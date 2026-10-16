@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { ExternalLink, FolderInput, Pencil, Trash2 } from 'lucide-react';
+import { Columns2, ExternalLink, FolderInput, Pencil, SquarePlus, Trash2 } from 'lucide-react';
 import { type KeyboardEvent, useState } from 'react';
 
 import { collectDeletion } from '../../features/documents/operations';
@@ -24,6 +24,9 @@ export interface DocumentDetailsProps {
     folders: readonly Folder[];
     entries: readonly DocumentIndexEntry[];
     onOpen: (entry: DocumentIndexEntry) => void;
+    /** Shows the document next to the ones already open (spec 034). */
+    onOpenBeside: (entry: DocumentIndexEntry) => void;
+    onOpenInNewTab: (entry: DocumentIndexEntry) => void;
     /** Commits a name typed in the details; `key` is the row key. */
     onRename: (key: string, name: string) => void;
     onMove: () => void;
@@ -107,6 +110,8 @@ export function DocumentDetails({
     folders,
     entries,
     onOpen,
+    onOpenBeside,
+    onOpenInNewTab,
     onRename,
     onMove,
     onDelete,
@@ -241,6 +246,18 @@ export function DocumentDetails({
                 <button type="button" onClick={() => onOpen(entry)} className={neutralButton}>
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                     {translate(labels.details.open)}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => onOpenInNewTab(entry)}
+                    className={neutralButton}
+                >
+                    <SquarePlus className="h-3.5 w-3.5" aria-hidden="true" />
+                    {translate(labels.details.openInNewTab)}
+                </button>
+                <button type="button" onClick={() => onOpenBeside(entry)} className={neutralButton}>
+                    <Columns2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    {translate(labels.details.openBeside)}
                 </button>
                 {renameButton}
                 {moveButton}

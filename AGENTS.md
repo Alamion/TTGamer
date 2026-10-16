@@ -131,8 +131,8 @@ check fo it existence before killing processes or creating new one.
 ├── docs/                      # Documentation (MDX); every tree but dev/ has a ru mirror
 │   ├── star-wars-wod-2e/      # Star Wars WoD 2e rules and catalogs
 │   ├── wod-v5/                # V5 rules (Hunter: the Reckoning 5e)
-│   ├── template-editor/       # Template editor guide (linked from the editor's help)
-│   ├── roll-sharing/          # Discord/Matrix roll sharing setup
+│   ├── guide/                 # How to use the site (sheet, documents, dice, template editor,
+│   │                          #   roll sharing); the app's help links here, never to rules pages
 │   └── dev/                   # Draft-only developer pages (storybook), English only
 ├── i18n/                      # Translations (en, ru)
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
@@ -166,9 +166,12 @@ check fo it existence before killing processes or creating new one.
   behavior belongs in `integrations/`.
 - Shared UI building blocks (spec 032): nested rows use `shared/components/tree/TreeView` (the
   library and the documents window are its users: differences are slots and options, not forks),
-  side-by-side panes use `shared/components/Splitter`, floating windows use `FloatingWindow`. Add an
-  option to these instead of copying them; their contract tests in `tests/shared/` run against every
-  user.
+  side-by-side panes use `shared/components/Splitter` (vertical or horizontal; `onCollapse` folds a
+  pane dragged 80 px past its minimum or on Enter), floating windows use `FloatingWindow` (its own
+  stored place, or an owner's with `layout`/`onLayoutChange`, `zIndex`, and `onFocus` for a stack of
+  windows; a keyboard-movable title bar with `moveLabel`; title-bar drags reported for docking). Add
+  an option to these instead of copying them; their contract tests in `tests/shared/` run against
+  every user.
 - The document collection is the index: generic code reads `entries` (or `DocumentRef`s) and loads
   one document by id when it needs its data; it never scans the loaded `documents`
   (`src/sheet_manager/AGENTS.md`, "Documents: Storage, Tree, and Window").

@@ -1,9 +1,14 @@
 // @vitest-environment happy-dom
+import { groupsInOrder } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
+import { usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { createElement } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { folder, openWindow, resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { openDocumentIds, resetLayout, roomyArea } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -50,10 +55,15 @@ describe('the documents window (spec 032, US1)', () => {
         expect(rowNames()).toEqual(['Character']);
     });
 
-    it('opens a document by a click and by Enter, but not by selecting', () => {
+    it('opens a document by a double click and by Enter, never by a click (T-116)', () => {
         seedDocuments(['Ana', 'Bruno', 'Cleo']);
         openWindow();
         fireEvent.click(row('Bruno'));
+        expect(current()).toBeNull();
+        expect(row('Bruno').getAttribute('aria-selected')).toBe('true');
+        fireEvent.doubleClick(row('Bruno'));
+        expect(current()).toBe('Bruno');
+        fireEvent.keyDown(row('Bruno'), { key: 'Enter' });
         expect(current()).toBe('Bruno');
 
         row('Cleo').focus();
@@ -70,9 +80,10 @@ describe('the documents window (spec 032, US1)', () => {
         fireEvent.click(row('Ana'));
         row('Ana').focus();
         fireEvent.keyDown(row('Ana'), { key: 'ArrowDown' });
-        expect(current()).toBe('Ana');
-        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
         expect(current()).toBe('Bruno');
+        fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
+        expect(current()).toBe('Cleo');
     });
 
     it("shows the selected document's fields", () => {
@@ -187,9 +198,79 @@ describe('the documents window (spec 032, US1)', () => {
         expect(screen.queryByRole('button', { name: 'Actions for Campaign' })).toBeNull();
     });
 
+    it('opens beside from the row menu and from the details, keeping the window open', () => {
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
+        const onOpenChange = vi.fn();
+        openWindow(onOpenChange);
+        fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+        expect(openDocumentIds()).toEqual(['Ana', 'Bruno']);
+        expect(current()).toBe('Bruno');
+
+        fireEvent.click(row('Cleo'), { ctrlKey: true });
+        fireEvent.click(
+            within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                name: 'Open beside',
+            })
+        );
+        expect(openDocumentIds()).toEqual(['Ana', 'Bruno', 'Cleo']);
+        expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
+    it('opens in a new tab of the same group from the row menu and from the details', () => {
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
+        const onOpenChange = vi.fn();
+        openWindow(onOpenChange);
+        fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'Open in new tab' }));
+        expect(groupsInOrder(usePaneStore.getState().root).map(({ tabs }) => tabs)).toEqual([
+            ['d:Ana', 'd:Bruno'],
+        ]);
+        expect(current()).toBe('Bruno');
+
+        fireEvent.click(row('Cleo'), { ctrlKey: true });
+        fireEvent.click(
+            within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                name: 'Open in new tab',
+            })
+        );
+        expect(openDocumentIds()).toEqual(['Ana', 'Bruno', 'Cleo']);
+        expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
+    it('opens a seventh document beside as a tab, and says so', async () => {
+        const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        resetLayout();
+        roomyArea();
+        seedDocuments(names, { current: 'A' });
+        openWindow();
+        render(createElement(Toaster));
+        for (const name of names.slice(1)) {
+            fireEvent.click(screen.getByRole('button', { name: `Actions for ${name}` }));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+        }
+        expect(openDocumentIds()).toHaveLength(7);
+        expect(
+            screen.getByText('There is no room for another group, so "G" opened as a tab.')
+        ).toBeTruthy();
+    });
+
     describe('on a phone', () => {
         beforeEach(() => {
             narrow = true;
+        });
+
+        it('closes the window after opening beside, as Open does', () => {
+            resetLayout();
+            seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
+            const onOpenChange = vi.fn();
+            openWindow(onOpenChange);
+            fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+            expect(current()).toBe('Bruno');
+            expect(onOpenChange).toHaveBeenCalledWith(false);
         });
 
         it('fills the screen, offers the list and the details as tabs, and closes once a document opens', () => {
@@ -204,7 +285,15 @@ describe('the documents window (spec 032, US1)', () => {
             fireEvent.click(tabs[1]!);
             expect(tabs[1]!.getAttribute('aria-selected')).toBe('true');
             fireEvent.click(tabs[0]!);
+            // A tap selects and shows the details, where the document opens.
             fireEvent.click(row('Ana'));
+            expect(current()).toBeNull();
+            expect(tabs[1]!.getAttribute('aria-selected')).toBe('true');
+            fireEvent.click(
+                within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                    name: 'Open',
+                })
+            );
             expect(current()).toBe('Ana');
             expect(onOpenChange).toHaveBeenCalledWith(false);
         });

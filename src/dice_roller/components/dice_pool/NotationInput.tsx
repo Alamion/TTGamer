@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 import { Info, Star } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
@@ -13,6 +14,7 @@ export default function NotationInput() {
     const roll = useDiceRollerStore((s) => s.roll);
     const favorites = useDiceRollerStore((s) => s.favorites);
     const toggleFavorite = useDiceRollerStore((s) => s.toggleFavorite);
+    const sitePath = useSitePath();
 
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [debouncedInput, setDebouncedInput] = useState('');
@@ -78,12 +80,14 @@ export default function NotationInput() {
                 )}
                 {notationInput.length > 0 && !notationValid && (
                     <a
-                        href="https://dice-roller.github.io/documentation/guide/notation/"
+                        // Our own guide lists only what this roller supports, in the reader's locale.
+                        href={sitePath('/docs/guide/dice-roller#notation')}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="absolute right-10 flex items-center justify-center w-5 h-5
                             text-textSecondary hover:text-textPrimary transition-colors"
                         title={translate(uiMessages.dice.pool.notation.reference)}
+                        aria-label={translate(uiMessages.dice.pool.notation.reference)}
                     >
                         <Info size={14} />
                     </a>

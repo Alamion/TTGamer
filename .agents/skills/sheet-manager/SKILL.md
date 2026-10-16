@@ -172,3 +172,11 @@ penalty (Bruised 0 → Crippled −5; Incapacitated none).
   aliases, template-backed views).
 - Checks by change size: `AGENTS.md` §11 (schema, persistence, and import changes run
   `yarn verify`).
+
+## Workspace layout
+
+The sheet page is a layout of groups with tabs (spec 036): documents and the tools (documents
+window, library, dice) are tabs of groups or floating windows; each document has its own document
+source and view; `currentDocumentId` is the document used last. Read `src/sheet_manager/AGENTS.md`
+("Workspace layout") before touching `features/sheet/panes/`, `useDocumentSource`, a tool's tab
+kind, or the loaded-document cache (`pinnedIds`, `loadIntoCache`).

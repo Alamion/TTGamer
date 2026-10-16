@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { expect, test } from '../fixtures';
+import { closeDocumentsTool, documentsTool } from '../tools';
 
 const FIXTURE = path.resolve('tests/sheet_manager/fixtures/legacy-export-first-version.json');
 
@@ -22,7 +23,7 @@ test('imports a batch with an old export and a broken file, then recovers the br
     await summary.getByRole('button', { name: 'Close' }).click();
 
     await page.getByRole('button', { name: 'Manage', exact: true }).click();
-    const manager = page.getByRole('dialog', { name: 'Documents', exact: true });
+    const manager = documentsTool(page);
     await expect(manager).toContainText('Rejected files kept for recovery: 1');
 
     const downloading = page.waitForEvent('download');
@@ -34,7 +35,7 @@ test('imports a batch with an old export and a broken file, then recovers the br
     const repaired = JSON.parse(readFileSync(FIXTURE, 'utf8'));
     repaired.id = '99999999-9999-4999-8999-999999999999';
     recovery.records[0].content = JSON.stringify(repaired);
-    await manager.getByRole('button', { name: 'Close the documents window' }).click();
+    await closeDocumentsTool(page);
 
     await input.setInputFiles({
         name: 'ttgamer_recovery.json',
@@ -47,7 +48,5 @@ test('imports a batch with an old export and a broken file, then recovers the br
         .click();
 
     await page.getByRole('button', { name: 'Manage', exact: true }).click();
-    await expect(page.getByRole('dialog', { name: 'Documents', exact: true })).not.toContainText(
-        'Rejected files kept for recovery'
-    );
+    await expect(documentsTool(page)).not.toContainText('Rejected files kept for recovery');
 });

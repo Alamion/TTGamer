@@ -48,8 +48,9 @@ describe('selecting documents with a finger (spec 032, FR-025 on a phone)', () =
 
         fireEvent.click(screen.getByRole('button', { name: 'Stop selecting' }));
         expect(screen.queryByRole('button', { name: 'Stop selecting' })).toBeNull();
-        // A tap opens again.
+        // A tap selects one row again (and opens nothing, T-116).
         fireEvent.click(row('Bruno'));
-        expect(useDocumentStore.getState().currentDocumentId).toBe('Bruno');
+        expect(useDocumentStore.getState().currentDocumentId).toBeNull();
+        expect(row('Bruno').getAttribute('aria-selected')).toBe('true');
     });
 });

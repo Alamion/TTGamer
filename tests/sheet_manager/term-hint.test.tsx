@@ -71,6 +71,21 @@ describe('TermHintProvider', () => {
         expect(screen.getByRole('tooltip').textContent).toBe('Larceny');
     });
 
+    it('draws the hint inside the Tailwind root, where its utilities exist', () => {
+        const modalRoot = document.createElement('div');
+        modalRoot.id = 'modal-root';
+        modalRoot.className = 'tailwind-root';
+        document.body.appendChild(modalRoot);
+        try {
+            sheet();
+            fireEvent.pointerOver(label('Воровство'), { pointerType: 'mouse' });
+            act(() => vi.advanceTimersByTime(300));
+            expect(modalRoot.contains(screen.getByRole('tooltip'))).toBe(true);
+        } finally {
+            modalRoot.remove();
+        }
+    });
+
     it('opens on focus and closes on Escape', () => {
         sheet();
         act(() => label('Воровство').focus());

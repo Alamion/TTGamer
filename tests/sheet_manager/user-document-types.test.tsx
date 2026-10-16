@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
-import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import {
     migrateDocumentStoreState,
@@ -18,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { renderEditor, resetEditorStores } from './helpers/editor';
+import { LibraryWindow } from './helpers/toolWindows';
 
 // Full editor renders (outline, live page, settings) are slow under a loaded test run.
 vi.setConfig({ testTimeout: 20_000 });
@@ -80,7 +80,7 @@ describe('user document types (spec 012, US4)', () => {
     });
 
     it('creates a type in a shipped setting without a page, then gives it its first page', () => {
-        render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+        render(createElement(LibraryWindow, { open: true, onOpenChange: () => {} }));
         fireEvent.click(document.querySelector('[data-tree-row="s:system:star-wars-wod"]')!);
         fireEvent.click(document.querySelector('[data-library-action="newType"]')!);
         fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Organization' } });
@@ -164,7 +164,7 @@ describe('user document types (spec 012, US4)', () => {
                 motto: 'Hope',
             }));
 
-            render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+            render(createElement(LibraryWindow, { open: true, onOpenChange: () => {} }));
             fireEvent.click(
                 within(
                     document.querySelector<HTMLElement>('[data-tree-row="s:system:star-wars-wod"]')!

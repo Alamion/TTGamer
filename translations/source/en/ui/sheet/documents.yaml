@@ -17,6 +17,34 @@ toolbar:
     exportSuccess: Exported "{title}"
     importSuccess: Imported "{title}"
     importError: Failed to import "{filename}"
+panes:
+    tabsLabel: Open documents
+    groupLabel: 'Tabs of group {number}'
+    close: 'Close {name}'
+    unreadable: This document could not be read.
+    closedHidden: 'At most {max} documents stay open: "{closed}" was closed to make room for "{name}".'
+    openedAsTab: 'There is no room for another group, so "{name}" opened as a tab.'
+    resize: 'Resize {left} and {right}'
+    resizeRows: 'Resize {top} and {bottom}'
+    actions: 'Actions for {name}'
+    moveLeft: Move left
+    moveRight: Move right
+    moveToNextGroup: Move to next group
+    splitRight: Split right
+    splitDown: Split down
+    groupLimit: 'There is no room for another group: at most six, each at least 320 × 200 px.'
+    moved: '"{name}" moved to group {number}.'
+    split: '"{name}" opened in a new group.'
+    float: Float
+    floatLimit: 'Four windows already float: dock or close one first.'
+    floated: '"{name}" floats above the page.'
+    dock: 'Dock {name}'
+    moveWindow: 'Move {name}: arrows move it, Shift and arrows resize it, Home puts it back'
+    maximize: 'Show only the group of {name}'
+    restore: 'Show all groups again'
+    expand: 'Open the group of {name}'
+    collapsed: 'The group of {name} is collapsed'
+
 conflict:
     typeTitle: This document type is already installed
     typePrompt: The file carries a different version of an installed document type. Replace the installed type, keep both (the imported one gets a new identity), or cancel.
@@ -91,6 +119,8 @@ manager:
         unknown: Unknown
         top: Top level
         open: Open
+        openBeside: Open beside
+        openInNewTab: Open in new tab
         delete: Delete
         rename: Rename
         move: Move to…
@@ -98,7 +128,7 @@ manager:
         selected:
             message: '{count} item selected|{count} items selected'
             plural: true
-        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A click on a document opens it.
+        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A double click or Enter opens a document; a click only selects it.
     search:
         label: Search names
         placeholder: Search names…

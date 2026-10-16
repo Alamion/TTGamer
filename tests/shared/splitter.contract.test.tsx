@@ -2,9 +2,9 @@
 import { Splitter } from '@site/src/shared/components/Splitter';
 import { fitPaneSizes, type PaneLimits, usePaneSizes } from '@site/src/shared/hooks/usePaneSizes';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement, useCallback, useRef } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { openWindow, seedDocuments } from '../sheet_manager/helpers/documentsWindow';
 import { renderEditor, resetEditorStores } from '../sheet_manager/helpers/editor';
@@ -16,8 +16,16 @@ vi.setConfig({ testTimeout: 20_000 });
 
 const BARE_LIMITS: Record<'tree', PaneLimits> = { tree: { min: 180, max: 480, initial: 280 } };
 
-/** The documents window's own divider, before the window exists (replaced by it in US1). */
-function BareHost() {
+/** A bare divider with its own stored size, between columns or between rows. */
+function BareHost({
+    orientation,
+    onCollapse,
+    primary,
+}: {
+    orientation?: 'vertical' | 'horizontal';
+    onCollapse?: (side: 'start' | 'end') => void;
+    primary?: 'start' | 'end';
+}) {
     const body = useRef<HTMLDivElement>(null);
     const panes = usePaneSizes('documents-panes', BARE_LIMITS, undefined, {
         restMin: 240,
@@ -30,6 +38,7 @@ function BareHost() {
     return (
         <div ref={body} data-testid="bare-host">
             <Splitter
+                orientation={orientation}
                 label="Resize the tree"
                 min={BARE_LIMITS.tree.min}
                 max={BARE_LIMITS.tree.max}
@@ -38,6 +47,9 @@ function BareHost() {
                 onPreview={preview}
                 onChange={(width) => panes.setSize('tree', width)}
                 onReset={() => panes.reset('tree')}
+                collapseAfter={onCollapse ? 80 : undefined}
+                onCollapse={onCollapse}
+                primary={primary}
             />
         </div>
     );
@@ -137,5 +149,55 @@ describe('fitting panes to a container that shrinks', () => {
         expect(fitted.a + fitted.b + room.dividers + room.restMin).toBeLessThanOrEqual(801);
         expect(fitted.a).toBeGreaterThanOrEqual(100);
         expect(fitPaneSizes({ a: 400, b: 200 }, limits, 300, room)).toEqual({ a: 100, b: 100 });
+    });
+});
+
+describeSplitterContract({
+    title: 'a divider between rows (spec 036)',
+    open: () => void render(createElement(BareHost, { orientation: 'horizontal' })),
+    divider: () => screen.getByRole('separator', { name: 'Resize the tree' }),
+    previewTarget: () => screen.getByTestId('bare-host'),
+    cssVariable: '--tree',
+    storageKey: 'documents-panes',
+    pane: 'tree',
+    limits: BARE_LIMITS.tree,
+    orientation: 'horizontal',
+});
+
+describe('collapsing a pane past its divider (spec 036, D9)', () => {
+    const divider = () => screen.getByRole('separator', { name: 'Resize the tree' });
+    const value = () => Number(divider().getAttribute('aria-valuenow'));
+    const drag = (to: number) => {
+        fireEvent.pointerDown(divider(), { button: 0, pointerId: 1, clientX: 1000 });
+        fireEvent.pointerMove(divider(), { pointerId: 1, clientX: 1000 + to });
+        fireEvent.pointerUp(divider(), { pointerId: 1, clientX: 1000 + to });
+    };
+    const host = (primary?: 'start' | 'end') => {
+        const onCollapse = vi.fn();
+        render(createElement(BareHost, { onCollapse, primary }));
+        return onCollapse;
+    };
+    afterEach(() => {
+        cleanup();
+        localStorage.clear();
+    });
+
+    it('collapses the pane a drag passes more than 80 px beyond its minimum', () => {
+        const onCollapse = host();
+        const { initial, min, max } = BARE_LIMITS.tree;
+        drag(min - initial - 80);
+        expect(onCollapse).not.toHaveBeenCalled();
+        expect(value()).toBe(min);
+        drag(min - value() - 81);
+        expect(onCollapse).toHaveBeenLastCalledWith('start');
+        drag(max - value() + 81);
+        expect(onCollapse).toHaveBeenLastCalledWith('end');
+        expect(onCollapse).toHaveBeenCalledTimes(2);
+    });
+
+    it('collapses the primary pane with Enter', () => {
+        const onCollapse = host('end');
+        fireEvent.keyDown(divider(), { key: 'Enter' });
+        expect(onCollapse).toHaveBeenCalledWith('end');
     });
 });

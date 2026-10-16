@@ -53,6 +53,12 @@ export interface DiceModifiers {
     setBonus?: SetBonus;
 }
 
+/** Names of the buttons that accept or cancel a 3D roll while the dice move. */
+export interface RollControlLabels {
+    accept: string;
+    cancel: string;
+}
+
 export interface DiceGroup {
     count: number;
     sides: number;

@@ -24,8 +24,13 @@ import {
     SAMPLE_DOCUMENT_ID,
 } from '../template-editor/sampleDocuments';
 
-/** A story's sandbox: the definition's first example (else a blank document), never stored. */
-function useStorySource(systemId: string, documentKind: string) {
+/**
+ * A story's sandbox: the definition's first example (else a blank document) with the story's own
+ * page values, never stored.
+ */
+function useStorySource(story: ElementStory) {
+    const { systemId, documentKind } = story.template;
+    const { values } = story;
     return useMemo(() => {
         const definition = findTemplateDefinition(systemId, documentKind);
         if (!definition) return undefined;
@@ -33,8 +38,11 @@ function useStorySource(systemId: string, documentKind: string) {
         const initial = example
             ? { ...structuredClone(example), id: SAMPLE_DOCUMENT_ID }
             : blankDocument(systemId, definition);
-        return createScratchDocumentSource(initial, definition);
-    }, [systemId, documentKind]);
+        const seeded = values
+            ? { ...initial, templateValues: { ...initial.templateValues, ...values } }
+            : initial;
+        return createScratchDocumentSource(seeded, definition);
+    }, [systemId, documentKind, values]);
 }
 
 function ScratchProvider({
@@ -52,7 +60,7 @@ function ScratchProvider({
 }
 
 function StoryView({ story }: { story: ElementStory }) {
-    const scratch = useStorySource(story.template.systemId, story.template.documentKind);
+    const scratch = useStorySource(story);
     if (!scratch) {
         reportSheetIssue({
             code: 'template-reference-invalid',
@@ -95,10 +103,48 @@ export function ElementStorybook({ filter }: { filter?: 'handwritten' | 'bound' 
     );
 }
 
+/** One part of a story, by its top-level node id; undefined when either does not exist. */
+export function findStoryPart(storyId: string, nodeId: string): ElementStory | undefined {
+    const story = listElementStories().find(({ id }) => id === storyId);
+    const node = story?.template.children.find(({ id }) => id === nodeId);
+    return story && node
+        ? { ...story, template: { ...story.template, children: [node] } }
+        : undefined;
+}
+
+function StoryPart({ story }: { story: ElementStory }) {
+    const scratch = useStorySource(story);
+    if (!scratch) return null;
+    return (
+        <div className="p-3">
+            <ScratchProvider scratch={scratch}>
+                <DeclarativeSheetView template={story.template} embedded />
+            </ScratchProvider>
+        </div>
+    );
+}
+
+/**
+ * One part of a storybook story for the template editor guide, on its own sandbox document: it
+ * can be tried, and nothing is stored. Labels are the storybook's (English).
+ */
+export function ElementExample({ story: storyId, node }: { story: string; node: string }) {
+    const story = useMemo(() => findStoryPart(storyId, node), [storyId, node]);
+    if (!story) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Guide element example references a story part that does not exist',
+            details: { story: storyId, node },
+        });
+        return null;
+    }
+    return <StoryPart story={story} />;
+}
+
 /** The documentation help link in its three states: site page, external page, rejected. */
 export function DocsLinkVariants() {
     const variants = [
-        ['Site docs page (opens in the reader’s locale)', '/docs/template-editor'],
+        ['Site docs page (opens in the reader’s locale)', '/docs/guide/template-editor'],
         ['External https page', 'https://example.org/'],
         ['Rejected (javascript:) — renders nothing', 'javascript:alert(1)'],
     ] as const;

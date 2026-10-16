@@ -83,7 +83,7 @@ export default function RollSharingSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
     const service = sharingServiceOf(settings.sharingService);
     const [address] = useSessionStorageState(service.addressKey, '');
-    const guideUrl = useSitePath()('/docs/roll-sharing');
+    const guideUrl = useSitePath()('/docs/guide/roll-sharing');
 
     const enabled = settings.enableDiscordWebhook;
     const includeRollContext = settings.includeRollContext;

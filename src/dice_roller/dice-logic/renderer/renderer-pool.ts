@@ -42,6 +42,7 @@ export function startPhysicsRoll(
         sharedRenderer = createRenderer(config);
     } else {
         sharedRenderer.setTimeToReact(config.timeToReact ?? false, config.timeToReactSeconds ?? 5);
+        sharedRenderer.setLabels(config.labels);
         if (config.liveliness !== undefined) {
             sharedRenderer.setLiveliness(config.liveliness);
         }

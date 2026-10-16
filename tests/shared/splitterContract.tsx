@@ -14,6 +14,8 @@ export interface SplitterHost {
     limits: { min: number; max: number; initial: number };
     /** The pane lies right of the divider: moving the divider right narrows it. */
     invert?: boolean;
+    /** A divider between rows (moved up and down) instead of between columns. */
+    orientation?: 'vertical' | 'horizontal';
     prepare?: () => void;
 }
 
@@ -29,8 +31,15 @@ export function describeSplitterContract(host: SplitterHost) {
         return raw === null ? undefined : (JSON.parse(raw) as Record<string, number>)[host.pane];
     };
     const direction = host.invert ? -1 : 1;
+    const horizontal = host.orientation === 'horizontal';
+    const grow = horizontal ? 'ArrowDown' : 'ArrowRight';
+    const shrink = horizontal ? 'ArrowUp' : 'ArrowLeft';
+    const at = (position: number) => (horizontal ? { clientY: position } : { clientX: position });
     const press = (key: string, shiftKey = false) =>
-        fireEvent.keyDown(host.divider(), { key, shiftKey });
+        fireEvent.keyDown(host.divider(), {
+            key: key === 'ArrowRight' ? grow : key === 'ArrowLeft' ? shrink : key,
+            shiftKey,
+        });
 
     describe(`splitter contract: ${host.title}`, () => {
         beforeEach(() => {
@@ -39,11 +48,11 @@ export function describeSplitterContract(host: SplitterHost) {
         });
         afterEach(cleanup);
 
-        it('is a vertical separator with its size and bounds', () => {
+        it('is a separator of its orientation with its size and bounds', () => {
             host.open();
             const divider = host.divider();
             expect(divider.getAttribute('role')).toBe('separator');
-            expect(divider.getAttribute('aria-orientation')).toBe('vertical');
+            expect(divider.getAttribute('aria-orientation')).toBe(host.orientation ?? 'vertical');
             expect(value()).toBe(limits.initial);
             expect(divider.getAttribute('aria-valuemin')).toBe(String(limits.min));
             expect(divider.getAttribute('aria-valuemax')).toBe(String(limits.max));
@@ -75,22 +84,33 @@ export function describeSplitterContract(host: SplitterHost) {
         it('previews a drag without storing it, stores once on release', () => {
             host.open();
             const divider = host.divider();
-            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, clientX: 200 });
-            fireEvent.pointerMove(divider, { pointerId: 1, clientX: 230 });
+            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, ...at(200) });
+            fireEvent.pointerMove(divider, { pointerId: 1, ...at(230) });
             expect(host.previewTarget()?.style.getPropertyValue(host.cssVariable)).toBe(
                 `${limits.initial + 30 * direction}px`
             );
             expect(stored()).toBeUndefined();
-            fireEvent.pointerUp(divider, { pointerId: 1, clientX: 230 });
+            fireEvent.pointerUp(divider, { pointerId: 1, ...at(230) });
             expect(stored()).toBe(limits.initial + 30 * direction);
             expect(value()).toBe(limits.initial + 30 * direction);
+        });
+
+        it('clamps a drag far past its bounds, and Enter changes nothing', () => {
+            host.open();
+            const divider = host.divider();
+            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, ...at(1000) });
+            fireEvent.pointerMove(divider, { pointerId: 1, ...at(1000 - 600 * direction) });
+            fireEvent.pointerUp(divider, { pointerId: 1, ...at(1000 - 600 * direction) });
+            expect(value()).toBe(limits.min);
+            press('Enter');
+            expect(value()).toBe(limits.min);
         });
 
         it('puts the preview back when a drag is cancelled', () => {
             host.open();
             const divider = host.divider();
-            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, clientX: 200 });
-            fireEvent.pointerMove(divider, { pointerId: 1, clientX: 260 });
+            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, ...at(200) });
+            fireEvent.pointerMove(divider, { pointerId: 1, ...at(260) });
             fireEvent.pointerCancel(divider, { pointerId: 1 });
             expect(host.previewTarget()?.style.getPropertyValue(host.cssVariable)).toBe(
                 `${limits.initial}px`

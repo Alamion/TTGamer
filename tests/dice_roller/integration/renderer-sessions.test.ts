@@ -26,6 +26,8 @@ vi.mock('@site/src/dice_roller/dice-logic/renderer/renderer', () => ({
             void args;
         }
 
+        setLabels() {}
+
         startRoll() {
             const sessionId = rendererCalls.sessionId++;
             return { sessionId, settle: Promise.resolve([sessionId]) };

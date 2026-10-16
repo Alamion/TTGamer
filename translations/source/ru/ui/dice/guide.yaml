@@ -1,0 +1,19 @@
+sandbox:
+    label: Попробуйте нотацию
+    hint: Наберите бросок или выберите пример; ниже показан каждый кубик.
+    examples: Примеры
+total: Итог
+rollAgain: Бросить {notation} ещё раз
+rollExample: Бросить {notation}
+legend:
+    label: Что значат пометки
+    kept: учтён
+    dropped: отброшен
+    success: успех
+    botch: снимает успех
+    critSuccess: критический успех
+    critFailure: критический провал
+    exploded: взорвался
+    raised: поднят до минимума
+    capped: опущен до максимума
+    special: особый кубик

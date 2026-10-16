@@ -1,0 +1,19 @@
+sandbox:
+    label: Try a notation
+    hint: Type a roll, or pick an example; each die is shown below.
+    examples: Examples
+total: Total
+rollAgain: Roll {notation} again
+rollExample: Roll {notation}
+legend:
+    label: What the marks mean
+    kept: kept
+    dropped: dropped
+    success: success
+    botch: takes a success away
+    critSuccess: critical success
+    critFailure: critical failure
+    exploded: exploded
+    raised: raised to the minimum
+    capped: lowered to the maximum
+    special: special die

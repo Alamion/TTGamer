@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { documentsTool } from '../tools';
 import { best, recordTiming, RUNS } from './record';
 
 const DOCUMENTS = 3000;
@@ -94,7 +95,7 @@ test('opening, scrolling, and searching 3,000 documents in nested folders', asyn
         await expect(manage).toBeEnabled();
         const started = Date.now();
         await manage.click();
-        const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+        const window = documentsTool(page);
         await expect(window.getByRole('treeitem').first()).toBeVisible();
         if (run > 0) opens.push(Date.now() - started);
 

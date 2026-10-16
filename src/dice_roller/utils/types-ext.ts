@@ -1,4 +1,4 @@
-import type { RollResult } from '../dice-logic/types';
+import type { RollControlLabels, RollResult } from '../dice-logic/types';
 
 export interface HistoryEntry {
     id: string;
@@ -27,4 +27,6 @@ export interface MixedRollConfig {
     diceLiveliness?: number;
     /** Face colour of labelled (`:h`) dice; the primary colour when absent. */
     specialDiceColor?: string;
+    /** Names of the accept and cancel buttons over 3D dice, in the reader's language. */
+    rollControlLabels?: RollControlLabels;
 }

@@ -1,10 +1,10 @@
-import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import type { Folder } from '@site/src/sheet_manager/store/documentIndex';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { render } from '@testing-library/react';
 import { createElement } from 'react';
 
 import { libraryDocument } from './library';
+import { DocumentsWindow } from './toolWindows';
 
 const STAMP = '2026-10-14T10:00:00.000Z';
 

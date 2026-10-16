@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
 
-import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
@@ -19,6 +18,7 @@ import {
     row,
     select,
 } from './helpers/libraryDialog';
+import { LibraryWindow } from './helpers/toolWindows';
 
 // The editor opens from the library; full renders are slow under a loaded run.
 vi.setConfig({ testTimeout: 30_000 });
@@ -179,7 +179,7 @@ describe('library dialog — browse (spec 013, US1)', () => {
 
     it('closes an open form before the dialog on Escape', () => {
         const onOpenChange = vi.fn();
-        render(createElement(LibraryDialog, { open: true, onOpenChange }));
+        render(createElement(LibraryWindow, { open: true, onOpenChange }));
         select('r:wod-2e');
         fireEvent.click(action('newSetting')!);
         fireEvent.keyDown(screen.getByLabelText('Name'), { key: 'Escape' });

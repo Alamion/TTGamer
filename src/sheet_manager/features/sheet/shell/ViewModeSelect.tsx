@@ -19,6 +19,8 @@ export interface ViewModeSelectProps {
     onChangeTemplate: (templateId: string | undefined) => void;
     onChangeView: (viewId: DocumentViewId) => void;
     templateOptions: ReadonlyArray<TemplatePageOption>;
+    /** A small selector whose label is only for assistive technology (a pane's header). */
+    compact?: boolean;
 }
 
 const TEMPLATE_PREFIX = 'tpl:';
@@ -50,6 +52,7 @@ export function ViewModeSelect({
     onChangeView,
     templateOptions,
     value,
+    compact = false,
 }: ViewModeSelectProps) {
     // FR-13: exactly one entry per page — view ids are default templates; skip custom-template
     // options whose id collides with a registered view id (they resolve through the same page).
@@ -60,7 +63,9 @@ export function ViewModeSelect({
 
     return (
         <label className="flex items-center gap-2 text-sm text-textSecondary">
-            {translate(uiMessages.sheet.documents.views.label)}
+            <span className={compact ? 'sr-only' : undefined}>
+                {translate(uiMessages.sheet.documents.views.label)}
+            </span>
             <select
                 value={value}
                 onChange={(event) => {
@@ -72,7 +77,11 @@ export function ViewModeSelect({
                         onChangeView(next as DocumentViewId);
                     }
                 }}
-                className="rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
+                className={
+                    compact
+                        ? 'max-w-40 rounded-sm border border-border bg-bgSurface px-1.5 py-0.5 text-xs text-textPrimary pointer-coarse:min-h-8'
+                        : 'rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary'
+                }
             >
                 {views.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>

@@ -62,6 +62,8 @@ export interface TreeRowShellProps extends TreeRowSlots {
     /** A right click: selects the row (without the click's side effects), then opens the menu. */
     onContext: (key: string, anchor: { x: number; y: number }) => void;
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
+    /** A double click on the row with no modifier key (the owner's "open"). */
+    onActivate?: (key: string) => void;
     /** A finger held on the row (touch only): the way to start selecting several rows. */
     onLongPress?: (key: string) => void;
 }
@@ -105,6 +107,7 @@ export const TreeRowShell = memo(function TreeRowShell({
     onMenu,
     onContext,
     onKeyDown,
+    onActivate,
     onLongPress,
 }: TreeRowShellProps) {
     const press = useRef<{ timer: number; x: number; y: number } | null>(null);
@@ -155,6 +158,9 @@ export const TreeRowShell = memo(function TreeRowShell({
                     return;
                 }
                 onSelect(rowKey, extendOf(event));
+            }}
+            onDoubleClick={(event) => {
+                if (onActivate && extendOf(event) === 'none') onActivate(rowKey);
             }}
             onPointerDown={beginPress}
             onPointerMove={movePress}

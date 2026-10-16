@@ -228,6 +228,7 @@ describe('3D renderer loading', () => {
 
         await executeUnifiedRoll('1d6', { enable3dDice: false });
         await executeUnifiedRoll('1d7', config3d); // unsupported sides
+        await executeUnifiedRoll('2d[2,4,6]', config3d); // custom faces
         // 101 d100 are 202 physical d10: over the limit, though within the parser's 200 dice.
         await executeUnifiedRoll(`${MAX_PHYSICAL_3D_DICE / 2 + 1}d100`, config3d);
 
@@ -475,6 +476,19 @@ describe('mixed 3D and 2D groups (dice #5)', () => {
         expect(valuesOf(result, 0)).toEqual([7]);
         expect(valuesOf(result, 1)).toEqual([4, 5]);
         expect(result.total).toBe(16);
+    });
+
+    it('rolls custom faces in 2D, never as the plain die of their largest face', async () => {
+        const random = rollHighIn2D();
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [1, 3],
+        });
+        const result = await executeUnifiedRoll('1d[1,3,6]+2d6', config3d);
+        random.mockRestore();
+
+        expect(scripted.groupSizes).toEqual([0, 2]);
+        expect(valuesOf(result, 0)).toEqual([6]);
+        expect(valuesOf(result, 1)).toEqual([1, 3]);
     });
 
     it('keeps forced values of a group without 3D dice and aims only the physical ones', async () => {

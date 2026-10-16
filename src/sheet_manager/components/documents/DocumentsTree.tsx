@@ -21,7 +21,7 @@ export interface DocumentsTreeProps {
     /** A plain click on a row. */
     onRowClick: (item: TreeRowItem<DocumentsNode>) => void;
     onToggle: (key: string, open?: boolean) => void;
-    /** Enter on a row: a document opens, a folder opens or closes. */
+    /** Enter or a double click on a row: a document opens, a folder opens or closes. */
     onEnter: (item: TreeRowItem<DocumentsNode>) => void;
     onDelete: (item: TreeRowItem<DocumentsNode>) => void;
     onMenu: (key: string, anchor: { x: number; y: number }) => void;
@@ -78,6 +78,7 @@ export function DocumentsTree({
             }}
             onToggle={onToggle}
             onEnter={onEnter}
+            onRowDoubleClick={onEnter}
             onDelete={onDelete}
             onMenu={onMenu}
             onCommand={onCommand}

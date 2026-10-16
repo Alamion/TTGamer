@@ -7,9 +7,9 @@ describe('parseDocsLink', () => {
             kind: 'site',
             path: '/docs/wod-v5/rules/dice-pools#reading-the-dice',
         });
-        expect(parseDocsLink(' /docs/template-editor ')).toEqual({
+        expect(parseDocsLink(' /docs/guide/template-editor ')).toEqual({
             kind: 'site',
-            path: '/docs/template-editor',
+            path: '/docs/guide/template-editor',
         });
     });
 

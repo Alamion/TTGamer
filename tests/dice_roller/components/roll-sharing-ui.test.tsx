@@ -40,7 +40,7 @@ describe('roll sharing settings and button', () => {
         expect(screen.getByText('Valid Discord webhook')).toBeTruthy();
         expect(
             screen.getByRole('link', { name: 'How to set up sharing' }).getAttribute('href')
-        ).toBe('/docs/roll-sharing#discord');
+        ).toBe('/docs/guide/roll-sharing#discord');
     });
 
     it('gives Matrix its own address and refuses a Discord one', () => {
@@ -58,7 +58,7 @@ describe('roll sharing settings and button', () => {
         expect(screen.getByText('Valid Matrix webhook')).toBeTruthy();
         expect(
             screen.getByRole('link', { name: 'How to set up sharing' }).getAttribute('href')
-        ).toBe('/docs/roll-sharing#matrix');
+        ).toBe('/docs/guide/roll-sharing#matrix');
     });
 
     it('keeps both addresses through ten switches', () => {

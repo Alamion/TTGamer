@@ -126,9 +126,9 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
 - Performance rules: tree operations keep untouched nodes' identity; `localizeTemplate` caches per
   locale by identity; panels read draft-derived data from `EditorModelContext` /
   `EditorFillTargetsContext` (`session/EditorModel.tsx`).
-- In-editor help (T-068): `EditorHelp` links the guide `docs/template-editor/` (en + ru, explicit
-  `\{#anchor}` ids) through `EDITOR_GUIDE`; `tests/docs/template-editor-guide.test.ts` fails when an
-  anchor disappears.
+- In-editor help (T-068): `EditorHelp` links the guide `docs/guide/template-editor/` (en + ru,
+  explicit `\{#anchor}` ids) through `EDITOR_GUIDE`;
+  `tests/docs/guide/template-editor-guide.test.ts` fails when an anchor disappears.
 - Tests: unit tests of the parts in `tests/sheet_manager/template-editor/`; dialog flows in
   `tests/sheet_manager/template-editor.*.test.tsx` and `editor-*.test.tsx`; helpers in
   `tests/sheet_manager/helpers/editor.ts` (`renderEditor`, `pressShortcut`, `openSettingsGroups`,

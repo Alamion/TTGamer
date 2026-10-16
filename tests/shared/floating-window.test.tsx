@@ -258,4 +258,85 @@ describe('floating window (spec 032, FR-002 to FR-004)', () => {
         mount({ open: false });
         expect(screen.queryByRole('dialog')).toBeNull();
     });
+
+    describe('owned by a layout (spec 036)', () => {
+        const owned = (extra: Partial<React.ComponentProps<typeof FloatingWindow>> = {}) => {
+            const onLayoutChange = vi.fn();
+            mount({
+                layout: { x: 100, y: 100, width: 600, height: 400 },
+                onLayoutChange,
+                moveLabel: 'Move Documents',
+                zIndex: 905,
+                ...extra,
+            });
+            return onLayoutChange;
+        };
+
+        it('shows the place it is given, reports moves, and stores nothing itself', () => {
+            const onLayoutChange = owned();
+            expect(frame().style.left).toBe('100px');
+            expect(frame().style.zIndex).toBe('905');
+            fireEvent.pointerDown(titleBar(), {
+                button: 0,
+                pointerId: 1,
+                clientX: 300,
+                clientY: 110,
+            });
+            fireEvent.pointerMove(titleBar(), { pointerId: 1, clientX: 350, clientY: 130 });
+            fireEvent.pointerUp(titleBar(), { pointerId: 1, clientX: 350, clientY: 130 });
+            expect(onLayoutChange).toHaveBeenLastCalledWith({
+                x: 150,
+                y: 120,
+                width: 600,
+                height: 400,
+            });
+            expect(stored('test')).toBeNull();
+        });
+
+        it('moves with the arrows, resizes with Shift, and goes back with Home', () => {
+            const onLayoutChange = owned();
+            const handle = screen.getByLabelText('Move Documents');
+            expect(handle.tabIndex).toBe(0);
+            fireEvent.keyDown(handle, { key: 'ArrowRight' });
+            expect(onLayoutChange).toHaveBeenLastCalledWith({
+                x: 110,
+                y: 100,
+                width: 600,
+                height: 400,
+            });
+            fireEvent.keyDown(handle, { key: 'ArrowDown', shiftKey: true });
+            expect(onLayoutChange).toHaveBeenLastCalledWith({
+                x: 100,
+                y: 100,
+                width: 600,
+                height: 410,
+            });
+            fireEvent.keyDown(handle, { key: 'Home' });
+            expect(onLayoutChange).toHaveBeenLastCalledWith(null);
+        });
+
+        it('lets the owner take the window where its title bar is let go', () => {
+            const onDragMove = vi.fn();
+            const onDragEnd = vi.fn(() => true);
+            const onLayoutChange = owned({ onDragMove, onDragEnd });
+            fireEvent.pointerDown(titleBar(), {
+                button: 0,
+                pointerId: 1,
+                clientX: 300,
+                clientY: 110,
+            });
+            fireEvent.pointerMove(titleBar(), { pointerId: 1, clientX: 20, clientY: 300 });
+            expect(onDragMove).toHaveBeenLastCalledWith({ x: 20, y: 300 });
+            fireEvent.pointerUp(titleBar(), { pointerId: 1, clientX: 20, clientY: 300 });
+            expect(onDragEnd).toHaveBeenCalledWith({ x: 20, y: 300 });
+            expect(onLayoutChange).not.toHaveBeenCalled();
+        });
+
+        it('tells its owner when focus moves into it, for the stack', () => {
+            const onFocus = vi.fn();
+            owned({ onFocus });
+            screen.getByLabelText('Inside').focus();
+            expect(onFocus).toHaveBeenCalled();
+        });
+    });
 });

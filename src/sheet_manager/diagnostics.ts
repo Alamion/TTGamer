@@ -49,7 +49,11 @@ export type SheetIssueCode =
     /** A deleted document's record could not be removed yet. */
     | 'document-purge-failed'
     | 'document-folders-repaired'
-    | 'document-boot-failed';
+    | 'document-boot-failed'
+    /** The stored arrangement of panes is not readable; the current document shows alone (spec 034). */
+    | 'pane-arrangement-invalid'
+    /** The dice panel could not be drawn as a tab; it slides in as on other pages (spec 036). */
+    | 'dice-tab-unavailable';
 
 export interface SheetIssue {
     code: SheetIssueCode;

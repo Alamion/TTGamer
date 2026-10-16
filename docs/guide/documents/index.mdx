@@ -1,0 +1,81 @@
+---
+sidebar_position: 2
+slug: ./
+title: Documents window
+sidebar_label: Documents window
+description: How to find, arrange, and manage your documents — folders, search, filters, sorting, moving, renaming, and undo, on a computer and on a phone.
+---
+
+import { LayoutSketch } from '@site/src/sheet_manager/docsEmbeds';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
+# Documents window \{#documents-window}
+
+:::tip[In short]
+**Manage** on the [character sheet](/universal_sheet) opens the documents window. Your documents sit in a tree of folders: double-click a document to open it, drag rows to arrange them, type in the search box to find one, and press **Undo** if you change your mind.
+:::
+
+## Opening and moving the window
+
+**Manage** opens the window as a tab at the left of the sheet, beside your document. Like every tab it can float above the sheet instead: choose **Float** in its tab menu, or drag the tab off the groups. A floating window moves by its title bar, resizes by its edges and corners, and **Dock** in its title bar puts it back. On a phone the window fills the screen: the tree and the details are two tabs, a tap on a document shows its details, and opening it closes the window. In a narrow tab or window the tree and the details are tabs too.
+
+## The tree
+
+Folders come first, then documents, each in the order you arranged. Open and close a folder with its arrow; the open folders are remembered.
+
+- **Double-click** a document, or press `Enter`, to open it on the sheet; a click only selects it and shows its details, with **Open** and **Open beside**. The open document is marked _current_.
+- **Ctrl or Cmd click** adds or removes a row from the selection, **Shift click** selects a range, and `Space` toggles the focused row. Selecting never opens a document.
+- On a touch screen, **hold** a row to start selecting, then tap the rows you need; the bar above the tree counts them and offers **Move to…** and **Delete**, and its **×** stops selecting. The library tree works the same way.
+- The **⋯** button on a row, a right click, `Shift+F10`, or the Menu key opens that row's actions. On a phone the **⋯** button is always shown.
+
+The keyboard works as in a file tree: the arrows move and open folders, `Home` and `End` jump to the first and last row, typing a name jumps to it, `F2` renames, `Delete` deletes.
+
+## Folders, names, and moving
+
+- **New folder** makes a folder (inside the selected folder, or beside the selected document) with its name ready to type over. **Add a document** asks which kind of document to make, puts it in the same place, and asks for its name, without switching the sheet to it.
+- **Rename** with `F2`, the row's menu, or the name field in the details on the right. `Enter` or leaving the field saves, `Escape` drops the change. Renaming a document also changes its name on the sheet.
+- **Drag** rows onto a folder to put them inside it, or above or below another row to put them there; a line shows where they will land. A folder cannot go into itself or into a folder inside it, and folders can be nested 32 deep.
+- **Move to…** (the row's menu, or the button in the details) works for everything the mouse does, and is the way to move rows on a phone: pick a folder, or the top level.
+- **Delete** asks first. Deleting a folder deletes what is inside it; the question says how many folders and documents go, and whether the open document is among them. The sheet then moves to the nearest document.
+
+**Undo** and **Redo** (the buttons above the tree, or `Ctrl+Z`, `Ctrl+Shift+Z`, and `Ctrl+Y`) take back and repeat the last 50 changes: moves, renames, new folders, and deletes, with the order of rows. The history lasts until you reload the page.
+
+Documents saved before folders existed appear at the top level, unchanged.
+
+## Search, filters, and sort
+
+- **Search** matches the names of documents and folders, ignoring case, accents, and `ё`; every word you type must be in the name. Matches are marked, and the folders that hold them stay open above them. A folder whose own name matches shows everything inside it.
+- **Filters** (the sliders button) narrow by type, game system, setting, and by when a document was created or last changed. All active filters apply together; each one shows as a chip you can remove, and **Clear search and filters** removes them all. Documents saved before times were kept show an unknown time and only match the filter _Unknown_.
+- **Sort** orders rows inside every folder by name, type, game system, created, or changed time, up or down; folders always come first. **Manual order** returns the order you arranged. While rows are sorted you can still drop rows into a folder, but not above or below other rows.
+
+Search and filters are kept while you close and reopen the window in the same visit.
+
+## Several documents side by side \{#layout}
+
+The sheet is a layout of **groups**. Each group has a strip of **tabs**, and a tab is a document or a tool: the documents window, the [library](../template-editor/library), or the dice roller. Groups sit side by side and above one another, as in a code editor.
+
+Try it on a small example layout:
+
+<LiveDemo kind="sketch">
+    <LayoutSketch />
+</LiveDemo>
+
+- **Opening.** **Open** (or a double click) shows a document in place of the one you used last. **Open in new tab** adds it as a tab of that group, and **Open beside** puts it in a new group on the right, in its brief view when it has one. **Manage** and **Library** open as tabs at the left, the dice button at the right; each tool then opens where you last had it.
+- **Dragging.** Drag a tab along its strip to reorder it, onto another strip or the middle of another group to move it there, or onto the edge of a group to split that group: a highlight shows where it will land, and `Escape` cancels. A single document row of the documents window can be dragged onto the layout the same way. A tab dropped away from every group floats.
+- **Floating windows.** Any tab can float above the sheet (**Float** in its tab menu), up to four at once; the last one you click is in front. To dock a floating window, drag its title bar onto a strip, or onto one of the squares that appear in the middle of a group (the middle, or a side to split it), or press **Dock**. Elsewhere it only moves.
+- **Keyboard.** `Shift+F10` or the Menu key on a tab opens its menu: move left or right, move to the next group, split right or down, float, show only this group, close. A floating window's title bar moves it with the arrows and resizes it with `Shift` and the arrows.
+- **Sizes.** Dividers between groups move with the mouse or the arrow keys; `Home` makes them equal. Each group stays at least 320 × 200 px. Drag a divider well past a group's edge, or press `Enter` on it, to collapse that group to a thin strip; click the strip to open it again. When the window is too small, groups of tools give way to strips by themselves.
+- **Limits.** Up to twelve documents and six groups stay open. Opening a thirteenth document closes the hidden one you used least recently and says so; a split with no room left opens a tab instead and says why.
+- **A group to the whole screen.** Double-click a tab, or press the group's **Show only** button, to give it the whole layout; do it again to bring the others back.
+- **Phone.** A phone shows one document at a time with a strip of every open document; tools open over the whole screen. When the window is wide again, the layout comes back as it was.
+- **Views and rolls.** Each document has its own view selector, which does not change the view the document itself prefers. A roll started in a document names that document's character, and the document you last clicked or typed in is the current one, which the dice roller follows.
+
+The layout, the tools' places, and the floating windows are remembered on this device and are not part of a document or an export.
+
+## Many documents
+
+The window is built for thousands of documents: it draws only the rows you can see, and it reads a document's content only when you open it. With 3,000 documents it opens in well under a second.
+
+## Rejected files \{#rejected-files}
+
+Files that failed to import are kept at the bottom of the window until you download or clear them. Download the kept files, repair them, and import the recovery file again from the sheet's **Import** button.

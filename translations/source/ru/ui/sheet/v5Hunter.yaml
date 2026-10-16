@@ -2,7 +2,7 @@ module: 'Охотник: Воздаяние, 5-я редакция'
 newHunter: Новый охотник
 views:
     sheet: Полный лист
-    brief: Краткий
+    brief: Краткий лист
 sections:
     edges: Грани и умения
     hunter: Охотник

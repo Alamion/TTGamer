@@ -1,20 +1,25 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { useMemo } from 'react';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+import { clsx } from 'clsx';
+import { useId, useMemo, useState } from 'react';
 
 import { reportSheetIssue } from './diagnostics';
 import { CatalogBrowser } from './features/docs/CatalogBrowser';
 import {
     DocsLinkVariants,
+    ElementExample,
     ElementStorybook,
     ReferenceEntryVariants,
     TrackerParity,
 } from './features/docs/ElementStorybook';
+import { LayoutSketch } from './features/docs/LayoutSketch';
 import { LibraryStorybook } from './features/docs/LibraryStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
 import { CreateCharacterButton } from './features/sheet/shell/CreateCharacterButton';
+import { GameTermsMenu } from './features/sheet/shell/GameTermsMenu';
 import { PolicyStatement } from './features/sheet/shell/PolicyNotice';
 import {
     createStaticDocumentSource,
@@ -136,12 +141,96 @@ export function TemplatePreview({
     );
 }
 
+/**
+ * A fixed document in each of its views, switched like the sheet's view selector: the real
+ * view names and the real renderer, read-only.
+ */
+export function ViewsPreview({
+    document,
+    initialView,
+}: {
+    document: UnknownDocumentEnvelope;
+    initialView?: string;
+}) {
+    const views =
+        systemRegistry.getDocumentDefinition(document.systemId, document.definitionId)?.views ?? [];
+    const [viewId, setViewId] = useState(initialView ?? views[0]?.id);
+    const tabsId = useId();
+    const view = views.find((candidate) => candidate.id === viewId) ?? views[0];
+    if (!view) return null;
+    return (
+        <div>
+            <div
+                role="tablist"
+                aria-label={translate(uiMessages.sheet.documents.views.label)}
+                className="flex gap-1 border-b border-border px-2 pt-2"
+            >
+                {views.map((candidate) => {
+                    const selected = candidate.id === view.id;
+                    return (
+                        <button
+                            key={candidate.id}
+                            type="button"
+                            role="tab"
+                            id={`${tabsId}-${candidate.id}`}
+                            aria-selected={selected}
+                            aria-controls={`${tabsId}-panel`}
+                            onClick={() => setViewId(candidate.id)}
+                            className={clsx(
+                                '-mb-px rounded-t-md border px-3 py-1.5 text-sm',
+                                selected
+                                    ? 'border-border border-b-bgSurface bg-bgSurface font-semibold text-textPrimary'
+                                    : 'border-transparent text-textSecondary hover:text-textPrimary'
+                            )}
+                        >
+                            {translate(candidate.label)}
+                        </button>
+                    );
+                })}
+            </div>
+            <div
+                role="tabpanel"
+                id={`${tabsId}-panel`}
+                aria-labelledby={`${tabsId}-${view.id}`}
+                className="max-h-[36rem] overflow-auto p-3"
+            >
+                <TemplatePreview
+                    document={document}
+                    systemId={document.systemId}
+                    template={view.layout.templateId}
+                />
+            </div>
+        </div>
+    );
+}
+
+/** The real game-terms menu over an example's attributes; outside English only, like the menu. */
+export function GameTermsDemo() {
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    if (locale === 'en') return null;
+    return (
+        <LiveDemo>
+            <div className="flex flex-col gap-2 p-3">
+                <GameTermsMenu />
+                <TemplatePreview
+                    document={LENA_VARGA_DOCUMENT}
+                    systemId="wod-v5"
+                    template="v5-hunter-sheet"
+                    node="attributes"
+                />
+            </div>
+        </LiveDemo>
+    );
+}
+
 export { JAX_VORN_PRESET } from './systems/star-wars-wod/presets';
 export {
     CatalogBrowser,
     CreateCharacterButton,
     DocsLinkVariants,
+    ElementExample,
     ElementStorybook,
+    LayoutSketch,
     LibraryStorybook,
     PolicyStatement,
     ReferenceEntryVariants,

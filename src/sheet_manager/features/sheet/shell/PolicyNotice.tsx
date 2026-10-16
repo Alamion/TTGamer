@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useSitePath } from '@site/src/shared/hooks/useSitePath';
+import { clsx } from 'clsx';
 
 import { type PolicyId, PUBLISHER_POLICIES, type PublisherPolicy } from '../../../systems';
 
@@ -12,17 +13,38 @@ function uniquePolicies(policies: readonly PublisherPolicy[]) {
     );
 }
 
+/** Where the badges sit: under the page, at the end of the toolbar, or at a window's foot. */
+export type BadgePlace = 'page' | 'toolbar' | 'window';
+
+const PLACE_CLASS: Record<BadgePlace, string> = {
+    page: 'px-4 pb-4 pt-2 lg:px-6',
+    toolbar: 'items-center sm:ml-auto [&_img]:h-8 [&_img]:w-8',
+    window: 'shrink-0 border-t border-border px-3 py-2 [&_img]:h-8 [&_img]:w-8',
+};
+
 /**
- * Publisher policy badges for material shown on a sheet (constitution VIII): small, in the
- * bottom-left corner, each linking to the policy's documentation page with the full statement.
- * Renders nothing when the document uses no policy material.
+ * Publisher policy badges for material shown on a sheet (constitution VIII): small, once per
+ * surface that shows the material (under one document's page, at the end of the toolbar over a
+ * layout of groups, at the foot of a floating window), each linking to the policy's
+ * documentation page with the full statement. Renders nothing when no shown document uses policy
+ * material.
  */
-export function PolicyBadges({ policies }: { policies: readonly PublisherPolicy[] }) {
+export function PolicyBadges({
+    policies,
+    place = 'page',
+}: {
+    policies: readonly PublisherPolicy[];
+    place?: BadgePlace;
+}) {
     const sitePath = useSitePath();
     const resolved = uniquePolicies(policies);
     if (resolved.length === 0) return null;
     return (
-        <aside aria-label={translate(notice.label)} className="flex gap-2 px-4 pb-4 pt-2 lg:px-6">
+        <aside
+            aria-label={translate(notice.label)}
+            data-badge-place={place}
+            className={clsx('flex gap-2', PLACE_CLASS[place])}
+        >
             {resolved.map((policy) => (
                 <a
                     key={policy.id}

@@ -104,6 +104,20 @@ describe('template value write path', () => {
         expect(storedValues()).toEqual({ luck: 42, notes: 'kept' });
     });
 
+    it('clears page values, system data, and the name on reset', () => {
+        seedDocument({ luck: 3, notes: 'kept' });
+        useDocumentStore.getState().updateDocumentData('doc-writes', (data) => {
+            const character = data as { metadata: Record<string, unknown> };
+            return { ...character, metadata: { ...character.metadata, name: 'Han' } };
+        });
+        useDocumentStore.getState().resetDocument('doc-writes');
+
+        const document = useDocumentStore.getState().documents[0]!;
+        expect(document.templateValues).toEqual({});
+        expect(document.data).toEqual(createDefaultStarWarsCharacterData());
+        expect(document.metadata.title).toBe('');
+    });
+
     it('reports writes to a document that does not exist', () => {
         useDocumentStore
             .getState()

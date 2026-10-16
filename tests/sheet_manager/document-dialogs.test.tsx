@@ -1,13 +1,14 @@
 // @vitest-environment happy-dom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
-import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { createHunterDefault } from '@site/src/sheet_manager/systems/v5';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
+
+import { DocumentsWindow } from './helpers/toolWindows';
 
 afterEach(cleanup);
 

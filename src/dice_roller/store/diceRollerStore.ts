@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type { SharingServiceId } from '@site/src/integrations/roll-sharing';
 import { warn } from '@site/src/shared/utils/logging';
 import type { StateCreator } from 'zustand';
@@ -72,6 +74,11 @@ interface DiceRollerState {
     notationInput: string;
     /** Selected dice-panel tab; `''` means none. Persisted, read even while the panel is closed. */
     panelTab: DicePanelTab;
+    /**
+     * Pages that show the panel in a place of their own (the sheet's layout, spec 036); while any
+     * does, the sliding panel is not drawn. Not saved.
+     */
+    panelHosts: number;
 
     roll: (notation: string, rollOptions?: RollOptions) => Promise<void>;
     clearHistory: () => void;
@@ -82,6 +89,8 @@ interface DiceRollerState {
     updateSettings: (partial: Partial<DiceRollerSettings>) => void;
     setNotationInput: (val: string) => void;
     setPanelTab: (tab: DicePanelTab) => void;
+    /** A page takes the panel; the returned function gives it back (once). */
+    claimPanelHost: () => () => void;
 }
 
 type PersistedDiceRollerState = Pick<
@@ -137,6 +146,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
         panelOpen: false,
         notationInput: '',
         panelTab: '',
+        panelHosts: 0,
 
         roll: async (notation: string, rollOptions?: RollOptions) => {
             if (!notation.trim()) return;
@@ -181,6 +191,10 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 timeToReactSeconds: s.timeToReactSeconds,
                 diceLiveliness: s.diceLiveliness,
                 specialDiceColor: s.specialDiceColor,
+                rollControlLabels: {
+                    accept: translate(uiMessages.dice.panel.acceptRoll),
+                    cancel: translate(uiMessages.dice.panel.cancelRoll),
+                },
             };
             const rolledNotation = prepared?.notation ?? notation;
             await handleRollEvent(
@@ -239,6 +253,16 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
 
         togglePanel: () => {
             set((state) => ({ panelOpen: !state.panelOpen }));
+        },
+
+        claimPanelHost: () => {
+            set((state) => ({ panelHosts: state.panelHosts + 1 }));
+            let released = false;
+            return () => {
+                if (released) return;
+                released = true;
+                set((state) => ({ panelHosts: Math.max(0, state.panelHosts - 1) }));
+            };
         },
 
         updateSettings: (partial: Partial<DiceRollerSettings>) => {

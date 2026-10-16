@@ -1,16 +1,15 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useDiceTab } from '@site/src/integrations/sheet-dice/diceTab';
 import { useShownDocumentPublisher } from '@site/src/integrations/sheet-dice/shownDocument';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../../../components/dialogs/DocumentCreateDialog';
 import { ImportConflictDialog } from '../../../components/dialogs/ImportConflictDialog';
 import { ImportSummaryDialog } from '../../../components/dialogs/ImportSummaryDialog';
-import { LibraryDialog } from '../../../components/dialogs/LibraryDialog';
-import { DocumentsWindow } from '../../../components/documents/DocumentsWindow';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
@@ -22,32 +21,57 @@ import {
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { FloatingTabs } from '../panes/FloatingTabs';
+import { openKeys } from '../panes/layoutTree';
+import { PaneArea } from '../panes/PaneArea';
+import { openTool, usePaneStore } from '../panes/paneStore';
+import { registerSheetTools } from '../panes/sheetTools';
+import { documentIdOf, tabKindOf } from '../panes/tabKeys';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
-import { PolicyBadges } from './PolicyNotice';
+import { type BadgePlace, PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
-    children: React.ReactNode;
+    /** Draws one document's page; the workspace decides how many documents are shown. */
+    renderDocument: (documentId: string, viewId?: string) => React.ReactNode;
 }
 
-export function SheetWorkspace({ children }: SheetWorkspaceProps) {
+export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     const {
         currentDocumentId,
         documents,
         forgetRecoveryEntry,
         importDocument,
+        resetDocument,
         retainImportForRecovery,
-        updateDocumentData,
         updateDocumentMetadata,
     } = useDocumentStore();
     const { templates } = useTemplateStore();
     // The registry lists installed user types; subscribing re-renders when they change.
     useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
+    // With several documents each pane has its own view selector (spec 034, D8).
+    const several = usePaneStore(
+        (state) => openKeys(state).filter((key) => documentIdOf(key) !== null).length > 1
+    );
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
+    const [noticeSlot, setNoticeSlot] = useState<HTMLElement | null>(null);
+    /**
+     * The publisher badges of the shown documents (constitution VIII), outside the template tree
+     * so no page template, shipped or custom, can remove them; the layout says where they go.
+     */
+    const notices = (ids: readonly string[], place: BadgePlace) => (
+        <PolicyBadges
+            place={place}
+            policies={ids.flatMap((id) => {
+                const document = documents.find((candidate) => candidate.id === id);
+                return document ? resolveDocumentPolicies(systemRegistry, document) : [];
+            })}
+        />
+    );
     useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument
         ? systemRegistry.getDocumentDefinition(
@@ -80,9 +104,10 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const pluralMessage = usePluralMessage();
-    const [managerDialogOpen, setManagerDialogOpen] = useState(false);
+    // The documents window and the library are tools of the layout (spec 036).
+    useEffect(() => registerSheetTools(), []);
+    useDiceTab();
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
-    const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
     const [importConflict, setImportConflict] = useState<'document' | 'type' | null>(null);
     const [offerApplyToRest, setOfferApplyToRest] = useState(false);
     const [importSummary, setImportSummary] = useState<BatchSummary | null>(null);
@@ -118,14 +143,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     };
 
     const handleResetConfirm = () => {
-        if (!currentDocument) return;
-        const definition = systemRegistry.getDocumentDefinition(
-            currentDocument.systemId,
-            currentDocument.definitionId
-        );
-        if (!definition) return;
-        updateDocumentData(currentDocument.id, () => definition.createDefault());
-        updateDocumentMetadata(currentDocument.id, { title: '' });
+        if (currentDocument) resetDocument(currentDocument.id);
         setResetDialogOpen(false);
     };
 
@@ -187,31 +205,37 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                     onCreate={() => setCreateDialogOpen(true)}
                     onExport={handleExport}
                     onImport={handleImport}
-                    onManage={() => setManagerDialogOpen(true)}
+                    onManage={() => openTool('documents')}
                     onReset={() => setResetDialogOpen(true)}
-                    onManageTemplates={() => setTemplatesDialogOpen(true)}
+                    onManageTemplates={() => openTool('library')}
+                    end={<div ref={setNoticeSlot} className="contents" />}
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
                             <>
-                                <ViewModeSelect
-                                    views={selectableViews(
-                                        currentDefinition,
-                                        currentDocument,
-                                        settings
-                                    )}
-                                    value={templateSelectValue(activeTemplateId, currentView.id)}
-                                    onChangeTemplate={(templateId) =>
-                                        updateDocumentMetadata(currentDocument.id, {
-                                            templateId: templateId ?? undefined,
-                                        })
-                                    }
-                                    onChangeView={(preferredViewId) =>
-                                        updateDocumentMetadata(currentDocument.id, {
-                                            preferredViewId,
-                                        })
-                                    }
-                                    templateOptions={templateOptions}
-                                />
+                                {!several && (
+                                    <ViewModeSelect
+                                        views={selectableViews(
+                                            currentDefinition,
+                                            currentDocument,
+                                            settings
+                                        )}
+                                        value={templateSelectValue(
+                                            activeTemplateId,
+                                            currentView.id
+                                        )}
+                                        onChangeTemplate={(templateId) =>
+                                            updateDocumentMetadata(currentDocument.id, {
+                                                templateId: templateId ?? undefined,
+                                            })
+                                        }
+                                        onChangeView={(preferredViewId) =>
+                                            updateDocumentMetadata(currentDocument.id, {
+                                                preferredViewId,
+                                            })
+                                        }
+                                        templateOptions={templateOptions}
+                                    />
+                                )}
                                 <GameTermsMenu />
                             </>
                         ) : undefined
@@ -245,9 +269,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
                 variant="danger"
             />
-            <DocumentsWindow open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
             <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
-            <LibraryDialog open={templatesDialogOpen} onOpenChange={setTemplatesDialogOpen} />
             <ImportSummaryDialog summary={importSummary} onClose={() => setImportSummary(null)} />
             <ImportConflictDialog
                 offerApplyToRest={offerApplyToRest}
@@ -256,10 +278,20 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 onResolve={resolveConflict}
             />
 
-            {currentDocument && children}
-            {/* Outside the template tree: no page template, shipped or custom, can remove it. */}
-            {currentDocument && (
-                <PolicyBadges policies={resolveDocumentPolicies(systemRegistry, currentDocument)} />
+            {currentDocument ? (
+                <PaneArea
+                    documentId={currentDocument.id}
+                    renderDocument={renderDocument}
+                    notices={notices}
+                    toolbarSlot={noticeSlot}
+                />
+            ) : (
+                // With no document there is no layout to dock in: the tools float.
+                <FloatingTabs
+                    notices={notices}
+                    renderDocument={renderDocument}
+                    titleOf={(key) => tabKindOf(key)?.title() ?? key}
+                />
             )}
         </>
     );

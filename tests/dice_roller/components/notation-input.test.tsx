@@ -51,6 +51,12 @@ describe('notation input diagnostics', () => {
         expect(screen.getByRole('textbox').getAttribute('aria-invalid')).toBe('false');
     });
 
+    it('links a notation it cannot read to the site guide, not to another roller', () => {
+        type('2d6 &');
+        const help = screen.getByRole('link', { name: 'View dice notation reference' });
+        expect(help.getAttribute('href')).toBe('/docs/guide/dice-roller#notation');
+    });
+
     it('keeps the live message stable while the same error persists', () => {
         type('2d6 &');
         const before = screen.getByRole('status').querySelector('span')?.textContent;

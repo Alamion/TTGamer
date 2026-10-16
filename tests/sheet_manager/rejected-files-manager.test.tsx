@@ -1,12 +1,12 @@
 // @vitest-environment happy-dom
 
-import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+import { DocumentsWindow } from './helpers/toolWindows';
 
 const open = () => render(createElement(DocumentsWindow, { open: true, onOpenChange: () => {} }));
 

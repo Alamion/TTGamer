@@ -33,9 +33,11 @@ const registryKeys = (clickWord: string) =>
 
 describe('the shortcut list matches the editor (spec 023, US5)', () => {
     it('lists the same keys in the guide, in English and Russian', () => {
-        expect(guideKeys('docs/template-editor/index.mdx')).toEqual(registryKeys('click'));
+        expect(guideKeys('docs/guide/template-editor/index.mdx')).toEqual(registryKeys('click'));
         expect(
-            guideKeys('i18n/ru/docusaurus-plugin-content-docs/current/template-editor/index.mdx')
+            guideKeys(
+                'i18n/ru/docusaurus-plugin-content-docs/current/guide/template-editor/index.mdx'
+            )
         ).toEqual(registryKeys('клик'));
     });
 

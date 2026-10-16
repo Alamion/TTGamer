@@ -121,7 +121,8 @@ export function TermHintProvider({ children }: { children: ReactNode }) {
                     }}
                 >
                     <Popover.Anchor virtualRef={anchorRef as React.RefObject<HTMLElement>} />
-                    <Popover.Portal>
+                    {/* Tailwind utilities exist only under .tailwind-root; #modal-root (theme/Root) carries it. */}
+                    <Popover.Portal container={document.getElementById('modal-root') ?? undefined}>
                         <Popover.Content
                             role="tooltip"
                             side="top"
@@ -133,7 +134,7 @@ export function TermHintProvider({ children }: { children: ReactNode }) {
                                 if (termElement(event.target, rootRef.current))
                                     event.preventDefault();
                             }}
-                            className="z-50 max-w-xs rounded-lg border border-border bg-bgSurface px-3 py-2 text-sm shadow-xl"
+                            className="z-50 max-w-xs rounded-lg border border-borderMoreContrast bg-bgSurface/85 px-3 py-2 text-sm shadow-xl backdrop-blur-md"
                         >
                             <span className="font-medium text-textPrimary">{active?.hint}</span>
                             {active?.detail && (

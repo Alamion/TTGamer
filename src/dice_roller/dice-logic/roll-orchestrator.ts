@@ -43,11 +43,15 @@ function loadRenderer(): Promise<RendererApi> {
 }
 const FUDGE_LABEL_MAP: Record<number, string> = { [-1]: '-', [0]: ' ', [1]: '+' };
 
+/** Custom faces have no 3D die: a physical die would read their largest face as its sides. */
+const has3DShape = (group: DiceGroupNode) =>
+    SUPPORTED_3D_SIDES.has(group.sides) && !group.customFaces;
+
 function has3DSupportedDice(ast: ASTNode): boolean {
     let found = false;
     function traverse(node: ASTNode): void {
         if (node.type === 'DiceGroup') {
-            if (SUPPORTED_3D_SIDES.has(node.sides)) {
+            if (has3DShape(node)) {
                 found = true;
             }
         } else if (node.type === 'BinaryOp') {
@@ -345,6 +349,7 @@ export async function executeUnifiedRoll(
         timeToReactSeconds: config?.timeToReactSeconds ?? 5,
         diceLiveliness: config?.diceLiveliness,
         specialDiceColor: config?.specialDiceColor,
+        rollControlLabels: config?.rollControlLabels,
     };
     const colourOf = (group: DiceGroupNode) =>
         group.label && defaultConfig.specialDiceColor
@@ -364,7 +369,7 @@ export async function executeUnifiedRoll(
         const diceGroupNodes = extractDiceGroupNodes(ast);
         const flatGroups = diceGroupNodes.map((g) => ({
             sides: g.sides,
-            count: g.count,
+            count: g.customFaces ? 0 : g.count,
             modifiers: g.modifiers,
             customFaces: g.customFaces,
             fudge: g.fudge,
@@ -417,6 +422,7 @@ export async function executeUnifiedRoll(
                 timeToReact: defaultConfig.timeToReact,
                 timeToReactSeconds: defaultConfig.timeToReactSeconds,
                 liveliness: defaultConfig.diceLiveliness,
+                labels: defaultConfig.rollControlLabels,
             },
             geometries,
             groupSizes,

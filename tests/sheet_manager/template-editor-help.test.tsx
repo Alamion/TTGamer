@@ -44,13 +44,15 @@ describe('template editor help and documentation links (T-068)', () => {
     it('links the guide from the header and explains settings in place', () => {
         expect(
             screen.getByRole('link', { name: 'Help: Template editor guide' }).getAttribute('href')
-        ).toBe('/docs/template-editor');
+        ).toBe('/docs/guide/template-editor');
 
         selectInOutline('motto');
         const help = within(settingsOf('motto')).getByRole('link', {
             name: /^Help: Value key/,
         });
-        expect(help.getAttribute('href')).toBe('/docs/template-editor/values#shared-value-key');
+        expect(help.getAttribute('href')).toBe(
+            '/docs/guide/template-editor/values#shared-value-key'
+        );
         expect(help.getAttribute('target')).toBe('_blank');
     });
 

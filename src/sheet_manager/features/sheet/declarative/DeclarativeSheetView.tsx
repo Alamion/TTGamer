@@ -46,6 +46,7 @@ import {
 } from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
+import { AreaLayoutContext, forArea } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
 import { useCatalogSuggestions } from './catalogSuggestions';
@@ -54,7 +55,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
-import type { FormulaEvaluationError } from './formula';
+import { formulaErrorMessage } from './formulaMessages';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
@@ -64,7 +65,6 @@ import { ShortLabelScope } from './ShortLabelScope';
 
 const editor = uiMessages.sheet.templates.editor;
 const rowMessages = uiMessages.sheet.documents.rows;
-const page = uiMessages.sheet.templates.page;
 const binding = uiMessages.sheet.templates.binding;
 
 const columnClasses: Record<number, string> = {
@@ -100,22 +100,6 @@ function spanClass(span: number, columns: number, proportional: boolean): string
     return size === 2
         ? 'md:col-span-2'
         : `md:col-span-2 ${size === 3 ? 'xl:col-span-3' : 'xl:col-span-4'}`;
-}
-
-function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinate = ''): string {
-    switch (reason) {
-        case 'circular':
-            return translate(page.formulaReasonCircular);
-        case 'division-by-zero':
-            return translate(page.formulaReasonDivision);
-        case 'non-numeric':
-            return translate(page.formulaReasonNonNumeric);
-        case 'parse':
-            return translate(page.formulaReasonInvalid);
-        case 'unknown-coordinate':
-        default:
-            return translate(page.formulaReasonUnknown).replace('{coordinate}', coordinate);
-    }
 }
 
 function FieldCell({
@@ -238,7 +222,9 @@ function FieldCell({
         onChange: handleChange,
         disabled: pageApi.disabled,
         resolvedMax: maxState?.resolvedMax,
-        maxDegraded: maxState?.degraded,
+        maxDegraded: maxState?.degraded
+            ? formulaErrorMessage(maxState.reason, maxState.coordinate)
+            : undefined,
         formulaResult,
         catalogOptions: runtime?.options,
         documentOptions: pageApi.documentOptions,
@@ -731,6 +717,7 @@ function ChildrenGrid({
 }) {
     const overlay = useTemplateEditorOverlay();
     const version = useContext(OverlayVersionContext);
+    const byArea = useContext(AreaLayoutContext);
     if (nodes.length === 0 && !overlay) return null;
     const renderNode = (node: TemplateNode, index: number, column: number | null = null) => {
         const content = (
@@ -754,7 +741,7 @@ function ChildrenGrid({
             const rendered = renderNode(node, index);
             const span =
                 columns && columns > 1 && node.span
-                    ? spanClass(node.span, columns, isProportional)
+                    ? forArea(spanClass(node.span, columns, isProportional) ?? '', byArea)
                     : undefined;
             return span ? (
                 <div key={node.id} className={span}>
@@ -770,8 +757,10 @@ function ChildrenGrid({
     const proportional =
         columns && columns > 1 && columnWidths?.length === columns
             ? {
-                  className:
+                  className: forArea(
                       'grid grid-cols-1 gap-4 md:[grid-template-columns:var(--template-columns)]',
+                      byArea
+                  ),
                   style: {
                       '--template-columns': columnWidths
                           .map((width) => `minmax(0, ${width}fr)`)
@@ -799,7 +788,10 @@ function ChildrenGrid({
                     area
                         ? (AREA_COLUMNS[Math.min(columns, 3)] ?? AREA_COLUMNS[3])
                         : (proportional?.className ??
-                          clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1]))
+                          clsx(
+                              'grid gap-4',
+                              forArea(columnClasses[columns] ?? columnClasses[1]!, byArea)
+                          ))
                 }
                 style={area ? undefined : proportional?.style}
             >
@@ -833,7 +825,7 @@ function ChildrenGrid({
             <div
                 className={
                     proportional?.className ??
-                    clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])
+                    clsx('grid gap-4', forArea(columnClasses[columns] ?? columnClasses[1]!, byArea))
                 }
                 style={proportional?.style}
             >
@@ -888,6 +880,7 @@ export function DeclarativeSheetView({
     embedded?: boolean;
 }) {
     const locale = useDocusaurusContext().i18n.currentLocale;
+    const inPane = useContext(AreaLayoutContext);
     // Translated display copy; ids and storage coordinates are identical to the source.
     const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
     const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
@@ -911,7 +904,11 @@ export function DeclarativeSheetView({
             className={
                 embedded
                     ? '@container/brief min-w-0 space-y-6'
-                    : '@container/brief mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
+                    : clsx(
+                          '@container/brief mx-auto min-w-0 max-w-7xl space-y-6 p-4',
+                          // A pane is not the window: its padding does not grow with the window.
+                          !inPane && 'lg:p-6'
+                      )
             }
         >
             <TermHintProvider>

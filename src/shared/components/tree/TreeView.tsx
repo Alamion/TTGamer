@@ -37,6 +37,8 @@ export interface TreeViewProps<T> {
     /** A pointer click on a row, after it was selected. */
     onRowClick?: (key: string, extend: SelectExtend) => void;
     onToggle: (key: string, open?: boolean) => void;
+    /** A double click on a row (no modifier key). */
+    onRowDoubleClick?: (item: TreeRowItem<T>) => void;
     /** Enter on a row; by default a branch opens or closes. */
     onEnter?: (item: TreeRowItem<T>) => void;
     onDelete?: (item: TreeRowItem<T>) => void;
@@ -76,6 +78,7 @@ export function TreeView<T>({
     selectedKeys,
     onSelect,
     onRowClick,
+    onRowDoubleClick,
     onToggle,
     onEnter,
     onDelete,
@@ -244,6 +247,14 @@ export function TreeView<T>({
         [onSelect, onRowClick, selecting]
     );
 
+    const activateRow = useCallback(
+        (key: string) => {
+            const item = rows.find((row) => row.key === key);
+            if (item && !selecting) onRowDoubleClick?.(item);
+        },
+        [onRowDoubleClick, rows, selecting]
+    );
+
     if (rows.length === 0 && emptyMessage) return <>{emptyMessage}</>;
 
     return (
@@ -283,6 +294,7 @@ export function TreeView<T>({
                     onMenu={onMenu}
                     onContext={openContext}
                     onKeyDown={handleKeyDown}
+                    onActivate={onRowDoubleClick ? activateRow : undefined}
                     onLongPress={onLongPress}
                 />
             ))}

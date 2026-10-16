@@ -118,7 +118,13 @@ export interface DocumentStoreState {
     /** The id being read from storage for the sheet, until it arrives. */
     opening: string | null;
     currentDocumentId: string | null;
+    /** Ids the loaded cache must keep besides the current one: the panes' documents (spec 034). */
+    pinnedIds: string[];
     recoveryEntries: unknown[];
+    /** Keeps these documents (at most `MAX_PINNED_DOCUMENTS`) loaded; not saved. */
+    pinDocuments: (ids: readonly string[]) => void;
+    /** Reads the ids that are only entries into the loaded cache; the current document stays. */
+    loadIntoCache: (ids: readonly string[]) => Promise<void>;
     /** Opens a loaded document at once; one that is only an entry is read from storage first. */
     setCurrentDocument: (id: string | null) => void;
     /** Reads the document if needed, then shows it; false when it cannot be opened. */
@@ -147,6 +153,8 @@ export interface DocumentStoreState {
         template: CustomTemplate,
         updater: (values: TemplatePageValues) => TemplatePageValues
     ) => void;
+    /** Puts the system data back to its defaults, clears page values and the name. */
+    resetDocument: (id: string) => void;
     deleteDocument: (id: string) => void;
     /**
      * Runs tree operations (folders, moves, deletes) on the index in one write; nothing is
@@ -181,6 +189,8 @@ interface SlimDocumentState {
 }
 
 const MAX_LOADED_DOCUMENTS = 8;
+/** Every open document of the layout (spec 036, `MAX_DOCUMENTS`). */
+const MAX_PINNED_DOCUMENTS = 12;
 /** A document's changed time moves at most this often while it is edited (spec 032, D3). */
 const TOUCH_INTERVAL_MS = 5000;
 const lastTouch = new Map<string, number>();
@@ -366,7 +376,7 @@ async function renameDocumentContent(id: string, name: string): Promise<void> {
         store.setState((state) => ({
             documents: state.documents.some((candidate) => candidate.id === id)
                 ? state.documents
-                : loadInto(state.documents, loaded, state.currentDocumentId ?? ''),
+                : loadInto(state.documents, loaded, keepIds(state, id)),
         }));
     }
     const capability = systemRegistry.getDocumentDefinition(
@@ -383,16 +393,28 @@ async function renameDocumentContent(id: string, name: string): Promise<void> {
     updateDocumentMetadata(id, { title: name });
 }
 
-/** Adds a read document to the loaded ones, dropping the oldest that is neither open nor unsaved. */
+/** The ids a read must not evict: the one being shown, the current one, and the panes' documents. */
+function keepIds(
+    state: Pick<DocumentStoreState, 'currentDocumentId' | 'pinnedIds'>,
+    ...ids: string[]
+): string[] {
+    return [
+        ...ids,
+        ...(state.currentDocumentId ? [state.currentDocumentId] : []),
+        ...state.pinnedIds,
+    ];
+}
+
+/** Adds a read document to the loaded ones, dropping the oldest that is neither kept nor unsaved. */
 function loadInto(
     documents: UnknownDocumentEnvelope[],
     document: UnknownDocumentEnvelope,
-    currentId: string
+    keep: readonly string[]
 ): UnknownDocumentEnvelope[] {
     const next = [...documents.filter(({ id }) => id !== document.id), document];
     for (let index = 0; next.length > MAX_LOADED_DOCUMENTS && index < next.length;) {
         const candidate = next[index]!;
-        if (candidate.id === currentId || recordWriter.isPending(candidate.id)) index += 1;
+        if (keep.includes(candidate.id) || recordWriter.isPending(candidate.id)) index += 1;
         else next.splice(index, 1);
     }
     return next;
@@ -405,7 +427,41 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
     pendingPurge: [],
     opening: null,
     currentDocumentId: null,
+    pinnedIds: [],
     recoveryEntries: [],
+
+    pinDocuments: (ids) => set({ pinnedIds: ids.slice(0, MAX_PINNED_DOCUMENTS) }),
+
+    loadIntoCache: async (ids) => {
+        const { documents, entries } = get();
+        const wanted = ids.filter(
+            (id) =>
+                entries.some((entry) => entry.id === id) &&
+                !documents.some((document) => document.id === id)
+        );
+        const read = await Promise.all(
+            wanted.map((id) =>
+                readEnvelope(
+                    id,
+                    entries.find((entry) => entry.id === id)
+                )
+            )
+        );
+        set((state) => {
+            let next = state.documents;
+            for (const document of read) {
+                if (
+                    !document ||
+                    !state.entries.some((entry) => entry.id === document.id) ||
+                    next.some((candidate) => candidate.id === document.id)
+                ) {
+                    continue;
+                }
+                next = loadInto(next, document, keepIds(state, ...ids));
+            }
+            return next === state.documents ? state : { documents: next };
+        });
+    },
 
     setCurrentDocument: (id) => {
         if (id === null) {
@@ -437,7 +493,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             return false;
         }
         set((state) => ({
-            documents: loadInto(state.documents, document, id),
+            documents: loadInto(state.documents, document, keepIds(state, id)),
             currentDocumentId: id,
             opening: null,
         }));
@@ -598,6 +654,24 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             documents: documents.map((document) => (document.id === id ? next : document)),
             entries: syncEntry(entries, next, { touch: true }),
         }));
+    },
+
+    resetDocument: (id) => {
+        const current = get().documents.find((document) => document.id === id);
+        if (!current || isPresetId(id)) return;
+        const definition = systemRegistry.getDocumentDefinition(
+            current.systemId,
+            current.definitionId
+        );
+        if (!definition) return;
+        const { updateDocumentData, updateDocumentMetadata } = get();
+        updateDocumentData(id, () => definition.createDefault());
+        set(({ documents }) => ({
+            documents: documents.map((document) =>
+                document.id === id ? { ...document, templateValues: {} } : document
+            ),
+        }));
+        updateDocumentMetadata(id, { title: '' });
     },
 
     deleteDocument: (id) => {

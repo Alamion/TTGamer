@@ -36,7 +36,8 @@ import {
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import type { DocumentOption } from './fieldControls';
 import { listEntryShape } from './fieldControls';
-import type { CatalogFieldRuntime, UseTemplatePageResult } from './hooks';
+import { formulaErrorMessage } from './formulaMessages';
+import type { CatalogFieldRuntime, MaxState, UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { toCatalogEntries } from './primitives';
 import { moveItem } from './rowOrder';
@@ -90,7 +91,7 @@ interface ListEntryRowProps {
     disabled: boolean;
     catalog: ListCatalog | undefined;
     itemCatalog: CatalogFieldRuntime | undefined;
-    maxState: { resolvedMax?: number; degraded?: boolean } | undefined;
+    maxState: MaxState | undefined;
     documentOptions: ReadonlyArray<DocumentOption>;
     onOpenDocument: (documentId: string) => void;
     previewSource: boolean;
@@ -198,7 +199,9 @@ const ListEntryRow = memo(function ListEntryRow({
               }
             : {}),
         resolvedMax: maxState?.resolvedMax,
-        maxDegraded: maxState?.degraded,
+        maxDegraded: maxState?.degraded
+            ? formulaErrorMessage(maxState.reason, maxState.coordinate)
+            : undefined,
         documentOptions,
         onOpenDocument,
         previewSource,
