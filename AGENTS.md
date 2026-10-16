@@ -75,6 +75,7 @@ check fo it existence before killing processes or creating new one.
 | `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)              |
 | `yarn ci:*`                         | The runner-independent checks (§11); `verify:*` compose them           |
 | `yarn ci:docker`                    | Build the site image and run the browser smoke tests on the container  |
+| `yarn readme:screenshots`           | Build, then retake the README images in `attachments/`                 |
 | `yarn deploy`                       | Deploy to GitHub Pages                                                 |
 | `yarn clear`                        | Clear Docusaurus cache                                                 |
 
@@ -140,7 +141,7 @@ check fo it existence before killing processes or creating new one.
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
 ├── scripts/                   # Validators, translation build, release script
 ├── tests/                     # Vitest logic, integration, and component tests
-├── tests-e2e/                 # Playwright: smoke/ (blocking) and timings/ (reported) on the build
+├── tests-e2e/                 # Playwright: smoke/ (blocking), timings/ (reported), readme/ (images)
 ├── contracts/cloud-api/       # Cloud API contract (OpenAPI), its change log, roll test vectors
 ├── deploy/                    # Docker stack: nginx config, Caddy edge proxy, compose (+ Dockerfile at root)
 ├── static/                    # Images, sounds (dice impacts, surfaces)

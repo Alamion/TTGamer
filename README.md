@@ -1,255 +1,105 @@
 # TTGamer
 
-A Docusaurus-based site hosting interactive documentation, a character sheet manager, and a 3D dice roller for a **Star Wars WEG/WoD hybrid TTRPG system**.
+Character sheets, a dice roller, and rules documentation for tabletop roleplaying games, in one
+site that works in the browser and keeps your data on your device.
 
-> **Live site:** [ttgamer.vercel.app](https://ttgamer.vercel.app)
+> **Live site:** [ttgamer.vercel.app](https://ttgamer.vercel.app) · English and Russian
 
----
+![Two characters side by side: a full Star Wars sheet and a Hunter brief, with the documents window and the dice roller](attachments/sheet-layout.png)
 
-## Features
+## What it does
 
-### For Players
+### Sheets for several games
 
-- **Character Sheet Manager** — Full-featured sheet with 9 attributes, 30 abilities (Talents/Skills/Knowledges), Force powers, Virtues/Willpower, backgrounds, merits/flaws, inventory, armor, weapons, health, and derived stats. Supports **sentient** and **droid** characters; a separate vehicle sheet is planned.
-- **3D Dice Roller** — Real-time 3D dice physics (WebGL + cannon-es), configurable surfaces (felt, wood, metal), sound effects, roll history, and full dice notation support. 2D SVG fallback included.
-- **Inline Dice Rolls** — Clickable dice notation throughout the docs (e.g., `5d10>=6f=1`).
-- **Data Catalogs** — Searchable, sortable, filterable interactive tables for species, Force powers, abilities, merits/flaws, backgrounds, equipment (ranged/melee/armor/consumables/tools), vehicles, creatures, and terminology.
-- **Import/Export** — Share characters via JSON files.
-- **Local-first Persistence** — Characters saved in IndexedDB via localForage — no account needed.
-- **Interactive Documentation** — 45 English MDX documents with matching Russian paths, covering core rules, character creation, combat, vehicles, GM tools, bestiary, and equipment.
+| Game                                   | Documents                                         |
+| -------------------------------------- | ------------------------------------------------- |
+| Star Wars on World of Darkness 2nd Ed. | character, droid, creature, vehicle, fodder group |
+| World of Darkness 2nd Edition          | character                                         |
+| Hunter: the Reckoning 5th Edition      | character                                         |
+| World of Darkness 5th Edition          | mortal                                            |
 
-### For GMs
+- **Documents, not just characters.** Keep them in folders, search and filter them, undo a move or
+  a delete. Every shipped document type has a full sheet and a short **brief** that fits a phone
+  screen.
+- **Several documents at once.** Arrange documents and tools like the tabs and groups of a code
+  editor: split in any direction, drag tabs between groups, float the documents window, the
+  library, or the dice roller above the page. The layout is remembered; a phone shows one document
+  at a time.
+- **Pages you can change.** Every sheet is a template. The **template editor** edits a page in
+  place, and the **library** holds the rules, settings, document types, pages, and catalogs your
+  documents are built from — including your own settings and types, such as a faction or a ship.
+- **Your data stays with you.** Documents are saved in the browser (IndexedDB) as you type, with no
+  account. Export a document or a template to a file and import it on another device.
 
-- **Full GM Section** — Encounter balance, difficulty calibration (with interactive probability calculator), rewards & advancement, adventure design, and running-the-game principles.
-- **Creature & NPC Tools** — Stat block templates, scale classification, special abilities.
-- **Vehicle Mechanics** — Dogfighting, capital ship combat, damage/repair, modifications.
+### Dice roller
 
-### For International Users
+- Dice notation with explosions, rerolls, keep and drop, success counting, botches, V5 criticals,
+  and special dice (Hunger, Desperation); every roll can be shown die by die.
+- 3D dice with physics and sound on a table of your choice, or plain 2D results.
+- A trait on a sheet rolls its own pool; rolls name the character they came from.
+- History and favorites; rolls can be posted to a **Discord** channel or a **Matrix** room.
 
-- **i18n** — English and Russian documentation fully translated (UI strings pending).
+### Documentation
 
----
+- Rules for **Star Wars WoD 2e** (a fan conversion of the Star Wars galaxy to the Vampire 2nd
+  Edition engine) and **World of Darkness V5** with **Hunter: the Reckoning**, written in the
+  project's own words.
+- Searchable catalogs (species, Force powers, merits and flaws, equipment, vehicles, creatures,
+  and more), rolls you can click in the text, and live sheet examples.
+- A **site guide** that explains the sheet, the documents window, the dice roller, the template
+  editor, and roll sharing with the real interface embedded in the page.
 
-## Screenshots & Demos
+## Screenshots
 
-<!-- TODO: Add screenshots/GIFs -->
-<!--
-![Character Sheet](url-to-screenshot)
-![3D Dice Roller](url-to-screenshot)
-![Species Catalog](url-to-screenshot)
-![Documentation](url-to-screenshot)
--->
+| Template editor                                         | A brief on a phone                                          |
+| ------------------------------------------------------- | ----------------------------------------------------------- |
+| ![The template editor](attachments/template-editor.png) | ![A hunter's brief on a phone](attachments/phone-brief.png) |
 
-| Feature                 | Preview                                                           |
-| ----------------------- | ----------------------------------------------------------------- |
-| Character Sheet Manager | ![img.png](attachments/character_sheet.png)                       |
-| 3D Dice Roller          | ![3d_dice_roller.gif](attachments/3d_dice_roller.gif)             |
-| Data Catalogs           | ![merits_flaws_catalog.png](attachments/merits_flaws_catalog.png) |
-| Documentation           | ![docs_example.png](attachments/docs_example.png)                 |
+| Rules with rolls read for you                 | Catalogs                                        |
+| --------------------------------------------- | ----------------------------------------------- |
+| ![A V5 rules page](attachments/docs-roll.png) | ![The species catalog](attachments/catalog.png) |
 
----
+![Dice notation examples rolled die by die in the site guide](attachments/dice-notation.png)
 
-## Documentation
+## Game material
 
-The full system documentation lives under `/docs/star-wars-wod-2e/`:
+TTGamer is a free fan project, not affiliated with the publishers of the games it supports. Rules
+are described in the project's own words; names of traits, mechanics, and items are used for
+reference. World of Darkness 5th Edition material appears under Paradox Interactive's Dark Pack
+policy: see the [Dark Pack notice](https://ttgamer.vercel.app/docs/wod-v5/dark-pack).
 
-| Section                 | Files                                                                                               | Status         |
-| ----------------------- | --------------------------------------------------------------------------------------------------- | -------------- |
-| Quick Start             | 1 file                                                                                              | ✅ Done        |
-| Core Rules              | 2 files (dice pools, attributes/abilities)                                                          | ✅ Done        |
-| Character Creation      | 10 files (step-by-step + species, backgrounds, merits/flaws, virtues, Force, droids, reading sheet) | ✅ Done        |
-| Combat                  | 3 files (flow, health/damage, scales)                                                               | ✅ Done        |
-| Equipment & Gear        | 1 file (weapons, armor, gear, price refs)                                                           | ✅ Done        |
-| Creatures & Adversaries | 2 files (mechanics, bestiary)                                                                       | ✅ Done        |
-| Vehicles                | 4 files (traits, damage, space combat, modifications)                                               | ✅ Done        |
-| GM Section              | 5 files (encounters, difficulty, rewards, adventure design, running the game)                       | ✅ Done        |
-| Polish                  | 3 files (example of play, en/ru glossary, index)                                                    | ✅ Done        |
-| WoD (VtM 2e)            | Started — clans, disciplines, Blood Points, Humanity                                                | 🟡 In Progress |
+## Development
 
----
-
-## Prerequisites
-
-- **Node.js** >= 20 (LTS recommended)
-- **Yarn** 1.x (classic) — `npm install -g yarn`
-
-## Quick Start
+You need Node.js 22 (see `.nvmrc`) and Yarn 1.
 
 ```bash
 yarn install
-yarn start
+yarn start      # http://localhost:3000
 ```
 
-Opens the site at `http://localhost:3000`.
+| Command                   | What it does                                                     |
+| ------------------------- | ---------------------------------------------------------------- |
+| `yarn build`              | Production build in `build/` (runs the data and i18n validators) |
+| `yarn test`               | Unit and component tests (Vitest)                                |
+| `yarn test:e2e`           | Browser tests on the production build (Playwright)               |
+| `yarn verify`             | Lint, type check, validators, dead code, and unit tests          |
+| `yarn readme:screenshots` | Builds the site and retakes the images in `attachments/`         |
 
-## Commands
+Every command, the project structure, and the rules for changes are in [AGENTS.md](AGENTS.md);
+module details are in the `AGENTS.md` file of each module.
 
-| Command              | Description                          |
-| -------------------- | ------------------------------------ |
-| `yarn start`         | Start Docusaurus development server  |
-| `yarn build`         | Production build                     |
-| `yarn serve`         | Preview production build             |
-| `yarn typecheck`     | TypeScript type checking             |
-| `yarn lint`          | ESLint + Prettier check              |
-| `yarn lint:fix`      | ESLint + Prettier auto-fix           |
-| `yarn format`        | Prettier format only                 |
-| `yarn format:check`  | Prettier check only                  |
-| `yarn deploy`        | Deploy to GitHub Pages               |
-| `yarn clear`         | Clear Docusaurus cache               |
-| `yarn test`          | Run Vitest test suite                |
-| `yarn test:watch`    | Vitest watch mode                    |
-| `yarn test:coverage` | Vitest coverage report               |
-| `yarn validate:data` | Validate catalog data and references |
-| `yarn validate:i18n` | Validate English/Russian docs parity |
-| `yarn verify:fast`   | Lint and typecheck                   |
-| `yarn verify:full`   | Lint, typecheck, tests, and build    |
+The site also ships as a Docker image (nginx) with a Caddy proxy in front, for the stack the online
+backend will run in: see [deploy/AGENTS.md](deploy/AGENTS.md).
 
----
+Built with Docusaurus, React, TypeScript, Zustand, Tailwind CSS, Zod, Three.js with cannon-es, and
+a hand-written dice parser.
 
-## For Developers
+## Where it is going
 
-### Project Structure
-
-```
-├── src/
-│   ├── dice_roller/           # Dice roller module (logic, UI, 3D renderer)
-│   │   ├── dice-logic/        #   Lexer, parser, evaluator, renderer engine
-│   │   ├── components/        #   UI components (dice pool, roll history, 2D/3D dice)
-│   │   └── store/             #   Zustand store for dice state
-│   ├── sheet_manager/         # Character sheet manager module
-│   │   ├── components/        #   UI components (modal, viewer, rows, dots, collapsible)
-│   │   ├── features/sheet/    #   Sheet blocks (AttributeBlock, SkillBlock, HealthBlock, etc.)
-│   │   ├── store/             #   Zustand store with IndexedDB persistence
-│   │   ├── types/             #   Zod schemas + TypeScript types
-│   │   ├── context/           #   CharacterContext for multi-character views
-│   │   └── data/              #   Presets, defaults
-│   ├── data/                  # Catalog data, filters, and table configs
-│   │   ├── speciesData.ts     #   11 era-variant species
-│   │   ├── forcePowersData.ts #   35 Force powers
-│   │   ├── abilities.ts       #   30 abilities
-│   │   ├── meritsFlawsData.ts #   Merits & flaws catalog
-│   │   ├── backgroundsData.ts #   12 backgrounds
-│   │   ├── vehicleData.ts     #   Vehicle stats
-│   │   ├── creatureData.ts    #   Creature stat blocks
-│   │   ├── rangedWeaponsData.ts, meleeWeaponsData.ts, armorData.ts, etc.
-│   │   └── *Config.tsx        #   Column definitions + render functions
-│   ├── shared/                # Shared utilities & components
-│   │   ├── components/        #   DataCatalog, EntityCard, TWWrapper, BottomSheet, etc.
-│   │   ├── hooks/             #   useLocalStorageState, useMediaQuery
-│   │   └── utils/             #   diceNotation, logging, random, env
-│   ├── integrations/          # Discord, docs↔sheet, and sheet↔dice adapters
-│   ├── pages/                 # Docusaurus pages
-│   ├── theme/                 # Docusaurus theme swizzles (Root, NavbarItem)
-│   └── css/                   # Global CSS + Tailwind setup
-├── docs/                      # Documentation (MDX)
-│   ├── star-wars-wod-2e/      # Main system docs (45 files, fully written)
-│   └── wod/                   # World of Darkness (VtM 2e) docs (in progress)
-├── i18n/                      # Translations (en, ru)
-├── scripts/                   # Data, i18n, and version validators
-├── tests/                     # Logic, integration, and component tests
-├── static/                    # Static assets (images, sounds)
-│   ├── sounds/dicehit/        #   40+ dice impact sounds (coin, metal, plastic, wood)
-│   └── sounds/surfaces/       #   25+ surface impact sounds (felt, metal, wood)
-├── docusaurus.config.ts
-├── postcss.config.js          # Must be CommonJS
-├── tsconfig.json              # Solution → tsconfig.app.json + tsconfig.node.json
-├── sidebars.ts
-└── vitest.config.ts
-```
-
-### Architecture Highlights
-
-- **Tailwind Isolation**: Tailwind's preflight is NOT imported, so Infima/Docusaurus styles stay intact. Utilities and the base reset are scoped to `.tailwind-root` (`src/css/custom.css`, `src/css/set_tailwind_styles.css`).
-- **Module CSS**: Module pages import their own Tailwind stylesheet directly (e.g., `../../css/set_tailwind_styles.css`).
-- **Module Separation**: `dice_roller/` and `sheet_manager/` are logically independent modules with their own `AGENTS.md`, `TODO.md`, and `TOFIX.md` files.
-- **Dice Logic**: `moo` lexer, strict hand-written AST parser, evaluator, and physics orchestrator. Supported 3D dice use physics-generated values; unsupported/excessive/failed 3D rolls fall back wholly to 2D evaluation.
-- **State Management**: Zustand 5 with `persist` middleware, using `localForage` (IndexedDB) as the custom storage backend. Character mutations use shallow merge via `updateCharacter(id, partial)`.
-- **Data Layer**: Type-safe data catalogs with `DataCatalog` component (TanStack Table) supporting search, sort, pagination, dual-filter (category + era), and detail popovers.
-- **i18n**: Docusaurus-native i18n system. Docs are fully translated (en/ru). UI strings and data file labels pending.
-
-### Key Design Decisions
-
-| Decision                              | Rationale                                                                        |
-| ------------------------------------- | -------------------------------------------------------------------------------- |
-| Tailwind via `tailwind-root` scoping  | Prevents conflict with Docusaurus/Infima styles                                  |
-| Tailwind configured in CSS (`@theme`) | Tailwind 4 is CSS-first; palette tokens live in `src/css/custom.css`             |
-| `postcss.config.js` as CommonJS       | Root `package.json` has no `"type": "module"`                                    |
-| `clsx` for conditional classes        | Lighter than `classnames`, better DX                                             |
-| Zustand over Redux                    | Simpler API, built-in persist middleware                                         |
-| localForage over localStorage         | Async, IndexedDB under the hood (no 5MB limit)                                   |
-| Parser/evaluator/renderer separation  | Keeps grammar and result semantics testable while allowing physics-backed values |
-
-### Testing
-
-Tests use **Vitest** (migrated from Jest in v3.1.0):
-
-```bash
-yarn test                    # Run all tests
-yarn test --watch            # Watch mode
-yarn test --coverage         # Coverage report
-```
-
-Test files under `tests/` cover:
-
-- Evaluator: basic rolls, modifiers, explosion, reroll, combined expressions
-- Parser: basic notation parsing
-- Utils: constants, notation cleaning, SVG recoloring
-- Integration: full pipeline (lex → parse → eval)
-- Sheet schemas, health, and controlled trait inputs
-- Integration payload safety and shared URL serialization
-
----
-
-## Roadmap
-
-### Done
-
-- [x] Character sheet manager (sentient, droid)
-- [x] 3D dice roller with physics, sound, and 2D fallback
-- [x] Inline dice rolls in documentation
-- [x] Star Wars documentation (45 English files with matching Russian paths)
-- [x] Data catalogs (species, Force powers, abilities, merits/flaws, backgrounds, equipment, vehicles, creatures, terminology)
-- [x] Character context & viewer mode (multiple characters, read-only view)
-- [x] i18n docs translation (en/ru)
-
-### In Progress
-
-- [/] UI i18n translation (extract English strings into JSON files)
-- [/] WoD/VtM 2e system documentation
-- [/] Data file i18n (add `ru` fields to data entries)
-
-- [/] Discord webhook integration (hardened frontend complete; backend proxy pending)
-
-### Planned
-
-- [ ] Vehicle sheet
-- [ ] Other systems sheets (D&D, Pathfinder)
-- [ ] Database + authentication layer
-- [ ] Lazy loading for 3D packages (three.js, cannon-es)
-- [ ] Dice pool tabs for other systems (D&D, Pathfinder)
-
----
-
-## Tech Stack
-
-| Concern         | Technology                         |
-| --------------- | ---------------------------------- |
-| Package Manager | yarn@1.22.22                       |
-| Site Framework  | Docusaurus 3.10 (preset-classic)   |
-| Frontend        | React 19 + TypeScript 6/7 (strict) |
-| State           | Zustand 5 (persist middleware)     |
-| Styling         | Tailwind CSS 4 + clsx              |
-| Validation      | Zod                                |
-| Persistence     | localForage (IndexedDB)            |
-| Icons           | Lucide-react                       |
-| Components      | Radix UI primitives                |
-| Testing         | Vitest                             |
-| i18n            | Docusaurus i18n (en, ru)           |
-| 3D Rendering    | Three.js + cannon-es               |
-| Dice Logic      | moo lexer + hand-written parser    |
-
----
+The direction of the project is in [ROADMAP.md](ROADMAP.md), the task queue in [TODO.md](TODO.md),
+and what changed in each version in [CHANGELOG.md](CHANGELOG.md). Suggestions are welcome on the
+[issues](https://github.com/Alamion/TTGamer/issues) page.
 
 ## License
 
-See [LICENSE](./LICENSE) for details.
+[MIT](LICENSE)
