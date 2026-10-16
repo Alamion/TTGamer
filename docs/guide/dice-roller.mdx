@@ -5,6 +5,11 @@ sidebar_label: Dice roller
 description: How to roll dice on the site — the dice panel and its tabs, dice notation with every modifier, history and favorites, 3D dice, settings, and rolls from sheets and documentation pages.
 ---
 
+import { DicePanelContent } from '@site/src/dice_roller/components/DiceRollerPanel';
+import { NotationSandbox } from '@site/src/dice_roller/components/guide/NotationSandbox';
+import { RollExample } from '@site/src/dice_roller/components/guide/RollExample';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
 # Dice roller \{#dice-roller}
 
 :::tip[In short]
@@ -20,6 +25,14 @@ The dice button in the top bar shows and hides the panel. On most pages it slide
 - **The pending roll.** While the field holds a notation, it also shows next to the dice button in the top bar: a left click there rolls it without opening the panel, a right click clears it.
 - **Result.** Every roll shows a short message with its total, and with the verdict when the roll has a goal.
 
+Try it: this is the panel itself, with your own history and settings.
+
+<LiveDemo>
+    <div className="max-w-md">
+        <DicePanelContent />
+    </div>
+</LiveDemo>
+
 ## The WoD tab \{#wod}
 
 **Rules** switches between **Classic** (Storyteller dice: a pool of d10 against a difficulty) and **V5**.
@@ -31,33 +44,35 @@ The dice button in the top bar shows and hides the panel. On most pages it slide
 
 A roll is dice and numbers joined by `+ - * / % ^` and parentheses: `2d6+3`, `(1d8+2)*2`. Spaces do not matter. Division rounds down. There are no functions such as `floor` or `max()`.
 
-| Dice                 | Meaning                                        |
-| -------------------- | ---------------------------------------------- |
-| `2d6`                | two six-sided dice; `d20` is one die           |
-| `d100`               | a percentile die                               |
-| `4dF`                | Fudge dice: each is −1, 0, or +1               |
-| `d[1,3,5]`, `d[2-5]` | a die with the faces you list (ranges allowed) |
+Click an example to roll it right there and see every die.
+
+| Dice                 | Try it                               | Meaning                                        |
+| -------------------- | ------------------------------------ | ---------------------------------------------- |
+| `2d6`                | <RollExample notation="2d6" />       | two six-sided dice; `d20` is one die           |
+| `d100`               | <RollExample notation="d100" />      | a percentile die                               |
+| `4dF`                | <RollExample notation="4dF" />       | Fudge dice: each is −1, 0, or +1               |
+| `d[1,3,5]`, `d[2-5]` | <RollExample notation="3d[1,3,5]" /> | a die with the faces you list (ranges allowed) |
 
 Modifiers follow the dice. Write them in any order: they always apply in this one — min and max, explode, reroll, unique, keep or drop, successes and failures, criticals, sort.
 
-| Modifier                   | What it does                                                             |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `min3`, `max5`             | a die below 3 counts as 3; above 5 counts as 5                           |
-| `!`                        | explode: a die on its highest face adds another die                      |
-| `!!`                       | compounding explode: the extra rolls add into the same die               |
-| `!p`                       | penetrating explode: each extra die counts one less                      |
-| `r`, `r3`, `r<3`           | reroll ones; reroll 3 or less; reroll below 3 — as often as it comes up  |
-| `ro`, `ro<3`               | reroll once                                                              |
-| `u`, `uo`                  | reroll duplicates (every time, or once)                                  |
-| `kh3` (`k3`), `kl2`        | keep the highest 3, keep the lowest 2                                    |
-| `dl1` (`d1`), `dh1`        | drop the lowest one, drop the highest one                                |
-| `>=6` right after the dice | count successes: the total is how many dice reached 6                    |
-| `f=1`                      | each 1 takes one success away (with a success count)                     |
-| `cs`, `cf`                 | mark critical successes (highest face) and failures (lowest face)        |
-| `csb`, `cfb`               | the same, and each one adds or takes away 1 from the total               |
-| `s`, `sd`                  | sort the dice up or down                                                 |
-| `x2=10`                    | every pair of dice showing 10 adds two successes (needs a success count) |
-| `:h`                       | right after the dice: these are special dice (Hunger or Desperation)     |
+| Modifier                   | Try it                                                   | What it does                                                             |
+| -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `min3`, `max5`             | <RollExample notation="4d6min3" />                       | a die below 3 counts as 3; above 5 counts as 5                           |
+| `!`                        | <RollExample notation="4d6!" />                          | explode: a die on its highest face adds another die                      |
+| `!!`                       | <RollExample notation="4d6!!" />                         | compounding explode: the extra rolls add into the same die               |
+| `!p`                       | <RollExample notation="4d6!p" />                         | penetrating explode: each extra die counts one less                      |
+| `r`, `r3`, `r<3`           | <RollExample notation={'4d6r\u003c3'} />                 | reroll ones; reroll 3 or less; reroll below 3 — as often as it comes up  |
+| `ro`, `ro<3`               | <RollExample notation={'4d6ro\u003c3'} />                | reroll once                                                              |
+| `u`, `uo`                  | <RollExample notation="4d6u" />                          | reroll duplicates (every time, or once)                                  |
+| `kh3` (`k3`), `kl2`        | <RollExample notation="4d6kh3" />                        | keep the highest 3, keep the lowest 2                                    |
+| `dl1` (`d1`), `dh1`        | <RollExample notation="4d6dl1" />                        | drop the lowest one, drop the highest one                                |
+| `>=6` right after the dice | <RollExample notation={'6d10\u003e=6'} />                | count successes: the total is how many dice reached 6                    |
+| `f=1`                      | <RollExample notation={'6d10\u003e=6f=1'} />             | each 1 takes one success away (with a success count)                     |
+| `cs`, `cf`                 | <RollExample notation="4d6cs" />                         | mark critical successes (highest face) and failures (lowest face)        |
+| `csb`, `cfb`               | <RollExample notation="4d6csb" />                        | the same, and each one adds or takes away 1 from the total               |
+| `s`, `sd`                  | <RollExample notation="6d6s" />                          | sort the dice up or down                                                 |
+| `x2=10`                    | <RollExample notation={'8d10\u003e=6x2=10'} />           | every pair of dice showing 10 adds two successes (needs a success count) |
+| `:h`                       | <RollExample notation={'3d10:h\u003e=6+2d10\u003e=6'} /> | right after the dice: these are special dice (Hunger or Desperation)     |
 
 Where a modifier takes a condition (a _compare point_), write `=`, `>`, `<`, `>=`, `<=`, or `<>` (not equal) and a number: `4d10!>=9`, `3d6r<=2`. Use `<>`, not `!=`, which reads as an explosion.
 
@@ -68,7 +83,20 @@ A few things to know:
 - Dice are written with a small `d`, modifiers in small letters; `D` and `d%` are not dice here.
 - Limits: 200 dice in a roll, 100,000 sides, 1,000 listed faces, 500 characters, and 100 explosions or rerolls of a die.
 
-Some examples: `4d6dl1` (a D&D ability score), `2d20kh1+5` (advantage), `6d10>=6f=1` (a Classic pool at difficulty 6 with botches), `5d10>=6x2=10` (a V5 pool with criticals), `3d10:h>=6+2d10>=6` (a V5 pool with three special dice).
+Type your own roll here. It is checked as you type, with the same messages as in the panel, and rolled on this page only.
+
+<NotationSandbox
+    initial="4d6dl1"
+    examples={[
+        '4d6dl1',
+        '2d20kh1+5',
+        '6d10\u003e=6f=1',
+        '5d10\u003e=6x2=10',
+        '3d10:h\u003e=6+2d10\u003e=6',
+    ]}
+/>
+
+The examples are a D&D ability score, advantage, a Classic pool at difficulty 6 with botches, a V5 pool with criticals, and a V5 pool with three special dice.
 
 ## History and favorites \{#history}
 

@@ -5,3 +5,7 @@ errors:
     sitePermission: 'Не удалось связаться с комнатой {service}. Возможно, сервер ещё не разрешил этот сайт.'
     rejected: '{service} отклонил бросок. Проверьте настройки вебхука.'
     setupGuide: Инструкция по настройке
+preview:
+    roll: Бросить {notation} как пример поста
+    again: Бросить {notation} ещё раз
+    author: Кубики

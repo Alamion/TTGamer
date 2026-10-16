@@ -6,6 +6,9 @@ sidebar_label: Sharing rolls
 description: How to post dice rolls to a Discord channel or a Matrix room — what players paste, and what a Matrix homeserver admin sets up.
 ---
 
+import { SharedRollPreview } from '@site/src/integrations/roll-sharing/SharedRollPreview';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
 # Sharing rolls
 
 :::tip[In short]
@@ -13,6 +16,16 @@ Open the dice settings, pick a **Service**, paste the webhook address, and turn 
 :::
 
 The dice roller can post each roll — the character name, the notation and total, the reading, and the dice — to one chat at a time. Rolls made within a moment are combined into one post. The button next to the dice settings shows the logo of the chosen service: a left click turns sharing on or off, a right click hides character data (name and stats) from the posts.
+
+A shared roll looks like this in the chat:
+
+<LiveDemo kind="example">
+    <SharedRollPreview
+        notation={'5d10\u003e=6f=1'}
+        characterName="Jax Vorn"
+        statLabels={['Dexterity', 'Security']}
+    />
+</LiveDemo>
 
 Each service keeps its own address, so you can switch between Discord and Matrix without pasting again. Addresses last until you close the browser tab; they are never sent anywhere except to the service itself.
 

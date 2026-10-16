@@ -99,6 +99,15 @@ follow the V5 front matter and In short rules below, describe what the reader se
 name controls by their visible labels. A page of a setting may link to the guide but never repeats
 it.
 
+Show rather than describe: where a control or a result can be drawn by the real code, embed it
+instead of adding prose. Real interface goes in `<LiveDemo>` (`shared/components/LiveDemo`):
+`kind="live"` (the default) for parts that act on the reader's own data, such as the dice panel
+(`DicePanelContent`) or `GameTermsMenu`; `kind="example"` for parts drawn from example data that
+nothing saves, such as `ViewsPreview` (a document in each of its views, from `docsEmbeds`) or
+`SharedRollPreview` (a post built by the real message code). Notation examples roll in place with
+`RollExample` (every die and its marks) and `NotationSandbox` (the panel's own check); neither
+reaches the history. Never fork a component for a page: add an option to the real one.
+
 ## V5 page format (candidate for all systems)
 
 Pages under `docs/wod-v5/` follow `specs/008-hunter-v5-character/contracts/docs-structure.md`,

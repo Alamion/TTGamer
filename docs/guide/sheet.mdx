@@ -5,6 +5,13 @@ sidebar_label: Character sheet
 description: How the character sheet page works for any game — creating documents, editing and saving, views and briefs, export and import, reset, game terms, and where your data is kept.
 ---
 
+import {
+    GameTermsDemo,
+    hunterExampleDocument,
+    ViewsPreview,
+} from '@site/src/sheet_manager/docsEmbeds';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
 # Character sheet \{#character-sheet}
 
 :::tip[In short]
@@ -43,6 +50,12 @@ Type, click ratings, add list entries: there is no save button. Every change is 
 
 A **brief** is the short view a GM glances at during play: ratings as short labels with their values, laid out by the width of the place it is drawn in, about one phone screen high. Hover, focus, or tap a short label to read the full name. A brief is still editable, and a document opened beside another starts in it.
 
+Switch the views of an example hunter, Lena Varga:
+
+<LiveDemo kind="example">
+    <ViewsPreview document={hunterExampleDocument()} initialView="v5-hunter-brief" />
+</LiveDemo>
+
 ## Export and import \{#export-import}
 
 **Export** downloads the current document as a `ttgamer_<name>.json` file. It holds the document and its view; a document of your own type carries the type inside, so it opens where the type is not installed. Pictures uploaded from the device stay behind (pictures by address travel), and so do its folder and your pages: pages go through the library's [export](./template-editor/library#library-export).
@@ -60,6 +73,8 @@ A **brief** is the short view a GM glances at during play: ratings as short labe
 ## Game terms \{#game-terms}
 
 On the Russian site, **Game terms** chooses how rules terms are named on sheets: Russian names with a hint showing the English rulebook name (the default), the English book names, or Russian names without hints. A tip under the toolbar explains the hints until you dismiss it. The choice is kept in this browser.
+
+<GameTermsDemo />
 
 ## Publisher badge \{#badge}
 

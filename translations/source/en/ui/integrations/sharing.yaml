@@ -5,3 +5,7 @@ errors:
     sitePermission: 'The {service} room could not be reached. The server may not allow this site yet.'
     rejected: '{service} rejected this roll. Check the webhook settings.'
     setupGuide: Setup guide
+preview:
+    roll: Roll {notation} as a sample post
+    again: Roll {notation} again
+    author: Dice

@@ -6,11 +6,13 @@ import path from 'node:path';
 import {
     exampleDocument,
     healthPreviewDocument,
+    hunterExampleDocument,
     presetCharacterDocument,
     resolveDocsFragment,
     TemplateFragment,
     TemplatePreview,
     vehicleDamagePreviewDocument,
+    ViewsPreview,
 } from '@site/src/sheet_manager/docsEmbeds';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
@@ -20,7 +22,7 @@ import {
     JAX_VORN_PRESET,
     PRESET_CHARACTERS,
 } from '@site/src/sheet_manager/systems/star-wars-wod/presets';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -75,6 +77,35 @@ describe('documentation template embeds', () => {
                 ).toContain(match[1]);
             }
         }
+    });
+
+    it('opens views previews only on views that exist (en + ru)', () => {
+        const viewIds = new Set(
+            systemRegistry
+                .getSystems()
+                .flatMap((system) => system.documents.flatMap((d) => d.views.map((v) => v.id)))
+        );
+        for (const file of DOC_ROOTS.flatMap(mdxFiles)) {
+            for (const match of readFileSync(file, 'utf8').matchAll(/initialView="([^"]+)"/g)) {
+                expect(viewIds, `${path.relative(ROOT, file)}: ${match[0]}`).toContain(match[1]);
+            }
+        }
+    });
+
+    it('switches a views preview between the document views by their real names', () => {
+        render(
+            createElement(ViewsPreview, {
+                document: hunterExampleDocument(),
+                initialView: 'v5-hunter-brief',
+            })
+        );
+        const brief = screen.getByRole('tab', { name: 'Brief' });
+        const full = screen.getByRole('tab', { name: 'Full sheet' });
+        expect(brief.getAttribute('aria-selected')).toBe('true');
+        fireEvent.click(full);
+        expect(full.getAttribute('aria-selected')).toBe('true');
+        expect(screen.getByRole('tabpanel')).toBeTruthy();
+        takeSheetIssues();
     });
 
     it('imports sheet content only through the documentation entry point', () => {

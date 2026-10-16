@@ -1,0 +1,6 @@
+live:
+    label: Live
+    caption: The real interface — what you do here is kept, as on the sheet.
+example:
+    label: Example
+    caption: Drawn by the real interface from example data; nothing here is saved.
