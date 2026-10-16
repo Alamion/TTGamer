@@ -82,7 +82,7 @@ const containers = story(
             id: 'section-site-link',
             type: 'section',
             title: 'Section with a site docs link',
-            docsPath: '/docs/template-editor/elements#sections',
+            docsPath: '/docs/guide/template-editor/elements#sections',
             columns: 2,
             children: [text('two-col-a', 'Column 1'), text('two-col-b', 'Column 2')],
         },
@@ -165,7 +165,7 @@ const containers = story(
                 }),
                 group('group-collapsible', 'Collapsible group', [text('g3', 'Field')], {
                     collapsible: true,
-                    docsPath: '/docs/template-editor/elements#groups',
+                    docsPath: '/docs/guide/template-editor/elements#groups',
                 }),
                 group('group-collapsed', 'Starts collapsed', [text('g4', 'Field')], {
                     collapsible: true,

@@ -274,6 +274,15 @@ restore at the browser level → **Finish**.
       split targets count that room too, so a third group of tools opens at about 700 px of area
       instead of 980.
 
+- **Site guide (maintainer's request after Finish)**: the pages on using the site moved to
+  `docs/guide/` (documents, template editor, roll sharing; ru mirror), apart from the rules of each
+  setting; the old addresses redirect. Two guides that did not exist were added from a review of the
+  recent specs: **Character sheet** (toolbar, creating, saving, views and briefs, export and import
+  with conflicts, reset, game terms, the badge, where data is kept) and **Dice roller** (panel and
+  tabs, the notation this roller supports, history, 3D, settings, sheet and inline rolls). The
+  notation help link in the dice panel now opens that guide instead of another roller's reference,
+  which lists syntax this one does not read.
+
 ## Walk results
 
 2026-10-16, after `yarn verify:full` (green: 2747 unit tests, perf, 47 browser tests).

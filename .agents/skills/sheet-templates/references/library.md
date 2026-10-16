@@ -80,6 +80,6 @@ stored.
   any ruleset or setting (`lostBy`: templates that would no longer see it; a setting moved to other
   rules loses the old ruleset's catalogs). The details pane edits a catalog with
   `library/CatalogTable.tsx` (memoized rows keyed by entry id).
-- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`; user catalogs →
+- Help anchors: `EDITOR_GUIDE.library*` → `docs/guide/template-editor/library.mdx`; user catalogs →
   `values.mdx#your-catalogs`. Storybook: the "Library" page (`features/docs/LibraryStorybook.tsx`)
   and the "Your own catalog" element story.

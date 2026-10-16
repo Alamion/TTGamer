@@ -127,7 +127,7 @@ describe('Roll sharing subscription with special dice', () => {
         const notice = render(content as ReactElement);
         expect(notice.container.textContent).toContain('Matrix');
         expect(notice.container.querySelector('a')?.getAttribute('href')).toBe(
-            '/docs/roll-sharing#site-permission'
+            '/docs/guide/roll-sharing#site-permission'
         );
     });
 

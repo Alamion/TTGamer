@@ -91,6 +91,14 @@ Use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)` — never absol
 | Character examples    | _italic_                   | _Jax Vorn_                             |
 | UI elements           | `` `inline code` ``        | click **New**, fill the **Name** field |
 
+## Site guide pages
+
+How to use the site (the sheet, documents, the dice roller, the template editor, roll sharing) lives
+in `docs/guide/`, apart from the rules of each setting; the app's help links point there. Pages
+follow the V5 front matter and In short rules below, describe what the reader sees and does, and
+name controls by their visible labels. A page of a setting may link to the guide but never repeats
+it.
+
 ## V5 page format (candidate for all systems)
 
 Pages under `docs/wod-v5/` follow `specs/008-hunter-v5-character/contracts/docs-structure.md`,

@@ -1,0 +1,70 @@
+---
+sidebar_position: 1
+title: Character sheet
+sidebar_label: Character sheet
+description: How the character sheet page works for any game — creating documents, editing and saving, views and briefs, export and import, reset, game terms, and where your data is kept.
+---
+
+# Character sheet \{#character-sheet}
+
+:::tip[In short]
+**New** on the [character sheet](/universal_sheet) makes a document for a game system; type into it and every change is saved on this device at once. **Export** saves a document to a file, **Import** brings files back, also on another device. The [documents window](./documents) keeps your documents in folders and lays several of them out side by side.
+:::
+
+## The toolbar \{#toolbar}
+
+| Button        | What it does                                                                                 |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| **Export**    | saves the current document to a file                                                         |
+| **Import**    | reads one or more files back                                                                 |
+| **Library**   | opens the [library](./template-editor/library) of rules, settings, document types, and pages |
+| **Manage**    | opens the [documents window](./documents)                                                    |
+| **Reset**     | puts the current document back to its defaults                                               |
+| **New**       | makes a new document                                                                         |
+| **View mode** | chooses how the document is shown ([views](#views))                                          |
+
+The _current_ document is the one you last clicked or typed in; **Export** and **Reset** act on it. With no document open, the page invites you to create one, and the tools you open float above it.
+
+## Creating a document \{#new}
+
+**New** asks for the game system and the kind of document: for example a Star Wars character, droid, creature, vehicle, or fodder group, or a Hunter character. Your own [document types](./template-editor/types-and-settings#document-types) and settings appear there too. The document opens with every value at its default, on the page the library chose for its type, and goes to the end of the top level of the documents tree.
+
+## Editing and saving \{#saving}
+
+Type, click ratings, add list entries: there is no save button. Every change is written on this device right away, so a reload keeps it. There is no undo for values on the sheet.
+
+- **Portraits and images.** **Upload image** takes a picture from the device (up to 10 MB; it is shrunk and kept on this device only), or paste an `https://` address of a picture on the web. The **×** removes it.
+- **Rolls.** A trait with a dice icon rolls its pool: a left click puts the pool into the dice roller, a right click rolls at once. See [rolling from a sheet](./dice-roller#sheet-rolls).
+- **Several documents.** Each open document keeps its own values; see [several documents side by side](./documents#layout).
+
+## Views and briefs \{#views}
+
+**View mode** lists the ways a document can be shown: its full sheet, its **Brief**, and pages you made for it in the [template editor](./template-editor). The choice is saved with the document. When two or more documents are open, each group has its own selector instead, which changes only that group.
+
+A **brief** is the short view a GM glances at during play: ratings as short labels with their values, laid out by the width of the place it is drawn in, about one phone screen high. Hover, focus, or tap a short label to read the full name. A brief is still editable, and a document opened beside another starts in it.
+
+## Export and import \{#export-import}
+
+**Export** downloads the current document as a `ttgamer_<name>.json` file. It holds the document and its view; a document of your own type carries the type inside, so it opens where the type is not installed. Pictures uploaded from the device stay behind (pictures by address travel), and so do its folder and your pages: pages go through the library's [export](./template-editor/library#library-export).
+
+**Import** takes one file or many at once; a broken file never stops the others, and each document goes to the end of the top level and becomes current.
+
+- **Already there.** A document that is already on this device asks: **Replace** it, import a **Duplicate** with a new identity, or **Cancel** this file. A different version of one of your document types asks the same about the type. With several files, **Apply this choice to the other conflicts in this import** answers once for all.
+- **The summary.** When something was repaired or not imported, a summary lists every file with its reason. Files that could not be imported are kept in the documents window, so they are not lost: see [rejected files](./documents#rejected-files).
+- **Old exports.** Characters exported by the first versions of the site still import as Star Wars characters, until 13 April 2027.
+
+## Reset \{#reset}
+
+**Reset** asks first, then puts the current document's values back to their defaults and clears its name; an uploaded portrait is deleted. The document keeps its place, its type, and its page. It cannot be undone, so export first if in doubt.
+
+## Game terms \{#game-terms}
+
+On the Russian site, **Game terms** chooses how rules terms are named on sheets: Russian names with a hint showing the English rulebook name (the default), the English book names, or Russian names without hints. A tip under the toolbar explains the hints until you dismiss it. The choice is kept in this browser.
+
+## Publisher badge \{#badge}
+
+A document built on material a publisher shares under a community policy (such as the World of Darkness 5th Edition material under the [Dark Pack](../wod-v5/dark-pack)) shows the policy's badge, which links to its page. It is shown once on each surface: under the page, at the end of the toolbar when several groups fill the screen, or at the foot of a floating window. Exports of such documents carry the notice text.
+
+## Where your data is kept \{#storage}
+
+Documents, folders, your pages and types, uploaded pictures, the layout, and your settings stay in this browser on this device: nothing is sent to a server, and there is no account. Another device or browser does not see them. To move them, export the documents and import the files there (pictures uploaded from the device do not travel). Clearing the site's data in the browser, or closing a private window, deletes everything; exported files are your backup.

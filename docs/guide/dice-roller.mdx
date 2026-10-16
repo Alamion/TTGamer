@@ -1,0 +1,91 @@
+---
+sidebar_position: 3
+title: Dice roller
+sidebar_label: Dice roller
+description: How to roll dice on the site — the dice panel and its tabs, dice notation with every modifier, history and favorites, 3D dice, settings, and rolls from sheets and documentation pages.
+---
+
+# Dice roller \{#dice-roller}
+
+:::tip[In short]
+The dice button in the top bar opens the dice panel. Click dice buttons or type a notation such as `2d6+3`, then press **Roll** or `Enter`. On the [character sheet](/universal_sheet) a trait's dice icon fills in its pool. Every roll lands in the history, where you can roll it again.
+:::
+
+## The dice panel \{#panel}
+
+The dice button in the top bar shows and hides the panel. On most pages it slides in from the right; on the character sheet it is a **Dice Roller** tab of the [layout](./documents#layout), which you can move, float, or dock like any other tab.
+
+- **Dice tabs.** **Standard** has buttons for d2–d20, d100, and Fudge dice; **D&D** adds **ADV** and **DIS** (advantage turns `1d20` into `2d20kh1`, the other button undoes it); **WoD** has the World of Darkness pools (below). A left click on a die adds one, a right click removes one; clicking the open tab again hides the buttons.
+- **Notation.** Type in the field and a check mark or a cross tells you at once whether it can be rolled; a cross comes with what is wrong and marks the place. `Enter` or **Roll** rolls; **Clear** empties the field. The star saves the notation to your favorites.
+- **The pending roll.** While the field holds a notation, it also shows next to the dice button in the top bar: a left click there rolls it without opening the panel, a right click clears it.
+- **Result.** Every roll shows a short message with its total, and with the verdict when the roll has a goal.
+
+## The WoD tab \{#wod}
+
+**Rules** switches between **Classic** (Storyteller dice: a pool of d10 against a difficulty) and **V5**.
+
+- **Classic.** **Difficulty** (6 by default) is the number each die must reach; **Successes needed** is how many successes the action takes. The buttons add a d10, a d10 where ones cancel successes (botches), or a d6. With successes needed set, the roll says **Success** with its margin or **Failure** with what it lacked.
+- **V5.** Every die succeeds on 6 or more. **Special dice** chooses the line: **Hunger** (Vampire) or **Desperation** (Hunter); the second d10 button adds such a die, drawn in its own colour. **Count pairs of 10s as criticals** adds two successes for every pair of 10s; **Report special dice outcomes** names messy criticals and bestial failures (Hunger) or a Desperation die showing 1. See [dice pools](../wod-v5/rules/dice-pools) for the rules.
+
+## Dice notation \{#notation}
+
+A roll is dice and numbers joined by `+ - * / % ^` and parentheses: `2d6+3`, `(1d8+2)*2`. Spaces do not matter. Division rounds down. There are no functions such as `floor` or `max()`.
+
+| Dice                 | Meaning                                        |
+| -------------------- | ---------------------------------------------- |
+| `2d6`                | two six-sided dice; `d20` is one die           |
+| `d100`               | a percentile die                               |
+| `4dF`                | Fudge dice: each is −1, 0, or +1               |
+| `d[1,3,5]`, `d[2-5]` | a die with the faces you list (ranges allowed) |
+
+Modifiers follow the dice. Write them in any order: they always apply in this one — min and max, explode, reroll, unique, keep or drop, successes and failures, criticals, sort.
+
+| Modifier                   | What it does                                                             |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `min3`, `max5`             | a die below 3 counts as 3; above 5 counts as 5                           |
+| `!`                        | explode: a die on its highest face adds another die                      |
+| `!!`                       | compounding explode: the extra rolls add into the same die               |
+| `!p`                       | penetrating explode: each extra die counts one less                      |
+| `r`, `r3`, `r<3`           | reroll ones; reroll 3 or less; reroll below 3 — as often as it comes up  |
+| `ro`, `ro<3`               | reroll once                                                              |
+| `u`, `uo`                  | reroll duplicates (every time, or once)                                  |
+| `kh3` (`k3`), `kl2`        | keep the highest 3, keep the lowest 2                                    |
+| `dl1` (`d1`), `dh1`        | drop the lowest one, drop the highest one                                |
+| `>=6` right after the dice | count successes: the total is how many dice reached 6                    |
+| `f=1`                      | each 1 takes one success away (with a success count)                     |
+| `cs`, `cf`                 | mark critical successes (highest face) and failures (lowest face)        |
+| `csb`, `cfb`               | the same, and each one adds or takes away 1 from the total               |
+| `s`, `sd`                  | sort the dice up or down                                                 |
+| `x2=10`                    | every pair of dice showing 10 adds two successes (needs a success count) |
+| `:h`                       | right after the dice: these are special dice (Hunger or Desperation)     |
+
+Where a modifier takes a condition (a _compare point_), write `=`, `>`, `<`, `>=`, `<=`, or `<>` (not equal) and a number: `4d10!>=9`, `3d6r<=2`. Use `<>`, not `!=`, which reads as an explosion.
+
+A few things to know:
+
+- Only one keep or drop applies to a group of dice: highest kept, then lowest kept, then highest dropped, then lowest dropped.
+- Modifiers after parentheses apply to each roll inside: `(3d10+1d10)>=6` counts successes in both. `(1d4+1)d6` is not "1d4+1 six-sided dice": write such rolls in two steps.
+- Dice are written with a small `d`, modifiers in small letters; `D` and `d%` are not dice here.
+- Limits: 200 dice in a roll, 100,000 sides, 1,000 listed faces, 500 characters, and 100 explosions or rerolls of a die.
+
+Some examples: `4d6dl1` (a D&D ability score), `2d20kh1+5` (advantage), `6d10>=6f=1` (a Classic pool at difficulty 6 with botches), `5d10>=6x2=10` (a V5 pool with criticals), `3d10:h>=6+2d10>=6` (a V5 pool with three special dice).
+
+## History and favorites \{#history}
+
+Under the panel, **History** keeps your last 50 rolls on this device, **Favorites** the notations you starred, **Recent** the last ten notations you typed. Click a roll to see each die, the character and traits it came from, the verdict, and the special dice. The ↻ button puts a notation back in the field; a right click on it rolls it again at once. Each list has its own **Clear**.
+
+## 3D dice \{#3d}
+
+With 3D dice on, d2–d20, d100, and Fudge dice are thrown on the screen, and the faces they land on are the result. While they roll, ✓ takes the roll as it is and ✗ cancels it; a click on a die throws it again (the history then says it was rerolled by hand). A roll with more than 200 dice, or with dice that have no 3D shape, is rolled instantly instead; so is everything when 3D is off or the 3D dice cannot load (you will be told once).
+
+## Settings \{#settings}
+
+The gear opens the settings: 3D dice on or off, the colours of dice, their text, and special dice, **Dice feel** (from heavy to lively), roll sounds and their volume, and **Time to react** (the 3D dice wait that many seconds before settling, unless you accept the roll). **Include roll context**, **character name**, and **character stats** decide what a roll carries into the history and into [shared rolls](./roll-sharing). Sharing rolls to Discord or Matrix is set up here too.
+
+## Rolling from a sheet \{#sheet-rolls}
+
+A trait with a pool has a small dice icon. A left click puts its pool into the dice field (adding to what is there) together with the character's name and the trait; roll it from the panel, with `Enter`, or with the pending roll in the top bar. A right click rolls it at once. Rolls from a V5 sheet follow V5 rules and its special dice, whatever tab the panel shows. Clearing the field forgets the character.
+
+## Rolls in the documentation \{#inline-rolls}
+
+Rules pages show rolls as a dice icon with an underlined notation: click it to roll right there, and again to roll anew. These rolls stay on the page: they are not added to the history or shared. Some examples roll fixed results on purpose, so the text can explain them.

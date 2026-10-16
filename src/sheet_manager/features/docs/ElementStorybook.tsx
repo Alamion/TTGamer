@@ -98,7 +98,7 @@ export function ElementStorybook({ filter }: { filter?: 'handwritten' | 'bound' 
 /** The documentation help link in its three states: site page, external page, rejected. */
 export function DocsLinkVariants() {
     const variants = [
-        ['Site docs page (opens in the reader’s locale)', '/docs/template-editor'],
+        ['Site docs page (opens in the reader’s locale)', '/docs/guide/template-editor'],
         ['External https page', 'https://example.org/'],
         ['Rejected (javascript:) — renders nothing', 'javascript:alert(1)'],
     ] as const;

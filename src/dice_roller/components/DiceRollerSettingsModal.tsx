@@ -286,7 +286,7 @@ export default function DiceRollerSettingsModal() {
                                         {translate(uiMessages.dice.sharing.service)}
                                     </label>
                                     <DocsHelpLink
-                                        docsPath={`/docs/roll-sharing#${service.guideAnchor}`}
+                                        docsPath={`/docs/guide/roll-sharing#${service.guideAnchor}`}
                                         label={translate(uiMessages.dice.sharing.setupGuide)}
                                         size="sm"
                                     />
