@@ -4,14 +4,18 @@ import {
     groupsInOrder,
     type SplitNode,
 } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
-import { openBeside, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import {
+    openBeside,
+    openTool,
+    usePaneStore,
+} from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { resetLayout } from './helpers/panes';
+import { resetLayout, windowWidth } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -230,5 +234,82 @@ describe('collapsing a group (spec 036, US5)', () => {
         fireEvent.click(stripOf('Library'));
         expect(screen.getByRole('region', { name: 'Library' })).toBeTruthy();
         expect(stripOf('Dice Roller')).toBeTruthy();
+    });
+});
+
+describe('phones and narrow windows (spec 036, US6)', () => {
+    const tabNames = () => screen.getAllByRole('tab').map((tab) => tab.textContent);
+    const stored = {
+        root: {
+            type: 'split' as const,
+            direction: 'row' as const,
+            children: [
+                { type: 'group' as const, id: 'A', tabs: ['d:Ana', 'd:Dora'], shown: 'd:Ana' },
+                { type: 'group' as const, id: 'B', tabs: ['d:Bruno'], shown: 'd:Bruno' },
+                { type: 'group' as const, id: 'T', tabs: ['t:dice'], shown: 't:dice' },
+            ],
+            weights: [2, 1, 1],
+        },
+        recent: ['d:Bruno', 'd:Ana'],
+        floating: [{ key: 'd:Cleo', rect: { x: 40, y: 40, width: 500, height: 400 } }],
+    };
+    let width: ReturnType<typeof windowWidth>;
+    afterEach(() => {
+        width.restore();
+        vi.unstubAllGlobals();
+    });
+
+    async function openAt(pixels: number) {
+        width = windowWidth(pixels);
+        // happy-dom never reports a resize to an observer: the area is measured on window resizes.
+        vi.stubGlobal('ResizeObserver', undefined);
+        const area = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get');
+        area.mockReturnValue(pixels - 32);
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno', 'Cleo', 'Dora'], { current: 'Bruno' });
+        usePaneStore.setState(stored);
+        render(createElement(CharacterSheet));
+        return area;
+    }
+
+    it('shows one unframed document and a strip of every open document on a phone', async () => {
+        await openAt(375);
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(4));
+        expect(tabNames()).toEqual(['Ana', 'Dora', 'Bruno', 'Cleo']);
+        expect(regions()).toEqual(['Bruno']);
+        expect(document.querySelector('[data-group-frame]')).toBeNull();
+        expect(screen.queryByRole('dialog')).toBeNull();
+
+        fireEvent.click(screen.getByRole('tab', { name: 'Cleo' }));
+        expect(regions()).toEqual(['Cleo']);
+        expect(current()).toBe('Cleo');
+    });
+
+    it('opens a tool over the page and keeps its place when it is put away', async () => {
+        await openAt(375);
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(4));
+        act(() => openTool('dice'));
+        const tool = screen.getByRole('dialog', { name: 'Dice Roller' });
+        fireEvent.click(within(tool).getByRole('button', { name: /close/i }));
+        expect(screen.queryByRole('dialog', { name: 'Dice Roller' })).toBeNull();
+        expect(usePaneStore.getState().root).toEqual(stored.root);
+    });
+
+    it('gives the layout back as it was when the window is widened', async () => {
+        const area = await openAt(375);
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(4));
+        fireEvent.click(screen.getByRole('tab', { name: 'Dora' }));
+        area.mockReturnValue(1248);
+        act(() => {
+            width.set(1280);
+            window.dispatchEvent(new Event('resize'));
+        });
+        await waitFor(() => expect(screen.getAllByRole('tablist')).toHaveLength(3));
+        // Dora, Bruno, the dice (a tool region), and Cleo floating again.
+        expect(regions()).toEqual(['Dora', 'Bruno', undefined, 'Cleo']);
+        expect(screen.getByRole('region', { name: 'Dice Roller' })).toBeTruthy();
+        expect(screen.getByRole('dialog', { name: 'Cleo' })).toBeTruthy();
+        const { root } = usePaneStore.getState();
+        expect((root as SplitNode).weights).toEqual([2, 1, 1]);
     });
 });

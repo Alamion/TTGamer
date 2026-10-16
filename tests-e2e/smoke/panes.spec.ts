@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
-import { closeDocumentsTool, documentsTool, openDocumentsFloating } from '../tools';
+import { closeDocumentsTool, documentsTool, openDocumentsFloating, tool } from '../tools';
 import { SINGLE_DOCUMENT_BASELINE } from './panes-baseline';
 
 test('with one document the page keeps its height (specs 034, 036: SC-004)', async ({ page }) => {
@@ -243,4 +243,34 @@ test('a roll started in a pane names the character of that pane', async ({ page 
         );
         expect(rolled).toBe(name);
     }
+});
+
+test('a layout narrowed to a phone and widened again comes back as it was (spec 036, US6)', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 2);
+    await page.getByRole('button', { name: 'Toggle dice roller' }).click();
+    await expect(tool(page, 'Dice Roller')).toBeVisible();
+    await expect(panes(page)).toHaveCount(2);
+
+    await page.setViewportSize({ width: 375, height: 700 });
+    await expect(panes(page)).toHaveCount(1);
+    // The phone's strip lists the documents; a tool shows over the page.
+    await expect(page.getByRole('tab')).toHaveCount(2);
+    await expect(page.getByRole('region', { name: 'Dice Roller', exact: true })).toHaveCount(0);
+    await page.getByRole('tab').nth(1).click();
+    await page.getByRole('button', { name: 'Toggle dice roller' }).click();
+    const dice = page.getByRole('dialog', { name: 'Dice Roller', exact: true });
+    await expect(dice).toBeVisible();
+    await dice
+        .getByRole('button', { name: /^Close/ })
+        .first()
+        .click();
+    await expect(dice).toHaveCount(0);
+    expect(await noSideways(page)).toBe(true);
+
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await expect(panes(page)).toHaveCount(2);
+    await expect(page.getByRole('region', { name: 'Dice Roller', exact: true })).toBeVisible();
 });

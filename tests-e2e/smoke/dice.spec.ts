@@ -18,3 +18,12 @@ test('rolls dice from the keyboard', async ({ page }) => {
         timeout: 15_000,
     });
 });
+
+test('slides in on a documentation page, where no layout claims it (spec 036, FR-014)', async ({
+    page,
+}) => {
+    await page.goto('/docs/documents');
+    await page.getByRole('button', { name: 'Toggle dice roller' }).click();
+    await expect(page.getByRole('complementary', { name: 'Dice Roller' })).toBeVisible();
+    await expect(page.locator('[data-group-frame]')).toHaveCount(0);
+});

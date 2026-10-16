@@ -3,7 +3,11 @@ import DiceRollerPanel from '@site/src/dice_roller/components/DiceRollerPanel';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { useDiceTab } from '@site/src/integrations/sheet-dice/diceTab';
 import { openKeys } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
-import { closeTab, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import {
+    closeTab,
+    hideShownTool,
+    usePaneStore,
+} from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { tabKindOf } from '@site/src/sheet_manager/features/sheet/panes/tabKeys';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
@@ -11,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { resetDocuments, seedDocuments } from '../sheet_manager/helpers/documentsWindow';
-import { resetLayout } from '../sheet_manager/helpers/panes';
+import { resetLayout, windowWidth } from '../sheet_manager/helpers/panes';
 
 function SheetPage() {
     useDiceTab();
@@ -53,6 +57,24 @@ describe('the dice panel as a tab of the sheet (spec 036, D6)', () => {
         act(() => useDiceRollerStore.getState().togglePanel());
         act(() => closeTab('t:dice'));
         expect(useDiceRollerStore.getState().panelOpen).toBe(false);
+    });
+
+    it('shows a tab put away on a phone again with the toggle, and closes it with the next', () => {
+        const width = windowWidth(375);
+        try {
+            render(createElement(SheetPage));
+            const toggle = () => act(() => useDiceRollerStore.getState().togglePanel());
+            toggle();
+            expect(usePaneStore.getState().shownTool).toBe('t:dice');
+            act(hideShownTool);
+            toggle();
+            expect(usePaneStore.getState().shownTool).toBe('t:dice');
+            expect(useDiceRollerStore.getState().panelOpen).toBe(true);
+            toggle();
+            expect(diceOpen()).toBe(false);
+        } finally {
+            width.restore();
+        }
     });
 
     it('opens the panel for a tab kept from the last visit', () => {

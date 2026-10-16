@@ -291,7 +291,8 @@ describe('tools and floating windows (spec 036, US3)', () => {
                 .filter((key) => key === 't:dice')
         ).toHaveLength(1);
         expect(layout().recent[0]).toBe('t:dice');
-        expect(layout().shownTool).toBe('t:dice');
+        // Only a phone shows a tool over the page; narrowed later, it does not pop up.
+        expect(layout().shownTool).toBeNull();
     });
 
     it('opens documents in the group of the last used document, never in a tool’s', () => {

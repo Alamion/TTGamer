@@ -347,13 +347,15 @@ export function PaneArea({
     );
 
     if (!sideBySide) {
-        // A phone shows a tool over the page; a window too narrow for the layout keeps its docked
-        // tools in the strip, or they could not be reached.
+        // A phone floats nothing: floating documents join the strip after the grouped ones and a
+        // tool shows over the page. A window too narrow for the layout keeps its windows floating
+        // and its docked tools in the strip, or they could not be reached.
         const grouped = new Set(groups.flatMap((candidate) => candidate.tabs));
-        const stripKeys = openKeys(layout).filter(
-            (key) => documentIdOf(key) !== null || (!phone && grouped.has(key))
+        const stripKeys = openKeys(layout).filter((key) =>
+            phone ? documentIdOf(key) !== null : grouped.has(key)
         );
-        const selected = layout.recent.find((key) => stripKeys.includes(key)) ?? currentKey;
+        const selected =
+            layout.recent.find((key) => stripKeys.includes(key)) ?? stripKeys[0] ?? currentKey;
         return (
             <div className="space-y-2 px-4 pb-4 pt-3" data-panes="">
                 <PaneTabs

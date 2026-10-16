@@ -3,6 +3,7 @@ import { DicePanelContent } from '@site/src/dice_roller/components/DiceRollerPan
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { reportSheetIssue } from '@site/src/sheet_manager/diagnostics';
+import { SIDE_BY_SIDE_WIDTH } from '@site/src/sheet_manager/features/sheet/panes/layout';
 import {
     closeTab,
     isToolOpen,
@@ -66,7 +67,15 @@ export function useDiceTab(): void {
         const unsubscribe = dice.subscribe((state, previous) => {
             if (state.panelOpen === previous.panelOpen || !release) return;
             if (state.panelOpen) openTool('dice');
-            else if (openNow()) closeTab(toolKey('dice'));
+            else if (openNow()) {
+                // On a phone a tab put away from the screen is still open: the toggle shows it.
+                const phone = window.matchMedia(`(max-width: ${SIDE_BY_SIDE_WIDTH - 1}px)`).matches;
+                if (phone && usePaneStore.getState().shownTool !== toolKey('dice')) {
+                    dice.setState({ panelOpen: true });
+                } else {
+                    closeTab(toolKey('dice'));
+                }
+            }
         });
         return () => {
             unsubscribe();

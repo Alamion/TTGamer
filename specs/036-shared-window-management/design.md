@@ -224,6 +224,18 @@ restore at the browser level → **Finish**.
       with the same edges and middle; floating windows stay above it. A zero-height element before
       the page measures the area. The overlay is shared (`DropOverlay`).
     - A row over the documents window's own tree is left to the tree (moving it between folders).
+- **US6**:
+    - Most of the narrow view came earlier (Foundation; the US3 follow-up). Its strip now differs by
+      where it shows: a phone floats nothing, so its strip lists the grouped documents and then the
+      floating ones (D11), and tools show over the page; a wider window that only lacks room keeps
+      its windows floating and lists the grouped documents and tools.
+    - The dice toggle on a phone: when the full-screen panel was put away but its tab is open, the
+      navbar toggle shows it again instead of closing the tab (the US3 nuance).
+    - A tool shows over the page only when it is opened on a phone (`shownTool`); before, opening
+      one on a wide screen set it too, so narrowing the window later popped the tool up over the
+      strip (found by the new browser test).
+    - Tests make a window width with `windowWidth` (media queries and listeners); happy-dom's
+      `ResizeObserver` never fires, so the widening test measures on window resizes.
 - **Dock compass (maintainer's walk after US4)**: a floating window docked on whatever group was
   under its title bar, so with several groups it could hardly be moved without docking. Now, while
   it is dragged, a compass of five 36 px squares shows in the middle of the group's page (the

@@ -453,6 +453,10 @@ function sideOf(state: LayoutState, key: TabKey): 'left' | 'right' | undefined {
     return index < groups.length / 2 ? 'left' : 'right';
 }
 
+/** A tool opened on a phone shows over the page; elsewhere it shows where it is held. */
+const overPage = (key: TabKey) =>
+    typeof window !== 'undefined' && window.innerWidth < SIDE_BY_SIDE_WIDTH ? key : null;
+
 /**
  * Opens a tool (spec 036, US3): one that is open is shown and brought forward; otherwise it docks
  * on its last side (first time: documents and library left, dice right). A phone shows it over
@@ -464,7 +468,7 @@ export function openTool(toolId: ToolId): void {
     if (openKeys(state).includes(key)) {
         if (state.floating.some((entry) => entry.key === key)) raise(key);
         else focusTab(key);
-        usePaneStore.setState({ shownTool: key });
+        usePaneStore.setState({ shownTool: overPage(key) });
         return;
     }
     const side = state.lastSide[key] ?? FIRST_SIDE[toolId];
@@ -476,7 +480,7 @@ export function openTool(toolId: ToolId): void {
         usePaneStore.setState({
             floating: [...state.floating.filter((entry) => entry.key !== key), { key, rect }],
             recent: [key, ...state.recent],
-            shownTool: key,
+            shownTool: overPage(key),
         });
         return;
     }
@@ -486,7 +490,7 @@ export function openTool(toolId: ToolId): void {
         recent: [key, ...state.recent],
         lastSide: { ...state.lastSide, [key]: side },
         maximized: null,
-        shownTool: key,
+        shownTool: overPage(key),
     });
 }
 

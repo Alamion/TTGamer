@@ -24,3 +24,42 @@ export const openDocumentIds = () =>
 /** The group a document is shown in: its frame holds the strip, the controls, and the page. */
 export const groupFrameOf = (name: string) =>
     screen.getByRole('region', { name }).closest<HTMLElement>('[data-group-frame]')!;
+
+/**
+ * The window's width as media queries see it (happy-dom does not resize): `max-width` and
+ * `min-width` queries match it, and `set` tells their listeners, as a resize would.
+ */
+export function windowWidth(initial: number) {
+    let width = initial;
+    const listeners = new Set<() => void>();
+    const original = window.matchMedia;
+    const originalWidth = window.innerWidth;
+    const apply = () =>
+        Object.defineProperty(window, 'innerWidth', { value: width, configurable: true });
+    window.matchMedia = ((query: string) => {
+        const max = /max-width:\s*(\d+)px/.exec(query);
+        const min = /min-width:\s*(\d+)px/.exec(query);
+        return {
+            matches:
+                !query.includes('coarse') &&
+                (!max || width <= Number(max[1])) &&
+                (!min || width >= Number(min[1])),
+            media: query,
+            addEventListener: (_: string, listener: () => void) => listeners.add(listener),
+            removeEventListener: (_: string, listener: () => void) => listeners.delete(listener),
+        };
+    }) as unknown as typeof window.matchMedia;
+    apply();
+    return {
+        set(next: number) {
+            width = next;
+            apply();
+            for (const listener of [...listeners]) listener();
+        },
+        restore() {
+            window.matchMedia = original;
+            width = originalWidth;
+            apply();
+        },
+    };
+}

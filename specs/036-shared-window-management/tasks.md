@@ -213,15 +213,15 @@ float the dice; click the window behind.
 **Check**: a layout at 1280 px narrowed to 375 px, documents switched, dice opened, widened; the
 dice panel on a documentation page.
 
-- [ ] T044 [US6] Write tests in `tests/sheet_manager/pane-area.test.tsx`: under 768 px or below
+- [x] T044 [US6] Write tests in `tests/sheet_manager/pane-area.test.tsx`: under 768 px or below
       `minSizeOf(root)` one strip lists grouped documents in reading order then floating ones, one
       unframed document shows; a tool opens full screen and closing it keeps its desktop place;
       widening restores everything
-- [ ] T045 [US6] Draw the narrow view in `PaneArea.tsx` (spec 035 D7, design D11)
-- [ ] T046 [US6] Extend `tests-e2e/smoke/panes.spec.ts`: layout at 1280 → 375 → 1280 px; one
+- [x] T045 [US6] Draw the narrow view in `PaneArea.tsx` (spec 035 D7, design D11)
+- [x] T046 [US6] Extend `tests-e2e/smoke/panes.spec.ts`: layout at 1280 → 375 → 1280 px; one
       document at 375 and 1280 px within 1 % of `panes-baseline.ts` (SC-004); on a documentation
       page the dice slide panel opens as today
-- [ ] T047 [US6] Run the targeted tests and `yarn verify:fast`; check on a phone; commit
+- [x] T047 [US6] Run the targeted tests and `yarn verify:fast`; check on a phone; commit
       `feat(sheet): one document at a time on narrow screens (spec 036, US6)`
 
 ## User Story 7 - The layout is remembered; spec 034 panes carry over (P7)
