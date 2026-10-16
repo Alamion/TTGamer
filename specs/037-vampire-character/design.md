@@ -72,12 +72,31 @@ that catalog).
   result toast says what changed. `diceRollerStore.roll` resolves with the final `RollResult` (or
   `null` when the 3D roll is cancelled — then nothing is written). _Rejected_: a Rouse button
   hard-coded in a page — templates hold no code, and Hunter's Willpower re-roll can reuse actions.
+  _Handoff (Constitution III)_: `sheet_manager` → `dice_roller` through `integrations/sheet-dice`
+  (`useSheetDiceActions`), contract `roll(notation, options) → RollResult | null`. Success: the roll
+  lands in the history under the character and a toast says whether Hunger rose. Failure: a
+  cancelled 3D roll shows "Rouse check cancelled" and writes nothing; a write the schema rejects
+  reports `template-value-write-rejected`; in a read-only document the button is disabled.
 - **D7 — Humanity is a score track.** `TrackBinding.score?: { valuePath, marksPath, length }`: boxes
   `1..humanity` filled, the last `stains` boxes slashed, never both (a stain on a filled box is
   refused with a message); stored as `humanity` (0–10) and `stains` (0–10). _Rejected_: the
   health-like `{ levels }` record — a box would carry two meanings.
 - **D8 — Thin-bloods.** Generation 14–16 allows Blood Potency 0 and an empty clan; other values are
-  kept and marked (FR-009) by a read-only check field. No separate definition.
+  kept and marked (FR-009) by a read-only check field beside Blood Potency (out of the generation's
+  range). No separate definition.
+- **D9 — Long catalog texts load on demand (Constitution VII).** Names, levels, Rouse costs, and
+  parent links stay in the bundle: pickers and Rouse need them at once. Summaries, banes,
+  compulsions, and predator grants of catalogs declaring `lazyText` are written by
+  `scripts/translation-build.ts` into `src/i18n/generated/catalogText/<catalogId>.ts` (both locales)
+  instead of `catalogTranslations.ts`, and read through a cached dynamic import (`useCatalogText`);
+  while loading, a fallback field shows a muted placeholder. Budget: the sheet page's JS grows by at
+  most 25 KB gzip (the timings' "sheet JS and CSS", before and after US1). _Rejected_: everything in
+  `catalogTranslations.ts` — about 150 KB of text on every page that loads catalogs; a lazy V5
+  plugin — the registry is synchronous and every V5 document needs it.
+- **D10 — Accessibility of the new controls (Constitution VI).** Action buttons name their action
+  and target ("Rouse check for Bond Famulus"); the score track is a group named "Humanity 5 of 10"
+  whose arrow keys move the score and `S` toggles a stain on the focused box; a row above its
+  parent's dots carries visible text ("above Blood Sorcery 2"), not colour alone.
 
 ## Changed types and data
 
@@ -91,6 +110,8 @@ that catalog).
 - `systems/templateBindings.ts`: `FieldBinding.readOnly`, `fallback`; `RowsCatalogParent.limit`;
   `ActionBinding` and `RowsBinding.actions`; `TrackBinding.score`. Editor sources list action
   bindings like primitives.
+- `scripts/translation-build.ts`, `systems/catalogs.ts`: `lazyText` catalogs and the `catalogText/`
+  modules (D9).
 - `systems/types.ts`: `RollReadingRules.specialDice`, `prepare` option `specialDice`;
   `dice_roller/utils/rollReader.ts`: `RollSource.specialDice?`; `diceRollerStore.roll` returns
   `Promise<RollResult | null>`.
@@ -108,8 +129,11 @@ that catalog).
   imported only by `systems/v5/index.ts` (ESLint rule unchanged).
 - **VI. Consistent experience**: every new option (read-only, fallback, action, rows limit, score
   track) gets a storybook story and a `REQUIRED_VARIANTS` tag; the brief follows spec 033 sizes.
-- **VII. Performance**: about 300 catalog entries load with the V5 plugin as the hunter's do; the
-  power suggestion list is filtered before rendering. The brief keeps the phone height limit.
+- **III. Cross-module flows**: Hunger replacement and Rouse go through `integrations/roll-reading`
+  and `integrations/sheet-dice`; D6 states success and failure.
+- **VII. Performance**: D9 keeps long catalog texts off page load within a 25 KB gzip budget; the
+  power suggestion list is filtered before rendering; the brief keeps the phone height limit. The
+  new shared options run `yarn verify:full` with a bundle review before merge.
 - **VIII. Third-party material**: names as names, summaries written fresh in both languages, no
   copied tables (Blood Potency values are computed mechanics, not a reproduced table); Dark Pack
   badge from module policies.
