@@ -35,46 +35,33 @@ fields:
     ritual: Ritual
     level: Level
     note: Notes
-    bloodSurge: Blood surge
-    mend: Mend per Rouse
-    powerBonus: Discipline bonus
+    bloodSurge: Blood surge, extra dice
+    mend: Mend per Rouse, Superficial
+    powerBonus: Discipline bonus, dice
     rouseReroll: Re-roll Rouse up to level
     baneSeverity: Bane severity
     feedingPenalty: Feeding
-    potencyRange: For this generation
-    bloodSorceryDots: Blood Sorcery dots
-    oblivionDots: Oblivion dots
-    alchemyDots: Thin-Blood Alchemy dots
+    potencyRange: Blood Potency for this generation
 baneVariants:
     usual: Usual
     variant: Variant
 marks:
-    humanity: Humanity
     stain: Stain
-    stainRefused: 'A stain goes on an empty box: lower Humanity first.'
 potency:
-    dice: '+{count} dice'
-    noDice: none
-    superficial: '{count} Superficial'
-    noReroll: none
-    rerollLevel: 'level {level}'
-    range: '{min}–{max}'
-    outOfRange: '{value} is outside {min}–{max} for generation {generation}'
+    outside: "Outside this generation's range"
     feeding:
         none: No penalty
-        animalHalf: Animal and bagged blood slake half Hunger
-        animalNone: Animal and bagged blood slake no Hunger
-        humanLess: 'Human blood slakes {count} less Hunger'
-        mustKill: 'Only a kill brings Hunger below {limit}'
+        b2: Animal and bagged blood slake half Hunger
+        b3: Animal and bagged blood slake no Hunger
+        b4: Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger
+        b5: Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2
+        b7: Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2
+        b9: Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3
+        b10: Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3
 rouse:
     action: Rouse check
-    actionFor: 'Rouse check for {name}'
-    passed: Rouse check passed — Hunger stays at {hunger}
-    failed: Rouse check failed — Hunger rises to {hunger}
-    atMax: Hunger is already 5 — a failure cannot raise it further
-    rerolled: 'Blood Potency re-rolled a failed check'
-    cancelled: Rouse check cancelled
-    checks: '{passed} of {count} checks passed'
+remorse:
+    action: Remorse check
 catalogColumns:
     summary: Summary
     level: Level

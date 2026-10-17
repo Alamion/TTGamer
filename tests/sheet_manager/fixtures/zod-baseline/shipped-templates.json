@@ -9650,6 +9650,12 @@
          "valueKey": "predator-grants",
          "compact": false,
          "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-predator-types",
+          "entryFrom": "predator-type",
+          "text": "grants",
+          "mode": "show"
+         },
          "multiline": false
         }
        ]
@@ -9800,15 +9806,68 @@
          "bindingKey": "resource:humanity",
          "label": "Humanity",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
+         "poolTracker": {
+          "display": "row",
+          "legend": false,
+          "total": true,
+          "marksFromEnd": {
+           "coordinate": "stains",
+           "mark": {
+            "name": "Stain",
+            "nameMessage": "ttgamer.ui.sheet.v5Vampire.marks.stain"
+           }
+          }
+         },
          "compact": false
         },
         {
          "id": "rouse",
-         "type": "primitive",
-         "bindingKey": "action:rouse",
          "label": "Rouse check",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
-         "compact": false
+         "icon": "droplet",
+         "roll": {
+          "notation": "1d10>=6",
+          "successAt": 1,
+          "gameDice": false
+         },
+         "onSuccess": [],
+         "onFailure": [
+          {
+           "target": "hunger",
+           "op": "add",
+           "amount": "1"
+          }
+         ],
+         "always": [],
+         "type": "button"
+        },
+        {
+         "id": "remorse",
+         "label": "Remorse check",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
+         "icon": "heart",
+         "availableWhen": "stains > 0",
+         "roll": {
+          "notation": "{max(1, 10 - humanity - stains)}d10>=6",
+          "successAt": 1,
+          "gameDice": false
+         },
+         "onSuccess": [],
+         "onFailure": [
+          {
+           "target": "humanity",
+           "op": "add",
+           "amount": "-1"
+          }
+         ],
+         "always": [
+          {
+           "target": "stains",
+           "op": "set",
+           "amount": "0"
+          }
+         ],
+         "type": "button"
         }
        ]
       },
@@ -9822,74 +9881,95 @@
        "columns": 2,
        "children": [
         {
-         "id": "blood-surge-field",
-         "label": "Blood surge",
+         "id": "blood-surge",
+         "label": "Blood surge, extra dice",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodSurge",
          "required": false,
-         "valueKey": "blood-surge",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)",
+         "prefix": "+"
         },
         {
-         "id": "mend-field",
-         "label": "Mend per Rouse",
+         "id": "mend",
+         "label": "Mend per Rouse, Superficial",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.mend",
          "required": false,
-         "valueKey": "mend",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "if(blood-potency >= 10, 5, if(blood-potency >= 8, 4, if(blood-potency >= 4, 3, if(blood-potency >= 2, 2, 1))))"
         },
         {
-         "id": "power-bonus-field",
-         "label": "Discipline bonus",
+         "id": "power-bonus",
+         "label": "Discipline bonus, dice",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.powerBonus",
          "required": false,
-         "valueKey": "power-bonus",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "floor(blood-potency / 2)",
+         "prefix": "+"
         },
         {
-         "id": "rouse-reroll-field",
+         "id": "rouse-reroll",
          "label": "Re-roll Rouse up to level",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.rouseReroll",
          "required": false,
-         "valueKey": "rouse-reroll",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)"
         },
         {
-         "id": "bane-severity-field",
+         "id": "bane-severity",
          "label": "Bane severity",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.baneSeverity",
          "required": false,
-         "valueKey": "bane-severity",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)"
         },
         {
-         "id": "potency-range-field",
-         "label": "For this generation",
+         "id": "potency-range",
+         "label": "Blood Potency for this generation",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.potencyRange",
          "required": false,
-         "valueKey": "potency-range",
          "compact": true,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "if(generation >= 14, 0, if(generation >= 10, 1, if(generation >= 8, 2, if(generation >= 6, 3, if(generation >= 5, 4, 5))))) & \"–\" & if(generation >= 14, 0, if(generation >= 12, 3, if(generation >= 10, 4, if(generation >= 9, 5, if(generation >= 8, 6, if(generation >= 7, 7, if(generation >= 6, 8, if(generation >= 5, 9, 10))))))))"
         },
         {
-         "id": "feeding-penalty-field",
+         "id": "potency-outside",
+         "label": "Blood Potency",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
+         "visibleWhen": {
+          "formula": "or(blood-potency < if(generation >= 14, 0, if(generation >= 10, 1, if(generation >= 8, 2, if(generation >= 6, 3, if(generation >= 5, 4, 5))))), blood-potency > if(generation >= 14, 0, if(generation >= 12, 3, if(generation >= 10, 4, if(generation >= 9, 5, if(generation >= 8, 6, if(generation >= 7, 7, if(generation >= 6, 8, if(generation >= 5, 9, 10)))))))))"
+         },
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "\"Outside this generation's range\"",
+         "textMessages": {
+          "Outside this generation's range": "ttgamer.ui.sheet.v5Vampire.potency.outside"
+         }
+        },
+        {
+         "id": "feeding-penalty",
          "label": "Feeding",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.feedingPenalty",
+         "span": 2,
          "required": false,
-         "valueKey": "feeding-penalty",
          "compact": false,
-         "type": "text",
-         "multiline": false
+         "type": "formula",
+         "formula": "if(blood-potency >= 10, \"Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3\", if(blood-potency >= 9, \"Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3\", if(blood-potency >= 7, \"Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2\", if(blood-potency >= 5, \"Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2\", if(blood-potency >= 4, \"Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger\", if(blood-potency >= 3, \"Animal and bagged blood slake no Hunger\", if(blood-potency >= 2, \"Animal and bagged blood slake half Hunger\", \"No penalty\")))))))",
+         "textMessages": {
+          "No penalty": "ttgamer.ui.sheet.v5Vampire.potency.feeding.none",
+          "Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b10",
+          "Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b9",
+          "Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b7",
+          "Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b5",
+          "Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b4",
+          "Animal and bagged blood slake no Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b3",
+          "Animal and bagged blood slake half Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b2"
+         }
         }
        ]
       }
@@ -10307,6 +10387,31 @@
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.powers",
          "hideLabel": true,
          "compact": false,
+         "rowButtons": [
+          {
+           "id": "power-rouse",
+           "label": "Rouse check",
+           "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
+           "icon": "droplet",
+           "availableWhen": "row.rouse > 0",
+           "roll": {
+            "notation": "1d10>=6",
+            "count": "row.rouse",
+            "rerollWhen": "row.level <= ceil(blood-potency / 2)",
+            "successAt": 1,
+            "gameDice": false
+           },
+           "onSuccess": [],
+           "onFailure": [
+            {
+             "target": "hunger",
+             "op": "add",
+             "amount": "1"
+            }
+           ],
+           "always": []
+          }
+         ],
          "limitByParent": {
           "entryKey": "level",
           "column": "level",
@@ -10322,9 +10427,7 @@
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.rituals",
        "column": 2,
        "visibleWhen": {
-        "coordinate": "ritual-dots",
-        "equals": 0,
-        "not": true
+        "formula": "rating(disciplines, \"Blood Sorcery\") + rating(disciplines, \"Oblivion\") + rating(disciplines, \"Thin-Blood Alchemy\") > 0"
        },
        "collapsible": false,
        "children": [
@@ -10407,6 +10510,16 @@
          "valueKey": "bane",
          "compact": false,
          "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-clans",
+          "entryFrom": "clan",
+          "text": "bane",
+          "alternative": {
+           "text": "variantBane",
+           "when": "bane-variant = \"variant\""
+          },
+          "mode": "suggest"
+         },
          "multiline": true
         },
         {
@@ -10417,6 +10530,12 @@
          "valueKey": "compulsion",
          "compact": false,
          "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-clans",
+          "entryFrom": "clan",
+          "text": "compulsion",
+          "mode": "suggest"
+         },
          "multiline": true
         }
        ]
@@ -10744,16 +10863,70 @@
        "label": "Humanity",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
        "column": 2,
+       "poolTracker": {
+        "display": "strip",
+        "legend": false,
+        "total": true,
+        "marksFromEnd": {
+         "coordinate": "stains",
+         "mark": {
+          "name": "Stain",
+          "nameMessage": "ttgamer.ui.sheet.v5Vampire.marks.stain"
+         }
+        }
+       },
        "compact": true
       },
       {
        "id": "rouse",
-       "type": "primitive",
-       "bindingKey": "action:rouse",
        "label": "Rouse check",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
-       "column": 2,
-       "compact": true
+       "icon": "droplet",
+       "roll": {
+        "notation": "1d10>=6",
+        "successAt": 1,
+        "gameDice": false
+       },
+       "onSuccess": [],
+       "onFailure": [
+        {
+         "target": "hunger",
+         "op": "add",
+         "amount": "1"
+        }
+       ],
+       "always": [],
+       "type": "button",
+       "column": 2
+      },
+      {
+       "id": "remorse",
+       "label": "Remorse check",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
+       "icon": "heart",
+       "availableWhen": "stains > 0",
+       "roll": {
+        "notation": "{max(1, 10 - humanity - stains)}d10>=6",
+        "successAt": 1,
+        "gameDice": false
+       },
+       "onSuccess": [],
+       "onFailure": [
+        {
+         "target": "humanity",
+         "op": "add",
+         "amount": "-1"
+        }
+       ],
+       "always": [
+        {
+         "target": "stains",
+         "op": "set",
+         "amount": "0"
+        }
+       ],
+       "type": "button",
+       "column": 2
       }
      ]
     },

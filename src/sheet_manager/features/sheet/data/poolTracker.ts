@@ -213,7 +213,9 @@ export function scoreTrackerModel(input: {
             },
             {
                 id: SCORE_MARK_ID,
-                name: mark?.name || translate(text.scoreMark),
+                name: mark?.nameMessage
+                    ? translate({ id: mark.nameMessage, message: mark.name ?? '' })
+                    : mark?.name || translate(text.scoreMark),
                 symbol: mark?.symbol ?? '╱',
                 fill: mark?.fill ?? 'error',
                 layer: 'outline',

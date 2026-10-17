@@ -251,6 +251,26 @@ export function primitiveSettings({
                     />
                 </div>
             )}
+            {descriptor?.kind === 'track' && descriptor.members && (
+                <SettingField label={settingLabel('cohort')} setting="cohort">
+                    {(control) => (
+                        <input
+                            {...control}
+                            type="number"
+                            min={1}
+                            max={24}
+                            value={node.cohort?.maxMembers ?? descriptor.members!.maxMembers}
+                            onChange={(event) => {
+                                const maxMembers = Math.round(Number(event.target.value));
+                                if (maxMembers >= 1 && maxMembers <= 24) {
+                                    update({ cohort: { maxMembers } });
+                                }
+                            }}
+                            className={`${inputClasses} w-20`}
+                        />
+                    )}
+                </SettingField>
+            )}
             {descriptor?.kind === 'track' && (
                 <div data-setting-list="" data-setting="tracker" tabIndex={-1}>
                     <TrackerSettings

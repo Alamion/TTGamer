@@ -81,6 +81,7 @@ editor:
     limitEntryLevel: Деталь записи с уровнем
     limitRowLevel: Колонка строки с уровнем
     limitParentRating: Рейтинг родителя
+    cohortMax: Не больше участников
     visibleWhenKind: Условие
     visibleWhenKindValue: Значение совпадает
     visibleWhenKindFormula: Формула выполняется

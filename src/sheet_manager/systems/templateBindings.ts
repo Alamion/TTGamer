@@ -1,5 +1,3 @@
-import type { RollResult } from '@site/src/dice_roller/dice-logic';
-
 import { systemRegistry } from './index';
 
 /**
@@ -41,12 +39,6 @@ export interface TraitBinding extends BindingBase {
 export interface TranslationDescriptor {
     id: string;
     message: string;
-}
-
-/** A message with its placeholder values, translated where it is shown. */
-export interface BoundMessage {
-    descriptor: TranslationDescriptor;
-    values?: Readonly<Record<string, string | number>>;
 }
 
 /** Entry shape of a bound list, selecting the list molecule and its raw↔entry mapping. */
@@ -106,23 +98,13 @@ export function createListEntry(
 export interface ResourceBinding extends BindingBase {
     kind: 'resource';
     resourceId: string;
-    /** `pool` → `{ current, max }` object; `rating` and `score` → plain number. */
+    /** `pool` → `{ current, max }` object; `rating` → plain number. */
     dataKey: string;
-    mode: 'pool' | 'rating' | 'score';
+    mode: 'pool' | 'rating';
     maximum: number;
     coordinate: string;
     /** Pools: raising `current` above `max` raises `max` too (otherwise current is capped). */
     currentRaisesMax?: boolean;
-    /**
-     * `score` mode (V5 Humanity, spec 037 D7): `maximum` boxes, `1..value` filled and the last
-     * `marksKey` boxes marked (stains); a box is never both, so a mark on a filled box is refused.
-     */
-    score?: {
-        marksKey: string;
-        valueName: TranslationDescriptor;
-        markName: TranslationDescriptor;
-        refused: TranslationDescriptor;
-    };
 }
 
 export interface TrackLevel {
@@ -239,21 +221,6 @@ export interface FieldBinding extends BindingBase {
      * and returns the value stored under `path[0]`.
      */
     constrain?: (record: unknown) => unknown;
-    /**
-     * Shown, never edited (spec 037 D4): the value comes from `adapter.read` (or `path`). A
-     * `BoundMessage` value is translated; numbers are formula coordinates.
-     */
-    readOnly?: boolean;
-    /**
-     * Text shown, muted, while the stored value is empty (spec 037 D5): the `field` of the
-     * catalog entry named at `namePath` (any of its names). Typing stores the player's own text;
-     * clearing it returns to the catalog's.
-     */
-    fallback?: {
-        catalogId: string;
-        namePath: readonly string[];
-        field: string | ((data: unknown) => string);
-    };
 }
 
 /** Reads a nested document-data value. */
@@ -339,8 +306,6 @@ export interface RowsBinding extends BindingBase {
         fills: Readonly<Record<string, string>>;
         parent?: RowsCatalogParent;
     };
-    /** Action bindings shown on each row (keys of `action` bindings of the same kinds). */
-    actions?: readonly string[];
 }
 
 /**
@@ -358,37 +323,7 @@ export interface RowsCatalogParent {
     namedBy?: { dataKey: string; column: string };
 }
 
-/** What an action asks of the sheet while it runs. */
-export interface ActionContext {
-    data: unknown;
-    /** The row the action runs on (`RowsBinding.actions`). */
-    row?: Readonly<Record<string, unknown>>;
-    /** Rolls through the dice roller as a roll of this document; `null` when cancelled. */
-    roll(notation: string): Promise<RollResult | null>;
-}
-
-export interface ActionOutcome {
-    /** Top-level data update to write, if any. */
-    update?: Record<string, unknown>;
-    message: BoundMessage;
-    tone: 'success' | 'error' | 'info';
-}
-
-/**
- * A button that rolls and writes its result (spec 037 D6, e.g. a V5 Rouse check). `available`
- * hides it on rows it does not apply to; `run` returns `null` when nothing was rolled.
- */
-export interface ActionBinding extends BindingBase {
-    kind: 'action';
-    translation: TranslationDescriptor;
-    /** Accessible name on a row: `{name}` is the row's name column. */
-    rowTranslation?: TranslationDescriptor;
-    available?(data: unknown, row?: Readonly<Record<string, unknown>>): boolean;
-    run(context: ActionContext): Promise<ActionOutcome | null>;
-}
-
 export type DocumentBindingDescriptor =
-    | ActionBinding
     | TraitBinding
     | ListBinding
     | ResourceBinding
@@ -457,6 +392,10 @@ export function listNumericCoordinates(
         ) {
             coordinates.push({ coordinate: binding.coordinate, label: binding.label });
         } else if (binding.kind === 'resource') {
+            // A single value (V5 Hunger, Humanity) reads by its bare name too (spec 038).
+            if (binding.mode === 'rating') {
+                coordinates.push({ coordinate: binding.coordinate, label: binding.label });
+            }
             coordinates.push({
                 coordinate: `${binding.coordinate}.current`,
                 label: `${binding.label} (current)`,

@@ -704,7 +704,7 @@ export function useTemplatePage(
             );
             let value: unknown;
             if (binding?.kind === 'field') {
-                // Computed fields (spec 037 D4) read through their adapter.
+                // Fields stored across several data paths read through their adapter.
                 value = binding.adapter
                     ? binding.adapter.read(documentData)
                     : readDataPath(documentData, binding.path);

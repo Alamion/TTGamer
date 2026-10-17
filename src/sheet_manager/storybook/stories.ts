@@ -858,16 +858,11 @@ export function bindingSignature(binding: DocumentBindingDescriptor): string {
         case 'track':
             return `track:${binding.members ? 'members' : binding.length ? 'length' : binding.variants ? 'variants' : 'levels'}`;
         case 'field':
-            return [
-                `field:${binding.valueType}`,
-                binding.options ? ':options' : '',
-                binding.readOnly ? ':readOnly' : '',
-                binding.fallback ? ':fallback' : '',
-            ].join('');
+            return [`field:${binding.valueType}`, binding.options ? ':options' : ''].join('');
         case 'equipment':
             return `equipment:${binding.sectionId}`;
         case 'rows':
-            return ['rows', binding.actions?.length ? ':actions' : ''].join('');
+            return 'rows';
         default:
             return binding.kind;
     }

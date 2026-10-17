@@ -139,18 +139,18 @@ Undo (spec US1).
 **Check**: a user copy of the shipped vampire sheet shows every mechanic as an element or option;
 037 behavior tests pass (spec US6, SC-001).
 
-- [ ] T033 [US6] Tests first: `tests/sheet_manager/shipped-parity.test.ts` (SC-003: every shipped
+- [x] T033 [US6] Tests first: `tests/sheet_manager/shipped-parity.test.ts` (SC-003: every shipped
       template opens in the editor model and saves unchanged; every key a node defines is in its
       type's `settingKeys`, a new list on each `ELEMENT_EDITORS` entry in
       `editor/elements/registry.tsx`); Remorse cases in
       `tests/sheet_manager/systems/v5/vampire-rouse.test.tsx`
-- [ ] T034 [US6] Rebuild `src/sheet_manager/systems/v5/modules/vampire/templates/sheet.ts` and
+- [x] T034 [US6] Rebuild `src/sheet_manager/systems/v5/modules/vampire/templates/sheet.ts` and
       `brief.ts`: Rouse and Remorse buttons, a power row button (count `row.rouse`, re-roll while
       `row.level <= ceil(blood-potency / 2)`, available while `row.rouse > 0`), Blood Potency
       effects and potency range as formula fields with `textMessages`, grants/bane/compulsion via
       `fromCatalog`, Humanity with `marksFromEnd: 'stains'`, powers with `limitByParent`, rituals
       shown by a `rating()` formula
-- [ ] T035 [US6] Retire the code-only mechanics: `ActionBinding` and its types,
+- [x] T035 [US6] Retire the code-only mechanics: `ActionBinding` and its types,
       `RowsBinding.actions`, resource `mode: 'score'`, `FieldBinding.readOnly`/`fallback`,
       `BoundMessage`, `RowsCatalogParent.limit` in `src/sheet_manager/systems/templateBindings.ts`;
       delete `decl/ActionButton.tsx`, `src/sheet_manager/components/stat-fields/ScoreTrack.tsx`,
@@ -158,7 +158,7 @@ Undo (spec US1).
       bindings in `vampire/bindings.ts`; keep `vampire/bloodPotency.ts` only as the oracle of
       `tests/sheet_manager/systems/v5/vampire-blood-potency.test.ts` if it stays imported, otherwise
       turn that test into formula-field checks; update `storybook/stories.ts` `bindingSignature`
-- [ ] T036 [US6] Update the 037 tests to the rebuilt templates (`vampire-sheet`, `vampire-rouse`,
+- [x] T036 [US6] Update the 037 tests to the rebuilt templates (`vampire-sheet`, `vampire-rouse`,
       `vampire-blood-potency`, `catalog-bindings`, `rows-catalog-limit`); vampire translations in
       `translations/source/{en,ru}/ui/sheet/v5Vampire.yaml` (button labels, Remorse, formula texts;
       drop unused rouse messages); the blood-cell check of `tests-e2e/smoke/vampire-brief.spec.ts`

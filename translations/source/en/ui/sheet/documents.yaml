@@ -356,8 +356,6 @@ button:
     notUndone: 'Kept, changed since: {names}'
     readOnly: This document is read-only
     forRow: '{label} for {name}'
-scoreTrack:
-    group: '{name} {value} of {length}'
 rows:
     moveUp: 'Move {name} up'
     moveDown: 'Move {name} down'

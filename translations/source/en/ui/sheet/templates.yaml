@@ -81,6 +81,7 @@ editor:
     limitEntryLevel: Entry detail with the level
     limitRowLevel: Row column with the level
     limitParentRating: Parent's rating
+    cohortMax: Members at most
     visibleWhenKind: Condition
     visibleWhenKindValue: A value matches
     visibleWhenKindFormula: A formula holds

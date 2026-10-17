@@ -13,7 +13,6 @@ import {
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
-import { ScoreTrack } from '../../../components/stat-fields/ScoreTrack';
 import {
     CustomTraitList,
     TraitRow,
@@ -58,7 +57,6 @@ import {
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
-import { ActionButton } from './ActionButton';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { PageScopeContext } from './PageScope';
@@ -698,48 +696,6 @@ function PrimitiveResourceBody({
     }
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    if (descriptor.mode === 'score' && descriptor.score) {
-        const score = descriptor.score;
-        const value =
-            typeof bound.data[descriptor.dataKey] === 'number'
-                ? (bound.data[descriptor.dataKey] as number)
-                : 0;
-        const marksRaw = bound.data[score.marksKey];
-        const marks = typeof marksRaw === 'number' ? marksRaw : 0;
-        return (
-            <div className="grid gap-1">
-                <span
-                    className={clsx(
-                        node.hideLabel && 'sr-only',
-                        !node.hideLabel && node.compact && 'text-xs text-textSecondary',
-                        !node.hideLabel && !node.compact && 'text-sm text-textPrimary'
-                    )}
-                >
-                    {label}
-                </span>
-                <ScoreTrack
-                    label={translate(score.valueName)}
-                    groupLabel={translate(uiMessages.sheet.documents.scoreTrack.group, {
-                        name: label,
-                        value,
-                        length: descriptor.maximum,
-                    })}
-                    value={value}
-                    marks={marks}
-                    length={descriptor.maximum}
-                    markName={translate(score.markName)}
-                    refusedMessage={translate(score.refused)}
-                    disabled={readOnly}
-                    onChange={(next) =>
-                        bound.update({
-                            [descriptor.dataKey]: next.value,
-                            [score.marksKey]: next.marks,
-                        })
-                    }
-                />
-            </div>
-        );
-    }
     const effectiveMax =
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
@@ -827,11 +783,17 @@ function PrimitiveResourceBody({
         );
     }
     if (node.compact) {
-        // A term row is a size container (zero intrinsic width): where a brief column wraps
-        // its cells as chips, the cell takes a width or the next cell covers it.
+        const asPool = descriptor.mode === 'pool' && !node.part;
+        // A rating's term row is a size container (zero intrinsic width): where a brief column
+        // wraps its cells as chips, it takes a width or the next cell covers it.
         return (
-            <div className="grid min-w-0 grid-cols-1 gap-1 @md/brief:w-40">
-                {descriptor.mode === 'pool' && !node.part ? (
+            <div
+                className={clsx(
+                    'grid min-w-0 grid-cols-1 gap-1',
+                    !asPool && !shortLabel && '@md/brief:w-40'
+                )}
+            >
+                {asPool ? (
                     <CompactResource
                         label={label}
                         current={pair.current}
@@ -1031,8 +993,6 @@ export function PrimitiveNodeView({
             return <EquipmentView node={node} descriptor={descriptor} />;
         case 'rows':
             return <RowsBody node={node} descriptor={descriptor} />;
-        case 'action':
-            return <ActionButton binding={descriptor} />;
         case 'list':
             return (
                 <SystemListBody

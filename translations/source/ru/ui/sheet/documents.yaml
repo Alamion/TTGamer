@@ -356,8 +356,6 @@ button:
     notUndone: 'Оставлено, изменено с тех пор: {names}'
     readOnly: Документ только для чтения
     forRow: '{label}: {name}'
-scoreTrack:
-    group: '{name}: {value} из {length}'
 rows:
     moveUp: 'Переместить {name} выше'
     moveDown: 'Переместить {name} ниже'

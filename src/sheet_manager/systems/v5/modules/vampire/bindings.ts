@@ -7,15 +7,10 @@ import type {
     RowsBinding,
 } from '../../../templateBindings';
 import { buildV5CoreBindings } from '../../ruleset/bindings';
-import { bloodPotencyEffects, type FeedingPenalty, potencyRange } from './bloodPotency';
 import { VAMPIRE_CATALOG_IDS } from './catalogs';
-import { disciplineDots } from './disciplineDots';
-import { rouseAction, rousePowerAction } from './rouse';
 import { VAMPIRE_LIMITS } from './schema';
 
 const vampire = uiMessages.sheet.v5Vampire;
-
-const RITUAL_DISCIPLINES = ['blood-sorcery', 'oblivion', 'thin-blood-alchemy'] as const;
 
 export const VAMPIRE_DOCUMENT_KINDS: ReadonlySet<string> = new Set(['vampire']);
 
@@ -46,94 +41,6 @@ function rating(id: string, dataKey: string, label: string, maximum: number): Re
         coordinate: id,
     };
 }
-
-/** Read-only dots of a discipline the sheet shows or hides parts by (design D4, T017). */
-function dots(key: string, disciplineId: string, label: string) {
-    return field(key, 'disciplines', {
-        label,
-        valueType: 'number',
-        readOnly: true,
-        adapter: { read: (data) => disciplineDots(data, disciplineId), update: () => ({}) },
-    });
-}
-
-const potencyMessages = vampire.potency;
-
-const potencyOf = (data: unknown) => {
-    const value = (data as { bloodPotency?: unknown } | null)?.bloodPotency;
-    return bloodPotencyEffects(typeof value === 'number' ? value : 0);
-};
-
-/** A read-only Blood Potency effect (design D4); numeric ones are formula coordinates. */
-function effect(key: string, label: string, read: (data: unknown) => unknown, numeric = false) {
-    return field(key, 'bloodPotency', {
-        label,
-        valueType: numeric ? 'number' : 'string',
-        readOnly: true,
-        adapter: { read, update: () => ({}) },
-    });
-}
-
-const dice = (count: number) =>
-    count > 0
-        ? { descriptor: potencyMessages.dice, values: { count } }
-        : { descriptor: potencyMessages.noDice };
-
-function feedingMessage(penalty: FeedingPenalty) {
-    switch (penalty.id) {
-        case 'animalHalf':
-            return { descriptor: potencyMessages.feeding.animalHalf };
-        case 'animalNone':
-            return { descriptor: potencyMessages.feeding.animalNone };
-        case 'humanLess':
-            return {
-                descriptor: potencyMessages.feeding.humanLess,
-                values: { count: penalty.count },
-            };
-        case 'mustKill':
-            return {
-                descriptor: potencyMessages.feeding.mustKill,
-                values: { limit: penalty.limit },
-            };
-    }
-}
-
-const potencyBindings: DocumentBindingDescriptor[] = [
-    effect('blood-surge', vampire.fields.bloodSurge.message, (data) => dice(potencyOf(data).surge)),
-    effect('mend', vampire.fields.mend.message, (data) => ({
-        descriptor: potencyMessages.superficial,
-        values: { count: potencyOf(data).mend },
-    })),
-    effect('power-bonus', vampire.fields.powerBonus.message, (data) => dice(potencyOf(data).bonus)),
-    effect('rouse-reroll', vampire.fields.rouseReroll.message, (data) => {
-        const level = potencyOf(data).reroll;
-        return level > 0
-            ? { descriptor: potencyMessages.rerollLevel, values: { level } }
-            : { descriptor: potencyMessages.noReroll };
-    }),
-    effect(
-        'bane-severity',
-        vampire.fields.baneSeverity.message,
-        (data) => potencyOf(data).severity,
-        true
-    ),
-    effect('feeding-penalty', vampire.fields.feedingPenalty.message, (data) => {
-        const penalties = potencyOf(data).feeding;
-        return penalties.length > 0
-            ? penalties.map(feedingMessage)
-            : { descriptor: potencyMessages.feeding.none };
-    }),
-    // The generation's range, or a mark when Blood Potency is outside it (FR-009, D8).
-    effect('potency-range', vampire.fields.potencyRange.message, (data) => {
-        const record = (data ?? {}) as { generation?: unknown; bloodPotency?: unknown };
-        const generation = typeof record.generation === 'number' ? record.generation : 13;
-        const value = typeof record.bloodPotency === 'number' ? record.bloodPotency : 0;
-        const { min, max } = potencyRange(generation);
-        return value < min || value > max
-            ? { descriptor: potencyMessages.outOfRange, values: { value, min, max, generation } }
-            : { descriptor: potencyMessages.range, values: { min, max } };
-    }),
-];
 
 const textColumn = (key: string, label: { id: string; message: string }) => ({
     key,
@@ -171,7 +78,6 @@ const powersRows: RowsBinding = {
         fills: { level: 'level', rouse: 'rouse', id: 'entry' },
         parent: disciplinesParent,
     },
-    actions: [rousePowerAction.key],
 };
 
 const ritualsRows: RowsBinding = {
@@ -211,16 +117,6 @@ const vampireBindings: DocumentBindingDescriptor[] = [
         label: vampire.fields.predatorType.message,
         suggestions: { catalogId: VAMPIRE_CATALOG_IDS.predatorTypes },
     }),
-    field('predator-grants', 'predatorType', {
-        label: vampire.fields.predatorGrants.message,
-        readOnly: true,
-        adapter: { read: () => '', update: () => ({}) },
-        fallback: {
-            catalogId: VAMPIRE_CATALOG_IDS.predatorTypes,
-            namePath: ['predatorType'],
-            field: 'grants',
-        },
-    }),
     field('generation', 'generation', {
         label: vampire.fields.generation.message,
         valueType: 'number',
@@ -242,25 +138,8 @@ const vampireBindings: DocumentBindingDescriptor[] = [
             },
         ],
     }),
-    field('bane', 'bane', {
-        label: vampire.fields.bane.message,
-        fallback: {
-            catalogId: VAMPIRE_CATALOG_IDS.clans,
-            namePath: ['clan'],
-            field: (data) =>
-                (data as { baneVariant?: string } | null)?.baneVariant === 'variant'
-                    ? 'variantBane'
-                    : 'bane',
-        },
-    }),
-    field('compulsion', 'compulsion', {
-        label: vampire.fields.compulsion.message,
-        fallback: {
-            catalogId: VAMPIRE_CATALOG_IDS.clans,
-            namePath: ['clan'],
-            field: 'compulsion',
-        },
-    }),
+    field('bane', 'bane', { label: vampire.fields.bane.message }),
+    field('compulsion', 'compulsion', { label: vampire.fields.compulsion.message }),
     rating('hunger', 'hunger', vampire.fields.hunger.message, VAMPIRE_LIMITS.hunger.max),
     rating(
         'blood-potency',
@@ -268,39 +147,11 @@ const vampireBindings: DocumentBindingDescriptor[] = [
         vampire.fields.bloodPotency.message,
         VAMPIRE_LIMITS.bloodPotency.max
     ),
-    {
-        ...rating(
-            'humanity',
-            'humanity',
-            vampire.fields.humanity.message,
-            VAMPIRE_LIMITS.humanity.max
-        ),
-        mode: 'score',
-        score: {
-            marksKey: 'stains',
-            valueName: vampire.marks.humanity,
-            markName: vampire.marks.stain,
-            refused: vampire.marks.stainRefused,
-        },
-    },
+    rating('humanity', 'humanity', vampire.fields.humanity.message, VAMPIRE_LIMITS.humanity.max),
     field('stains', 'stains', {
         label: vampire.fields.stains.message,
         valueType: 'number',
         range: { min: 0, max: VAMPIRE_LIMITS.humanity.max },
-    }),
-    dots('blood-sorcery-dots', 'blood-sorcery', vampire.fields.bloodSorceryDots.message),
-    dots('oblivion-dots', 'oblivion', vampire.fields.oblivionDots.message),
-    dots('thin-blood-alchemy-dots', 'thin-blood-alchemy', vampire.fields.alchemyDots.message),
-    // Rituals, ceremonies, and formulas show while any of their disciplines has dots.
-    field('ritual-dots', 'disciplines', {
-        label: vampire.sections.rituals.message,
-        valueType: 'number',
-        readOnly: true,
-        adapter: {
-            read: (data) =>
-                RITUAL_DISCIPLINES.reduce((sum, id) => sum + disciplineDots(data, id), 0),
-            update: () => ({}),
-        },
     }),
     {
         key: 'list:disciplines',
@@ -322,7 +173,4 @@ const vampireBindings: DocumentBindingDescriptor[] = [
 export const vampireTemplateBindings: readonly DocumentBindingDescriptor[] = [
     ...buildV5CoreBindings(kinds),
     ...vampireBindings,
-    ...potencyBindings,
-    rouseAction,
-    rousePowerAction,
 ];

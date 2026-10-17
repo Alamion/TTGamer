@@ -5,6 +5,7 @@ import { DocumentKindSchema, SystemIdSchema } from '../../../../../types/documen
 import {
     type CustomTemplate,
     type GroupNode,
+    type RowButton,
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
@@ -21,6 +22,17 @@ import {
     trackGroup,
     v5Text,
 } from '../../../ruleset/templateParts';
+import {
+    baneField,
+    bloodPotencyEffects,
+    compulsionField,
+    humanityTracker,
+    powerRouseButton,
+    predatorGrantsField,
+    remorseButton,
+    RITUALS_VISIBLE,
+    rouseButton,
+} from './mechanics';
 
 /**
  * Vampire pages built for the screen (spec 037): what changes during play (Hunger, Humanity,
@@ -73,16 +85,11 @@ function vampireSection(): SectionNode {
         [
             portraitGroup(1),
             vampireIdentityGroup({ column: 2 }),
-            group(
-                'predator',
-                vampire.fields.predatorGrants.message,
-                [
-                    v5Text('predator-grants', 'predator-grants', vampire.fields.predatorGrants, {
-                        hideLabel: true,
-                    }),
-                ],
-                { column: 2, collapsible: true, labelMessage: vampire.fields.predatorGrants }
-            ),
+            group('predator', vampire.fields.predatorGrants.message, [predatorGrantsField()], {
+                column: 2,
+                collapsible: true,
+                labelMessage: vampire.fields.predatorGrants,
+            }),
             biographyGroup(2),
         ],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.vampire }
@@ -110,12 +117,10 @@ export function vampireBloodGroup(options: { compact?: boolean; column?: number 
                 label: vampire.fields.humanity.message,
                 labelMessage: vampire.fields.humanity,
                 compact,
+                poolTracker: humanityTracker(compact),
             }),
-            primitive('rouse', 'action:rouse', {
-                label: vampire.rouse.action.message,
-                labelMessage: vampire.rouse.action,
-                compact,
-            }),
+            rouseButton(),
+            remorseButton(),
         ],
         {
             ...(options.column ? { column: options.column } : {}),
@@ -125,22 +130,12 @@ export function vampireBloodGroup(options: { compact?: boolean; column?: number 
     );
 }
 
-/** What the current Blood Potency gives, computed from it (spec 037 D4). */
+/** What the current Blood Potency gives, as derived values (spec 037 D4, spec 038). */
 function bloodPotencyGroup(column: number): GroupNode {
-    const effect = (id: string, label: { id: string; message: string }) =>
-        v5Text(id, id, label, { compact: true });
     return group(
         'blood-potency-effects',
         vampire.sections.bloodPotency.message,
-        [
-            effect('blood-surge', vampire.fields.bloodSurge),
-            effect('mend', vampire.fields.mend),
-            effect('power-bonus', vampire.fields.powerBonus),
-            effect('rouse-reroll', vampire.fields.rouseReroll),
-            effect('bane-severity', vampire.fields.baneSeverity),
-            effect('potency-range', vampire.fields.potencyRange),
-            v5Text('feeding-penalty', 'feeding-penalty', vampire.fields.feedingPenalty),
-        ],
+        bloodPotencyEffects(),
         {
             column,
             columns: 2,
@@ -176,8 +171,8 @@ function baneGroup(column: number): GroupNode {
                 label: vampire.fields.baneVariant.message,
                 labelMessage: vampire.fields.baneVariant,
             }),
-            v5Text('bane', 'bane', vampire.fields.bane, { multiline: true }),
-            v5Text('compulsion', 'compulsion', vampire.fields.compulsion, { multiline: true }),
+            baneField(),
+            compulsionField(),
         ],
         { column, collapsible: true, labelMessage: vampire.sections.bane }
     );
@@ -188,7 +183,8 @@ function rowsGroup(
     bindingKey: string,
     title: { id: string; message: string },
     column: number,
-    extra: Partial<GroupNode> = {}
+    extra: Partial<GroupNode> = {},
+    rowButtons?: RowButton[]
 ): GroupNode {
     return {
         ...group(
@@ -201,6 +197,7 @@ function rowsGroup(
                     hideLabel: true,
                     // Powers and rituals up to their discipline's dots (spec 037 D3, spec 038).
                     limitByParent: { entryKey: 'level', column: 'level', parentValue: 'value' },
+                    ...(rowButtons ? { rowButtons } : {}),
                 }),
             ],
             { column, labelMessage: title }
@@ -227,9 +224,11 @@ export function vampireDisciplinesSection(): SectionNode {
                 ],
                 { column: 1, labelMessage: vampire.sections.disciplineList }
             ),
-            rowsGroup('power-list', 'rows:powers', vampire.sections.powers, 2),
+            rowsGroup('power-list', 'rows:powers', vampire.sections.powers, 2, {}, [
+                powerRouseButton(),
+            ]),
             rowsGroup('ritual-list', 'rows:rituals', vampire.sections.rituals, 2, {
-                visibleWhen: { coordinate: 'ritual-dots', equals: 0, not: true },
+                visibleWhen: RITUALS_VISIBLE,
             }),
         ],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.disciplines }

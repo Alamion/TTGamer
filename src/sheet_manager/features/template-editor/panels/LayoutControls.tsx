@@ -83,7 +83,7 @@ export function ColumnSpanControl({
 }) {
     const current = value ?? 1;
     return (
-        <div className="grid gap-1 text-xs text-textSecondary">
+        <div className="grid gap-1 text-xs text-textSecondary" data-setting="span">
             <span className="font-semibold text-textPrimary">{t(editor.columnSpan)}</span>
             <div role="radiogroup" aria-label={t(editor.columnSpan)} className="flex gap-1">
                 {Array.from({ length: parentColumns }, (_, index) => index + 1).map((span) => {

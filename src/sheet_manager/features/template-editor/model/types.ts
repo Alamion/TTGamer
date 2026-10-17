@@ -50,6 +50,7 @@ export type NodeUpdates = {
     /** Spec 038: buttons on table and built-in rows, and a page button's own settings. */
     rowButtons?: RowButton[];
     limitByParent?: LimitByParent;
+    cohort?: { maxMembers: number };
 } & Partial<Omit<RowButton, 'id' | 'label'>>;
 
 export type EditorDraft = CustomTemplate;

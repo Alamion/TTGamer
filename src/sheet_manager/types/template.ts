@@ -294,6 +294,8 @@ const trackerSymbolSchema = z
 /** A built-in mark's page look: the game keeps its id and meaning. */
 const TrackerMarkOverrideSchema = z.object({
     name: trackerNameSchema.optional(),
+    /** Shipped templates: the name's translation (spec 038, V5 stains). */
+    nameMessage: LabelMessageSchema.optional(),
     symbol: trackerSymbolSchema.optional(),
     fill: TrackerFillSchema.optional(),
 });

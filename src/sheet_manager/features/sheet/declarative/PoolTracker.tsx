@@ -85,7 +85,8 @@ export function ScoreTracker({
     const markName = model.marks[1]!.name;
     const text = uiMessages.sheet.tracks.tracker;
     return (
-        <div className="grid gap-1">
+        // Full width: in a brief column of chips the boxes keep one row.
+        <div className="grid w-full min-w-0 gap-1">
             <span className="sr-only">
                 {translate(text.scoreSummary, {
                     name: label,

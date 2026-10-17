@@ -10,17 +10,10 @@ import {
     RowMoveControls,
     rowMoveKeys,
 } from '../../../components/controls/RowMoveControls';
-import { useDocumentSource } from '../../../hooks/useDocumentSource';
-import type {
-    ActionBinding,
-    BindingOption,
-    RowsBinding,
-    RowsColumn,
-} from '../../../systems/templateBindings';
-import { createRowId, resolveDocumentBinding } from '../../../systems/templateBindings';
+import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/templateBindings';
+import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
-import { ActionButton } from './ActionButton';
 import { useBoundDocument } from './boundDocument';
 import { moveItem } from './rowOrder';
 import {
@@ -120,17 +113,10 @@ function columnLabel(column: RowsColumn): string {
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
     const bound = useBoundDocument();
-    const { document } = useDocumentSource();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
     // Rows above their parent's rating (spec 038): the page decides, the binding names the parent.
     const limit = catalog?.parent ? node.limitByParent : undefined;
-    // Actions shown on each row (spec 037 D6, a power's Rouse check).
-    const actions = (descriptor.actions ?? [])
-        .map((key) =>
-            document ? resolveDocumentBinding(document.systemId, document.kind, key) : undefined
-        )
-        .filter((binding): binding is ActionBinding => binding?.kind === 'action');
     const suggestions = useMemo(
         () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale, limit) : []),
         [catalog, locale, limit]
@@ -202,15 +188,6 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     {columnLabel(column)}
                                 </th>
                             ))}
-                            {actions.length > 0 && (
-                                <th
-                                    scope="col"
-                                    aria-label={actions
-                                        .map((action) => translate(action.translation))
-                                        .join(', ')}
-                                    className="w-8 border-b border-border"
-                                />
-                            )}
                             {rowButtons.length > 0 && (
                                 <th
                                     scope="col"
@@ -338,20 +315,6 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                         </td>
                                     );
                                 })}
-                                {actions.length > 0 && (
-                                    <td className="whitespace-nowrap px-1 py-1 align-top">
-                                        {actions.map((action) => (
-                                            <ActionButton
-                                                key={action.key}
-                                                binding={action}
-                                                row={row}
-                                                rowName={
-                                                    typeof row.name === 'string' ? row.name : ''
-                                                }
-                                            />
-                                        ))}
-                                    </td>
-                                )}
                                 {rowButtons.length > 0 && (
                                     <td className="whitespace-nowrap px-1 py-1 align-top">
                                         {rowButtons.map((button) => (

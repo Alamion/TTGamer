@@ -55,8 +55,8 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
-import { boundValueText, useFieldFallback, useFromCatalogText } from './fieldFallback';
 import { formulaErrorMessage } from './formulaMessages';
+import { useFromCatalogText } from './fromCatalog';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
@@ -341,7 +341,7 @@ function BoundFieldCell({
 }) {
     const bound = useBoundDocument();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
-    const fallback = useFieldFallback(binding, bound?.data) ?? catalogText;
+    const fallback = catalogText;
     const stored = bound
         ? binding.adapter
             ? binding.adapter.read(bound.data)
@@ -357,20 +357,7 @@ function BoundFieldCell({
     }, [binding.syncsTitle, unnamed, setTitle, stored]);
     if (!bound) return null;
     const { readOnly } = bound;
-    if (binding.readOnly) {
-        const text = boundValueText(stored) || fallback || '';
-        return field.compact ? (
-            <div className="grid min-w-24 flex-1 basis-24 gap-0">
-                <span className={BRIEF.caption}>{field.label}</span>
-                <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
-            </div>
-        ) : (
-            <LabeledField field={field}>
-                <output className="block py-1.5 text-sm text-textPrimary">{text || '—'}</output>
-            </LabeledField>
-        );
-    }
-    // A catalog text stands in, muted, while the field is empty (spec 037 D5).
+    // A From catalog text stands in, muted, while the field is empty (spec 038 D9).
     const shown = fallback ? { ...field, placeholder: fallback } : field;
     // Document-owned images follow the portrait rules (site-relative paths allowed; the image
     // control still checks safety), not the stricter HTTPS-only template value rules.
