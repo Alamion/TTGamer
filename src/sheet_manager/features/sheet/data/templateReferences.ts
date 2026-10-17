@@ -43,9 +43,9 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-label-message'; nodeId: string; key: string }
     | { code: 'invalid-docs-link'; nodeId: string; key: string }
     | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string }
-    /** A button reads or changes a value the page does not have (spec 038); `setting` is the control. */
+    /** A button or From catalog reads or changes a value the page does not have (spec 038). */
     | {
-          code: 'unknown-button-value';
+          code: 'unknown-value';
           nodeId: string;
           key: string;
           setting: string;
@@ -297,7 +297,7 @@ export function validateTemplateReferences(
         const checkButton = (button: RowButton, prefix: string) => {
             const report = (key: string, setting: string, group: 'value' | 'visibility') =>
                 issues.push({
-                    code: 'unknown-button-value',
+                    code: 'unknown-value',
                     nodeId: node.id,
                     key,
                     setting: `${prefix}${setting}`,
@@ -331,6 +331,24 @@ export function validateTemplateReferences(
             }
         };
         if (node.type === 'button') checkButton(node, '');
+        if (node.type === 'text' && node.fromCatalog) {
+            const from = node.fromCatalog;
+            if (!catalogInScope(from.catalogId)) {
+                issues.push({ code: 'unknown-catalog', nodeId: node.id, key: from.catalogId });
+            }
+            const known = (coordinate: string) => coordinates.has(coordinate);
+            const report = (key: string) =>
+                issues.push({
+                    code: 'unknown-value',
+                    nodeId: node.id,
+                    key,
+                    setting: 'fromCatalog',
+                    group: 'value',
+                });
+            if (!known(from.entryFrom)) report(from.entryFrom);
+            const when = from.alternative ? parseFormula(from.alternative.when) : undefined;
+            if (when?.ok) unknownCoordinates(when.coords, coordinates).forEach(report);
+        }
         if (node.type === 'table' || node.type === 'primitive') {
             for (const button of node.rowButtons ?? [])
                 checkButton(button, `rowButton:${button.id}.`);

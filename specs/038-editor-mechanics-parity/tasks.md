@@ -84,19 +84,19 @@ Undo (spec US1).
 
 **Check**: a user catalog, a picker field, and text fields From catalog in both modes (spec US3).
 
-- [ ] T018 [US3] Tests first in `tests/sheet_manager/from-catalog.test.tsx`: show only (not
+- [x] T018 [US3] Tests first in `tests/sheet_manager/from-catalog.test.tsx`: show only (not
       typeable), suggest (typing replaces, clearing restores), alternative text by condition, no
       matching entry, lazy text without a flash, user catalog text columns
-- [ ] T019 [US3] Schema `fromCatalog` on text fields (`src/sheet_manager/types/template.ts`);
+- [x] T019 [US3] Schema `fromCatalog` on text fields (`src/sheet_manager/types/template.ts`);
       `CatalogBindingEntry.texts` in `src/sheet_manager/systems/catalogs.ts` (vampire clans and
       predator types declare theirs in `src/sheet_manager/systems/v5/modules/vampire/catalogs.ts`;
       user catalogs derive them from text columns in `src/sheet_manager/systems/userCatalogs.ts`)
-- [ ] T020 [US3] Generalize `decl/fieldFallback.ts` to read a field's `fromCatalog` and render it in
+- [x] T020 [US3] Generalize `decl/fieldFallback.ts` to read a field's `fromCatalog` and render it in
       `decl/fieldControls.tsx` (show only as output, suggest as placeholder)
-- [ ] T021 [US3] Editor: "From catalog" settings in `editor/panels/field/ValueSettings.tsx`
+- [x] T021 [US3] Editor: "From catalog" settings in `editor/panels/field/ValueSettings.tsx`
       (catalog, picking field, text, alternative with condition, mode); editor tests in
       `tests/sheet_manager/template-editor/from-catalog-settings.test.tsx`
-- [ ] T022 [US3] Storybook story and translations; run `yarn verify` and commit the story
+- [x] T022 [US3] Storybook story and translations; run `yarn verify` and commit the story
 
 ## User Story 4 - A tracker with marks from the other end (P2)
 

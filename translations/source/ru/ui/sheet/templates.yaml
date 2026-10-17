@@ -56,6 +56,18 @@ editor:
     rowButtonsAdd: Добавить кнопку строки
     rowButtonsRemove: 'Убрать «{label}»'
     rowButtonNew: Кнопка
+    fromCatalog: Из каталога
+    fromCatalogHint: Показывает текст записи каталога, которую называет другое значение
+    fromCatalogCatalog: Каталог
+    fromCatalogEntry: Запись по значению
+    fromCatalogEntryHint: 'Ключ значения с именем записи: клан, тип хищника'
+    fromCatalogText: Текст
+    fromCatalogAlternative: Другой текст, пока выполняется формула
+    fromCatalogAlternativeText: Другой текст
+    fromCatalogWhen: Пока
+    fromCatalogMode: Показывает
+    fromCatalogModeSuggest: Подсказку, пока читатель не напишет своё
+    fromCatalogModeShow: Только текст (вписать нельзя)
     visibleWhenKind: Условие
     visibleWhenKindValue: Значение совпадает
     visibleWhenKindFormula: Формула выполняется

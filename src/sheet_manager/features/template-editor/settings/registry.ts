@@ -94,6 +94,7 @@ export const SETTINGS = {
     failureMessage: { group: 'value', identity: true },
     availableWhen: { group: 'visibility', label: editor.buttonAvailableWhen },
     rowButtons: { group: 'value', label: editor.rowButtons },
+    fromCatalog: { group: 'value', label: editor.fromCatalog },
     // Value
     valueKey: { group: 'value', label: editor.valueKey, identity: true },
     bindingKey: { group: 'value', identity: true },

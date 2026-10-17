@@ -56,6 +56,18 @@ editor:
     rowButtonsAdd: Add a row button
     rowButtonsRemove: 'Remove {label}'
     rowButtonNew: Button
+    fromCatalog: From catalog
+    fromCatalogHint: Shows a text of the catalog entry another value names
+    fromCatalogCatalog: Catalog
+    fromCatalogEntry: Entry named by
+    fromCatalogEntryHint: 'The value key holding the name: a clan, a predator type'
+    fromCatalogText: Text
+    fromCatalogAlternative: Another text while a formula holds
+    fromCatalogAlternativeText: Other text
+    fromCatalogWhen: While
+    fromCatalogMode: Shows
+    fromCatalogModeSuggest: A suggestion until the reader writes their own
+    fromCatalogModeShow: The text only (readers cannot type)
     visibleWhenKind: Condition
     visibleWhenKindValue: A value matches
     visibleWhenKindFormula: A formula holds

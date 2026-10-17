@@ -501,6 +501,7 @@ const catalogFields = story(
 export const SAMPLE_CATALOG_ID = 'user-catalog-storybk1';
 const SAMPLE_POWER = 'c-power001';
 const SAMPLE_CURSED = 'c-cursed01';
+const SAMPLE_LORE = 'c-lore0001';
 
 export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
     id: SAMPLE_CATALOG_ID,
@@ -509,17 +510,26 @@ export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
     columns: [
         { id: SAMPLE_POWER, name: 'Power', type: 'number' },
         { id: SAMPLE_CURSED, name: 'Cursed', type: 'toggle' },
+        { id: SAMPLE_LORE, name: 'Lore', type: 'text' },
     ],
     entries: [
         {
             id: 'e-bonefl01',
             name: 'Bone Flute',
-            values: { [SAMPLE_POWER]: 2, [SAMPLE_CURSED]: false },
+            values: {
+                [SAMPLE_POWER]: 2,
+                [SAMPLE_CURSED]: false,
+                [SAMPLE_LORE]: 'Plays the songs of the dead.',
+            },
         },
         {
             id: 'e-mirror01',
             name: 'Black Mirror',
-            values: { [SAMPLE_POWER]: 4, [SAMPLE_CURSED]: true },
+            values: {
+                [SAMPLE_POWER]: 4,
+                [SAMPLE_CURSED]: true,
+                [SAMPLE_LORE]: 'Shows the room as it will be.',
+            },
         },
         { id: 'e-candle01', name: 'Grave Candle', values: { [SAMPLE_POWER]: 1 } },
     ],
@@ -549,6 +559,28 @@ const userCatalogFields = story(
             },
             { id: 'relic-power', type: 'number', label: 'Power' },
             { id: 'relic-cursed', type: 'toggle', label: 'Cursed' },
+            {
+                id: 'relic-lore',
+                type: 'text',
+                label: 'Lore (From catalog, shown)',
+                fromCatalog: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    entryFrom: 'relic-pick',
+                    text: SAMPLE_LORE,
+                    mode: 'show',
+                },
+            },
+            {
+                id: 'relic-note',
+                type: 'text',
+                label: 'Note (From catalog, suggested)',
+                fromCatalog: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    entryFrom: 'relic-pick',
+                    text: SAMPLE_LORE,
+                    mode: 'suggest',
+                },
+            },
         ]),
         {
             id: 'relic-list',

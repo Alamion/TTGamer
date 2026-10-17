@@ -228,6 +228,9 @@ export function userCatalogBinding(
             return typeof value === 'string' ? value : undefined;
         },
         entryList: () => undefined,
+        texts: catalog.columns
+            .filter(({ type }) => type === 'text')
+            .map(({ id, name: label }) => ({ key: id, label })),
     };
     bindings.set(catalog, binding);
     return binding;

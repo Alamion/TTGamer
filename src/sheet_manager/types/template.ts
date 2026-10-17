@@ -141,9 +141,27 @@ const columnWidthsShape = {
         .optional(),
 };
 
+/**
+ * A text field showing a text of a catalog entry (spec 038 D9): the entry named by the value at
+ * `entryFrom`; `alternative` replaces the text while its formula holds. `show` displays it and
+ * stores nothing; `suggest` shows it while the field is empty.
+ */
+export const FromCatalogSchema = z.object({
+    catalogId: templateIdentifierSchema,
+    entryFrom: templateIdentifierSchema,
+    text: z.string().min(1).max(64),
+    alternative: z
+        .object({ text: z.string().min(1).max(64), when: z.string().min(1).max(500) })
+        .optional(),
+    mode: z.enum(['show', 'suggest']).default('suggest'),
+});
+
+export type FromCatalog = z.infer<typeof FromCatalogSchema>;
+
 const TextFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('text'),
+    fromCatalog: FromCatalogSchema.optional(),
     multiline: z.boolean().default(false),
     placeholder: z.string().max(120).optional(),
     placeholderMessage: LabelMessageSchema.optional(),

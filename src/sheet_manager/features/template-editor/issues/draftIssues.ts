@@ -116,7 +116,7 @@ function referenceIssue(
                 message: interpolate(messages.invalidDocsLink, { id: issue.key }),
                 setting: at('visibility', 'docsPath'),
             };
-        case 'unknown-button-value':
+        case 'unknown-value':
             return {
                 message: interpolate(messages.unknownCoordinate, { id: issue.key || '—' }),
                 setting: at(issue.group, issue.setting),

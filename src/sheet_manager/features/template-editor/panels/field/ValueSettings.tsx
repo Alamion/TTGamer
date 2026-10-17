@@ -4,6 +4,7 @@ import { settingLabel } from '../../settings/registry';
 import { CatalogBindingEditor } from '../CatalogBindingEditor';
 import { ToggleRow } from '../LayoutControls';
 import { TrackerSourceSelect, ValueSourceSelect } from '../SourceControls';
+import { FromCatalogSetting } from './FromCatalogSetting';
 import { ReferenceKindsControl } from './ReferenceKindsControl';
 import { editor, t } from './shared';
 import type { FieldContext } from './types';
@@ -74,6 +75,13 @@ export function valueSettings({
                         />
                     )}
                 </>
+            )}
+            {field.type === 'text' && !itemOfList && !several && (
+                <FromCatalogSetting
+                    value={field.fromCatalog}
+                    setting={key('fromCatalog')}
+                    onChange={(fromCatalog) => update({ fromCatalog })}
+                />
             )}
             {field.type === 'reference' && (
                 <>

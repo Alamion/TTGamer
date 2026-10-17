@@ -1,6 +1,12 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { anyCatalog, type CatalogBindingEntry, defineCatalog, textDetail } from '../../../catalogs';
+import {
+    anyCatalog,
+    type CatalogBindingEntry,
+    defineCatalog,
+    textDetail,
+    withTexts,
+} from '../../../catalogs';
 import {
     VAMPIRE_CLAN_ENTRIES,
     VAMPIRE_DISCIPLINE_ENTRIES,
@@ -10,6 +16,10 @@ import {
 } from './catalogEntries';
 
 const columns = uiMessages.sheet.v5Vampire.catalogColumns;
+
+/** Texts From catalog fields can show; all of them load on demand (design D9 of spec 037). */
+const lazy = (...keys: Array<keyof typeof columns>) =>
+    keys.map((key) => ({ key, label: columns[key], lazy: true as const }));
 
 /**
  * Vampire: the Masquerade 5e catalogs (spec 037). Names follow the books; summaries, banes,
@@ -29,15 +39,20 @@ const DISCIPLINE_NAME_BY_ID: Readonly<Record<string, string>> = Object.fromEntri
     VAMPIRE_DISCIPLINE_ENTRIES.map(({ id, name }) => [id, name])
 );
 
-export const VAMPIRE_CLANS_CATALOG = defineCatalog(
-    VAMPIRE_CATALOG_IDS.clans,
-    VAMPIRE_CLAN_ENTRIES.map((entry) => ({
-        ...entry,
-        disciplineNames: entry.disciplines.map((id) => DISCIPLINE_NAME_BY_ID[id] ?? id).join(', '),
-    })),
-    [textDetail('name', 'Name')],
-    undefined,
-    { columns: [{ key: 'disciplineNames', header: columns.disciplines }] }
+export const VAMPIRE_CLANS_CATALOG = withTexts(
+    defineCatalog(
+        VAMPIRE_CATALOG_IDS.clans,
+        VAMPIRE_CLAN_ENTRIES.map((entry) => ({
+            ...entry,
+            disciplineNames: entry.disciplines
+                .map((id) => DISCIPLINE_NAME_BY_ID[id] ?? id)
+                .join(', '),
+        })),
+        [textDetail('name', 'Name')],
+        undefined,
+        { columns: [{ key: 'disciplineNames', header: columns.disciplines }] }
+    ),
+    lazy('summary', 'bane', 'variantBane', 'compulsion')
 );
 
 export const VAMPIRE_DISCIPLINES_CATALOG = defineCatalog(
@@ -99,10 +114,11 @@ export const VAMPIRE_RITUALS_CATALOG = defineCatalog(
     }
 );
 
-export const VAMPIRE_PREDATOR_TYPES_CATALOG = defineCatalog(
-    VAMPIRE_CATALOG_IDS.predatorTypes,
-    VAMPIRE_PREDATOR_TYPE_ENTRIES,
-    [textDetail('name', 'Name')]
+export const VAMPIRE_PREDATOR_TYPES_CATALOG = withTexts(
+    defineCatalog(VAMPIRE_CATALOG_IDS.predatorTypes, VAMPIRE_PREDATOR_TYPE_ENTRIES, [
+        textDetail('name', 'Name'),
+    ]),
+    lazy('summary', 'grants')
 );
 
 export const vampireCatalogs: readonly CatalogBindingEntry[] = [

@@ -56,7 +56,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
-import { boundValueText, useFieldFallback } from './fieldFallback';
+import { boundValueText, useFieldFallback, useFromCatalogText } from './fieldFallback';
 import { formulaErrorMessage } from './formulaMessages';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
@@ -106,7 +106,7 @@ function spanClass(span: number, columns: number, proportional: boolean): string
 }
 
 function FieldCell({
-    field,
+    field: placed,
     pageApi,
     value,
 }: {
@@ -115,6 +115,10 @@ function FieldCell({
     value: unknown;
 }) {
     const template = pageApi.template!;
+    const catalogText = useFromCatalogText(placed, pageApi);
+    // A From catalog text stands in, muted, while the field is empty (spec 038 D9).
+    const field: TemplateField =
+        placed.type === 'text' && catalogText ? { ...placed, placeholder: catalogText } : placed;
     // Feature 005 review: a field whose shared value key matches a document data address
     // operates on the document data — the interface is identical to custom (value-bag) fields.
     const bridged = resolveDataBindingByCoordinate(
@@ -122,8 +126,11 @@ function FieldCell({
         template.documentKind,
         fieldValueKey(field)
     );
+    if (field.type === 'text' && field.fromCatalog?.mode === 'show') {
+        return <CatalogTextOutput field={field} text={catalogText} />;
+    }
     if (bridged?.kind === 'field') {
-        return <BoundFieldCell field={field} binding={bridged} />;
+        return <BoundFieldCell field={field} binding={bridged} catalogText={catalogText} />;
     }
     if (bridged) {
         return (
@@ -266,10 +273,35 @@ function FieldCell({
  * its own control and presentation (multiline, placeholder, hidden label); only the storage is
  * the document instead of the template value bag.
  */
-function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
+/** A From catalog text shown, never stored (spec 038 D9, mode `show`). */
+function CatalogTextOutput({ field, text }: { field: TemplateField; text: string | undefined }) {
+    return field.compact ? (
+        <div className="grid min-w-24 flex-1 basis-24 gap-0">
+            <span className={BRIEF.caption}>{field.label}</span>
+            <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
+        </div>
+    ) : (
+        <LabeledField field={field}>
+            <output className="block whitespace-pre-line py-1.5 text-sm text-textPrimary">
+                {text || '—'}
+            </output>
+        </LabeledField>
+    );
+}
+
+function BoundFieldCell({
+    field,
+    binding,
+    catalogText,
+}: {
+    field: TemplateField;
+    binding: FieldBinding;
+    /** A From catalog suggestion shown while the field is empty (spec 038). */
+    catalogText?: string;
+}) {
     const bound = useBoundDocument();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
-    const fallback = useFieldFallback(binding, bound?.data);
+    const fallback = useFieldFallback(binding, bound?.data) ?? catalogText;
     const stored = bound
         ? binding.adapter
             ? binding.adapter.read(bound.data)

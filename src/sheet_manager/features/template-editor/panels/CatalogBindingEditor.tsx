@@ -47,7 +47,7 @@ interface CatalogBindingEditorProps {
  * The catalogs a draft may bind, as `<option>`s grouped by owner (spec 015): this setting, its
  * ruleset, then the system's shipped catalogs. A bound catalog outside that scope stays listed.
  */
-function useCatalogOptions(bound: string | undefined) {
+export function useCatalogOptions(bound: string | undefined) {
     const { systemId, documentKind, settingId } = useEditorModel();
     const t = (descriptor: { message: string }) => translate(descriptor);
     // Re-list when the user's catalogs change (created or renamed in the library).

@@ -74,6 +74,15 @@ The editor always shows conditional elements, hatched, and says whether the cond
 
 A **Choice** field can take its options from one of the game's catalogs — weapons, merits, species. Choosing an entry can fill other fields of the page with the entry's details (damage, cost, description): pick which detail goes to which field. The filled values are copies; readers can still change them.
 
+### Text from a catalog \{#from-catalog}
+
+A **Text** field can show a text of a catalog entry: turn on **From catalog**, pick the **Catalog**, name the value that holds the entry in **Entry named by** (a choice bound to the catalog, or a text with the entry's name in either language), and pick the **Text** — a clan's bane, a predator type's summary, or a text column of your own catalog. **Another text while a formula holds** switches to a second text, for example the variant bane while a toggle is on. **Shows** picks how:
+
+- **A suggestion until the reader writes their own**: the text stands in the empty field; typing replaces it, and clearing the field brings it back;
+- **The text only**: the field shows the text and readers cannot type into it; nothing is stored.
+
+A name that matches no entry shows nothing.
+
 ### Your own catalogs \{#your-catalogs}
 
 Make your own catalogs in the [library](./library.mdx): **New catalog** on a setting, or on a ruleset when every setting on those rules should share it. A catalog is a small table: every entry has a **Name** and a value in each of your columns — **Text**, **Number**, or **Toggle**. Add entries one by one, or **Paste rows** copied from a spreadsheet: one entry per line, the name first, then the columns in order. Changing a column's type warns before values that do not fit are emptied.
