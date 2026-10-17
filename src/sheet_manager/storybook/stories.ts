@@ -194,6 +194,9 @@ const containers = story(
                 text('field-when-on', 'Field shown only while the toggle is on', {
                     visibleWhen: { coordinate: 'show-extra', equals: true },
                 }),
+                text('field-when-formula', 'Field shown while a formula holds (toggle on)', {
+                    visibleWhen: { formula: 'and(show-extra, 1 + 1 = 2)' },
+                }),
             ],
         },
         {
@@ -422,6 +425,18 @@ const fields = story(
                     formula: 'max(1, rating-dots) * 2',
                     prefix: '×',
                     suffix: 'm',
+                },
+                {
+                    id: 'formula-rounded',
+                    type: 'formula',
+                    label: 'Rounded up: half of Rating: dots',
+                    formula: 'ceil(rating-dots / 2)',
+                },
+                {
+                    id: 'formula-text',
+                    type: 'formula',
+                    label: 'Text result',
+                    formula: 'if(rating-dots >= 3, "Strong (" & rating-dots & ")", "Weak")',
                 },
                 {
                     id: 'formula-division',

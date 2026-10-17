@@ -12,6 +12,7 @@ import type { SystemListShape } from '../../../systems/templateBindings';
 import {
     boundWriteUpdate,
     createListEntry,
+    listDocumentBindings,
     readBoundNumber,
     readDataPath,
     resolveDocumentBinding,
@@ -22,6 +23,7 @@ import {
     collectListNodes,
     collectTemplateFields,
     fieldValueKey,
+    isFormulaCondition,
     listIsNamed,
     listItemField,
     walkTemplateNodes,
@@ -41,11 +43,17 @@ import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import {
     evaluateFormula,
+    evaluateFormulaValue,
     type Expr,
     type FormulaEvaluationError,
     type FormulaEvaluationResult,
+    type FormulaScope,
+    formulaTruthy,
+    type FormulaValue,
+    type FormulaValueResult,
     parseFormula,
 } from './formula';
+import { listRating, ratedEntries } from './listRating';
 import { moveTableRow } from './rowOrder';
 
 export type TemplatePageStatus = 'none' | 'ready' | 'missing';
@@ -80,7 +88,7 @@ export interface FormulaState {
     /** Computed result for a formula field; error surfaces as a labeled state (FR-15). */
     results: ReadonlyMap<
         string,
-        | { state: 'ok'; value: number }
+        | { state: 'ok'; value: FormulaValue }
         | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
     >;
     /** Per-node computed maxima for `maxFrom` (FR-12); degraded when the source is unavailable. */
@@ -89,7 +97,17 @@ export interface FormulaState {
     minima: ReadonlyMap<string, number>;
     /** Per-primitive computed minima of a pool's maximum, `maxMinFrom` (spec 020). */
     maxMinima: ReadonlyMap<string, number>;
+    /**
+     * Any formula against the page's values and computed results (spec 038): display conditions,
+     * buttons, From catalog conditions; `row` reads a table row's cells.
+     */
+    evaluate: (source: string, scope?: Pick<FormulaScope, 'row'>) => FormulaRun;
 }
+
+/** A formula run outside the formula fields: its value, or why it has none. */
+export type FormulaRun = FormulaValueResult | { ok: false; error: 'parse'; coordinate?: undefined };
+
+const NO_TEMPLATE: FormulaRun = { ok: false, error: 'unknown-coordinate' };
 
 export interface SystemListRuntime {
     descriptor: DocumentBindingDescriptor;
@@ -174,6 +192,32 @@ function readRows(value: unknown): Record<string, Record<string, unknown>> {
         !Array.isArray(value)
         ? (value as Record<string, Record<string, unknown>>)
         : {};
+}
+
+/**
+ * `rating(list, "Name")` in a formula (spec 038 D3): a template list by its value key, or a game's
+ * built-in list by its data key; `undefined` when neither exists.
+ */
+function ratingOf(
+    template: CustomTemplate,
+    values: TemplatePageValues,
+    documentData: Readonly<Record<string, unknown>> | undefined,
+    coordinate: string,
+    name: string
+): number | undefined {
+    const list = collectListNodes(template).find(
+        (node) => (node.valueKey ?? node.id) === coordinate && !node.bindingKey
+    );
+    if (list) {
+        const catalog = list.catalog ? getCatalogBinding(list.catalog.catalogId) : undefined;
+        return listRating(ratedEntries(values[coordinate]), name, catalog);
+    }
+    const binding = listDocumentBindings(template.systemId, template.documentKind).find(
+        (candidate) => candidate.kind === 'list' && candidate.dataKey === coordinate
+    );
+    if (binding?.kind !== 'list') return undefined;
+    const catalog = binding.catalog ? getCatalogBinding(binding.catalog.catalogId) : undefined;
+    return listRating(ratedEntries(documentData?.[binding.dataKey]), name, catalog);
 }
 
 export interface UseTemplatePageOptions {
@@ -372,46 +416,6 @@ export function useTemplatePage(
         [bound, currentDocumentId, fieldCoords, readOnly, template, updateTemplateValues]
     );
 
-    const isVisible = useCallback(
-        (condition: VisibleWhen, nodeId: string) => {
-            if (!template) return true;
-            const binding = resolveWritableBinding(
-                template.systemId,
-                template.documentKind,
-                condition.coordinate
-            );
-            let value: unknown;
-            if (binding?.kind === 'field') {
-                // Computed fields (spec 037 D4) read through their adapter.
-                value = binding.adapter
-                    ? binding.adapter.read(documentData)
-                    : readDataPath(documentData, binding.path);
-            } else if (binding?.kind === 'resource' && documentData) {
-                value = documentData[binding.dataKey];
-            } else if (binding) {
-                const read = readBoundNumber(
-                    template.systemId,
-                    template.documentKind,
-                    documentData ?? {},
-                    condition.coordinate
-                );
-                value = read.bound ? read.value : undefined;
-            } else if ([...fieldCoords.values()].includes(condition.coordinate)) {
-                value = values[condition.coordinate];
-            } else {
-                reportSheetIssue({
-                    code: 'binding-unresolved',
-                    message: 'Render condition references an unknown coordinate; node hidden',
-                    details: { templateId: template.id, nodeId, coordinate: condition.coordinate },
-                });
-                return false;
-            }
-            const matches = value === condition.equals;
-            return condition.not ? !matches : matches;
-        },
-        [documentData, fieldCoords, template, values]
-    );
-
     const previewSource = source.preview;
     const openDocument = useCallback(
         (documentId: string) => {
@@ -425,19 +429,24 @@ export function useTemplatePage(
     const formulaState = useMemo<FormulaState>(() => {
         const results = new Map<
             string,
-            | { state: 'ok'; value: number }
+            | { state: 'ok'; value: FormulaValue }
             | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
         >();
         const maxima = new Map<string, MaxState>();
         const minima = new Map<string, number>();
         const maxMinima = new Map<string, number>();
-        if (!template) return { results, maxima, minima, maxMinima };
+        if (!template) {
+            return { results, maxima, minima, maxMinima, evaluate: () => NO_TEMPLATE };
+        }
 
-        // Base numeric resolver: bag values + system-bound coordinates (undifferentiated).
-        const resolveBase = (path: string): number | undefined => {
-            const bagNumber = (key: string, part?: 'current' | 'max'): number | undefined => {
+        // Base resolver: bag values + system-bound coordinates (undifferentiated).
+        const resolveBase = (path: string): FormulaValue | undefined => {
+            const bagNumber = (key: string, part?: 'current' | 'max'): FormulaValue | undefined => {
                 const stored = values[key];
                 if (typeof stored === 'number') return part === 'max' ? undefined : stored;
+                // Texts and choices compare as text (spec 038); toggles read as 1 or 0.
+                if (typeof stored === 'string') return part ? undefined : stored;
+                if (typeof stored === 'boolean') return part ? undefined : stored ? 1 : 0;
                 if (typeof stored === 'object' && stored !== null && 'current' in stored) {
                     const pool = stored as { current: number; max: number };
                     if (part === 'max') return pool.max;
@@ -457,12 +466,27 @@ export function useTemplatePage(
                     path
                 );
                 if (bound.bound) return bound.value;
+                const text = resolveWritableBinding(template.systemId, template.documentKind, path);
+                if (
+                    text?.kind === 'field' &&
+                    (text.valueType === 'string' || text.valueType === 'enum')
+                ) {
+                    const stored = text.adapter
+                        ? text.adapter.read(documentData)
+                        : readDataPath(documentData, text.path);
+                    return typeof stored === 'string' ? stored : '';
+                }
             }
             const [head, part] = path.split('.');
             if (part === 'current' || part === 'max') {
                 return bagNumber(head, part as 'current' | 'max');
             }
             return bagNumber(path);
+        };
+
+        const scope: FormulaScope = {
+            rating: (coordinate, name) =>
+                ratingOf(template, values, documentData, coordinate, name),
         };
 
         // Formula fields first, evaluated in dependency order with a cycle guard.
@@ -509,17 +533,21 @@ export function useTemplatePage(
                     progressed = true;
                     continue;
                 }
-                const resolution = evaluateFormula(entry.expr, (path) => {
-                    if (path === entry.coordinate) return undefined; // self-reference → unknown
-                    const computedEntry = formulaFields.find(
-                        (candidate) => candidate.coordinate === path
-                    );
-                    if (computedEntry && computed.has(path)) {
-                        const value = results.get(path);
-                        return value && value.state === 'ok' ? value.value : undefined;
-                    }
-                    return resolveBase(path);
-                });
+                const resolution = evaluateFormulaValue(
+                    entry.expr,
+                    (path) => {
+                        if (path === entry.coordinate) return undefined; // self-reference → unknown
+                        const computedEntry = formulaFields.find(
+                            (candidate) => candidate.coordinate === path
+                        );
+                        if (computedEntry && computed.has(path)) {
+                            const value = results.get(path);
+                            return value && value.state === 'ok' ? value.value : undefined;
+                        }
+                        return resolveBase(path);
+                    },
+                    scope
+                );
                 results.set(
                     entry.coordinate,
                     resolution.ok
@@ -561,13 +589,17 @@ export function useTemplatePage(
                 });
                 return { ok: false, error: 'parse' };
             }
-            const resolution = evaluateFormula(parsed.expr, (path) => {
-                if (computed.has(path)) {
-                    const value = results.get(path);
-                    return value && value.state === 'ok' ? value.value : undefined;
-                }
-                return resolveBase(path);
-            });
+            const resolution = evaluateFormula(
+                parsed.expr,
+                (path) => {
+                    if (computed.has(path)) {
+                        const value = results.get(path);
+                        return value && value.state === 'ok' ? value.value : undefined;
+                    }
+                    return resolveBase(path);
+                },
+                scope
+            );
             return resolution;
         };
         const maxStateOf = (resolution: FormulaResolution): MaxState =>
@@ -599,8 +631,85 @@ export function useTemplatePage(
             }
         });
 
-        return { results, maxima, minima, maxMinima };
+        const evaluate = (source: string, extra: Pick<FormulaScope, 'row'> = {}): FormulaRun => {
+            const parsed = parsedFormula(source);
+            if (!parsed.ok) return { ok: false, error: 'parse' };
+            return evaluateFormulaValue(
+                parsed.expr,
+                (path) => {
+                    if (computed.has(path)) {
+                        const value = results.get(path);
+                        return value && value.state === 'ok' ? value.value : undefined;
+                    }
+                    return resolveBase(path);
+                },
+                { ...scope, ...extra }
+            );
+        };
+
+        return { results, maxima, minima, maxMinima, evaluate };
     }, [template, values, documentData]);
+
+    const isVisible = useCallback(
+        (condition: VisibleWhen, nodeId: string) => {
+            if (!template) return true;
+            if (isFormulaCondition(condition)) {
+                const result = formulaState.evaluate(condition.formula);
+                if (result.ok) return formulaTruthy(result.value);
+                // A field nobody filled in yet hides the node quietly, like an unmatched value.
+                const empty =
+                    result.error === 'unknown-coordinate' &&
+                    result.coordinate !== undefined &&
+                    ([...fieldCoords.values()].includes(result.coordinate) ||
+                        resolveWritableBinding(
+                            template.systemId,
+                            template.documentKind,
+                            result.coordinate
+                        ) !== undefined);
+                if (empty) return false;
+                reportSheetIssue({
+                    code: 'formula-error',
+                    message: 'Display condition formula cannot be computed; node hidden',
+                    details: { templateId: template.id, nodeId, formula: condition.formula },
+                });
+                return false;
+            }
+            const binding = resolveWritableBinding(
+                template.systemId,
+                template.documentKind,
+                condition.coordinate
+            );
+            let value: unknown;
+            if (binding?.kind === 'field') {
+                // Computed fields (spec 037 D4) read through their adapter.
+                value = binding.adapter
+                    ? binding.adapter.read(documentData)
+                    : readDataPath(documentData, binding.path);
+            } else if (binding?.kind === 'resource' && documentData) {
+                value = documentData[binding.dataKey];
+            } else if (binding) {
+                const read = readBoundNumber(
+                    template.systemId,
+                    template.documentKind,
+                    documentData ?? {},
+                    condition.coordinate
+                );
+                value = read.bound ? read.value : undefined;
+            } else if ([...fieldCoords.values()].includes(condition.coordinate)) {
+                value = values[condition.coordinate];
+            } else {
+                reportSheetIssue({
+                    code: 'binding-unresolved',
+                    message: 'Render condition references an unknown coordinate; node hidden',
+                    details: { templateId: template.id, nodeId, coordinate: condition.coordinate },
+                });
+                return false;
+            }
+            const matches = value === condition.equals;
+            return condition.not ? !matches : matches;
+        },
+        [documentData, fieldCoords, formulaState, template, values]
+    );
 
     const resolveSystemList = useCallback(
         (list: ListNode): SystemListRuntime | undefined => {

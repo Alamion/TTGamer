@@ -11,6 +11,7 @@ import {
 import type { CustomTemplate } from '../../../types/template';
 import {
     fieldValueKey,
+    isFormulaCondition,
     isTemplateField,
     listIsNamed,
     listItemField,
@@ -100,6 +101,39 @@ export function listTemplateNumericCoordinates(
     });
 }
 
+/**
+ * Everything a formula can read (spec 038): the numeric space, plus texts, choices, toggles, and
+ * lists (`rating(list, "Name")`) of the template and of the game's built-in data.
+ */
+export function listTemplateFormulaCoordinates(
+    template: CustomTemplate
+): readonly NumericCoordinateOption[] {
+    const options: NumericCoordinateOption[] = [...listTemplateNumericCoordinates(template)];
+    for (const binding of listDocumentBindings(template.systemId, template.documentKind)) {
+        if (
+            binding.kind === 'field' &&
+            (binding.valueType === 'string' || binding.valueType === 'enum')
+        ) {
+            options.push({ coordinate: binding.coordinate, label: binding.label });
+        } else if (binding.kind === 'list') {
+            options.push({ coordinate: binding.dataKey, label: binding.label });
+        }
+    }
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'text' || node.type === 'select' || node.type === 'toggle') {
+            options.push({ coordinate: fieldValueKey(node), label: node.label });
+        } else if (node.type === 'list' && !node.bindingKey) {
+            options.push({ coordinate: listValueKey(node), label: node.title ?? node.id });
+        }
+    });
+    const seen = new Set<string>();
+    return options.filter(({ coordinate }) => {
+        if (seen.has(coordinate)) return false;
+        seen.add(coordinate);
+        return true;
+    });
+}
+
 export function validateTemplateReferences(
     template: CustomTemplate,
     { referenceScope = true }: TemplateReferenceOptions = {}
@@ -115,7 +149,7 @@ export function validateTemplateReferences(
         ])
     );
     const coordinates = new Set(
-        listTemplateNumericCoordinates(template).map(({ coordinate }) => coordinate)
+        listTemplateFormulaCoordinates(template).map(({ coordinate }) => coordinate)
     );
     const fieldIds = new Set<string>();
     // Storage coordinates a fill or render condition may address: field ids and value keys,
@@ -140,7 +174,7 @@ export function validateTemplateReferences(
     const checkCoordinates = (
         nodeId: string,
         source: string | undefined,
-        setting: FormulaSetting
+        setting: CoordinateSetting
     ) => {
         if (!source) return;
         const parsed = parseFormula(source);
@@ -241,7 +275,9 @@ export function validateTemplateReferences(
         ) {
             issues.push({ code: 'invalid-docs-link', nodeId: node.id, key: node.docsPath });
         }
-        if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
+        if (node.visibleWhen && isFormulaCondition(node.visibleWhen)) {
+            checkCoordinates(node.id, node.visibleWhen.formula, 'visibleWhen');
+        } else if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
             issues.push({
                 code: 'unknown-coordinate',
                 nodeId: node.id,

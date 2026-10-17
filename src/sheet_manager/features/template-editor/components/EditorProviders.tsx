@@ -6,7 +6,7 @@ import {
     collectTemplateNodes,
     TEMPLATE_LIMITS,
 } from '../../../types/template';
-import { listTemplateNumericCoordinates } from '../../sheet/data/templateReferences';
+import { listTemplateFormulaCoordinates } from '../../sheet/data/templateReferences';
 import type { EditorDraft } from '../model/types';
 import { createEditorActions } from '../session/actions';
 import {
@@ -87,7 +87,7 @@ export function EditorProviders({
         [fillTargetsKey]
     );
     const coordinatesKey = JSON.stringify(
-        listTemplateNumericCoordinates(draft).map(({ coordinate, label }) => [coordinate, label])
+        listTemplateFormulaCoordinates(draft).map(({ coordinate, label }) => [coordinate, label])
     );
     const coordinates = useMemo(
         () => JSON.parse(coordinatesKey) as Array<[string, string]>,

@@ -13,31 +13,31 @@ code-only mechanics. Paths are relative to the repository root; `decl/` stands f
 **Check**: a user template with derived values for each new function, a text result, a list lookup,
 and a card shown by a formula condition (spec US2).
 
-- [ ] T001 [US2] Tests first in `tests/sheet_manager/formula-functions.test.ts`: `ceil`, `floor`,
+- [x] T001 [US2] Tests first in `tests/sheet_manager/formula-functions.test.ts`: `ceil`, `floor`,
       `round`, `abs`; `< <= > >= = !=` giving 1/0; `and`, `or`, `not`; `if`; string literals and
       `&`; arithmetic on text → `non-numeric`; `row.<column>` with a row scope; parse errors with
       positions; every formula of the existing formula tests keeps its result
-- [ ] T002 [US2] Extend the tokenizer, parser, `Expr`, `collectDependencies`, and `evaluateFormula`
+- [x] T002 [US2] Extend the tokenizer, parser, `Expr`, `collectDependencies`, and `evaluateFormula`
       in `decl/formula.ts` (results `number | string`; `row.*` resolved through an optional row
       resolver; `rating` as a call whose first argument is a coordinate)
-- [ ] T003 [US2] Tests first in `tests/sheet_manager/formula-rating.test.ts`: `rating()` over a
+- [x] T003 [US2] Tests first in `tests/sheet_manager/formula-rating.test.ts`: `rating()` over a
       template list and a built-in list, matching any catalog name (en, ru, book name), 0 when
-      absent, summing duplicates
-- [ ] T004 [US2] Implement `rating()` resolution in `decl/hooks.ts` (formula pass), generalizing the
+      absent, the highest of duplicates
+- [x] T004 [US2] Implement `rating()` resolution in `decl/hooks.ts` (formula pass), generalizing the
       name matching of `src/sheet_manager/systems/v5/modules/vampire/disciplineDots.ts` into
       `decl/listRating.ts` (system-free: catalog names through `getCatalogBinding`)
-- [ ] T005 [US2] Formula field text results: `FormulaResolution` carries strings; formula fields
+- [x] T005 [US2] Formula field text results: `FormulaResolution` carries strings; formula fields
       render text; add `textMessages` (literal → message) to the formula schema in
       `src/sheet_manager/types/template.ts` and translate in `decl/fieldControls.tsx`
-- [ ] T006 [US2] Tests first in `tests/sheet_manager/visible-when-formula.test.tsx`, then add the
+- [x] T006 [US2] Tests first in `tests/sheet_manager/visible-when-formula.test.tsx`, then add the
       `{formula}` variant to `VisibleWhenSchema` (`src/sheet_manager/types/template.ts`) and to
       `isVisible` in `decl/hooks.ts` (shown while the result is non-zero / non-empty; errors hide
       the node and report to `diagnostics.ts`)
-- [ ] T007 [US2] Editor: formula help and checks for the new functions in `decl/formulaMessages.ts`
+- [x] T007 [US2] Editor: formula help and checks for the new functions in `decl/formulaMessages.ts`
       and `src/sheet_manager/features/sheet/data/formulaCheck.ts`; "Show when" offers "Formula" in
       `editor/panels/LayoutControls.tsx`; text-result translations are not editable for user
       templates; editor tests in `tests/sheet_manager/template-editor/visible-when.test.tsx`
-- [ ] T008 [US2] Storybook: a derived-value story with a text result and a formula-conditioned card
+- [x] T008 [US2] Storybook: a derived-value story with a text result and a formula-conditioned card
       in `docs/dev/storybook/template-elements.mdx` (its story data under
       `src/sheet_manager/features/sheet/storybook/`); translations for new editor strings in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`

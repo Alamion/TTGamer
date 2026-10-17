@@ -19,7 +19,12 @@ primitives:
     removePreset: Удалить пресет
     degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
-    visibleWhen: Показывать только при совпадении значения
+    visibleWhen: Показывать только при условии
+    visibleWhenKind: Условие
+    visibleWhenKindValue: Значение совпадает
+    visibleWhenKindFormula: Формула выполняется
+    visibleWhenFormula: Формула
+    visibleWhenFormulaHint: Показывается, пока результат не 0 и не пустой
     visibleWhenCoordinate: Ключ значения
     visibleWhenOperator: Сравнение
     visibleWhenValue: Значение
@@ -208,6 +213,7 @@ editor:
     sampleNote: Пробные данные — точки, клетки и текст, изменённые здесь, не попадают в ваши документы.
     noSampleDocument: Тип документа этого шаблона недоступен, поэтому страницу нельзя показать.
     hiddenByCondition: 'Скрыто условием: показывается, только когда «{coordinate}» = {value}. Сейчас читатель этого не видит.'
+    hiddenByFormula: 'Скрыто условием: показывается, только пока выполняется «{formula}». Сейчас читатель этого не видит.'
     conditionMet: Условие выполнено
     conditionNotMet: Условие не выполнено
     elementIssue: У этого элемента есть проблема

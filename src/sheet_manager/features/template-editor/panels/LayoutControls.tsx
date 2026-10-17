@@ -4,9 +4,10 @@ import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { useEffect, useRef } from 'react';
 
-import type { VisibleWhen } from '../../../types/template';
-import { TEMPLATE_LIMITS } from '../../../types/template';
+import type { VisibleWhen, VisibleWhenValue } from '../../../types/template';
+import { isFormulaCondition, TEMPLATE_LIMITS } from '../../../types/template';
 import { EditorHelp } from '../components/EditorHelp';
+import { FormulaField } from '../settings/FormulaField';
 import { inputClasses } from '../settings/inputClasses';
 import { KeyField } from '../settings/KeyField';
 import { useMixedSetting } from '../settings/mixedSettings';
@@ -264,7 +265,8 @@ export function ColumnLayoutControl({
 
 /**
  * Render condition: the element shows only while a stored value equals (or differs from) the
- * given value. Numbers and true/false are stored typed; everything else as text.
+ * given value — numbers and true/false are stored typed, everything else as text — or while a
+ * formula holds (spec 038 D4).
  */
 export function VisibilityControl({
     onChange,
@@ -273,7 +275,7 @@ export function VisibilityControl({
     onChange: (next: VisibleWhen | undefined) => void;
     value: VisibleWhen | undefined;
 }) {
-    const typed = (raw: string): VisibleWhen['equals'] =>
+    const typed = (raw: string): VisibleWhenValue['equals'] =>
         raw === 'true'
             ? true
             : raw === 'false'
@@ -295,46 +297,92 @@ export function VisibilityControl({
             </div>
             {value && (
                 <div className="grid gap-2 pl-5">
-                    <KeyField
-                        label={t(editor.visibleWhenCoordinate)}
-                        setting="visibleWhen"
-                        value={value.coordinate}
-                        onChange={(coordinate) => onChange({ ...value, coordinate })}
-                    />
-                    <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
-                        <SettingField label={t(editor.visibleWhenOperator)}>
-                            {(control) => (
-                                <select
-                                    {...control}
-                                    value={value.not ? 'not' : 'equals'}
-                                    onChange={(event) =>
-                                        onChange({
-                                            ...value,
-                                            not: event.target.value === 'not' || undefined,
-                                        })
-                                    }
-                                    className={inputClasses}
-                                >
-                                    <option value="equals">=</option>
-                                    <option value="not">≠</option>
-                                </select>
-                            )}
-                        </SettingField>
-                        <SettingField label={t(editor.visibleWhenValue)}>
-                            {(control) => (
-                                <input
-                                    {...control}
-                                    value={String(value.equals)}
-                                    onChange={(event) =>
-                                        onChange({ ...value, equals: typed(event.target.value) })
-                                    }
-                                    className={`${inputClasses} w-full`}
-                                />
-                            )}
-                        </SettingField>
-                    </div>
+                    <SettingField label={t(editor.visibleWhenKind)}>
+                        {(control) => (
+                            <select
+                                {...control}
+                                value={isFormulaCondition(value) ? 'formula' : 'value'}
+                                onChange={(event) =>
+                                    onChange(
+                                        event.target.value === 'formula'
+                                            ? { formula: '1' }
+                                            : { coordinate: 'value', equals: '' }
+                                    )
+                                }
+                                className={inputClasses}
+                            >
+                                <option value="value">{t(editor.visibleWhenKindValue)}</option>
+                                <option value="formula">{t(editor.visibleWhenKindFormula)}</option>
+                            </select>
+                        )}
+                    </SettingField>
+                    {isFormulaCondition(value) ? (
+                        <FormulaField
+                            help="displayConditions"
+                            label={t(editor.visibleWhenFormula)}
+                            hint={t(editor.visibleWhenFormulaHint)}
+                            setting="visibleWhen"
+                            value={value.formula}
+                            onChange={(formula) => onChange({ formula: formula ?? '' })}
+                        />
+                    ) : (
+                        <ValueCondition value={value} onChange={onChange} typed={typed} />
+                    )}
                 </div>
             )}
         </div>
+    );
+}
+
+function ValueCondition({
+    onChange,
+    typed,
+    value,
+}: {
+    onChange: (next: VisibleWhen) => void;
+    typed: (raw: string) => VisibleWhenValue['equals'];
+    value: VisibleWhenValue;
+}) {
+    return (
+        <>
+            <KeyField
+                label={t(editor.visibleWhenCoordinate)}
+                setting="visibleWhen"
+                value={value.coordinate}
+                onChange={(coordinate) => onChange({ ...value, coordinate })}
+            />
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
+                <SettingField label={t(editor.visibleWhenOperator)}>
+                    {(control) => (
+                        <select
+                            {...control}
+                            value={value.not ? 'not' : 'equals'}
+                            onChange={(event) =>
+                                onChange({
+                                    ...value,
+                                    not: event.target.value === 'not' || undefined,
+                                })
+                            }
+                            className={inputClasses}
+                        >
+                            <option value="equals">=</option>
+                            <option value="not">≠</option>
+                        </select>
+                    )}
+                </SettingField>
+                <SettingField label={t(editor.visibleWhenValue)}>
+                    {(control) => (
+                        <input
+                            {...control}
+                            value={String(value.equals)}
+                            onChange={(event) =>
+                                onChange({ ...value, equals: typed(event.target.value) })
+                            }
+                            className={`${inputClasses} w-full`}
+                        />
+                    )}
+                </SettingField>
+            </div>
+        </>
     );
 }

@@ -19,7 +19,12 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
-    visibleWhen: Show only when a value matches
+    visibleWhen: Show only when a condition holds
+    visibleWhenKind: Condition
+    visibleWhenKindValue: A value matches
+    visibleWhenKindFormula: A formula holds
+    visibleWhenFormula: Formula
+    visibleWhenFormulaHint: Shown while the result is not 0 and not empty
     visibleWhenCoordinate: Value key
     visibleWhenOperator: Comparison
     visibleWhenValue: Value
@@ -208,6 +213,7 @@ editor:
     sampleNote: Sample data — dots, boxes, and text you change here never reach your documents.
     noSampleDocument: This template's document type is not available, so the page cannot be shown.
     hiddenByCondition: 'Hidden by a condition: shown only when "{coordinate}" is {value}. Readers do not see it now.'
+    hiddenByFormula: 'Hidden by a condition: shown only while "{formula}" holds. Readers do not see it now.'
     conditionMet: Condition met
     conditionNotMet: Condition not met
     elementIssue: This element has an issue

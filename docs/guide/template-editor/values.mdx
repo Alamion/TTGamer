@@ -7,7 +7,7 @@ description: Where a field keeps its value, how shared value keys link fields, a
 # Values, formulas, and conditions
 
 :::tip[In short]
-Every field keeps its value under a key. Fields with the same key share one value — across pages too. Formulas compute numbers from those keys, and conditions show elements only while a value matches.
+Every field keeps its value under a key. Fields with the same key share one value — across pages too. Formulas compute numbers and texts from those keys, and conditions show elements only while a value matches or a formula holds.
 :::
 
 ## Where a value is kept \{#value-source}
@@ -35,7 +35,7 @@ Removing a field never deletes its value: bring the field back with the same key
 
 ## Formulas \{#formulas}
 
-A **Derived value** shows a number computed from other values. Formulas use value keys, numbers, `+ - * /`, parentheses, and `min(…)` / `max(…)`:
+A **Derived value** shows a number or a text computed from other values. Formulas use value keys, numbers, texts in double quotes, `+ - * /`, and parentheses:
 
 ```text
 passion + self-control
@@ -43,7 +43,19 @@ max(0, reputation - 2)
 willpower.max
 ```
 
-For values with a current and a maximum, `.current` and `.max` pick one. The editor suggests the keys it knows. A formula that does not parse, refers to a value that does not exist, or depends on itself is listed as an issue; on the page, a failing formula says why instead of showing a wrong number.
+For values with a current and a maximum, `.current` and `.max` pick one. Text fields and choices read as text, toggles as 1 or 0.
+
+| Write                          | What it does                                                                                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `min(a, b, …)`, `max(a, b, …)` | The smallest or the largest value.                                                                                                              |
+| `ceil(x)`, `floor(x)`          | Rounds up or down: `ceil(potency / 2)`.                                                                                                         |
+| `round(x)`, `abs(x)`           | Rounds to the nearest whole number; drops the minus sign.                                                                                       |
+| `< <= > >= = !=`               | Compares two values: 1 when true, 0 when false. Texts compare with `=` and `!=`. One comparison per part.                                       |
+| `and(…)`, `or(…)`, `not(x)`    | Joins conditions: a value holds when it is not 0 and not empty.                                                                                 |
+| `if(condition, then, else)`    | One of two results: `if(potency >= 3, "None", "Half")`. Only the chosen result is computed.                                                     |
+| `"text" & value`               | Joins texts and numbers: `"BP " & potency`.                                                                                                     |
+| `rating(list, "Name")`         | The rating of the list entry with that name, 0 without one. A list following a catalog finds the entry by any of its names, in either language. |
+| `row.column`                   | Inside a row button: that row's value in the column (see [Buttons](./elements.mdx#buttons)).                                                    | The editor suggests the keys it knows. A formula that does not parse, refers to a value that does not exist, or depends on itself is listed as an issue; on the page, a failing formula says why instead of showing a wrong number. |
 
 ## Limits from values \{#limits-from-values}
 
@@ -51,7 +63,10 @@ A rating or a number can take its maximum from a value or a formula: **Maximum f
 
 ## Display conditions \{#display-conditions}
 
-**Show only when a value matches** hides an element unless a value equals the one you give: **Value key** names the value, **Comparison** picks equals or not equals, **Value** is what to compare with (`true`, `false`, a number, or text).
+**Show only when a condition holds** hides an element until its **Condition** is met:
+
+- **A value matches**: **Value key** names the value, **Comparison** picks equals or not equals, **Value** is what to compare with (`true`, `false`, a number, or text);
+- **A formula holds**: the element shows while the [formula](#formulas) gives a number other than 0 or a text that is not empty — for example `rating(disciplines, "Blood Sorcery") > 0`. A formula that cannot be computed hides the element and is listed as an issue.
 
 The editor always shows conditional elements, hatched, and says whether the condition is met on the sample data. Hiding never deletes the element's values.
 

@@ -52,10 +52,10 @@ const termShape = {
 
 /**
  * Render-time condition on any node: shown only while the value at `coordinate` equals `equals`
- * (`not` inverts). Evaluated against the shared coordinate space; never affects storage, and
+ * (`not` inverts), or while a formula holds. Evaluated against the shared coordinate space; never affects storage, and
  * the template editor always shows the node.
  */
-export const VisibleWhenSchema = z.object({
+export const VisibleWhenValueSchema = z.object({
     coordinate: z
         .string()
         .min(1)
@@ -65,7 +65,19 @@ export const VisibleWhenSchema = z.object({
     not: z.boolean().optional(),
 });
 
+/** Spec 038 D4: shown while the formula gives a non-zero number or a non-empty text. */
+export const VisibleWhenFormulaSchema = z.object({ formula: z.string().min(1).max(500) });
+
+export const VisibleWhenSchema = z.union([VisibleWhenValueSchema, VisibleWhenFormulaSchema]);
+
 export type VisibleWhen = z.infer<typeof VisibleWhenSchema>;
+export type VisibleWhenValue = z.infer<typeof VisibleWhenValueSchema>;
+
+export function isFormulaCondition(
+    condition: VisibleWhen
+): condition is z.infer<typeof VisibleWhenFormulaSchema> {
+    return 'formula' in condition;
+}
 
 /**
  * Placement inside the parent's column layout (1-based). When any child of a multi-column
@@ -160,10 +172,20 @@ const ImageFieldSchema = z.object({
 const FormulaFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('formula'),
-    formula: z.string().min(1).max(500),
+    formula: z.string().min(1).max(TEMPLATE_LIMITS.formulaFieldMax),
     /** Display decoration around the computed number (e.g. `×` for multipliers). */
     prefix: z.string().max(8).optional(),
     suffix: z.string().max(8).optional(),
+    /**
+     * Shipped templates (spec 038 D2): a text result equal to a key is shown as that message's
+     * translation; the formula keeps the English text.
+     */
+    textMessages: z
+        .record(z.string().min(1).max(200), LabelMessageSchema)
+        .refine((map) => Object.keys(map).length <= TEMPLATE_LIMITS.formulaTextsMax, {
+            message: `At most ${TEMPLATE_LIMITS.formulaTextsMax} translated texts`,
+        })
+        .optional(),
 });
 
 function hasUniqueIds(values: readonly { id: string }[]) {
