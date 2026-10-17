@@ -5,11 +5,11 @@
 **Input**: "Spec 038 — template-editor parity for the spec 037 vampire mechanics (constitution VI).
 Every mechanic 037 built as a system-only binding becomes a template element or element option
 authors configure in the editor, and the shipped vampire templates are rebuilt on them: a Button
-element and a button column; a field option 'From catalog'; formula functions with comparisons and
-text results; a tracker option for marks of a second value from the end; a catalog list option
-limiting rows by their parent row; display conditions on computed values. Code-only mechanics are
-retired. Hunger dice in rolls stay a ruleset mechanic. Hunter and Star Wars templates need no
-buttons. Branch from 037-vampire-character; 037 merges only together with 038."
+element and row buttons; a field option 'From catalog'; formula functions with comparisons and text
+results; a tracker option for marks of a second value from the end; a catalog list option limiting
+rows by their parent row; display conditions on computed values. Code-only mechanics are retired.
+Hunger dice in rolls stay a ruleset mechanic. Hunter and Star Wars templates need no buttons. Branch
+from 037-vampire-character; 037 merges only together with 038."
 
 ## Context
 
@@ -75,9 +75,10 @@ the messages.
    rolls `3d10>=6`, **Then** no die is a Hunger die; with the option on, as many dice as Hunger are.
 8. **Given** a button with an availability condition (Remorse: stains above 0), **When** the
    condition does not hold, **Then** the button is disabled and says why.
-9. **Given** a table of the template, **When** the author adds a **button column**, **Then** each
-   row shows the button, and the button's notation, count, and conditions may use that row's values
-   (a power's level and cost); a condition can hide the button on rows it does not fit.
+9. **Given** a table of the template (or a built-in list of rows such as powers), **When** the
+   author adds a **row button**, **Then** each row shows the button, and the button's notation,
+   count, and conditions may use that row's values (a power's level and cost); a condition can hide
+   the button on rows it does not fit.
 
 ---
 
@@ -143,7 +144,8 @@ option of an existing field, not a new element.
 An author gives a tracker a **second value marked from the end**: boxes fill from the start up to
 the first value and the second value's marks fill from the last box backward, never on a filled box
 (Humanity and its stains). The values can be the document's built-in values or the template's own.
-The keyboard and the right click work as on other trackers.
+The keyboard and the outline action (right click, Shift+Enter, long press) work as on other
+trackers.
 
 **Why this priority**: Humanity is on every vampire sheet; the option extends the existing tracker
 rather than keeping a separate score element.
@@ -229,10 +231,10 @@ templates.
 
 ### Functional Requirements
 
-- **FR-001**: The editor's "+" menu MUST offer a Button element; tables MUST accept a button column.
-  A button has a label (translatable when shipped) and a roll, count, re-roll condition, success
-  rule, availability condition, "Roll with the game's dice" option (off by default), and changes for
-  success and failure, each optional except the label.
+- **FR-001**: The editor's "+" menu MUST offer a Button element; tables and built-in rows MUST
+  accept row buttons. A button has a label (translatable when shipped) and a roll, count, re-roll
+  condition, success rule, availability condition, "Roll with the game's dice" option (off by
+  default), and changes for success and failure, each optional except the label.
 - **FR-002**: A button's roll MUST go through the same dice path as other sheet rolls (3D dice,
   history, sharing, game-system readings) and MUST write nothing for a cancelled roll.
 - **FR-003**: A change MUST target a value coordinate of the document (the template's own fields or
@@ -251,7 +253,8 @@ templates.
 - **FR-008**: A text field MUST offer From catalog with a catalog, the field picking the entry, the
   entry text, an optional second text with its condition, and the modes Show only and Suggest.
 - **FR-009**: A tracker MUST offer a second value marked from the end that never covers a filled
-  box, editable by click, right click, and keyboard, with an accessible description.
+  box, editable by click, the trackers' outline action (right click, Shift+Enter, long press), and
+  the arrow keys, with an accessible description.
 - **FR-010**: A catalog table under a parent list MUST offer Limit by parent: picks filtered to
   levels within the parent row's rating, and rows above it marked, not removed. User catalogs MUST
   offer a Parent column (an entry of another catalog) so the option works with them as with shipped
@@ -268,8 +271,8 @@ templates.
 
 ### Key Entities
 
-- **Button**: a template element (or table column) with a label, an optional roll (notation, count,
-  re-roll condition, success rule), and changes per outcome.
+- **Button**: a template element (or a row button of a table or built-in rows) with a label, an
+  optional roll (notation, count, re-roll condition, success rule), and changes per outcome.
 - **Change**: a target value coordinate, an operation (add within bounds, or set), and an amount or
   formula.
 - **From catalog**: a text field option naming the catalog, the picking field, the entry text (and a

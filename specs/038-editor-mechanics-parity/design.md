@@ -104,8 +104,9 @@ rolls, conditions, and changes. Delivery order follows the dependencies:
 ## Principles at risk
 
 - **VI (editor parity, storybook)**: every new node and option gets editor settings, issue checks,
-  and a storybook story; `tests/sheet_manager/shipped-parity.test.ts` fails when a shipped template
-  uses a node property the editor has no setting for, or a binding exposes behavior.
+  and a storybook story. Each `ELEMENT_EDITORS` entry lists the node keys its settings edit
+  (`settingKeys`); `tests/sheet_manager/shipped-parity.test.ts` walks every shipped template and
+  fails on a defined key outside its node type's list (SC-003).
 - **III (handoffs)**: rolls go only through `integrations/sheet-dice`; failures (cancel, bad
   notation, unknown target) show a message and report to `diagnostics.ts`.
 - **II (contracts)**: template and user catalog schemas change additively; library items carry

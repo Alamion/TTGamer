@@ -55,8 +55,9 @@ Undo (spec US1).
 - [ ] T011 [US1] Tests first in `tests/sheet_manager/button-run.test.ts`: success and failure
       changes; add clamped to bounds and the at-limit message; `set`; `always`; `count` with re-roll
       per failed roll while `rerollWhen` holds; cancel mid-way keeps finished writes; unavailable;
-      notation or condition that does not evaluate; no roll → success changes; `{formula}` notation
-      segments; `row.*` values; `gameDice` on and off
+      notation or condition that does not evaluate; a target the document cannot store (skipped and
+      reported); two changes to one value applied in order; no roll → success changes; `{formula}`
+      notation segments; `row.*` values; `gameDice` on and off
 - [ ] T012 [US1] Implement `runButton` in `decl/button/runButton.ts` (pure: spec, values reader,
       bounds reader, roll function → writes, old values, message descriptor and values)
 - [ ] T013 [US1] Tests first in `tests/sheet_manager/button-ui.test.tsx`: a button node and row
@@ -139,8 +140,10 @@ Undo (spec US1).
 037 behavior tests pass (spec US6, SC-001).
 
 - [ ] T033 [US6] Tests first: `tests/sheet_manager/shipped-parity.test.ts` (SC-003: every shipped
-      template opens in the editor model and saves unchanged; every node property it uses has an
-      editor setting); Remorse cases in `tests/sheet_manager/systems/v5/vampire-rouse.test.tsx`
+      template opens in the editor model and saves unchanged; every key a node defines is in its
+      type's `settingKeys`, a new list on each `ELEMENT_EDITORS` entry in
+      `editor/elements/registry.tsx`); Remorse cases in
+      `tests/sheet_manager/systems/v5/vampire-rouse.test.tsx`
 - [ ] T034 [US6] Rebuild `src/sheet_manager/systems/v5/modules/vampire/templates/sheet.ts` and
       `brief.ts`: Rouse and Remorse buttons, a power row button (count `row.rouse`, re-roll while
       `row.level <= ceil(blood-potency / 2)`, available while `row.rouse > 0`), Blood Potency
@@ -158,7 +161,8 @@ Undo (spec US1).
 - [ ] T036 [US6] Update the 037 tests to the rebuilt templates (`vampire-sheet`, `vampire-rouse`,
       `vampire-blood-potency`, `catalog-bindings`, `rows-catalog-limit`); vampire translations in
       `translations/source/{en,ru}/ui/sheet/v5Vampire.yaml` (button labels, Remorse, formula texts;
-      drop unused rouse messages)
+      drop unused rouse messages); the blood-cell check of `tests-e2e/smoke/vampire-brief.spec.ts`
+      finds Humanity through the pool tracker instead of the retired score track
 - [ ] T037 [US6] Run `yarn verify:full` (route-visible template change) and commit the story
 
 ## Finish
@@ -168,12 +172,13 @@ Undo (spec US1).
       `.agents/skills/sheet-manager/SKILL.md`; the template-editor guide en + ru
       (`docs/guide/template-editor/elements.mdx`, `values.mdx`, and their Russian mirrors) for the
       button, formulas, From catalog, marks from the end, and parents; `docs/guide/sheet.mdx` en +
-      ru for Remorse and Undo; spec 037 design gets a banner pointing to 038 for the superseded
-      mechanics
+      ru for Remorse and Undo; `specs/037-vampire-character/spec.md` gets a historical-record banner
+      (as in spec 005) naming 038 and the current guidance
 - [ ] T039 Backlog entry T-123 in `TODO.md` (spec 038, done with T-039), then measure the sheet page
       bundle against `037-vampire-character` (SC-005, +10 KB gzip) and record it in design.md
-- [ ] T040 Run `yarn verify:full`; walk the steps in design.md "Manual walk" (SC-002 timed on step
-      6); record results in design.md
+- [ ] T040 Run `yarn verify:full`; walk the steps in design.md "Manual walk" ; record results in
+      design.md. SC-002 (an author rebuilds the buttons from the guide alone in ten minutes) is the
+      maintainer's step: the walk only checks that the guide names every setting it needs
 
 ## Coverage
 
@@ -194,7 +199,7 @@ Undo (spec US1).
 | FR-013      | T007, T008, T015, T016, T021, T022, T026, T027, T031, T038 |
 | FR-014      | T010 (zod baseline), T024, T029, T030                      |
 | SC-001      | T033, T036                                                 |
-| SC-002      | T040 (manual walk step 6)                                  |
+| SC-002      | T040 (maintainer's check)                                  |
 | SC-003      | T033                                                       |
 | SC-004      | T011 (timing measured in the manual walk, T040)            |
 | SC-005      | T039                                                       |
