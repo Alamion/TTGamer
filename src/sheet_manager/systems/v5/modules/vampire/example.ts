@@ -10,6 +10,7 @@ import { VampireSchema } from './schema';
  */
 export const MIRELA_VOSS_DATA = VampireSchema.parse({
     name: 'Mirela Voss',
+    metadata: { imageUrl: '/img/mirela_voss.webp' },
     concept: 'Restorer of old paintings',
     chronicle: 'Nights of the Old Port',
     sire: 'Aurelio, a gallery owner who never explained himself',
