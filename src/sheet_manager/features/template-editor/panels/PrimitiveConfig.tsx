@@ -11,6 +11,7 @@ import { inputClasses } from '../settings/inputClasses';
 import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
 import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
+import { RowButtonsSetting } from './ButtonSettings';
 import { ToggleRow } from './LayoutControls';
 import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { ShortFormSettings } from './ShortFormSettings';
@@ -121,6 +122,12 @@ export function primitiveSettings({
                 </SettingField>
             ) : (
                 <ValueSourceSelect node={node} onReplace={onReplace} />
+            )}
+            {descriptor?.kind === 'rows' && (
+                <RowButtonsSetting
+                    buttons={node.rowButtons ?? []}
+                    onChange={(rowButtons) => update({ rowButtons })}
+                />
             )}
             {pool && !asTracker && (
                 <SettingField label={settingLabel('part')} setting="part">

@@ -29,4 +29,7 @@ export const TEMPLATE_LIMITS = {
     /** Spec 038: a derived value's formula (texts by thresholds run long) and its translations. */
     formulaFieldMax: 2_000,
     formulaTextsMax: 30,
+    /** Spec 038 buttons: changes per outcome, buttons per row. */
+    buttonChangesMax: 8,
+    rowButtonsMax: 4,
 } as const;

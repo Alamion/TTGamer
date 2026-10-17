@@ -8,7 +8,7 @@ import {
     listNumericCoordinates,
     resolveWritableBinding,
 } from '../../../systems/templateBindings';
-import type { CustomTemplate } from '../../../types/template';
+import type { CustomTemplate, RowButton } from '../../../types/template';
 import {
     fieldValueKey,
     isFormulaCondition,
@@ -18,6 +18,7 @@ import {
     listValueKey,
     walkTemplateNodes,
 } from '../../../types/template';
+import { buttonTarget } from '../declarative/buttonTargets';
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { catalogKindFitsListItem, getCatalogBinding, isCatalogInScope } from './catalogBindings';
@@ -41,7 +42,15 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-coordinate'; nodeId: string; key: string; setting: CoordinateSetting }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
     | { code: 'invalid-docs-link'; nodeId: string; key: string }
-    | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string };
+    | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string }
+    /** A button reads or changes a value the page does not have (spec 038); `setting` is the control. */
+    | {
+          code: 'unknown-button-value';
+          nodeId: string;
+          key: string;
+          setting: string;
+          group: 'value' | 'visibility';
+      };
 
 /** The formula settings and the display condition, which address template coordinates. */
 type FormulaSetting = 'formula' | 'maxFrom' | 'minFrom' | 'maxMinFrom';
@@ -284,6 +293,47 @@ export function validateTemplateReferences(
                 key: node.visibleWhen.coordinate,
                 setting: 'visibleWhen',
             });
+        }
+        const checkButton = (button: RowButton, prefix: string) => {
+            const report = (key: string, setting: string, group: 'value' | 'visibility') =>
+                issues.push({
+                    code: 'unknown-button-value',
+                    nodeId: node.id,
+                    key,
+                    setting: `${prefix}${setting}`,
+                    group,
+                });
+            const reads = (
+                source: string | undefined,
+                setting: string,
+                group: 'value' | 'visibility'
+            ) => {
+                if (!source) return;
+                const parsed = parseFormula(source);
+                if (!parsed.ok) return;
+                for (const coordinate of unknownCoordinates(parsed.coords, coordinates)) {
+                    report(coordinate, setting, group);
+                }
+            };
+            reads(button.availableWhen, 'availableWhen', 'visibility');
+            reads(button.roll?.count, 'count', 'value');
+            reads(button.roll?.rerollWhen, 'rerollWhen', 'value');
+            for (const [, segment] of (button.roll?.notation ?? '').matchAll(/\{([^{}]*)\}/g)) {
+                reads(segment, 'notation', 'value');
+            }
+            for (const outcome of ['onSuccess', 'onFailure', 'always'] as const) {
+                for (const change of button[outcome]) {
+                    reads(change.amount, outcome, 'value');
+                    if (!buttonTarget(template, change.target, () => undefined)) {
+                        report(change.target, outcome, 'value');
+                    }
+                }
+            }
+        };
+        if (node.type === 'button') checkButton(node, '');
+        if (node.type === 'table' || node.type === 'primitive') {
+            for (const button of node.rowButtons ?? [])
+                checkButton(button, `rowButton:${button.id}.`);
         }
         if (node.type === 'primitive') {
             if (!bindings.has(node.bindingKey)) {

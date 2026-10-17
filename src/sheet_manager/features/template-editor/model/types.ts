@@ -3,6 +3,7 @@ import type {
     PoolTrackerOverride,
     PrimitivePreset,
     PrimitiveTrackOverride,
+    RowButton,
     TrackerOverride,
     VisibleWhen,
 } from '../../../types/template';
@@ -45,7 +46,9 @@ export type NodeUpdates = {
     trackLayout?: 'table' | 'strip';
     tracker?: TrackerOverride;
     presets?: PrimitivePreset[];
-};
+    /** Spec 038: buttons on table and built-in rows, and a page button's own settings. */
+    rowButtons?: RowButton[];
+} & Partial<Omit<RowButton, 'id' | 'label'>>;
 
 export type EditorDraft = CustomTemplate;
 

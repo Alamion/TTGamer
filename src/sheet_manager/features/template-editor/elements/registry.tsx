@@ -10,6 +10,7 @@ import {
 } from '../../../types/template';
 import { newField } from '../model/factories';
 import { generateDraftId } from '../model/ids';
+import { buttonSettings, newRowButton } from '../panels/ButtonSettings';
 import { fieldSettings } from '../panels/FieldEditor';
 import { primitiveSettings } from '../panels/PrimitiveConfig';
 import { fieldEditsFor, type NodeEdits } from '../session/useNodeEdits';
@@ -126,6 +127,21 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
             },
         },
     },
+    button: {
+        typeLabel: editor.elementButton,
+        name: (node) => node.label,
+        settings: (node, { edits }) => buttonSettings(node, edits),
+        palette: {
+            key: 'button',
+            label: editor.paletteButton,
+            hint: editor.paletteButtonHint,
+            build: () => ({
+                ...newRowButton(translate(editor.paletteButton)),
+                type: 'button',
+                roll: { notation: '1d10>=6', successAt: 1, gameDice: false },
+            }),
+        },
+    },
     primitive: {
         typeLabel: fieldTypes.builtIn,
         name: (node) => node.label ?? node.bindingKey,
@@ -163,9 +179,9 @@ export function elementEditor<N extends TemplateNode>(node: N): ElementEditor<N>
 }
 
 /** The "+" menu in display order. */
-export const PALETTE: readonly PaletteEntry[] = (['section', 'text', 'list'] as const).map(
-    (type) => ELEMENT_EDITORS[type].palette!
-);
+export const PALETTE: readonly PaletteEntry[] = (
+    ['section', 'text', 'list', 'button'] as const
+).map((type) => ELEMENT_EDITORS[type].palette!);
 
 export const KIND_NAMES = {
     section: editor.kindSection,

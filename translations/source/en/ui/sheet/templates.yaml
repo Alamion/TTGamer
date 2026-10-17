@@ -20,6 +20,42 @@ primitives:
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
     visibleWhen: Show only when a condition holds
+    elementButton: Button
+    paletteButton: Button
+    paletteButtonHint: 'Rolls dice and changes values: a Rouse check, spending a point'
+    buttonIcon: Icon
+    buttonIcons:
+        dice: Dice
+        droplet: Drop
+        heart: Heart
+        flame: Flame
+        sparkles: Sparkles
+        skull: Skull
+    buttonRoll: Roll dice
+    buttonNotation: Dice to roll
+    buttonNotationHint: 'Dice notation; {…} computes a number from a formula: {max(1, 10 - humanity)}d10>=6'
+    buttonCount: Rolls per press
+    buttonReroll: Re-roll a failed roll once while
+    buttonSuccessAt: A roll succeeds at a total of
+    buttonGameDice: "Roll with the game's dice (V5 Hunger dice)"
+    buttonOnSuccess: On a success (or without a roll)
+    buttonOnFailure: On a failure
+    buttonAlways: After all rolls
+    buttonChangeTarget: Value
+    buttonChangeOp: Change
+    buttonOpAdd: Add
+    buttonOpSet: Set to
+    buttonChangeAmount: Amount
+    buttonAddChange: 'Add a change: {outcome}'
+    buttonRemoveChange: 'Remove change {index}: {outcome}'
+    buttonSuccessText: Text on a success
+    buttonFailureText: Text on a failure
+    buttonAvailableWhen: Available while
+    rowButtons: Row buttons
+    rowButtonsHint: 'Every row gets the button; its formulas read the row as row.<column>.'
+    rowButtonsAdd: Add a row button
+    rowButtonsRemove: 'Remove {label}'
+    rowButtonNew: Button
     visibleWhenKind: Condition
     visibleWhenKindValue: A value matches
     visibleWhenKindFormula: A formula holds

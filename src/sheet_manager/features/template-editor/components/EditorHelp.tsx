@@ -14,6 +14,7 @@ export const EDITOR_GUIDE = {
     formulas: '/docs/guide/template-editor/values#formulas',
     limitsFromValues: '/docs/guide/template-editor/values#limits-from-values',
     displayConditions: '/docs/guide/template-editor/values#display-conditions',
+    buttons: '/docs/guide/template-editor/elements#buttons',
     catalogs: '/docs/guide/template-editor/values#catalogs',
     movingPage: '/docs/guide/template-editor/types-and-settings#moving-a-page',
     library: '/docs/guide/template-editor/library',

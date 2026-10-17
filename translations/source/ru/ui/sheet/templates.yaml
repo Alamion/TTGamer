@@ -20,6 +20,42 @@ primitives:
     degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
     visibleWhen: Показывать только при условии
+    elementButton: Кнопка
+    paletteButton: Кнопка
+    paletteButtonHint: 'Бросает кубы и меняет значения: проверка Rouse, трата очка'
+    buttonIcon: Значок
+    buttonIcons:
+        dice: Кубики
+        droplet: Капля
+        heart: Сердце
+        flame: Пламя
+        sparkles: Искры
+        skull: Череп
+    buttonRoll: Бросать кубы
+    buttonNotation: Какие кубы
+    buttonNotationHint: 'Нотация кубов; {…} вычисляет число по формуле: {max(1, 10 - humanity)}d10>=6'
+    buttonCount: Бросков за нажатие
+    buttonReroll: Перебросить провал один раз, пока
+    buttonSuccessAt: Бросок успешен при итоге от
+    buttonGameDice: 'Бросать кубами игры (кубы Голода V5)'
+    buttonOnSuccess: При успехе (или без броска)
+    buttonOnFailure: При провале
+    buttonAlways: После всех бросков
+    buttonChangeTarget: Значение
+    buttonChangeOp: Изменение
+    buttonOpAdd: Прибавить
+    buttonOpSet: Сделать равным
+    buttonChangeAmount: Величина
+    buttonAddChange: 'Добавить изменение: {outcome}'
+    buttonRemoveChange: 'Убрать изменение {index}: {outcome}'
+    buttonSuccessText: Текст при успехе
+    buttonFailureText: Текст при провале
+    buttonAvailableWhen: Доступна, пока
+    rowButtons: Кнопки строк
+    rowButtonsHint: 'Кнопка появится в каждой строке; её формулы читают строку как row.<колонка>.'
+    rowButtonsAdd: Добавить кнопку строки
+    rowButtonsRemove: 'Убрать «{label}»'
+    rowButtonNew: Кнопка
     visibleWhenKind: Условие
     visibleWhenKindValue: Значение совпадает
     visibleWhenKindFormula: Формула выполняется

@@ -1029,6 +1029,77 @@ const trackers = story(
     ]
 );
 
+const buttons = story(
+    'buttons',
+    'Buttons',
+    'A button rolls and changes values; row buttons read their row. Pressing them here rolls the dice for real.',
+    { systemId: 'star-wars-wod', documentKind: 'character' },
+    [
+        {
+            id: 'section-buttons',
+            type: 'section',
+            title: 'Page and row buttons',
+            columns: 3,
+            children: [
+                { id: 'strain', type: 'number', label: 'Strain', min: 0, max: 5 },
+                { id: 'marks', type: 'number', label: 'Marks', min: 0, max: 10 },
+                {
+                    id: 'button-roll',
+                    type: 'button',
+                    label: 'Check (1d10, 6+)',
+                    icon: 'droplet',
+                    roll: { notation: '1d10>=6' },
+                    onFailure: [{ target: 'strain', op: 'add', amount: '1' }],
+                },
+                {
+                    id: 'button-pool',
+                    type: 'button',
+                    label: 'Pool from a formula, re-roll',
+                    roll: {
+                        notation: '{max(1, 10 - marks)}d10>=6',
+                        rerollWhen: 'strain < 3',
+                    },
+                    onFailure: [{ target: 'marks', op: 'add', amount: '1' }],
+                    always: [{ target: 'strain', op: 'set', amount: '0' }],
+                },
+                {
+                    id: 'button-spend',
+                    type: 'button',
+                    label: 'Spend a mark (no roll)',
+                    icon: 'heart',
+                    availableWhen: 'marks > 0',
+                    onSuccess: [{ target: 'marks', op: 'add', amount: '-1' }],
+                },
+                {
+                    id: 'table-row-buttons',
+                    type: 'table',
+                    title: 'Row buttons',
+                    span: 3,
+                    columns: [
+                        { id: 'name', type: 'text', label: 'Name' },
+                        { id: 'cost', type: 'number', label: 'Cost', min: 0, max: 3 },
+                    ],
+                    rowButtons: [
+                        {
+                            id: 'row-check',
+                            label: 'Pay',
+                            icon: 'flame',
+                            availableWhen: 'row.cost > 0',
+                            roll: { notation: '1d10>=6', count: 'row.cost' },
+                            onFailure: [{ target: 'strain', op: 'add', amount: '1' }],
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+    {
+        strain: 1,
+        marks: 2,
+        'table-row-buttons': { '0': { name: 'Costly', cost: 2 }, '1': { name: 'Free', cost: 0 } },
+    }
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     fields,
@@ -1037,6 +1108,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     collections,
     listEntries,
     trackers,
+    buttons,
 ];
 
 let allStories: readonly ElementStory[] | undefined;

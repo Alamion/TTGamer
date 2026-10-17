@@ -145,13 +145,13 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the three element kinds with descriptions', () => {
+    it('offers exactly the four element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['group', 'field', 'list']);
+        expect(options).toEqual(['group', 'field', 'list', 'button']);
         const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });

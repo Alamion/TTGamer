@@ -1,6 +1,6 @@
 import { compactId, randomToken } from '../../../../shared/utils/random';
 
-export type DraftIdPrefix = 'tpl' | 'sec' | 'grp' | 'blk' | 'lst' | 'f' | 'opt';
+export type DraftIdPrefix = 'tpl' | 'sec' | 'grp' | 'blk' | 'lst' | 'f' | 'opt' | 'btn';
 
 /**
  * Kebab-safe identifier for a new draft node; the prefix guarantees a letter start. A template is

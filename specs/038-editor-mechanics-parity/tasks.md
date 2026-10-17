@@ -48,34 +48,34 @@ and a card shown by a formula condition (spec US2).
 **Check**: a user template button rolling `1d10>=6` that adds 1 to a number field on a failure, with
 Undo (spec US1).
 
-- [ ] T010 [US1] Schema: `ButtonSpec`, `ButtonNodeSchema` (`type: 'button'`), `Change`, and
+- [x] T010 [US1] Schema: `ButtonSpec`, `ButtonNodeSchema` (`type: 'button'`), `Change`, and
       `rowButtons` on `TableNodeSchema` and `PrimitiveNodeSchema` in
       `src/sheet_manager/types/template.ts`; limits (changes per outcome, buttons per row) in
       `src/sheet_manager/types/templateLimits.ts`; zod baseline updated (additions only)
-- [ ] T011 [US1] Tests first in `tests/sheet_manager/button-run.test.ts`: success and failure
+- [x] T011 [US1] Tests first in `tests/sheet_manager/button-run.test.ts`: success and failure
       changes; add clamped to bounds and the at-limit message; `set`; `always`; `count` with re-roll
       per failed roll while `rerollWhen` holds; cancel mid-way keeps finished writes; unavailable;
       notation or condition that does not evaluate; a target the document cannot store (skipped and
       reported); two changes to one value applied in order; no roll → success changes; `{formula}`
       notation segments; `row.*` values; `gameDice` on and off
-- [ ] T012 [US1] Implement `runButton` in `decl/button/runButton.ts` (pure: spec, values reader,
+- [x] T012 [US1] Implement `runButton` in `decl/button/runButton.ts` (pure: spec, values reader,
       bounds reader, roll function → writes, old values, message descriptor and values)
-- [ ] T013 [US1] Tests first in `tests/sheet_manager/button-ui.test.tsx`: a button node and row
+- [x] T013 [US1] Tests first in `tests/sheet_manager/button-ui.test.tsx`: a button node and row
       buttons render with labels ("<label> for <row name>" on rows); read-only disables with a
       reason; unavailable disables with a reason; Undo restores values and skips one edited by hand;
       a cancelled roll writes nothing
-- [ ] T014 [US1] Implement `decl/button/SheetButton.tsx` (rolls through `useSheetDiceActions` in
+- [x] T014 [US1] Implement `decl/button/SheetButton.tsx` (rolls through `useSheetDiceActions` in
       `src/integrations/sheet-dice/`, special dice only with `gameDice`, writes through
       `applyWrites`, toast with Undo for 8 s), render `button` nodes in
       `decl/DeclarativeSheetView.tsx` and row buttons in `decl/RowsBody.tsx` and the table renderer
-- [ ] T015 [US1] Editor: `button` in `ELEMENT_EDITORS` and the "+" menu
+- [x] T015 [US1] Editor: `button` in `ELEMENT_EDITORS` and the "+" menu
       (`editor/elements/registry.tsx`); settings panel `editor/panels/ButtonSettings.tsx` (label,
       icon, availability, roll, count, re-roll, success at, game dice, the three change lists with a
       coordinate picker); row buttons settings on tables and rows primitives; draft issues for
       unknown targets and bad formulas in `editor/issues/draftIssues.ts`; editor tests in
       `tests/sheet_manager/template-editor/button-settings.test.tsx` (palette now group, field,
       list, button)
-- [ ] T016 [US1] Storybook stories (button with and without a roll, row buttons) in
+- [x] T016 [US1] Storybook stories (button with and without a roll, row buttons) in
       `docs/dev/storybook/template-elements.mdx`; translations in
       `translations/source/{en,ru}/ui/sheet/templates.yaml` and `documents.yaml` (messages, Undo)
 - [ ] T017 [US1] Run `yarn verify` and commit the story

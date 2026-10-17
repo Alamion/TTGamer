@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Elements
-description: Groups (sections and cards), fields, lists (entries and tables), and trackers — what each element does and the settings it takes.
+description: Groups (sections and cards), fields, lists (entries and tables), trackers, and buttons — what each element does and the settings it takes.
 ---
 
 import { ElementExample } from '@site/src/sheet_manager/docsEmbeds';
@@ -10,7 +10,7 @@ import { LiveDemo } from '@site/src/shared/components/LiveDemo';
 # Elements
 
 :::tip[In short]
-Groups arrange the page; fields, lists, and trackers hold values. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
+Groups arrange the page; fields, lists, and trackers hold values; buttons roll dice and change them. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
 :::
 
 ## Kinds of groups and lists \{#kinds}
@@ -170,6 +170,24 @@ A tracker cannot be a table column or a list entry: its copies already repeat it
 A game's own track takes the same settings: the display, the names and values of its levels (a level you leave empty keeps the game's name and penalty), the names, symbols, and fills of its marks, extra columns, the total row, and the legend, which works as a brush here too. Its marks are always fills: the game keeps one mark per box. The game keeps the number and order of levels, a length computed from traits (V5 health and willpower), the number of marks, and the members of a group; lengths and "out" follow the game's rules. Columns you add keep their values with the page, next to the document's own marks.
 
 Pages saved before this setting existed keep their look: **Compact** reads as **One line**, and a stored track view keeps its display.
+
+## Buttons \{#buttons}
+
+A **Button** does something when the reader presses it: it rolls dice and changes values, or only changes values. Add one from the **+** menu.
+
+- **Label** and **Icon** are what the reader sees.
+- **Roll dice** turns on the roll. **Dice to roll** is dice notation; a part in braces is a [formula](./values.mdx#formulas) computed first, so `{max(1, 10 - humanity - stains)}d10>=6` rolls one die per empty box, at least one. **Rolls per press** repeats the roll (a formula, so a power can pay its cost). **Re-roll a failed roll once while** re-rolls a failure while its formula holds. **A roll succeeds at a total of** sets what counts as a success: for `d10>=6` the total is the number of successes. **Roll with the game's dice** turns dice into the game's special dice, as character rolls do (V5 Hunger dice); it is off by default.
+- **On a success**, **On a failure**, and **After all rolls** list the changes: a **Value** (its key, or `.current` / `.max` of a pool), **Add** or **Set to**, and an **Amount** (a formula: `1`, `-1`, `row.cost`). An added value stays within its bounds; the message says when it was already at its limit. A button without a roll applies its success changes directly — a "spend a point" button.
+- **Available while** disables the button, with the reason, until its formula holds.
+- **Text on a success** and **Text on a failure** are added to the result message.
+
+The roll goes to the dice panel like any sheet roll: 3D dice, history, and sharing. The message names every change, and **Undo** in it puts the values back for a few seconds; a value the reader changed in the meantime is kept. Cancelling the 3D roll writes nothing more. In a read-only document buttons are disabled.
+
+**Row buttons** of a table or a built-in list of rows put a button on every row; its formulas read that row as `row.<column>` (`row.level`, `row.cost`).
+
+<LiveDemo kind="example">
+    <ElementExample story="buttons" node="section-buttons" />
+</LiveDemo>
 
 ## Built-in page parts \{#built-in-parts}
 

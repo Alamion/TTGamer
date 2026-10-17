@@ -49,6 +49,7 @@ import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { AreaLayoutContext, forArea } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
+import { ButtonScopeContext } from './ButtonScope';
 import { useCatalogSuggestions } from './catalogSuggestions';
 import {
     OverlayVersionContext,
@@ -62,6 +63,7 @@ import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
 import { PrimitiveNodeView, SystemListView } from './primitives';
+import { SheetButton } from './SheetButton';
 import { ShortLabelScope } from './ShortLabelScope';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -389,6 +391,7 @@ function TableBlock({
     const rowEntries = Object.entries(rows).sort(([left], [right]) => Number(left) - Number(right));
     const blockKey = tableValueKey(node);
     const movable = !pageApi.disabled && rowEntries.length > 1;
+    const rowButtons = node.rowButtons ?? [];
     /** A row is called by its first column when that holds text, else by its position. */
     const rowName = (row: Record<string, unknown>, position: number) => {
         const first = node.columns[0] ? row[node.columns[0].id] : undefined;
@@ -462,6 +465,13 @@ function TableBlock({
                                 {column.label}
                             </th>
                         ))}
+                        {rowButtons.length > 0 && (
+                            <th
+                                scope="col"
+                                aria-label={rowButtons.map(({ label }) => label).join(', ')}
+                                className="w-8 border-b border-border px-1 py-2"
+                            />
+                        )}
                         <th
                             scope="col"
                             aria-label={translate(editor.remove)}
@@ -531,6 +541,18 @@ function TableBlock({
                                     </td>
                                 );
                             })}
+                            {rowButtons.length > 0 && (
+                                <td className="whitespace-nowrap px-1 py-1.5 align-top">
+                                    {rowButtons.map((button) => (
+                                        <SheetButton
+                                            key={button.id}
+                                            button={button}
+                                            row={row}
+                                            rowName={rowName(row, position)}
+                                        />
+                                    ))}
+                                </td>
+                            )}
                             <td className="px-1 py-1.5 align-top">
                                 <button
                                     type="button"
@@ -656,6 +678,7 @@ const NodeView = memo(function NodeView({
     }
 
     if (node.type === 'table') return <TableBlock node={node} pageApi={pageApi} />;
+    if (node.type === 'button') return <SheetButton button={node} />;
     if (node.type === 'list') return <ListView node={node} pageApi={pageApi} />;
 
     if (node.type === 'primitive') {
@@ -914,6 +937,7 @@ export function DeclarativeSheetView({
     );
     const values = pageApi.values;
     const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
+    const buttonScope = useMemo(() => ({ pageApi, template: localized }), [pageApi, localized]);
 
     return (
         <div
@@ -930,7 +954,9 @@ export function DeclarativeSheetView({
         >
             <TermHintProvider>
                 <OverlayVersionContext.Provider value={version}>
-                    <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                    <ButtonScopeContext.Provider value={buttonScope}>
+                        <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                    </ButtonScopeContext.Provider>
                 </OverlayVersionContext.Provider>
             </TermHintProvider>
         </div>

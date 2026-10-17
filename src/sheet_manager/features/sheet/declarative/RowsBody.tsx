@@ -30,6 +30,7 @@ import {
     rowSuggestions,
     suggestionsForRow,
 } from './rowsCatalog';
+import { SheetButton } from './SheetButton';
 
 const fields = uiMessages.sheet.documents.fields;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -138,6 +139,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     ) as Array<Record<string, unknown>>;
     const disabled = bound.readOnly;
     const label = node.label ?? descriptor.label;
+    const rowButtons = node.rowButtons ?? [];
     const write = (next: Array<Record<string, unknown>>) =>
         bound.update({ [descriptor.dataKey]: next });
     const visibleColumns = descriptor.columns.filter((column) => !column.hidden);
@@ -204,6 +206,13 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     aria-label={actions
                                         .map((action) => translate(action.translation))
                                         .join(', ')}
+                                    className="w-8 border-b border-border"
+                                />
+                            )}
+                            {rowButtons.length > 0 && (
+                                <th
+                                    scope="col"
+                                    aria-label={rowButtons.map(({ label }) => label).join(', ')}
                                     className="w-8 border-b border-border"
                                 />
                             )}
@@ -331,6 +340,20 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                             <ActionButton
                                                 key={action.key}
                                                 binding={action}
+                                                row={row}
+                                                rowName={
+                                                    typeof row.name === 'string' ? row.name : ''
+                                                }
+                                            />
+                                        ))}
+                                    </td>
+                                )}
+                                {rowButtons.length > 0 && (
+                                    <td className="whitespace-nowrap px-1 py-1 align-top">
+                                        {rowButtons.map((button) => (
+                                            <SheetButton
+                                                key={button.id}
+                                                button={button}
                                                 row={row}
                                                 rowName={
                                                     typeof row.name === 'string' ? row.name : ''

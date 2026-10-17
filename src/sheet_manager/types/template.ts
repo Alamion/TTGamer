@@ -615,6 +615,82 @@ export const TrackerOverrideSchema = z.object({
 
 export type TrackerOverride = z.infer<typeof TrackerOverrideSchema>;
 
+/** Icons a button may show (Lucide); unset shows the dice. */
+export const BUTTON_ICONS = ['dice', 'droplet', 'heart', 'flame', 'sparkles', 'skull'] as const;
+
+const buttonFormulaSchema = z.string().min(1).max(500);
+
+/** A value a button changes (spec 038): a coordinate, `.current`/`.max` for pools. */
+export const ButtonChangeSchema = z.object({
+    target: z
+        .string()
+        .min(1)
+        .max(130)
+        .regex(
+            /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?$/,
+            'Expected a value key, optionally with .current or .max'
+        ),
+    /** `add` keeps the value within its bounds; `set` writes the amount (bounded too). */
+    op: z.enum(['add', 'set']),
+    /** A formula: `1`, `-1`, `0`, `row.cost`. */
+    amount: buttonFormulaSchema,
+});
+
+const changeListSchema = z
+    .array(ButtonChangeSchema)
+    .max(TEMPLATE_LIMITS.buttonChangesMax)
+    .default([]);
+
+/** What a press rolls (spec 038 D6); without it the success changes apply directly. */
+export const ButtonRollSchema = z.object({
+    /** Dice notation; `{formula}` segments are computed first: `{max(1, 10 - humanity)}d10>=6`. */
+    notation: z.string().min(1).max(300),
+    /** How many rolls one press makes (a formula; unset = 1). */
+    count: buttonFormulaSchema.optional(),
+    /** A failed roll is rolled once more while this formula holds. */
+    rerollWhen: buttonFormulaSchema.optional(),
+    /** A roll succeeds when its total reaches this. */
+    successAt: z.number().int().min(1).max(1_000).default(1),
+    /** Turn dice into the game's special dice (V5 Hunger), as character rolls do. */
+    gameDice: z.boolean().default(false),
+});
+
+const buttonShape = {
+    id: templateIdentifierSchema,
+    label: z.string().min(1).max(120),
+    ...labelMessageShape,
+    icon: z.enum(BUTTON_ICONS).optional(),
+    /** Enabled only while this formula holds. */
+    availableWhen: buttonFormulaSchema.optional(),
+    roll: ButtonRollSchema.optional(),
+    onSuccess: changeListSchema,
+    onFailure: changeListSchema,
+    /** Applied once after every roll of the press finished. */
+    always: changeListSchema,
+    /** Author texts added to the result message (translated in shipped templates). */
+    successText: z.string().max(200).optional(),
+    successMessage: LabelMessageSchema.optional(),
+    failureText: z.string().max(200).optional(),
+    failureMessage: LabelMessageSchema.optional(),
+};
+
+/** A button on every row of a table or built-in rows; formulas may read `row.<column>`. */
+export const RowButtonSchema = z.object(buttonShape);
+
+export type RowButton = z.infer<typeof RowButtonSchema>;
+export type ButtonChange = z.infer<typeof ButtonChangeSchema>;
+
+const rowButtonsShape = {
+    rowButtons: z.array(RowButtonSchema).max(TEMPLATE_LIMITS.rowButtonsMax).optional(),
+};
+
+/** A button on the page (spec 038, US1). */
+const ButtonNodeSchema = z.object({
+    ...buttonShape,
+    type: z.literal('button'),
+    ...placementShape,
+});
+
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
  * registry. Resolution is a runtime registry query — unavailable bindings degrade at render.
@@ -650,6 +726,8 @@ const PrimitiveNodeSchema = z.object({
     /** Member tracks (bindings with members): member cap; ignored by other bindings. */
     cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
     ...maxFromShape,
+    /** Built-in rows (`rows:*`): buttons on each row (spec 038). */
+    ...rowButtonsShape,
 });
 
 /** Custom list (FR-17): own value coordinate OR a system-owned list — identical interface. */
@@ -693,6 +771,7 @@ const TableNodeSchema = z.object({
     minRows: z.number().int().min(0).max(1_000).default(0),
     maxRows: z.number().int().min(1).max(1_000).default(100),
     columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.tableColumnsMax),
+    ...rowButtonsShape,
 });
 
 export interface SectionNode {
@@ -738,13 +817,21 @@ export interface GroupNode {
 export type TableNode = z.infer<typeof TableNodeSchema>;
 export type ListNode = z.infer<typeof ListNodeSchema>;
 export type PrimitiveNode = z.infer<typeof PrimitiveNodeSchema>;
+export type ButtonNode = z.infer<typeof ButtonNodeSchema>;
 
 /** Any node of the template tree — containers and leaves share one placement model (FR-1). */
 export type TemplateNode =
-    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | TemplateField;
+    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | ButtonNode | TemplateField;
 
 /** Container and leaf node types that are not fields. */
-export const TEMPLATE_STRUCTURE_TYPES = ['section', 'group', 'table', 'list', 'primitive'] as const;
+export const TEMPLATE_STRUCTURE_TYPES = [
+    'section',
+    'group',
+    'table',
+    'list',
+    'primitive',
+    'button',
+] as const;
 
 export type TemplateNodeType = (typeof TEMPLATE_STRUCTURE_TYPES)[number] | TemplateFieldType;
 
@@ -796,6 +883,7 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
         case 'section':
         case 'group':
         case 'primitive':
+        case 'button':
             return;
     }
 }
@@ -839,6 +927,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
             TableNodeSchema,
             ListNodeSchema,
             PrimitiveNodeSchema,
+            ButtonNodeSchema,
             TextFieldSchema,
             NumberFieldSchema,
             ToggleFieldSchema,

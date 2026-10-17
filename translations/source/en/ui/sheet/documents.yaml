@@ -340,6 +340,22 @@ fields:
         speeder: Speeder
         character: Character
         vermin: Vermin
+button:
+    success: '{label}: success'
+    failure: '{label}: failure'
+    checks: '{label}: {passed} of {count} succeeded'
+    done: '{label}: done'
+    cancelled: '{label}: roll cancelled; finished rolls keep their changes'
+    unavailable: '{label} is not available now'
+    error: '{label} cannot run: {reason}'
+    change: '{name} {from} → {to}'
+    atLimit: '{name} already at {value}'
+    skipped: 'not stored: {names}'
+    undo: Undo
+    undone: Changes undone
+    notUndone: 'Kept, changed since: {names}'
+    readOnly: This document is read-only
+    forRow: '{label} for {name}'
 scoreTrack:
     group: '{name} {value} of {length}'
 rows:

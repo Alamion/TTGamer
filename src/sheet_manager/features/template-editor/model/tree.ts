@@ -285,6 +285,18 @@ export function keepTermOnRename(node: TermCarrier): void {
     delete node.labelMessage;
 }
 
+const BUTTON_KEYS: ReadonlySet<string> = new Set([
+    'roll',
+    'availableWhen',
+    'icon',
+    'labelMessage',
+    'successText',
+    'successMessage',
+    'failureText',
+    'failureMessage',
+    'rowButtons',
+]);
+
 export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {
     const apply = (node: TemplateNode): TemplateNode => {
         if (node.id !== nodeId) return node;
@@ -305,6 +317,12 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
             'maxMinFrom',
         ] as const) {
             if (key in updates && (merged as Record<string, unknown>)[key] === '') {
+                delete (merged as Record<string, unknown>)[key];
+            }
+        }
+        // Button settings and row buttons cleared to undefined are removed (spec 038).
+        for (const [key, value] of Object.entries(updates)) {
+            if (value === undefined && BUTTON_KEYS.has(key)) {
                 delete (merged as Record<string, unknown>)[key];
             }
         }
