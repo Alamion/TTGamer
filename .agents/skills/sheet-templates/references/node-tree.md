@@ -25,7 +25,18 @@ invariants are in the skill index.
       numeric input (fields, resource, editor settings) is `shared/components/NumberInput`: numeric
       text only, bounded to min/max/step on blur or Enter, arrow keys step.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list` (exactly one
-  of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
+  of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data), `button` (spec 038).
+- Buttons: `label` (`labelMessage`), `icon`, `availableWhen`,
+  `roll? {notation, count, rerollWhen, successAt, gameDice}`, change lists `onSuccess` / `onFailure`
+  / `always` of `{target, op: add|set, amount}` (formulas; `target` may be `x.current` / `x.max`),
+  and author texts. Tables and built-in rows take the same spec as `rowButtons`, whose formulas read
+  `row.<column>`. Targets must be numbers the page can bound (`buttonTargets.ts`).
+- Text fields:
+  `fromCatalog {catalogId, entryFrom, text, alternative? {text, when}, mode: show|suggest}` (spec
+  038 D9). Ratings: `presentation: 'tracker'` with `poolTracker`;
+  `poolTracker.marksFromEnd {coordinate, mark?}` marks a second value from the last box (also on
+  rating-mode built-in values). Catalog choices: `binding.parent {list, via, level?}`; built-in
+  rows: `limitByParent {entryKey, column, parentValue}`. Formula fields: `textMessages`.
 - Custom lists (`valueKey`, spec 016): `item` is the entry template — any field except a formula
   (`ListItemFieldSchema`, `LIST_ITEM_TYPES`) — and `named: false` drops the typed entry name. Read
   both only through `listItemField(list)` (unset = `legacyListItem`: named dot rating 0–5 with S/P/E
@@ -108,11 +119,12 @@ invariants are in the skill index.
   Diagnostics: `template-value-unreadable` (value of another shape, reads empty) and
   `template-value-hidden` (count of stored values under removed parts), both skipped in the editor
   preview.
-- Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value at
-  the coordinate (bag value or bound document data) equals `equals` (`not` inverts). Never affects
-  storage; the editor always shows the node (condition control on every panel). An unknown
-  coordinate hides the node and reports `binding-unresolved`; `validateTemplateReferences` flags it
-  as `unknown-coordinate`.
+- Any node may carry `visibleWhen: { coordinate, equals, not? }` or `visibleWhen: { formula }` (spec
+  038): rendered only while the value at the coordinate (bag value or bound document data) equals
+  `equals` (`not` inverts), or while the formula is non-zero / non-empty. Never affects storage; the
+  editor always shows the node (condition control on every panel). An unknown coordinate hides the
+  node and reports `binding-unresolved`; `validateTemplateReferences` flags it as
+  `unknown-coordinate`.
 - `docsPath` (sections, groups) is `/docs/<path>[#anchor]` or an `https://` address
   (`shared/utils/docsLink.ts`); site paths render under the reader's locale base URL (`useSitePath`)
   through the `DocsHelpLink` atom. Anything else is an `invalid-docs-link` reference issue (editor

@@ -10,7 +10,7 @@ import { useDocumentRollSource } from '../../../hooks/useDocumentSource';
 import type { CustomTemplate, RowButton } from '../../../types/template';
 import { listTemplateFormulaCoordinates } from '../data/templateReferences';
 import { useBoundDocument } from './boundDocument';
-import { buttonTarget, readNumber } from './buttonTargets';
+import { buttonTarget, readNumber, valueNames } from './buttonTargets';
 import type { FormulaEvaluationError, FormulaValue } from './formula';
 import { formulaErrorMessage } from './formulaMessages';
 import type { FormulaRun, UseTemplatePageResult } from './hooks';
@@ -98,11 +98,14 @@ function ScopedButton({
 
     const names = useMemo(
         () =>
-            new Map(
-                listTemplateFormulaCoordinates(template).map(({ coordinate, label }) => [
-                    coordinate,
-                    label,
-                ])
+            valueNames(
+                template,
+                new Map(
+                    listTemplateFormulaCoordinates(template).map(({ coordinate, label }) => [
+                        coordinate,
+                        label,
+                    ])
+                )
             ),
         [template]
     );

@@ -4,10 +4,22 @@ Reference for the `sheet-templates` skill: the formula language and sheet embeds
 
 ## Formulas (`features/sheet/declarative/formula.ts`)
 
-- Grammar: numbers, coordinates (`kebab` or `kebab.current` / `kebab.max`), `+ - * /`, parentheses,
-  unary minus, and `min(a, b, …)` / `max(a, b, …)`. Pure tokenizer → parser → evaluator.
-- One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
-  `resolveBase` in `hooks.ts`).
+- Grammar: numbers, texts in double quotes, coordinates (`kebab` or `kebab.current` / `kebab.max`),
+  `row.<column>` (row buttons only), `+ - * /`, one comparison per part (`< <= > >= = !=`, 1 or 0),
+  `&` joining texts, parentheses, unary minus, and the functions `min`, `max`, `ceil`, `floor`,
+  `round`, `abs`, `if(cond, a, b)` (only the chosen branch is evaluated), `and`, `or`, `not`, and
+  `rating(list, "Name")` (spec 038). Pure tokenizer → parser → evaluator; results are
+  `number | string` (`evaluateFormulaValue`), and `evaluateFormula` keeps numbers-only callers
+  (bounds, lengths) honest: a text there is `non-numeric`.
+- One coordinate space: bag values (texts and choices read as text, toggles as 1/0) plus system
+  traits, pools, rating-mode values by bare name, and text fields (`readBoundNumber` and the text
+  branch of `resolveBase` in `hooks.ts`). `rating()` reads a template list by value key or a game's
+  list by data key (`listRating.ts`: any catalog name, the highest when named twice).
+- `formulaState.evaluate(source, { row })` runs any formula on the page: display conditions
+  (`visibleWhen: { formula }`, shown while non-zero / non-empty; an empty field hides quietly, other
+  errors report `formula-error`), buttons, and From catalog conditions. The editor checks them all
+  against `listTemplateFormulaCoordinates`.
+- Shipped formula fields translate text results through `textMessages` (literal → message id).
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps the
   display; stored values are clamped only when the bounded value itself is edited. For a rating the
   resolved maximum also raises the range above the static `max`, up to 100.

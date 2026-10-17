@@ -147,3 +147,55 @@ rolls, conditions, and changes. Delivery order follows the dependencies:
    formula, the bane field, Humanity, and the powers table — each shows its settings.
 6. New user template: build a "Spend" button without a roll and a Rouse-like button from the guide.
 7. Repeat 1–4 in Russian; brief at 375 and 1280 px.
+
+## Implementation notes
+
+- **Deviations from the design and tasks.**
+    - Button files sit in `features/sheet/declarative/` itself (`runButton.ts`, `SheetButton.tsx`,
+      `buttonTargets.ts`, `PageScope.ts`), not a `button/` folder: the lint rule against directory
+      index imports forbids `../hooks` from a subfolder.
+    - `rating()` takes the highest rating when a name is written twice (as 037's discipline dots
+      did), not the sum.
+    - From catalog's `alternative.when` is a formula, not a `VisibleWhen`; the entry is found by its
+      id too, so a catalog choice can name it.
+    - Blood Potency effects show numbers, with the unit in the label ("Blood surge, extra dice +2")
+      instead of 037's "+2 dice" / "none" messages; the range is a "min–max" text, and a separate
+      text shows "Outside this generation's range" by a display formula. Feeding penalties are eight
+      whole texts translated through `textMessages`.
+    - Tracker marks gained `nameMessage` so a shipped mark name ("Stain") is translated; the brief
+      draws Humanity as a strip (a labelled row was cramped on phones).
+    - Rating-mode built-in values are formula coordinates by their bare name (`hunger`) besides
+      `.current`; the button's context became `PageScopeContext` (trackers of built-in values use it
+      too).
+    - Marks from the end are set by the trackers' outline action (right click, Shift+Enter, long
+      press) and the value by a click or Enter; the arrow keys move between boxes as on every
+      tracker, they do not change the value (FR-009 named them).
+- **Found by the parity test (SC-003), fixed.** The member cap of group tracks (`cohort`) had no
+  editor setting (now "Members at most" on built-in member tracks), and the column span control had
+  no `data-setting`. The test lists the properties that are not settings with the reason.
+- **Found by the walk and e2e, fixed.** Button messages named values by their English binding
+  labels; they now use the localized page labels and mark names. The compact cell width added in
+  `ce08f95` (037 brief fix) widened Star Wars brief chips and broke the 400 px brief budget; it now
+  applies only to full-label rating rows.
+- **SC-005 bundle (T039).** Unique JS and CSS the sheet page loads with a new vampire open, built
+  from `037-vampire-character` and from this branch: 21 files, 873,196 → 885,011 bytes gzip
+  (+11,815, about 11.5 KB) against a 10 KB budget — over by about 1.5 KB (the button, From catalog,
+  and score tracker code; the editor is lazy and not counted). Open for the maintainer.
+- **SC-004.** The message shows as soon as the 3D roll settles (no extra wait measured in the walk);
+  not timed by a test.
+- **Manual walk (2026-10-17, dev server in Russian; scripted with Playwright).**
+    1. New vampire → Rouse check → "Проверка жажды: успех"; on a failure the message names the
+       Hunger change and offers Undo, which restores it — as expected.
+    2. Stains by right click on boxes 10 and 9 → "Пятно" marks; a right click on a filled box →
+       "Пятно ставится на пустую клетку: сначала уменьшите значение."; Remorse check → "успех ·
+       Пятно 1 → 0" (and "провал · Человечность 7 → 6 · Пятно 2 → 0" on a failure); without stains
+       the button is disabled — as expected.
+    3. Generation 9 → range "2–5" and "Вне пределов этого поколения" at Blood Potency 1; clan Бруха
+       → bane and compulsion suggested in Russian; predator type Alleycat → grants shown — as
+       expected.
+    4. No disciplines → no rituals block; power limits and power Rouse buttons: unit tests
+       (`vampire-sheet`, `vampire-rouse`).
+    5. Editor: every shipped element's settings are checked by `shipped-parity.test.tsx`.
+    6. SC-002 (an author rebuilds Rouse from the guide in ten minutes) is the maintainer's step; the
+       guide names every setting it needs.
+    7. Brief at 375, 640, and 1280 px: nothing covers anything; e2e brief budgets pass.

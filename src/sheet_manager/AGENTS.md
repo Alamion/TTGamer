@@ -143,16 +143,24 @@ appropriate for layout/manager operations that explicitly manage the collection.
   `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
-- Action bindings (`kind: 'action'`, spec 037 D6) are buttons that roll and write: `run` gets the
-  data, an optional row (`RowsBinding.actions`), and `roll()` through `useSheetDiceActions` (the
-  document as source, without special dice); `diceRollerStore.roll` resolves with the result, or
-  `null` when a 3D roll is cancelled, and nothing is written then (`ActionButton.tsx`). The V5 Rouse
-  checks (`modules/vampire/rouse.ts`) are the first.
+- Bindings say where a document keeps its data; everything a page computes, shows, or does lives in
+  the template as elements an author can configure (constitution VI, spec 038). A system never adds
+  a behavior only its own code can produce: `tests/sheet_manager/shipped-parity.test.tsx` fails when
+  a shipped element uses a property the editor shows no setting for.
+- Buttons (`type: 'button'`, and `rowButtons` on tables and built-in rows) roll and write:
+  `runButton.ts` is the pure press (availability, `{formula}` notation segments, count, re-roll,
+  success at a total, changes within bounds, `always`); `SheetButton.tsx` rolls through
+  `useSheetDiceActions` (special dice only with `roll.gameDice`), writes through `applyWrites`, and
+  offers Undo for 8 s. `diceRollerStore.roll` resolves `null` for a cancelled 3D roll, and the press
+  stops there. Built-in rows and values reach the page through `PageScopeContext`.
 - The vampire (`modules/vampire/`, kind `vampire` so its bindings never collide with the hunter's
-  `character`): Humanity is a `score` resource with stains, Blood Potency effects are read-only
-  field bindings computed in `bloodPotency.ts`, bane, compulsion, and predator grants fall back to
-  the catalog texts, powers and rituals are rows under the disciplines list with a level `limit`.
-  Its five catalogs keep names in code and long texts in `catalogText/` (loaded on demand).
+  `character`): its mechanics are template elements in `templates/mechanics.ts` — Rouse and Remorse
+  buttons and a power's Rouse row button, Blood Potency effects as formula fields (texts translated
+  through `textMessages`), bane, compulsion, and predator grants as From catalog texts, Humanity as
+  a rating-mode value drawn as a tracker with stains from the end, powers and rituals limited by
+  their discipline (`limitByParent`) and shown by a `rating()` formula. Its five catalogs keep names
+  in code and long texts in `catalogText/` (loaded on demand); they declare the texts From catalog
+  fields can show (`withTexts`).
 - Shipped view ids are unique across systems (prefix them with the system, e.g. `v5-hunter-sheet`);
   edited defaults are keyed `systemId:viewId` (T-046, template store v5).
 - The Star Wars system is a setting on the WoD 2e ruleset (`systems/wod2e/ruleset/`: engine schema

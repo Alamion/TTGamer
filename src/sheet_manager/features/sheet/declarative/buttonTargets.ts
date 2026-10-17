@@ -1,4 +1,6 @@
-import { resolveWritableBinding } from '../../../systems/templateBindings';
+import { translate } from '@docusaurus/Translate';
+
+import { resolveDocumentBinding, resolveWritableBinding } from '../../../systems/templateBindings';
 import {
     type CustomTemplate,
     fieldValueKey,
@@ -96,4 +98,49 @@ export function buttonTarget(
 export function readNumber(evaluate: (source: string) => FormulaRun, coordinate: string) {
     const result = evaluate(coordinate);
     return result.ok && typeof result.value === 'number' ? result.value : undefined;
+}
+
+/**
+ * What a button's message calls each value, in the reader's language: the label of the element
+ * showing it on the (localized) page, a tracker's mark name for its marks, else `fallback`.
+ */
+export function valueNames(
+    template: CustomTemplate,
+    fallback: ReadonlyMap<string, string>
+): Map<string, string> {
+    const names = new Map(fallback);
+    walkTemplateNodes(template.children, (node) => {
+        if (isTemplateField(node)) {
+            names.set(fieldValueKey(node), node.label);
+            const end = node.type === 'rating' ? node.poolTracker?.marksFromEnd : undefined;
+            if (end?.mark?.name) {
+                names.set(
+                    end.coordinate,
+                    end.mark.nameMessage
+                        ? translate({ id: end.mark.nameMessage, message: end.mark.name })
+                        : end.mark.name
+                );
+            }
+            return;
+        }
+        if (node.type !== 'primitive') return;
+        const binding = resolveDocumentBinding(
+            template.systemId,
+            template.documentKind,
+            node.bindingKey
+        );
+        if (binding && 'coordinate' in binding && binding.coordinate && node.label) {
+            names.set(binding.coordinate, node.label);
+        }
+        const end = node.poolTracker?.marksFromEnd;
+        if (end?.mark?.name) {
+            names.set(
+                end.coordinate,
+                end.mark.nameMessage
+                    ? translate({ id: end.mark.nameMessage, message: end.mark.name })
+                    : end.mark.name
+            );
+        }
+    });
+    return names;
 }

@@ -1197,11 +1197,12 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
 function parseFormulaSafe(source: string): string[] | undefined {
     // Local import would create a cycle (formula module imports nothing from template);
     // the dependency extraction is duplicated deliberately as a tiny regex walk.
-    // Whole identifiers only; an identifier followed by "(" is a function call (min/max).
+    // Whole identifiers only; an identifier followed by "(" is a function call (min/max). Texts in
+    // quotes and a row's cells (`row.level`) read no page value (spec 038).
+    const bare = source.replace(/"[^"]*"/g, ' ').replace(/\brow\.[a-z][a-z0-9-]*/g, ' ');
     return (
-        source.match(
-            /[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?(?![a-z0-9.-])(?!\s*\()/g
-        ) ?? []
+        bare.match(/[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?(?![a-z0-9.-])(?!\s*\()/g) ??
+        []
     );
 }
 

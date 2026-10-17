@@ -1,5 +1,10 @@
 # Feature Specification: Vampire: the Masquerade 5e Player Character
 
+> **Historical record.** The vampire's mechanics this spec built as system bindings (Rouse actions,
+> the `score` resource, read-only and fallback fields, the parent `limit`) were rebuilt as template
+> elements by spec 038. Current behavior: `src/sheet_manager/AGENTS.md` ("Systems") and
+> `.agents/skills/sheet-templates/`.
+
 **Branch**: `037-vampire-character` | **Created**: 2026-10-16 | **Status**: Draft
 
 **Input**: "T-039 — Vampire: the Masquerade 5e player character: players maintain VtM 5e vampire

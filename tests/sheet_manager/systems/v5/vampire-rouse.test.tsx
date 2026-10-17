@@ -29,8 +29,9 @@ import {
     rouseButton,
 } from '@site/src/sheet_manager/systems/v5/modules/vampire/templates/mechanics';
 import type { RowButton } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 /**
@@ -151,7 +152,10 @@ describe('Remorse check', () => {
 });
 
 describe('Rouse and Remorse on the sheet', () => {
-    afterEach(cleanup);
+    afterEach(() => {
+        act(() => toast.remove());
+        cleanup();
+    });
 
     const vampire = (overrides: Partial<VampireData> = {}) =>
         VampireSchema.parse({ ...createVampireDefault(), ...overrides });
@@ -171,7 +175,12 @@ describe('Rouse and Remorse on the sheet', () => {
         const template = systemRegistry
             .getSystem('wod-v5')!
             .defaultTemplates!.find((t) => t.id === 'v5-vampire-sheet')!;
-        const sheet = createElement(DeclarativeSheetView, { template });
+        const sheet = createElement(
+            'div',
+            null,
+            createElement(Toaster),
+            createElement(DeclarativeSheetView, { template })
+        );
         render(
             readOnly
                 ? createElement(
@@ -216,6 +225,8 @@ describe('Rouse and Remorse on the sheet', () => {
         mount(vampire({ humanity: 7, stains: 2 }));
         fireEvent.click(screen.getByRole('button', { name: 'Remorse check' }));
         await waitFor(() => expect(stored()).toMatchObject({ humanity: 6, stains: 0 }));
+        // The message names the values as the sheet does (the page label, the mark name).
+        expect(await screen.findByText(/Humanity 7 → 6 · Stain 2 → 0/)).toBeTruthy();
     }, 40_000);
 
     it('disables both in a read-only document', () => {

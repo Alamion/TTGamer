@@ -84,7 +84,7 @@ Documentation inline rolls call `rollDices()` directly and are never read. A `Ro
 `specialDice` (V5 Hunger): the reading then turns that many pool dice into `:h` dice with
 `withSpecialDice` (`dice-logic/notation-utils.ts`; a notation that already has them is kept).
 `store.roll()` resolves with the final `RollResult`, or `null` when nothing was rolled (an empty
-notation or a cancelled 3D roll); sheet actions write their result from it (spec 037).
+notation or a cancelled 3D roll); sheet buttons write their result from it (spec 038).
 
 Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in the orchestrator, kept
 by explosions) and are listed as special dice in history and shared rolls. The WoD tab has a

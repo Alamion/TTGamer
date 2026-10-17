@@ -41,7 +41,7 @@ and a card shown by a formula condition (spec US2).
       in `docs/dev/storybook/template-elements.mdx` (its story data under
       `src/sheet_manager/features/sheet/storybook/`); translations for new editor strings in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`
-- [ ] T009 [US2] Run `yarn verify` (schema change) and commit the story
+- [x] T009 [US2] Run `yarn verify` (schema change) and commit the story
 
 ## User Story 1 - A button that rolls and changes values (P1)
 
@@ -78,7 +78,7 @@ Undo (spec US1).
 - [x] T016 [US1] Storybook stories (button with and without a roll, row buttons) in
       `docs/dev/storybook/template-elements.mdx`; translations in
       `translations/source/{en,ru}/ui/sheet/templates.yaml` and `documents.yaml` (messages, Undo)
-- [ ] T017 [US1] Run `yarn verify` and commit the story
+- [x] T017 [US1] Run `yarn verify` and commit the story
 
 ## User Story 3 - Text from a catalog entry (P2)
 
@@ -163,20 +163,20 @@ Undo (spec US1).
       `translations/source/{en,ru}/ui/sheet/v5Vampire.yaml` (button labels, Remorse, formula texts;
       drop unused rouse messages); the blood-cell check of `tests-e2e/smoke/vampire-brief.spec.ts`
       finds Humanity through the pool tracker instead of the retired score track
-- [ ] T037 [US6] Run `yarn verify:full` (route-visible template change) and commit the story
+- [x] T037 [US6] Run `yarn verify:full` (route-visible template change) and commit the story
 
 ## Finish
 
-- [ ] T038 Update `src/sheet_manager/AGENTS.md`, `.agents/skills/sheet-templates/SKILL.md` and
+- [x] T038 Update `src/sheet_manager/AGENTS.md`, `.agents/skills/sheet-templates/SKILL.md` and
       `references/bindings.md` (what bindings own vs what templates own), the formula reference, and
       `.agents/skills/sheet-manager/SKILL.md`; the template-editor guide en + ru
       (`docs/guide/template-editor/elements.mdx`, `values.mdx`, and their Russian mirrors) for the
       button, formulas, From catalog, marks from the end, and parents; `docs/guide/sheet.mdx` en +
       ru for Remorse and Undo; `specs/037-vampire-character/spec.md` gets a historical-record banner
       (as in spec 005) naming 038 and the current guidance
-- [ ] T039 Backlog entry T-123 in `TODO.md` (spec 038, done with T-039), then measure the sheet page
+- [x] T039 Backlog entry T-123 in `TODO.md` (spec 038, done with T-039), then measure the sheet page
       bundle against `037-vampire-character` (SC-005, +10 KB gzip) and record it in design.md
-- [ ] T040 Run `yarn verify:full`; walk the steps in design.md "Manual walk" ; record results in
+- [x] T040 Run `yarn verify:full`; walk the steps in design.md "Manual walk" ; record results in
       design.md. SC-002 (an author rebuilds the buttons from the guide alone in ten minutes) is the
       maintainer's step: the walk only checks that the guide names every setting it needs
 
