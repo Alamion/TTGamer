@@ -10,6 +10,16 @@ export const EXCEPTIONS_FILE = path.resolve('translations/i18n-exceptions.yaml')
 /** Reserved key of a catalog data file: enumerated values shared by all entries. */
 export const CATALOG_LABELS_KEY = '_labels';
 
+/**
+ * Reserved key of an English catalog data file: fields loaded on demand from
+ * `src/i18n/generated/catalogText/<catalogId>.ts` instead of the page bundle (spec 037, D9).
+ */
+export const CATALOG_LAZY_KEY = '_lazy';
+
+/** Reserved keys of a catalog data file, never entry ids. */
+export const isCatalogMetaKey = (key: string) =>
+    key === CATALOG_LABELS_KEY || key === CATALOG_LAZY_KEY;
+
 export interface UiMessage {
     message: string;
     description?: string;

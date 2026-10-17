@@ -8,6 +8,8 @@ import type { DiceRollerSettings } from '../store/diceRollerStore';
 export interface RollSource {
     systemId: string;
     definitionId: string;
+    /** Dice of the pool the document's state turns into special dice (V5 Hunger, spec 037). */
+    specialDice?: number;
 }
 
 export type DicePanelTab = 'standard' | 'dnd' | 'wod' | '';

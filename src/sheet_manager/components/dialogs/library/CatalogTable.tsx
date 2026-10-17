@@ -17,7 +17,10 @@ import {
 } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
 
-import { getCatalogBinding } from '../../../features/sheet/data/catalogBindings';
+import {
+    catalogDisplayName,
+    getCatalogBinding,
+} from '../../../features/sheet/data/catalogBindings';
 import {
     addColumn,
     addEntry,
@@ -33,6 +36,7 @@ import {
     renameColumn,
     retypeColumn,
     retypeLosses,
+    setColumnCatalog,
     updateEntry,
 } from '../../../features/sheet/data/catalogEdit';
 import type { CatalogNode } from '../../../features/sheet/data/libraryTree';
@@ -44,6 +48,7 @@ import {
     type CatalogColumn,
     type CatalogColumnType,
     type CatalogEntry,
+    catalogOwnerKey,
     type UserCatalog,
 } from '../../../systems/userCatalogs';
 import { TEMPLATE_LIMITS } from '../../../types/templateLimits';
@@ -152,7 +157,61 @@ function ValueCell({
                     className={cellInput}
                 />
             );
+        case 'entry':
+            return <EntryCell column={column} value={value} label={label} onChange={onChange} />;
     }
+}
+
+/**
+ * A cell naming an entry of another catalog (spec 038, a parent): a choice of its entries; a
+ * value no entry has (deleted, renamed, or a missing catalog) stays and is marked.
+ */
+function EntryCell({
+    column,
+    value,
+    label,
+    onChange,
+}: {
+    column: CatalogColumn;
+    value: CatalogCellValue | undefined;
+    label: string;
+    onChange: (value: CatalogCellValue | undefined) => void;
+}) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    const userCatalogs = useDocumentTypeStore((state) => state.catalogs);
+    const target = column.catalogId ? getCatalogBinding(column.catalogId, userCatalogs) : undefined;
+    const text = typeof value === 'string' ? value : '';
+    const entry = target?.entries.find(
+        (candidate) => candidate.id === text || candidate.name === text
+    );
+    const broken = text !== '' && !entry;
+    return (
+        <div className="grid gap-0.5">
+            <select
+                value={entry?.id ?? text}
+                aria-label={label}
+                aria-invalid={broken || undefined}
+                onChange={(event) => onChange(event.target.value || undefined)}
+                className={clsx(cellInput, broken && 'border-error')}
+            >
+                <option value="">—</option>
+                {broken && <option value={text}>{text}</option>}
+                {(target?.entries ?? []).map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                        {target!.entryLabel(candidate, locale)}
+                    </option>
+                ))}
+            </select>
+            {broken && (
+                <p className="text-[11px] text-error">
+                    {translate(labels.brokenEntry, {
+                        value: text,
+                        catalog: column.catalogId ? catalogDisplayName(column.catalogId) : '—',
+                    })}
+                </p>
+            )}
+        </div>
+    );
 }
 
 /**
@@ -243,16 +302,21 @@ function ColumnHeader({
     count,
     onRename,
     onRetype,
+    onSetCatalog,
     onMove,
     onRemove,
+    catalogs,
 }: {
     column: CatalogColumn;
     index: number;
     count: number;
     onRename: (name: string) => void;
     onRetype: (type: CatalogColumnType) => void;
+    onSetCatalog: (catalogId: string | undefined) => void;
     onMove: (offset: -1 | 1) => void;
     onRemove: () => void;
+    /** Catalogs an `entry` column may name: the owner's other catalogs. */
+    catalogs: readonly { id: string; name: string }[];
 }) {
     const [draft, setDraft] = useState(column.name);
     const [lastName, setLastName] = useState(column.name);
@@ -284,6 +348,21 @@ function ColumnHeader({
                         </option>
                     ))}
                 </select>
+                {column.type === 'entry' && (
+                    <select
+                        value={column.catalogId ?? ''}
+                        aria-label={translate(labels.columnCatalog, { column: column.name })}
+                        onChange={(event) => onSetCatalog(event.target.value || undefined)}
+                        className="max-w-[8rem] rounded-sm border border-border bg-bgBase px-1 py-0.5 text-xs text-textPrimary"
+                    >
+                        <option value="">{translate(labels.noCatalog)}</option>
+                        {catalogs.map(({ id, name }) => (
+                            <option key={id} value={id}>
+                                {name}
+                            </option>
+                        ))}
+                    </select>
+                )}
                 <button
                     type="button"
                     disabled={index === 0}
@@ -422,6 +501,20 @@ function EditableCatalogTable({ catalog }: { catalog: UserCatalog }) {
 
     const entriesFull = catalog.entries.length >= TEMPLATE_LIMITS.catalogEntriesMax;
     const columnsFull = catalog.columns.length >= TEMPLATE_LIMITS.catalogColumnsMax;
+
+    // An entry column names entries of another catalog of the same owner, or of the game.
+    const allCatalogs = useDocumentTypeStore((state) => state.catalogs);
+    const parentCatalogs = useMemo(
+        () =>
+            Object.values(allCatalogs)
+                .filter(
+                    (other) =>
+                        other.id !== catalog.id &&
+                        catalogOwnerKey(other.owner) === catalogOwnerKey(catalog.owner)
+                )
+                .map(({ id, name }) => ({ id, name })),
+        [allCatalogs, catalog.id, catalog.owner]
+    );
 
     const requestRetype = (column: CatalogColumn, type: CatalogColumnType) => {
         const losses = retypeLosses(catalog, column.id, type);
@@ -562,6 +655,17 @@ function EditableCatalogTable({ catalog }: { catalog: UserCatalog }) {
                                             save(renameColumn(current(), column.id, name, now()))
                                         }
                                         onRetype={(type) => requestRetype(column, type)}
+                                        onSetCatalog={(catalogId) =>
+                                            save(
+                                                setColumnCatalog(
+                                                    current(),
+                                                    column.id,
+                                                    catalogId,
+                                                    now()
+                                                )
+                                            )
+                                        }
+                                        catalogs={parentCatalogs}
                                         onMove={(offset) =>
                                             save(moveColumn(current(), column.id, offset, now()))
                                         }

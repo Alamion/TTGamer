@@ -320,6 +320,7 @@ describe('element storybook (constitution VI, T-069)', () => {
             'collections',
             'list-entries',
             'trackers',
+            'buttons',
         ]);
     });
 

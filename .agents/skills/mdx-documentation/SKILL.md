@@ -60,14 +60,19 @@ use a single `<br />`.)
 Show a catalog's entries with `<CatalogBrowser catalogId="…" />` (from
 `@site/src/sheet_manager/docsEmbeds`, inside `TWWrapper`): a searchable, filterable table with a
 detail panel, localized from the catalog translations. The catalog must declare `browse` (columns,
-filters, optional child catalog) in its plugin; a list lives on one page only — link to it from
+filters, optional child catalog) in its plugin; the catalog's lazy long texts (summaries, banes)
+load on demand into the detail panel. `<CatalogSummaryTable catalogId="…" />` is the short
+name-and-summary table for a choice inside a step. A list lives on one page only — link to it from
 other pages instead of repeating it.
 
 ## Russian terminology
 
 - The first mention of a glossary game term on a Russian page reads «Русский (English)»
   (`Воровство (Larceny)`); later mentions are Russian only. The verifier's `docs-terms` rule checks
-  it (terms come from `translations/glossary/`, scoped to the system's docs tree).
+  it (terms come from `translations/glossary/`, each file scoped to the docs folders listed in the
+  verifier's `glossaryDocs`; a longer term such as «Сила крови» hides the shorter «Сила» inside it).
+  Hint only the meaning the term has: «точку в Дисциплине», not «точку Дисциплины (Disciplines)». A
+  bilingual glossary page is excepted in `translations/i18n-exceptions.yaml`.
 - Catalog embeds (`DataCatalog` filters, `EntityGrid` getters) use the exported descriptor-based
   configs from `src/data/*Config.tsx`, never literal labels.
 

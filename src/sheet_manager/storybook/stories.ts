@@ -194,6 +194,9 @@ const containers = story(
                 text('field-when-on', 'Field shown only while the toggle is on', {
                     visibleWhen: { coordinate: 'show-extra', equals: true },
                 }),
+                text('field-when-formula', 'Field shown while a formula holds (toggle on)', {
+                    visibleWhen: { formula: 'and(show-extra, 1 + 1 = 2)' },
+                }),
             ],
         },
         {
@@ -358,6 +361,16 @@ const fields = story(
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
                 {
+                    id: 'rating-tracker',
+                    type: 'rating',
+                    label: 'Rating as a tracker, marks from the end',
+                    max: 10,
+                    presentation: 'tracker',
+                    poolTracker: {
+                        marksFromEnd: { coordinate: 'number-plain', mark: { name: 'Stain' } },
+                    },
+                },
+                {
                     id: 'resource-tracker',
                     type: 'resource',
                     label: 'Resource as a tracker (minimum 1)',
@@ -424,6 +437,18 @@ const fields = story(
                     suffix: 'm',
                 },
                 {
+                    id: 'formula-rounded',
+                    type: 'formula',
+                    label: 'Rounded up: half of Rating: dots',
+                    formula: 'ceil(rating-dots / 2)',
+                },
+                {
+                    id: 'formula-text',
+                    type: 'formula',
+                    label: 'Text result',
+                    formula: 'if(rating-dots >= 3, "Strong (" & rating-dots & ")", "Weak")',
+                },
+                {
                     id: 'formula-division',
                     type: 'formula',
                     label: 'Error: division by zero',
@@ -453,7 +478,7 @@ const fields = story(
         },
     ],
     // The formulas and computed maxima read these; the error examples stay errors on purpose.
-    { 'number-plain': 4, 'rating-dots': 3, 'rating-number': 2 }
+    { 'number-plain': 4, 'rating-dots': 3, 'rating-number': 2, 'rating-tracker': 5 }
 );
 
 const catalogFields = story(
@@ -486,6 +511,7 @@ const catalogFields = story(
 export const SAMPLE_CATALOG_ID = 'user-catalog-storybk1';
 const SAMPLE_POWER = 'c-power001';
 const SAMPLE_CURSED = 'c-cursed01';
+const SAMPLE_LORE = 'c-lore0001';
 
 export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
     id: SAMPLE_CATALOG_ID,
@@ -494,22 +520,65 @@ export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
     columns: [
         { id: SAMPLE_POWER, name: 'Power', type: 'number' },
         { id: SAMPLE_CURSED, name: 'Cursed', type: 'toggle' },
+        { id: SAMPLE_LORE, name: 'Lore', type: 'text' },
     ],
     entries: [
         {
             id: 'e-bonefl01',
             name: 'Bone Flute',
-            values: { [SAMPLE_POWER]: 2, [SAMPLE_CURSED]: false },
+            values: {
+                [SAMPLE_POWER]: 2,
+                [SAMPLE_CURSED]: false,
+                [SAMPLE_LORE]: 'Plays the songs of the dead.',
+            },
         },
         {
             id: 'e-mirror01',
             name: 'Black Mirror',
-            values: { [SAMPLE_POWER]: 4, [SAMPLE_CURSED]: true },
+            values: {
+                [SAMPLE_POWER]: 4,
+                [SAMPLE_CURSED]: true,
+                [SAMPLE_LORE]: 'Shows the room as it will be.',
+            },
         },
         { id: 'e-candle01', name: 'Grave Candle', values: { [SAMPLE_POWER]: 1 } },
     ],
     createdAt: '2026-09-27T00:00:00.000Z',
     updatedAt: '2026-09-27T00:00:00.000Z',
+});
+
+const SAMPLE_RITES_ID = 'user-catalog-storybk2';
+const RITE_RELIC = 'c-relic001';
+const RITE_LEVEL = 'c-level001';
+
+/** Rites that belong to relics (a parent column) with a level: a table limits them (spec 038). */
+const SAMPLE_RITES: UserCatalog = UserCatalogSchema.parse({
+    id: SAMPLE_RITES_ID,
+    name: 'Sample rites',
+    owner: { rulesetId: ENGINE.systemId },
+    columns: [
+        { id: RITE_RELIC, name: 'Relic', type: 'entry', catalogId: SAMPLE_CATALOG_ID },
+        { id: RITE_LEVEL, name: 'Level', type: 'number' },
+    ],
+    entries: [
+        {
+            id: 'e-dirge001',
+            name: 'Dirge',
+            values: { [RITE_RELIC]: 'e-bonefl01', [RITE_LEVEL]: 1 },
+        },
+        {
+            id: 'e-wake0001',
+            name: 'Wake the Dead',
+            values: { [RITE_RELIC]: 'e-bonefl01', [RITE_LEVEL]: 3 },
+        },
+        {
+            id: 'e-gaze0001',
+            name: 'Far Gaze',
+            values: { [RITE_RELIC]: 'e-mirror01', [RITE_LEVEL]: 2 },
+        },
+    ],
+    createdAt: '2026-10-17T00:00:00.000Z',
+    updatedAt: '2026-10-17T00:00:00.000Z',
 });
 
 const userCatalogFields = story(
@@ -534,6 +603,28 @@ const userCatalogFields = story(
             },
             { id: 'relic-power', type: 'number', label: 'Power' },
             { id: 'relic-cursed', type: 'toggle', label: 'Cursed' },
+            {
+                id: 'relic-lore',
+                type: 'text',
+                label: 'Lore (From catalog, shown)',
+                fromCatalog: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    entryFrom: 'relic-pick',
+                    text: SAMPLE_LORE,
+                    mode: 'show',
+                },
+            },
+            {
+                id: 'relic-note',
+                type: 'text',
+                label: 'Note (From catalog, suggested)',
+                fromCatalog: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    entryFrom: 'relic-pick',
+                    text: SAMPLE_LORE,
+                    mode: 'suggest',
+                },
+            },
         ]),
         {
             id: 'relic-list',
@@ -567,7 +658,29 @@ const userCatalogFields = story(
                 { id: 'relic-item-cursed', type: 'toggle', label: 'Cursed' },
             ],
         },
-    ]
+        {
+            id: 'rite-table',
+            type: 'table',
+            title: 'Rites, limited by the relics carried',
+            columns: [
+                {
+                    id: 'rite',
+                    type: 'select',
+                    label: 'Rite',
+                    options: [{ id: 'placeholder', label: 'Placeholder' }],
+                    binding: {
+                        catalogId: SAMPLE_RITES_ID,
+                        parent: { list: 'relic-list', via: RITE_RELIC, level: RITE_LEVEL },
+                    },
+                },
+            ],
+        },
+    ],
+    // One relic carried at 2: the rite table offers its rites up to level 2.
+    {
+        'relic-list': [{ id: 'carried-flute', label: 'Bone Flute', value: 2 }],
+        'rite-table': { '0': {} },
+    }
 );
 
 const collections = story(
@@ -745,9 +858,11 @@ export function bindingSignature(binding: DocumentBindingDescriptor): string {
         case 'track':
             return `track:${binding.members ? 'members' : binding.length ? 'length' : binding.variants ? 'variants' : 'levels'}`;
         case 'field':
-            return `field:${binding.valueType}${binding.options ? ':options' : ''}`;
+            return [`field:${binding.valueType}`, binding.options ? ':options' : ''].join('');
         case 'equipment':
             return `equipment:${binding.sectionId}`;
+        case 'rows':
+            return 'rows';
         default:
             return binding.kind;
     }
@@ -1003,6 +1118,77 @@ const trackers = story(
     ]
 );
 
+const buttons = story(
+    'buttons',
+    'Buttons',
+    'A button rolls and changes values; row buttons read their row. Pressing them here rolls the dice for real.',
+    { systemId: 'star-wars-wod', documentKind: 'character' },
+    [
+        {
+            id: 'section-buttons',
+            type: 'section',
+            title: 'Page and row buttons',
+            columns: 3,
+            children: [
+                { id: 'strain', type: 'number', label: 'Strain', min: 0, max: 5 },
+                { id: 'marks', type: 'number', label: 'Marks', min: 0, max: 10 },
+                {
+                    id: 'button-roll',
+                    type: 'button',
+                    label: 'Check (1d10, 6+)',
+                    icon: 'droplet',
+                    roll: { notation: '1d10>=6' },
+                    onFailure: [{ target: 'strain', op: 'add', amount: '1' }],
+                },
+                {
+                    id: 'button-pool',
+                    type: 'button',
+                    label: 'Pool from a formula, re-roll',
+                    roll: {
+                        notation: '{max(1, 10 - marks)}d10>=6',
+                        rerollWhen: 'strain < 3',
+                    },
+                    onFailure: [{ target: 'marks', op: 'add', amount: '1' }],
+                    always: [{ target: 'strain', op: 'set', amount: '0' }],
+                },
+                {
+                    id: 'button-spend',
+                    type: 'button',
+                    label: 'Spend a mark (no roll)',
+                    icon: 'heart',
+                    availableWhen: 'marks > 0',
+                    onSuccess: [{ target: 'marks', op: 'add', amount: '-1' }],
+                },
+                {
+                    id: 'table-row-buttons',
+                    type: 'table',
+                    title: 'Row buttons',
+                    span: 3,
+                    columns: [
+                        { id: 'name', type: 'text', label: 'Name' },
+                        { id: 'cost', type: 'number', label: 'Cost', min: 0, max: 3 },
+                    ],
+                    rowButtons: [
+                        {
+                            id: 'row-check',
+                            label: 'Pay',
+                            icon: 'flame',
+                            availableWhen: 'row.cost > 0',
+                            roll: { notation: '1d10>=6', count: 'row.cost' },
+                            onFailure: [{ target: 'strain', op: 'add', amount: '1' }],
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+    {
+        strain: 1,
+        marks: 2,
+        'table-row-buttons': { '0': { name: 'Costly', cost: 2 }, '1': { name: 'Free', cost: 0 } },
+    }
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     fields,
@@ -1011,13 +1197,14 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     collections,
     listEntries,
     trackers,
+    buttons,
 ];
 
 let allStories: readonly ElementStory[] | undefined;
 
 /** Every story, handwritten first; bound parts are built on first use (the registry is ready). */
 export function listElementStories(): readonly ElementStory[] {
-    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG]);
+    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG, SAMPLE_RITES]);
     allStories ??= [...HANDWRITTEN_STORIES, ...boundPartStories()];
     return allStories;
 }

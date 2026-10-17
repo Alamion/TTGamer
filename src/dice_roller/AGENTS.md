@@ -80,7 +80,11 @@ the notation (e.g. add `x2=10`), `interpret` returns a `RollReadingSummary` stor
 `RollResult.reading` (history, toast, roll sharing). No reader, or a throwing reader, means an
 unread roll and a logged warning. The reader lives in `src/integrations/roll-reading/` and is
 registered lazily from `src/theme/Root.tsx`, so the system registry never joins the shared bundle.
-Documentation inline rolls call `rollDices()` directly and are never read.
+Documentation inline rolls call `rollDices()` directly and are never read. A `RollSource` may carry
+`specialDice` (V5 Hunger): the reading then turns that many pool dice into `:h` dice with
+`withSpecialDice` (`dice-logic/notation-utils.ts`; a notation that already has them is kept).
+`store.roll()` resolves with the final `RollResult`, or `null` when nothing was rolled (an empty
+notation or a cancelled 3D roll); sheet buttons write their result from it (spec 038).
 
 Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in the orchestrator, kept
 by explosions) and are listed as special dice in history and shared rolls. The WoD tab has a
@@ -106,6 +110,7 @@ The public barrel exports only:
 - `onRollResult`
 - `validateNotation` and `diagnoseNotation` (structured `NotationDiagnostic`; spec 011)
 - `isSuccessPool` and `withPoolSetBonus` (neutral pool helpers for system readings)
+- `withSpecialDice` (in `notation-utils.ts`, imported by its file)
 - `RollResult`, `FullRollResult`, `NotationDiagnostic`, `NotationErrorKind`, and `LimitName` types
 
 UI outside this module may use that barrel. Dice internals and their unit tests should import the

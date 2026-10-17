@@ -80,7 +80,7 @@ export interface TemplateFieldControlProps {
     /** Why a `maxFrom` limit has no value; the control shows it as the degraded state. */
     maxDegraded?: string;
     /** Read-only formula result for formula fields (computed by the hook layer, never stored). */
-    formulaResult?: { state: 'ok'; value: number } | { state: 'error'; message: string };
+    formulaResult?: { state: 'ok'; value: number | string } | { state: 'error'; message: string };
     /** Resolved catalog options for a catalog-backed select (US3); absent → static options. */
     catalogOptions?: ReadonlyArray<CatalogOption>;
     /** Documents available for a reference control (provided by the hook layer). */
@@ -494,7 +494,8 @@ function RatingFieldControlRender({
             hideLabel={field.hideLabel}
             labelPosition={fieldLabelPosition(field)}
             required={field.required}
-            presentation={field.presentation}
+            // A tracker look is drawn by the page (it writes two values); here it reads as dots.
+            presentation={field.presentation === 'tracker' ? 'dots' : field.presentation}
             value={current}
             clampedFrom={stored !== undefined && stored > effectiveMax ? stored : undefined}
             min={field.min}
@@ -921,7 +922,9 @@ function FormulaFieldControlRender({
             >
                 {field.label}
             </span>
-            {formulaResult?.state === 'ok' ? (
+            {formulaResult?.state === 'ok' && typeof formulaResult.value === 'string' ? (
+                <span className="text-textPrimary">{formulaText(field, formulaResult.value)}</span>
+            ) : formulaResult?.state === 'ok' ? (
                 <span className="font-mono text-textPrimary">
                     {field.prefix}
                     {formulaResult.value}
@@ -936,6 +939,12 @@ function FormulaFieldControlRender({
             )}
         </div>
     );
+}
+
+/** A text result in the reader's language when a shipped template translates it (spec 038 D2). */
+function formulaText(field: FieldType<'formula'>, value: string): string {
+    const id = field.textMessages?.[value];
+    return id ? translate({ id, message: value }) : value;
 }
 
 export function FormulaFieldControl(props: TemplateFieldControlProps) {

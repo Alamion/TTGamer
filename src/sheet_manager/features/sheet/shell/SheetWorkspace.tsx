@@ -72,7 +72,21 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
             })}
         />
     );
-    useShownDocumentPublisher(currentDocument);
+    // The header's pending roll follows the shown document, with its Hunger (spec 037 D2).
+    const shownSpecialDice = currentDocument
+        ? systemRegistry
+              .getSystem(currentDocument.systemId)
+              ?.dice?.reading?.specialDice?.(currentDocument.definitionId, currentDocument.data)
+        : undefined;
+    useShownDocumentPublisher(
+        currentDocument
+            ? {
+                  systemId: currentDocument.systemId,
+                  definitionId: currentDocument.definitionId,
+                  ...(shownSpecialDice ? { specialDice: shownSpecialDice } : {}),
+              }
+            : null
+    );
     const currentDefinition = currentDocument
         ? systemRegistry.getDocumentDefinition(
               currentDocument.systemId,

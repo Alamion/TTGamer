@@ -22,7 +22,7 @@ export function isUserCatalogId(id: string): boolean {
     return id.startsWith(USER_CATALOG_PREFIX);
 }
 
-export const CATALOG_COLUMN_TYPES = ['text', 'number', 'toggle'] as const;
+export const CATALOG_COLUMN_TYPES = ['text', 'number', 'toggle', 'entry'] as const;
 export type CatalogColumnType = (typeof CATALOG_COLUMN_TYPES)[number];
 
 export const CatalogColumnSchema = z
@@ -30,6 +30,8 @@ export const CatalogColumnSchema = z
         id: z.string().regex(/^c-[a-z0-9]{8}$/, 'Expected a catalog column id'),
         name: z.string().trim().min(1).max(60),
         type: z.enum(CATALOG_COLUMN_TYPES),
+        /** `entry` columns (spec 038): the catalog whose entry each cell names (its parent). */
+        catalogId: z.string().min(1).max(80).optional(),
     })
     .strict();
 
@@ -64,7 +66,7 @@ export type CatalogEntry = z.infer<typeof CatalogEntrySchema>;
 export type UserCatalogOwner = z.infer<typeof UserCatalogOwnerSchema>;
 
 const matchesType = (value: CatalogCellValue, type: CatalogColumnType) =>
-    type === 'text'
+    type === 'text' || type === 'entry'
         ? typeof value === 'string'
         : type === 'number'
           ? typeof value === 'number'
@@ -186,6 +188,7 @@ const FILL_KIND: Record<CatalogColumnType, CatalogFillKind> = {
     text: 'text',
     number: 'number',
     toggle: 'boolean',
+    entry: 'text',
 };
 
 const bindings = new WeakMap<UserCatalog, CatalogBindingEntry<UserCatalogEntryView>>();
@@ -228,6 +231,9 @@ export function userCatalogBinding(
             return typeof value === 'string' ? value : undefined;
         },
         entryList: () => undefined,
+        texts: catalog.columns
+            .filter(({ type }) => type === 'text')
+            .map(({ id, name: label }) => ({ key: id, label })),
     };
     bindings.set(catalog, binding);
     return binding;

@@ -1,0 +1,69 @@
+---
+sidebar_position: 3
+title: Humanity and Stains
+description: How a vampire's Humanity wears down — Stains, the Remorse check at the end of a session, and what happens when Stains overflow.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+import { TemplatePreview, vampireExampleDocument } from '@site/src/sheet_manager/docsEmbeds';
+
+# Humanity and Stains
+
+:::tip[In short]
+**Humanity** (0–10, starting at 7) is how much of a person your vampire still is. Monstrous acts mark **Stains**. At the end of a session with Stains, make a **Remorse check**: succeed and they fade, fail and you lose a dot of Humanity.
+:::
+
+## Stains
+
+Your Storyteller gives you Stains when your vampire acts against what they believe:
+
+- breaking one of your **Convictions** or the coterie's **Chronicle tenets**;
+- harming or losing a **Touchstone**;
+- some messy criticals, and other cruel acts the Storyteller judges.
+
+Usually one Stain, more for something terrible. Stains fill the Humanity track from its far end, toward your Humanity dots.
+
+**On the sheet:** Humanity and its Stains share one row of ten boxes. Click a box to set Humanity; mark a Stain with a right click, Shift+Enter, or a long press. Stains never cover a Humanity dot: the sheet tells you when there is no room.
+
+<TWWrapper>
+    <TemplatePreview
+        document={vampireExampleDocument()}
+        systemId="wod-v5"
+        template="v5-vampire-sheet"
+        node="blood"
+    />
+</TWWrapper>
+
+<br />
+<br />
+
+## The Remorse check
+
+At the end of each session with at least one Stain, roll one die for every box that is neither a Humanity dot nor a Stain — at least one die. No Hunger dice here.
+
+- **One success or more:** your vampire feels enough guilt to hold on. Clear the Stains.
+- **No successes:** the Beast wins. Lose one dot of Humanity, then clear the Stains.
+
+:::note[Example: Mirela]
+Mirela ends the session with Humanity 7 and one Stain. That leaves two empty boxes: she rolls two dice.
+
+<TWWrapper>
+    <InlineRoll notation={'2d10>=6@3,8'} variant="details" preroll />
+</TWWrapper>
+
+<br />
+<br />
+
+The 8 is a success. She keeps her Humanity, and the Stain is gone.
+:::
+
+**On the sheet:** the **Remorse check** button appears while you have Stains. It rolls the right number of dice, takes a dot of Humanity on a failure, and clears the Stains either way. The message after the roll offers **Undo** if you pressed by mistake.
+
+## When Stains overflow
+
+If you gain more Stains than you have empty boxes, your vampire is overcome by guilt: they are **impaired** (two dice fewer on every pool) and take a point of aggravated Willpower damage for each Stain that did not fit. It lasts until the Remorse check at the end of the session — or until they give up a dot of Humanity on purpose to make peace with what they did.
+
+## Low Humanity
+
+The lower your Humanity, the less your vampire passes for alive: their body is colder, their face harder to read, and resting by day is longer and deeper. At Humanity 0 the Beast takes over for good, and the character is no longer yours to play.

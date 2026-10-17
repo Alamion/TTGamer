@@ -37,6 +37,11 @@ export interface CatalogBrowseColumn {
     filter?: boolean;
     /** Only in the detail panel, not as a table column. */
     detailOnly?: boolean;
+    /**
+     * The value names entries of this catalog: an id, `<id>:<suffix>`, or a list of them, shown
+     * as the entries' names in the reader's language (`dominate:3` → `Dominate 3`).
+     */
+    entriesOf?: string;
 }
 
 /** How documentation pages browse a catalog (searchable table with filters and details). */
@@ -75,6 +80,23 @@ export interface CatalogBindingEntry<TEntry extends CatalogLike = CatalogLike> {
     /** Text matched by picker search: the localized and the English name. */
     pickSearchText: (entry: TEntry, lang: string) => string;
     browse?: CatalogBrowse;
+    /** Texts a field can show From catalog (spec 038 D9): bane, summary, a text column. */
+    texts?: readonly CatalogTextDescriptor[];
+}
+
+/** One text of a catalog's entries; `lazy` texts load on demand (spec 037 D9). */
+export interface CatalogTextDescriptor {
+    key: string;
+    label: { id: string; message: string } | string;
+    lazy?: true;
+}
+
+/** A catalog with the texts its entries offer to From catalog fields. */
+export function withTexts<TEntry extends CatalogLike>(
+    catalog: CatalogBindingEntry<TEntry>,
+    texts: readonly CatalogTextDescriptor[]
+): CatalogBindingEntry<TEntry> {
+    return { ...catalog, texts };
 }
 
 export function rowsDetail(key: string, label: string): CatalogFillableDetail {

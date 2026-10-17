@@ -3,7 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { systemRegistry } from '../../../systems';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
-import type { TemplateField } from '../../../types/template';
+import type { RowButton, TemplateField } from '../../../types/template';
 import {
     collectFormulaDependencies,
     collectTreeIssues,
@@ -115,6 +115,11 @@ function referenceIssue(
             return {
                 message: interpolate(messages.invalidDocsLink, { id: issue.key }),
                 setting: at('visibility', 'docsPath'),
+            };
+        case 'unknown-value':
+            return {
+                message: interpolate(messages.unknownCoordinate, { id: issue.key || '—' }),
+                setting: at(issue.group, issue.setting),
             };
         case 'reference-target-unavailable':
             return {
@@ -331,6 +336,28 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
             checkFieldSettings(node, messages, (problem, setting, named) =>
                 issue(named ? problem : inElement(name, problem), setting)
             );
+        }
+        const buttonIssues = (button: RowButton, prefix: string) => {
+            if (button.label.trim().length === 0) {
+                issue(messages.emptyLabel, at('content', `${prefix}label`));
+            }
+            formulaIssue(button.availableWhen, at('visibility', `${prefix}availableWhen`));
+            formulaIssue(button.roll?.count, at('value', `${prefix}count`));
+            formulaIssue(button.roll?.rerollWhen, at('value', `${prefix}rerollWhen`));
+            for (const [, segment] of (button.roll?.notation ?? '').matchAll(/\{([^{}]*)\}/g)) {
+                formulaIssue(segment, at('value', `${prefix}notation`));
+            }
+            for (const outcome of ['onSuccess', 'onFailure', 'always'] as const) {
+                for (const change of button[outcome]) {
+                    formulaIssue(change.amount, at('value', `${prefix}${outcome}`));
+                }
+            }
+        };
+        if (node.type === 'button') buttonIssues(node, '');
+        if (node.type === 'table' || node.type === 'primitive') {
+            for (const button of node.rowButtons ?? []) {
+                buttonIssues(button, `rowButton:${button.id}.`);
+            }
         }
         if (node.type === 'primitive') {
             formulaIssue(node.minFrom, at('limits', 'minFrom'));

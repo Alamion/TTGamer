@@ -1,4 +1,5 @@
 import { isSuccessPool, type RollResult, withPoolSetBonus } from '@site/src/dice_roller/dice-logic';
+import { withSpecialDice } from '@site/src/dice_roller/dice-logic/notation-utils';
 
 import type {
     DiceOutcome,
@@ -29,6 +30,8 @@ export interface V5DiceLine extends DiceReadingLine {
     /** Document definitions whose sheet rolls use this line. */
     definitionIds: readonly string[];
     outcomes(facts: V5RollFacts): DiceOutcome[];
+    /** Special dice that replace regular dice of a sheet's pool (VtM Hunger), from the data. */
+    replaces?: { count(data: unknown): number };
 }
 
 /** Builds an outcome that is conditional when the Difficulty is unknown. */
@@ -59,9 +62,18 @@ export function createV5DiceReading(lines: readonly V5DiceLine[]): RollReadingRu
         lines: lines.map(({ id, label }) => ({ id, label })),
         lineFor: (definitionId) =>
             lines.find((line) => line.definitionIds.includes(definitionId))?.id,
-        prepare(notation, { criticalPairs }) {
-            if (!criticalPairs) return isSuccessPool(notation) ? notation.trim() : null;
-            return withPoolSetBonus(notation, CRITICAL_PAIRS);
+        specialDice(definitionId, data) {
+            return lines
+                .find((line) => line.definitionIds.includes(definitionId))
+                ?.replaces?.count(data);
+        },
+        prepare(notation, { criticalPairs, specialDice }) {
+            const pool =
+                specialDice && specialDice > 0
+                    ? (withSpecialDice(notation, specialDice) ?? notation)
+                    : notation;
+            if (!criticalPairs) return isSuccessPool(pool) ? pool.trim() : null;
+            return withPoolSetBonus(pool, CRITICAL_PAIRS);
         },
         interpret(result, { line, outcomes, difficulty }) {
             if (!outcomes) return [];

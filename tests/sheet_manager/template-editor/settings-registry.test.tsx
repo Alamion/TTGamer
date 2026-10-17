@@ -83,7 +83,7 @@ const tracker = (id: string) => ({
 
 /** The `data-setting` key without its row index or its entry/column prefix. */
 function baseKey(key: string): string {
-    const last = key.replace(/^(entry\.|column:[^.]+\.)/, '');
+    const last = key.replace(/^(entry\.|column:[^.]+\.|rowButton:[^.]+\.)/, '');
     return last.split(':')[0]!;
 }
 

@@ -16,7 +16,14 @@ import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
 import { moveItem } from './rowOrder';
-import { parentName, type RowSuggestion, rowSuggestions, suggestionsForRow } from './rowsCatalog';
+import {
+    parentName,
+    rowAboveLimit,
+    type RowSuggestion,
+    rowSuggestions,
+    suggestionsForRow,
+} from './rowsCatalog';
+import { SheetButton } from './SheetButton';
 
 const fields = uiMessages.sheet.documents.fields;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -108,9 +115,11 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const bound = useBoundDocument();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
+    // Rows above their parent's rating (spec 038): the page decides, the binding names the parent.
+    const limit = catalog?.parent ? node.limitByParent : undefined;
     const suggestions = useMemo(
-        () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale) : []),
-        [catalog, locale]
+        () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale, limit) : []),
+        [catalog, locale, limit]
     );
     if (!bound) return null;
     const rows = (
@@ -118,6 +127,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     ) as Array<Record<string, unknown>>;
     const disabled = bound.readOnly;
     const label = node.label ?? descriptor.label;
+    const rowButtons = node.rowButtons ?? [];
     const write = (next: Array<Record<string, unknown>>) =>
         bound.update({ [descriptor.dataKey]: next });
     const visibleColumns = descriptor.columns.filter((column) => !column.hidden);
@@ -178,6 +188,13 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     {columnLabel(column)}
                                 </th>
                             ))}
+                            {rowButtons.length > 0 && (
+                                <th
+                                    scope="col"
+                                    aria-label={rowButtons.map(({ label }) => label).join(', ')}
+                                    className="w-8 border-b border-border"
+                                />
+                            )}
                             {!disabled && (
                                 <th
                                     scope="col"
@@ -210,6 +227,17 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     </td>
                                 )}
                                 {visibleColumns.map((column) => {
+                                    const above =
+                                        catalog && column.key === catalog.column
+                                            ? rowAboveLimit(
+                                                  CATALOG_LOOKUP,
+                                                  catalog,
+                                                  limit,
+                                                  row,
+                                                  bound.data,
+                                                  locale
+                                              )
+                                            : null;
                                     const cell =
                                         typeof row[column.key] === 'string'
                                             ? (row[column.key] as string)
@@ -240,6 +268,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                         ...suggestionsForRow(
                                                             CATALOG_LOOKUP,
                                                             catalog,
+                                                            limit,
                                                             suggestions,
                                                             row,
                                                             bound.data,
@@ -272,9 +301,34 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                     }
                                                 />
                                             )}
+                                            {above && (
+                                                <p
+                                                    data-row-above=""
+                                                    className="mt-0.5 text-xs text-warning"
+                                                >
+                                                    {translate(rowMessages.aboveParent, {
+                                                        parent: above.parent,
+                                                        dots: above.dots,
+                                                    })}
+                                                </p>
+                                            )}
                                         </td>
                                     );
                                 })}
+                                {rowButtons.length > 0 && (
+                                    <td className="whitespace-nowrap px-1 py-1 align-top">
+                                        {rowButtons.map((button) => (
+                                            <SheetButton
+                                                key={button.id}
+                                                button={button}
+                                                row={row}
+                                                rowName={
+                                                    typeof row.name === 'string' ? row.name : ''
+                                                }
+                                            />
+                                        ))}
+                                    </td>
+                                )}
                                 {!disabled && (
                                     <td className="whitespace-nowrap px-1 py-1 align-top">
                                         <button

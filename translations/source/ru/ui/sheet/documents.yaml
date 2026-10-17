@@ -207,6 +207,7 @@ examples:
     landspeeder: Лендспидер Люка (пример)
     falcon: «Тысячелетний сокол» (пример)
     lenaVarga: Лена Варга (пример)
+    mirelaVoss: Мирела Восс (пример)
 create:
     title: Создать документ
     prompt: Выберите игровую систему и формат документа.
@@ -339,8 +340,25 @@ fields:
         speeder: Спидер
         character: Персонаж
         vermin: Мелкое существо
+button:
+    success: '{label}: успех'
+    failure: '{label}: провал'
+    checks: '{label}: успешно {passed} из {count}'
+    done: '{label}: готово'
+    cancelled: '{label}: бросок отменён; завершённые броски сохранили изменения'
+    unavailable: '{label} сейчас недоступно'
+    error: '{label} не выполняется: {reason}'
+    change: '{name} {from} → {to}'
+    atLimit: '{name} уже {value}'
+    skipped: 'не хранится: {names}'
+    undo: Отменить
+    undone: Изменения отменены
+    notUndone: 'Оставлено, изменено с тех пор: {names}'
+    readOnly: Документ только для чтения
+    forRow: '{label}: {name}'
 rows:
     moveUp: 'Переместить {name} выше'
     moveDown: 'Переместить {name} ниже'
     reorder: Перетащите, чтобы переставить
     fallbackName: 'строку {index}'
+    aboveParent: 'выше уровня: {parent} {dots}'

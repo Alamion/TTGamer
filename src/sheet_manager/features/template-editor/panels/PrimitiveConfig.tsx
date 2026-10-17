@@ -11,6 +11,8 @@ import { inputClasses } from '../settings/inputClasses';
 import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
 import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
+import { RowButtonsSetting } from './ButtonSettings';
+import { RowsLimitSetting } from './field/ParentSetting';
 import { ToggleRow } from './LayoutControls';
 import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { ShortFormSettings } from './ShortFormSettings';
@@ -46,26 +48,32 @@ export function primitiveSettings({
     const update = (updates: NodeUpdates) => onUpdate(node.id, updates);
     const resource = descriptor?.kind === 'resource';
     const pool = resource && descriptor.mode === 'pool';
-    const asTracker = pool && node.poolTracker !== undefined;
+    // A rating-mode value (V5 Humanity) draws as boxes too, with marks from the end (spec 038).
+    const single = resource && descriptor.mode === 'rating';
+    const asTracker = (pool || single) && node.poolTracker !== undefined;
     // A dots node editing the maximum keeps its minimum on the maximum as a tracker, and back.
     const setDisplay = (tracker: boolean) =>
-        update(
-            tracker
-                ? {
-                      poolTracker: { display: 'row', legend: false, total: true },
-                      part: undefined,
-                      ...(node.part === 'max' && node.minFrom
-                          ? { maxMinFrom: node.minFrom, minFrom: undefined }
-                          : {}),
-                  }
-                : {
-                      poolTracker: undefined,
-                      maxMinFrom: undefined,
-                      ...(node.maxMinFrom && !node.minFrom
-                          ? { minFrom: node.maxMinFrom, part: 'max' as const }
-                          : {}),
-                  }
-        );
+        single
+            ? update({
+                  poolTracker: tracker ? { display: 'row', legend: false, total: true } : undefined,
+              })
+            : update(
+                  tracker
+                      ? {
+                            poolTracker: { display: 'row', legend: false, total: true },
+                            part: undefined,
+                            ...(node.part === 'max' && node.minFrom
+                                ? { maxMinFrom: node.minFrom, minFrom: undefined }
+                                : {}),
+                        }
+                      : {
+                            poolTracker: undefined,
+                            maxMinFrom: undefined,
+                            ...(node.maxMinFrom && !node.minFrom
+                                ? { minFrom: node.maxMinFrom, part: 'max' as const }
+                                : {}),
+                        }
+              );
     const bindingLabel = descriptor ? editor.trackerSource : primitives.binding;
 
     const content = (
@@ -122,6 +130,18 @@ export function primitiveSettings({
             ) : (
                 <ValueSourceSelect node={node} onReplace={onReplace} />
             )}
+            {descriptor?.kind === 'rows' && descriptor.catalog?.parent && (
+                <RowsLimitSetting
+                    value={node.limitByParent}
+                    onChange={(limitByParent) => update({ limitByParent })}
+                />
+            )}
+            {descriptor?.kind === 'rows' && (
+                <RowButtonsSetting
+                    buttons={node.rowButtons ?? []}
+                    onChange={(rowButtons) => update({ rowButtons })}
+                />
+            )}
             {pool && !asTracker && (
                 <SettingField label={settingLabel('part')} setting="part">
                     {(control) => (
@@ -172,7 +192,7 @@ export function primitiveSettings({
 
     const look = (
         <>
-            {pool && (
+            {(pool || single) && (
                 <div
                     role="group"
                     aria-label={t(editor.primitiveDisplay)}
@@ -225,10 +245,31 @@ export function primitiveSettings({
             {asTracker && node.poolTracker && (
                 <div data-setting-list="" data-setting="tracker" tabIndex={-1}>
                     <PoolTrackerSettings
+                        single={single}
                         value={node.poolTracker}
                         onChange={(poolTracker) => update({ poolTracker })}
                     />
                 </div>
+            )}
+            {descriptor?.kind === 'track' && descriptor.members && (
+                <SettingField label={settingLabel('cohort')} setting="cohort">
+                    {(control) => (
+                        <input
+                            {...control}
+                            type="number"
+                            min={1}
+                            max={24}
+                            value={node.cohort?.maxMembers ?? descriptor.members!.maxMembers}
+                            onChange={(event) => {
+                                const maxMembers = Math.round(Number(event.target.value));
+                                if (maxMembers >= 1 && maxMembers <= 24) {
+                                    update({ cohort: { maxMembers } });
+                                }
+                            }}
+                            className={`${inputClasses} w-20`}
+                        />
+                    )}
+                </SettingField>
             )}
             {descriptor?.kind === 'track' && (
                 <div data-setting-list="" data-setting="tracker" tabIndex={-1}>

@@ -52,9 +52,10 @@ describe('library tree (spec 013)', () => {
         expect(v5!.settings.map(({ key }) => key)).toEqual([
             's:rules:wod-v5',
             's:module:wod-v5:hunter',
+            's:module:wod-v5:vampire',
             `s:user:${ASHEN_ID}`,
         ]);
-        expect(v5!.settings[2]).toMatchObject({ name: 'Ashen Realms', ownership: 'user' });
+        expect(v5!.settings[3]).toMatchObject({ name: 'Ashen Realms', ownership: 'user' });
     });
 
     it('places core characters, user types, and their pages', () => {
@@ -75,6 +76,15 @@ describe('library tree (spec 013)', () => {
         expect(starWars.types.at(-1)).toMatchObject({ key: `t:user:${ORG_ID}`, documentCount: 1 });
         const rulesOnly = findNode(tree, 's:rules:wod-v5')!.node as { types: TypeNode[] };
         expect(names(rulesOnly.types[0]!.pages)).toHaveLength(2);
+
+        // Vampire: the Masquerade 5e is a shipped line with its character and two pages, and
+        // its five catalogs sit with the ruleset's, read-only (spec 037, US5).
+        const vampire = findNode(tree, 's:module:wod-v5:vampire')!.node as { types: TypeNode[] };
+        expect(vampire.types.map(({ documentKind }) => documentKind)).toEqual(['vampire']);
+        expect(names(vampire.types[0]!.pages)).toHaveLength(2);
+        for (const id of ['clans', 'disciplines', 'powers', 'rituals', 'predator-types']) {
+            expect(findNode(tree, `c:wod-v5:v5-vampire-${id}`), id).toBeTruthy();
+        }
     });
 
     it('flags edited shipped pages and the default page', () => {
@@ -152,6 +162,7 @@ describe('library tree (spec 013)', () => {
             'r:wod-v5',
             's:rules:wod-v5',
             's:module:wod-v5:hunter',
+            's:module:wod-v5:vampire',
             `s:user:${ASHEN_ID}`,
         ]);
         expect(keys[2]).toBe(`c:user:${FIREARMS_ID}`);

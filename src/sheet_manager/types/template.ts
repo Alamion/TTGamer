@@ -52,10 +52,10 @@ const termShape = {
 
 /**
  * Render-time condition on any node: shown only while the value at `coordinate` equals `equals`
- * (`not` inverts). Evaluated against the shared coordinate space; never affects storage, and
+ * (`not` inverts), or while a formula holds. Evaluated against the shared coordinate space; never affects storage, and
  * the template editor always shows the node.
  */
-export const VisibleWhenSchema = z.object({
+export const VisibleWhenValueSchema = z.object({
     coordinate: z
         .string()
         .min(1)
@@ -65,7 +65,19 @@ export const VisibleWhenSchema = z.object({
     not: z.boolean().optional(),
 });
 
+/** Spec 038 D4: shown while the formula gives a non-zero number or a non-empty text. */
+export const VisibleWhenFormulaSchema = z.object({ formula: z.string().min(1).max(500) });
+
+export const VisibleWhenSchema = z.union([VisibleWhenValueSchema, VisibleWhenFormulaSchema]);
+
 export type VisibleWhen = z.infer<typeof VisibleWhenSchema>;
+export type VisibleWhenValue = z.infer<typeof VisibleWhenValueSchema>;
+
+export function isFormulaCondition(
+    condition: VisibleWhen
+): condition is z.infer<typeof VisibleWhenFormulaSchema> {
+    return 'formula' in condition;
+}
 
 /**
  * Placement inside the parent's column layout (1-based). When any child of a multi-column
@@ -129,9 +141,27 @@ const columnWidthsShape = {
         .optional(),
 };
 
+/**
+ * A text field showing a text of a catalog entry (spec 038 D9): the entry named by the value at
+ * `entryFrom`; `alternative` replaces the text while its formula holds. `show` displays it and
+ * stores nothing; `suggest` shows it while the field is empty.
+ */
+export const FromCatalogSchema = z.object({
+    catalogId: templateIdentifierSchema,
+    entryFrom: templateIdentifierSchema,
+    text: z.string().min(1).max(64),
+    alternative: z
+        .object({ text: z.string().min(1).max(64), when: z.string().min(1).max(500) })
+        .optional(),
+    mode: z.enum(['show', 'suggest']).default('suggest'),
+});
+
+export type FromCatalog = z.infer<typeof FromCatalogSchema>;
+
 const TextFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('text'),
+    fromCatalog: FromCatalogSchema.optional(),
     multiline: z.boolean().default(false),
     placeholder: z.string().max(120).optional(),
     placeholderMessage: LabelMessageSchema.optional(),
@@ -160,10 +190,20 @@ const ImageFieldSchema = z.object({
 const FormulaFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('formula'),
-    formula: z.string().min(1).max(500),
+    formula: z.string().min(1).max(TEMPLATE_LIMITS.formulaFieldMax),
     /** Display decoration around the computed number (e.g. `×` for multipliers). */
     prefix: z.string().max(8).optional(),
     suffix: z.string().max(8).optional(),
+    /**
+     * Shipped templates (spec 038 D2): a text result equal to a key is shown as that message's
+     * translation; the formula keeps the English text.
+     */
+    textMessages: z
+        .record(z.string().min(1).max(200), LabelMessageSchema)
+        .refine((map) => Object.keys(map).length <= TEMPLATE_LIMITS.formulaTextsMax, {
+            message: `At most ${TEMPLATE_LIMITS.formulaTextsMax} translated texts`,
+        })
+        .optional(),
 });
 
 function hasUniqueIds(values: readonly { id: string }[]) {
@@ -179,8 +219,22 @@ export const CatalogFillRuleSchema = z.object({
     disabled: z.boolean().optional(),
 });
 
+/**
+ * Table rows whose catalog entries belong to entries of another list's catalog (spec 038): the
+ * parent `list` (its value key or a game list), the entry detail naming the parent (`via`), and
+ * optionally the detail holding the entry's level, kept at or below the parent's rating.
+ */
+export const CatalogParentSchema = z.object({
+    list: templateIdentifierSchema,
+    via: z.string().min(1).max(64),
+    level: z.string().min(1).max(64).optional(),
+});
+
+export type CatalogParent = z.infer<typeof CatalogParentSchema>;
+
 export const CatalogBindingSchema = z.object({
     catalogId: templateIdentifierSchema,
+    parent: CatalogParentSchema.optional(),
     fills: z
         .record(z.string().min(1).max(64), CatalogFillRuleSchema)
         .refine((fills) => Object.keys(fills).length <= TEMPLATE_LIMITS.fillMappingsPerField, {
@@ -208,38 +262,6 @@ const SelectFieldSchema = z.object({
         .min(1)
         .max(TEMPLATE_LIMITS.optionsPerField),
     binding: CatalogBindingSchema.optional(),
-});
-
-/** Trait-row flags a rating may show, in display order (S, P, E). */
-export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
-
-export type RatingFlag = (typeof RATING_FLAGS)[number];
-
-const RatingFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('rating'),
-    min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
-    // The retired "boxes" style was paler dots; stored templates keep working as dots.
-    presentation: z
-        .preprocess((value) => (value === 'boxes' ? 'dots' : value), z.enum(['dots', 'number']))
-        .default('dots'),
-    /** Free text between the label and the value (for example a specialization). */
-    textInput: z.boolean().optional(),
-    /** "current / maximum" after the value. */
-    showNumbers: z.boolean().optional(),
-    /** Die symbol rolling the value through the document system's trait pool. */
-    dice: z.boolean().optional(),
-    /** Trait-row flags shown on the dot style. */
-    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
-    ...maxFromShape,
-});
-
-const ReferenceFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('reference'),
-    targetKinds: z.array(DocumentKindSchema).min(1).max(20),
-    multiple: z.boolean().default(false),
 });
 
 /** Palette fills a tracker mark may take; they follow the theme. Any other fill is `#rrggbb`. */
@@ -272,6 +294,8 @@ const trackerSymbolSchema = z
 /** A built-in mark's page look: the game keeps its id and meaning. */
 const TrackerMarkOverrideSchema = z.object({
     name: trackerNameSchema.optional(),
+    /** Shipped templates: the name's translation (spec 038, V5 stains). */
+    nameMessage: LabelMessageSchema.optional(),
     symbol: trackerSymbolSchema.optional(),
     fill: TrackerFillSchema.optional(),
 });
@@ -294,9 +318,56 @@ export const PoolTrackerOverrideSchema = z.object({
         .optional(),
     legend: z.boolean().default(false),
     total: z.boolean().default(true),
+    /**
+     * Spec 038 D10: a second value marked from the last box backward, never on a filled box
+     * (V5 Humanity and stains). Single values only (ratings, rating-mode built-in values).
+     */
+    marksFromEnd: z
+        .object({
+            coordinate: templateIdentifierSchema,
+            mark: TrackerMarkOverrideSchema.optional(),
+        })
+        .optional(),
 });
 
 export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
+
+/** Trait-row flags a rating may show, in display order (S, P, E). */
+export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
+
+export type RatingFlag = (typeof RATING_FLAGS)[number];
+
+const RatingFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('rating'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
+    // The retired "boxes" style was paler dots; stored templates keep working as dots.
+    presentation: z
+        .preprocess(
+            (value) => (value === 'boxes' ? 'dots' : value),
+            z.enum(['dots', 'number', 'tracker'])
+        )
+        .default('dots'),
+    /** Presentation `tracker` (spec 038): its look, and marks of a second value from the end. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+    /** Free text between the label and the value (for example a specialization). */
+    textInput: z.boolean().optional(),
+    /** "current / maximum" after the value. */
+    showNumbers: z.boolean().optional(),
+    /** Die symbol rolling the value through the document system's trait pool. */
+    dice: z.boolean().optional(),
+    /** Trait-row flags shown on the dot style. */
+    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
+    ...maxFromShape,
+});
+
+const ReferenceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('reference'),
+    targetKinds: z.array(DocumentKindSchema).min(1).max(20),
+    multiple: z.boolean().default(false),
+});
 
 const ResourceFieldSchema = z.object({
     ...fieldBaseShape,
@@ -593,6 +664,94 @@ export const TrackerOverrideSchema = z.object({
 
 export type TrackerOverride = z.infer<typeof TrackerOverrideSchema>;
 
+/** Icons a button may show (Lucide); unset shows the dice. */
+export const BUTTON_ICONS = ['dice', 'droplet', 'heart', 'flame', 'sparkles', 'skull'] as const;
+
+const buttonFormulaSchema = z.string().min(1).max(500);
+
+/** A value a button changes (spec 038): a coordinate, `.current`/`.max` for pools. */
+export const ButtonChangeSchema = z.object({
+    target: z
+        .string()
+        .min(1)
+        .max(130)
+        .regex(
+            /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?$/,
+            'Expected a value key, optionally with .current or .max'
+        ),
+    /** `add` keeps the value within its bounds; `set` writes the amount (bounded too). */
+    op: z.enum(['add', 'set']),
+    /** A formula: `1`, `-1`, `0`, `row.cost`. */
+    amount: buttonFormulaSchema,
+});
+
+const changeListSchema = z
+    .array(ButtonChangeSchema)
+    .max(TEMPLATE_LIMITS.buttonChangesMax)
+    .default([]);
+
+/** What a press rolls (spec 038 D6); without it the success changes apply directly. */
+export const ButtonRollSchema = z.object({
+    /** Dice notation; `{formula}` segments are computed first: `{max(1, 10 - humanity)}d10>=6`. */
+    notation: z.string().min(1).max(300),
+    /** How many rolls one press makes (a formula; unset = 1). */
+    count: buttonFormulaSchema.optional(),
+    /** A failed roll is rolled once more while this formula holds. */
+    rerollWhen: buttonFormulaSchema.optional(),
+    /** A roll succeeds when its total reaches this. */
+    successAt: z.number().int().min(1).max(1_000).default(1),
+    /** Turn dice into the game's special dice (V5 Hunger), as character rolls do. */
+    gameDice: z.boolean().default(false),
+});
+
+const buttonShape = {
+    id: templateIdentifierSchema,
+    label: z.string().min(1).max(120),
+    ...labelMessageShape,
+    icon: z.enum(BUTTON_ICONS).optional(),
+    /** Enabled only while this formula holds. */
+    availableWhen: buttonFormulaSchema.optional(),
+    roll: ButtonRollSchema.optional(),
+    onSuccess: changeListSchema,
+    onFailure: changeListSchema,
+    /** Applied once after every roll of the press finished. */
+    always: changeListSchema,
+    /** Author texts added to the result message (translated in shipped templates). */
+    successText: z.string().max(200).optional(),
+    successMessage: LabelMessageSchema.optional(),
+    failureText: z.string().max(200).optional(),
+    failureMessage: LabelMessageSchema.optional(),
+};
+
+/** A button on every row of a table or built-in rows; formulas may read `row.<column>`. */
+export const RowButtonSchema = z.object(buttonShape);
+
+export type RowButton = z.infer<typeof RowButtonSchema>;
+export type ButtonChange = z.infer<typeof ButtonChangeSchema>;
+
+const rowButtonsShape = {
+    rowButtons: z.array(RowButtonSchema).max(TEMPLATE_LIMITS.rowButtonsMax).optional(),
+};
+
+/**
+ * Entries limited by their parent row (spec 038, a power by its discipline's dots): the entry's
+ * level (`entryKey`), the row's level (`column`), and the parent record's rating (`parentValue`).
+ */
+export const LimitByParentSchema = z.object({
+    entryKey: z.string().min(1).max(64),
+    column: z.string().min(1).max(64),
+    parentValue: z.string().min(1).max(64),
+});
+
+export type LimitByParent = z.infer<typeof LimitByParentSchema>;
+
+/** A button on the page (spec 038, US1). */
+const ButtonNodeSchema = z.object({
+    ...buttonShape,
+    type: z.literal('button'),
+    ...placementShape,
+});
+
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
  * registry. Resolution is a runtime registry query — unavailable bindings degrade at render.
@@ -628,6 +787,10 @@ const PrimitiveNodeSchema = z.object({
     /** Member tracks (bindings with members): member cap; ignored by other bindings. */
     cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
     ...maxFromShape,
+    /** Built-in rows (`rows:*`): buttons on each row (spec 038). */
+    ...rowButtonsShape,
+    /** Built-in rows under a parent list: picks and rows above the parent's rating (spec 038). */
+    limitByParent: LimitByParentSchema.optional(),
 });
 
 /** Custom list (FR-17): own value coordinate OR a system-owned list — identical interface. */
@@ -671,6 +834,7 @@ const TableNodeSchema = z.object({
     minRows: z.number().int().min(0).max(1_000).default(0),
     maxRows: z.number().int().min(1).max(1_000).default(100),
     columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.tableColumnsMax),
+    ...rowButtonsShape,
 });
 
 export interface SectionNode {
@@ -716,13 +880,21 @@ export interface GroupNode {
 export type TableNode = z.infer<typeof TableNodeSchema>;
 export type ListNode = z.infer<typeof ListNodeSchema>;
 export type PrimitiveNode = z.infer<typeof PrimitiveNodeSchema>;
+export type ButtonNode = z.infer<typeof ButtonNodeSchema>;
 
 /** Any node of the template tree — containers and leaves share one placement model (FR-1). */
 export type TemplateNode =
-    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | TemplateField;
+    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | ButtonNode | TemplateField;
 
 /** Container and leaf node types that are not fields. */
-export const TEMPLATE_STRUCTURE_TYPES = ['section', 'group', 'table', 'list', 'primitive'] as const;
+export const TEMPLATE_STRUCTURE_TYPES = [
+    'section',
+    'group',
+    'table',
+    'list',
+    'primitive',
+    'button',
+] as const;
 
 export type TemplateNodeType = (typeof TEMPLATE_STRUCTURE_TYPES)[number] | TemplateFieldType;
 
@@ -774,6 +946,7 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
         case 'section':
         case 'group':
         case 'primitive':
+        case 'button':
             return;
     }
 }
@@ -817,6 +990,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
             TableNodeSchema,
             ListNodeSchema,
             PrimitiveNodeSchema,
+            ButtonNodeSchema,
             TextFieldSchema,
             NumberFieldSchema,
             ToggleFieldSchema,
@@ -1023,11 +1197,12 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
 function parseFormulaSafe(source: string): string[] | undefined {
     // Local import would create a cycle (formula module imports nothing from template);
     // the dependency extraction is duplicated deliberately as a tiny regex walk.
-    // Whole identifiers only; an identifier followed by "(" is a function call (min/max).
+    // Whole identifiers only; an identifier followed by "(" is a function call (min/max). Texts in
+    // quotes and a row's cells (`row.level`) read no page value (spec 038).
+    const bare = source.replace(/"[^"]*"/g, ' ').replace(/\brow\.[a-z][a-z0-9-]*/g, ' ');
     return (
-        source.match(
-            /[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?(?![a-z0-9.-])(?!\s*\()/g
-        ) ?? []
+        bare.match(/[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?(?![a-z0-9.-])(?!\s*\()/g) ??
+        []
     );
 }
 

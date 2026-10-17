@@ -5,6 +5,7 @@ import { AlertTriangle, GripVertical, Plus } from 'lucide-react';
 import { memo, type ReactNode } from 'react';
 
 import type { TemplateNode } from '../../../types/template';
+import { isFormulaCondition } from '../../../types/template';
 import type { OverlayPlacement } from '../../sheet/declarative/editorOverlay';
 import { elementName, elementTypeLabel } from '../elements/registry';
 import { useEditorActions, useNodeSelection } from '../session/context';
@@ -154,12 +155,16 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 {content}
                 {conditionHidden && node.visibleWhen && (
                     <p className="mt-1 px-2 text-xs text-textSecondary">
-                        {translate(editor.hiddenByCondition, {
-                            coordinate: node.visibleWhen.coordinate,
-                            value: `${node.visibleWhen.not ? '≠ ' : ''}${String(
-                                node.visibleWhen.equals
-                            )}`,
-                        })}
+                        {isFormulaCondition(node.visibleWhen)
+                            ? translate(editor.hiddenByFormula, {
+                                  formula: node.visibleWhen.formula,
+                              })
+                            : translate(editor.hiddenByCondition, {
+                                  coordinate: node.visibleWhen.coordinate,
+                                  value: `${node.visibleWhen.not ? '≠ ' : ''}${String(
+                                      node.visibleWhen.equals
+                                  )}`,
+                              })}
                     </p>
                 )}
             </div>

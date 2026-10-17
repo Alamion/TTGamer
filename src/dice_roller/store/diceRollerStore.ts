@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { onRollResult } from '../dice-logic/dice-roller';
+import type { RollResult } from '../dice-logic/types';
 import { DEFAULT_SETTINGS } from '../utils/constants';
 import type { RollOptions } from '../utils/events';
 import { handleRollEvent } from '../utils/events';
@@ -80,7 +81,11 @@ interface DiceRollerState {
      */
     panelHosts: number;
 
-    roll: (notation: string, rollOptions?: RollOptions) => Promise<void>;
+    /**
+     * Rolls and resolves with the final result (read and judged), or `null` when nothing was
+     * rolled: an empty notation, or a 3D roll that was cancelled (spec 037 D6).
+     */
+    roll: (notation: string, rollOptions?: RollOptions) => Promise<RollResult | null>;
     clearHistory: () => void;
     clearFavorites: () => void;
     clearRecentNotations: () => void;
@@ -149,7 +154,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
         panelHosts: 0,
 
         roll: async (notation: string, rollOptions?: RollOptions) => {
-            if (!notation.trim()) return;
+            if (!notation.trim()) return null;
             const s = get().settings;
 
             let origin = rollOptions?.origin;
@@ -197,6 +202,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 },
             };
             const rolledNotation = prepared?.notation ?? notation;
+            let finished: RollResult | null = null;
             await handleRollEvent(
                 rolledNotation,
                 config,
@@ -204,6 +210,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                     ? { statLabels, characterName, origin }
                     : undefined,
                 (result) => {
+                    finished = result;
                     const verdict = rollVerdict(origin, rolledNotation, result.total);
                     if (verdict) result.verdict = verdict;
                     if (!reader || !prepared) return;
@@ -217,6 +224,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                     }
                 }
             );
+            return finished;
         },
 
         clearHistory: () => {

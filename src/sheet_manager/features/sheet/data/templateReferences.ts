@@ -8,15 +8,17 @@ import {
     listNumericCoordinates,
     resolveWritableBinding,
 } from '../../../systems/templateBindings';
-import type { CustomTemplate } from '../../../types/template';
+import type { CustomTemplate, RowButton } from '../../../types/template';
 import {
     fieldValueKey,
+    isFormulaCondition,
     isTemplateField,
     listIsNamed,
     listItemField,
     listValueKey,
     walkTemplateNodes,
 } from '../../../types/template';
+import { buttonTarget } from '../declarative/buttonTargets';
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { catalogKindFitsListItem, getCatalogBinding, isCatalogInScope } from './catalogBindings';
@@ -40,7 +42,15 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-coordinate'; nodeId: string; key: string; setting: CoordinateSetting }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
     | { code: 'invalid-docs-link'; nodeId: string; key: string }
-    | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string };
+    | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string }
+    /** A button or From catalog reads or changes a value the page does not have (spec 038). */
+    | {
+          code: 'unknown-value';
+          nodeId: string;
+          key: string;
+          setting: string;
+          group: 'value' | 'visibility';
+      };
 
 /** The formula settings and the display condition, which address template coordinates. */
 type FormulaSetting = 'formula' | 'maxFrom' | 'minFrom' | 'maxMinFrom';
@@ -100,6 +110,39 @@ export function listTemplateNumericCoordinates(
     });
 }
 
+/**
+ * Everything a formula can read (spec 038): the numeric space, plus texts, choices, toggles, and
+ * lists (`rating(list, "Name")`) of the template and of the game's built-in data.
+ */
+export function listTemplateFormulaCoordinates(
+    template: CustomTemplate
+): readonly NumericCoordinateOption[] {
+    const options: NumericCoordinateOption[] = [...listTemplateNumericCoordinates(template)];
+    for (const binding of listDocumentBindings(template.systemId, template.documentKind)) {
+        if (
+            binding.kind === 'field' &&
+            (binding.valueType === 'string' || binding.valueType === 'enum')
+        ) {
+            options.push({ coordinate: binding.coordinate, label: binding.label });
+        } else if (binding.kind === 'list') {
+            options.push({ coordinate: binding.dataKey, label: binding.label });
+        }
+    }
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'text' || node.type === 'select' || node.type === 'toggle') {
+            options.push({ coordinate: fieldValueKey(node), label: node.label });
+        } else if (node.type === 'list' && !node.bindingKey) {
+            options.push({ coordinate: listValueKey(node), label: node.title ?? node.id });
+        }
+    });
+    const seen = new Set<string>();
+    return options.filter(({ coordinate }) => {
+        if (seen.has(coordinate)) return false;
+        seen.add(coordinate);
+        return true;
+    });
+}
+
 export function validateTemplateReferences(
     template: CustomTemplate,
     { referenceScope = true }: TemplateReferenceOptions = {}
@@ -115,7 +158,7 @@ export function validateTemplateReferences(
         ])
     );
     const coordinates = new Set(
-        listTemplateNumericCoordinates(template).map(({ coordinate }) => coordinate)
+        listTemplateFormulaCoordinates(template).map(({ coordinate }) => coordinate)
     );
     const fieldIds = new Set<string>();
     // Storage coordinates a fill or render condition may address: field ids and value keys,
@@ -140,7 +183,7 @@ export function validateTemplateReferences(
     const checkCoordinates = (
         nodeId: string,
         source: string | undefined,
-        setting: FormulaSetting
+        setting: CoordinateSetting
     ) => {
         if (!source) return;
         const parsed = parseFormula(source);
@@ -189,6 +232,16 @@ export function validateTemplateReferences(
                 key: field.binding.catalogId,
             });
             return;
+        }
+        const parent = field.binding.parent;
+        if (parent && !coordinates.has(parent.list)) {
+            issues.push({
+                code: 'unknown-value',
+                nodeId: field.id,
+                key: parent.list,
+                setting: 'parent',
+                group: 'value',
+            });
         }
         if (siblingColumns === 'list-entry') return;
         const details = new Set(catalog.fillableDetails.map(({ key }) => key));
@@ -241,13 +294,74 @@ export function validateTemplateReferences(
         ) {
             issues.push({ code: 'invalid-docs-link', nodeId: node.id, key: node.docsPath });
         }
-        if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
+        if (node.visibleWhen && isFormulaCondition(node.visibleWhen)) {
+            checkCoordinates(node.id, node.visibleWhen.formula, 'visibleWhen');
+        } else if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
             issues.push({
                 code: 'unknown-coordinate',
                 nodeId: node.id,
                 key: node.visibleWhen.coordinate,
                 setting: 'visibleWhen',
             });
+        }
+        const checkButton = (button: RowButton, prefix: string) => {
+            const report = (key: string, setting: string, group: 'value' | 'visibility') =>
+                issues.push({
+                    code: 'unknown-value',
+                    nodeId: node.id,
+                    key,
+                    setting: `${prefix}${setting}`,
+                    group,
+                });
+            const reads = (
+                source: string | undefined,
+                setting: string,
+                group: 'value' | 'visibility'
+            ) => {
+                if (!source) return;
+                const parsed = parseFormula(source);
+                if (!parsed.ok) return;
+                for (const coordinate of unknownCoordinates(parsed.coords, coordinates)) {
+                    report(coordinate, setting, group);
+                }
+            };
+            reads(button.availableWhen, 'availableWhen', 'visibility');
+            reads(button.roll?.count, 'count', 'value');
+            reads(button.roll?.rerollWhen, 'rerollWhen', 'value');
+            for (const [, segment] of (button.roll?.notation ?? '').matchAll(/\{([^{}]*)\}/g)) {
+                reads(segment, 'notation', 'value');
+            }
+            for (const outcome of ['onSuccess', 'onFailure', 'always'] as const) {
+                for (const change of button[outcome]) {
+                    reads(change.amount, outcome, 'value');
+                    if (!buttonTarget(template, change.target, () => undefined)) {
+                        report(change.target, outcome, 'value');
+                    }
+                }
+            }
+        };
+        if (node.type === 'button') checkButton(node, '');
+        if (node.type === 'text' && node.fromCatalog) {
+            const from = node.fromCatalog;
+            if (!catalogInScope(from.catalogId)) {
+                issues.push({ code: 'unknown-catalog', nodeId: node.id, key: from.catalogId });
+            }
+            const known = (coordinate: string) => coordinates.has(coordinate);
+            const report = (key: string) =>
+                issues.push({
+                    code: 'unknown-value',
+                    nodeId: node.id,
+                    key,
+                    setting: 'fromCatalog',
+                    group: 'value',
+                });
+            if (!known(from.entryFrom)) report(from.entryFrom);
+            const when = from.alternative ? parseFormula(from.alternative.when) : undefined;
+            if (when?.ok) unknownCoordinates(when.coords, coordinates).forEach(report);
+        }
+        if (node.type === 'table' || node.type === 'primitive') {
+            for (const button of node.rowButtons ?? [])
+                checkButton(button, `rowButton:${button.id}.`);
         }
         if (node.type === 'primitive') {
             if (!bindings.has(node.bindingKey)) {

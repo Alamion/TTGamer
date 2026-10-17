@@ -39,6 +39,15 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 | `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`, or a `dataKey` item array                                                |
 | `rows`      | `rows:<dataKey>`                                         | arrays of string records (`attacks`, `weapons`, `configuration`)                                              |
 
+- Bindings own storage only (spec 038). What a page computes, shows, or does is template data:
+  formula fields and display conditions, buttons, From catalog texts, trackers with marks from the
+  end, `limitByParent` on built-in rows and `binding.parent` on catalog choices (`node-tree.md`,
+  `formulas-embeds.md`). `RowsCatalogParent` names the parent catalog and the records naming
+  parents; the page decides the limit.
+- Rating-mode resources are formula coordinates by their bare name (`hunger`) and `.current`.
+- A catalog's English source may mark long fields `_lazy`: the build writes them to
+  `src/i18n/generated/catalogText/<catalogId>.ts` instead of `catalogTranslations.ts`; catalogs list
+  the texts From catalog fields can show in `texts` (`withTexts`; user catalogs: text columns).
 - Field bindings: `path` + `valueType` (`string`/`number`/`image`/`enum` with `options`); `numeric`
   gives text a formula reading (`'+3D'` → 3, empty → 0); `syncsTitle` renames the document when
   written (entity name/concept; the WoD 2e engine's `field:name`, since it has no character

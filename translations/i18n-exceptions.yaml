@@ -314,3 +314,10 @@
   match: '/Hunter: the Reckoning/'
   reason: 'product names (World of Darkness, Hunter: the Reckoning) in the Dark
       Pack notice, kept in English'
+- rule: identical
+  match: Ex Nihilo
+  reason: Latin name of an Oblivion ceremony, kept in Latin in Russian too (spec 037)
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/vampire/reference/glossary.mdx
+  match: /.*/
+  reason: 'bilingual glossary table: the English name is already in its own column'

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: Elements
-description: Groups (sections and cards), fields, lists (entries and tables), and trackers — what each element does and the settings it takes.
+description: Groups (sections and cards), fields, lists (entries and tables), trackers, and buttons — what each element does and the settings it takes.
 ---
 
 import { ElementExample } from '@site/src/sheet_manager/docsEmbeds';
@@ -10,7 +10,7 @@ import { LiveDemo } from '@site/src/shared/components/LiveDemo';
 # Elements
 
 :::tip[In short]
-Groups arrange the page; fields, lists, and trackers hold values. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
+Groups arrange the page; fields, lists, and trackers hold values; buttons roll dice and change them. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
 :::
 
 ## Kinds of groups and lists \{#kinds}
@@ -85,7 +85,7 @@ A field holds one value. Its **Label** is shown next to it (**Show label** hides
 
 ## Ratings \{#rating}
 
-A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point) or **Number** (a number box). Templates saved with the older "boxes" presentation open as dots and keep their values.
+A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point), **Number** (a number box), or **Tracker** (boxes, below). Templates saved with the older "boxes" presentation open as dots and keep their values.
 
 - **Min** is a floor, not a dot: the dots up to it stay filled in a darker shade, and the reader cannot go below it.
 - **Max** sets the number of dots. A [maximum from a value or formula](./values.mdx#limits-from-values) replaces it while it can be computed, up to 100 dots; when it drops below the stored value, the value is kept and shown in parentheses until the maximum rises again.
@@ -95,6 +95,8 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 - **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
 
 **Short label (brief format)** shows the rating as a few capital letters and its number instead of its full name, so many ratings fit one screen. The letters default to the first three of the label; **Short label text** sets your own (up to four). In a narrow area each rating is a row (letters, number); in a wider one it is a small chip, and chips flow inside their card. The full name stays the name for screen readers and appears as a hint on hover, focus, and tap. A short label that would repeat another one in the same card falls back to the full label. On a free rating only the number shows in this form: its dots, text, flags, and die are not part of it.
+
+**Tracker** draws the rating as a row of boxes (up to 20), like a [pool drawn as a tracker](#built-in-parts). **Marks of another value from the end** adds a second value marked from the last box backward — Humanity and its stains: name the **Value of the marks** (a number field or a game value) and the **Mark name**. A click fills or empties up to a box; the outline action (right click, **Shift+Enter**, or a long press) marks or clears from the end. A mark never lands on a filled box: the page says so instead, and raising the rating shrinks marks that no longer fit. A game's own single value, such as V5 Humanity, takes the same **Display: Tracker** and marks.
 
 Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
 
@@ -170,6 +172,24 @@ A tracker cannot be a table column or a list entry: its copies already repeat it
 A game's own track takes the same settings: the display, the names and values of its levels (a level you leave empty keeps the game's name and penalty), the names, symbols, and fills of its marks, extra columns, the total row, and the legend, which works as a brush here too. Its marks are always fills: the game keeps one mark per box. The game keeps the number and order of levels, a length computed from traits (V5 health and willpower), the number of marks, and the members of a group; lengths and "out" follow the game's rules. Columns you add keep their values with the page, next to the document's own marks.
 
 Pages saved before this setting existed keep their look: **Compact** reads as **One line**, and a stored track view keeps its display.
+
+## Buttons \{#buttons}
+
+A **Button** does something when the reader presses it: it rolls dice and changes values, or only changes values. Add one from the **+** menu.
+
+- **Label** and **Icon** are what the reader sees.
+- **Roll dice** turns on the roll. **Dice to roll** is dice notation; a part in braces is a [formula](./values.mdx#formulas) computed first, so `{max(1, 10 - humanity - stains)}d10>=6` rolls one die per empty box, at least one. **Rolls per press** repeats the roll (a formula, so a power can pay its cost). **Re-roll a failed roll once while** re-rolls a failure while its formula holds. **A roll succeeds at a total of** sets what counts as a success: for `d10>=6` the total is the number of successes. **Roll with the game's dice** turns dice into the game's special dice, as character rolls do (V5 Hunger dice); it is off by default.
+- **On a success**, **On a failure**, and **After all rolls** list the changes: a **Value** (its key, or `.current` / `.max` of a pool), **Add** or **Set to**, and an **Amount** (a formula: `1`, `-1`, `row.cost`). An added value stays within its bounds; the message says when it was already at its limit. A button without a roll applies its success changes directly — a "spend a point" button.
+- **Available while** disables the button, with the reason, until its formula holds.
+- **Text on a success** and **Text on a failure** are added to the result message.
+
+The roll goes to the dice panel like any sheet roll: 3D dice, history, and sharing. The message names every change, and **Undo** in it puts the values back for a few seconds; a value the reader changed in the meantime is kept. Cancelling the 3D roll writes nothing more. In a read-only document buttons are disabled.
+
+**Row buttons** of a table or a built-in list of rows put a button on every row; its formulas read that row as `row.<column>` (`row.level`, `row.cost`).
+
+<LiveDemo kind="example">
+    <ElementExample story="buttons" node="section-buttons" />
+</LiveDemo>
 
 ## Built-in page parts \{#built-in-parts}
 

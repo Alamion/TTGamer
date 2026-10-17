@@ -1,0 +1,65 @@
+_lazy: [summary, grants]
+alleycat:
+    name: 'Alleycat'
+    summary: 'Takes blood by force: stalks, overpowers and drinks, then is gone.'
+    grants: 'Specialty: Intimidation (Stickups) or Brawl (Grappling). +1 dot Celerity or Potence. Humanity -1. Contacts 3 (criminal).'
+bagger:
+    name: 'Bagger'
+    summary: 'Skips the hunt for bagged or cold blood gained by theft, purchase or connections.'
+    grants: 'Specialty: Larceny (Lockpicking) or Streetwise (Black Market). +1 dot Blood Sorcery (Tremere, Banu Haqim) or Obfuscate. Iron Gullet (3). Enemy Flaw (2). Not for Ventrue.'
+blood-leech:
+    name: 'Blood Leech'
+    summary: 'Feeds on other vampires, by hunting, coercion or tribute: a forbidden diet.'
+    grants: 'Specialty: Brawl (Kindred) or Stealth (against Kindred). +1 dot Celerity or Protean. Humanity -1. Blood Potency +1. Dark Secret: Diablerist (2) or Shunned (2). Prey Exclusion: mortals (2).'
+cleaver:
+    name: 'Cleaver'
+    summary: 'Feeds in secret from a mortal family or circle of friends they still keep close.'
+    grants: 'Specialty: Persuasion (Gaslighting) or Subterfuge (Coverups). +1 dot Dominate or Animalism. Dark Secret: Cleaver (1). Herd (2).'
+consensualist:
+    name: 'Consensualist'
+    summary: 'Drinks only with consent, framed as blood drives, kink or an honest confession.'
+    grants: 'Specialty: Medicine (Phlebotomy) or Persuasion (Victims). +1 dot Auspex or Fortitude. Humanity +1. Dark Secret: Masquerade Breacher (1). Prey Exclusion: non-consenting (1).'
+farmer:
+    name: 'Farmer'
+    summary: 'Refuses human blood and lives on animals, battling constant Hunger.'
+    grants: 'Specialty: Animal Ken (specific animal) or Survival (Hunting). +1 dot Animalism or Protean. Humanity +1. Feeding Flaw: Vegan (2). Not for Ventrue or Blood Potency 3+.'
+osiris:
+    name: 'Osiris'
+    summary: 'Feeds on followers who adore them: fans, a congregation or a cult.'
+    grants: 'Specialty: Occult (a tradition) or Performance (a field). +1 dot Blood Sorcery (Tremere, Banu Haqim) or Presence. 3 dots among Fame and Herd. 2 dots among Enemies and Mythic Flaws.'
+sandman:
+    name: 'Sandman'
+    summary: 'Slips in and feeds from sleepers who never wake to see them.'
+    grants: 'Specialty: Medicine (Anesthetics) or Stealth (Break-in). +1 dot Auspex or Obfuscate. Resources (1).'
+scene-queen:
+    name: 'Scene Queen'
+    summary: 'Reigns over a subculture that sees them as one of its own and offers itself willingly.'
+    grants: 'Specialty: Etiquette, Leadership or Streetwise (a scene). +1 dot Dominate or Potence. Fame (1). Contacts (1). Disliked outside the scene (1) or Prey Exclusion: another subculture (1).'
+siren:
+    name: 'Siren'
+    summary: 'Feeds during real or feigned intimacy, using seduction to hide the bite.'
+    grants: 'Specialty: Persuasion or Subterfuge (Seduction). +1 dot Fortitude or Presence. Looks: Beautiful (2). Enemy Flaw (1): a spurned lover or jealous partner.'
+extortionist:
+    name: 'Extortionist'
+    summary: 'Demands blood as payment for protection or services, needed or invented.'
+    grants: 'Specialty: Intimidation (Coercion) or Larceny (Security). +1 dot Dominate or Potence. 3 dots among Contacts and Resources. Enemy Flaw (2): the police or an escaped victim.'
+graverobber:
+    name: 'Graverobber'
+    summary: 'Drinks from fresh corpses and the grieving at morgues, hospitals and cemeteries.'
+    grants: 'Specialty: Occult (Grave Rituals) or Medicine (Cadavers). +1 dot Fortitude or Oblivion. Iron Gullet (3). Haven (1). Herd Flaw: Obvious Predator (2).'
+grim-reaper:
+    name: 'Grim Reaper'
+    summary: 'Feeds only on the dying, drifting between hospices and care homes.'
+    grants: 'Specialty: Awareness (Death) or Larceny (Forgery). +1 dot Auspex or Oblivion. Allies or Influence (1) in medicine. Humanity +1. Prey Exclusion: healthy mortals (1).'
+montero:
+    name: 'Montero'
+    summary: 'Uses retainers as beaters who drive prey toward them for the kill.'
+    grants: 'Specialty: Leadership (Hunting Pack) or Stealth (Stakeout). +1 dot Dominate or Obfuscate. Retainers (2). Humanity -1.'
+pursuer:
+    name: 'Pursuer'
+    summary: 'Studies and stalks a victim nobody will miss before striking.'
+    grants: 'Specialty: Investigation (Profiling) or Stealth (Shadowing). +1 dot Animalism or Auspex. Bloodhound (1). Contacts (1) among locals of the hunting ground. Humanity -1.'
+trapdoor:
+    name: 'Trapdoor'
+    summary: 'Builds a lair that lures prey inside, where they feed at leisure.'
+    grants: 'Specialty: Persuasion (Marketing) or Stealth (Ambushes or Traps). +1 dot Protean or Obfuscate. Haven (1). Retainers (1), Herd (1) or a second Haven dot. Haven Flaw: Creepy or Haunted (1).'

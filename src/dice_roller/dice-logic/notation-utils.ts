@@ -393,3 +393,26 @@ export function withPoolSetBonus(
     const singleScope = ast.type === 'DiceGroup' || ast.type === 'Parenthesized';
     return singleScope ? `${trimmed}${suffix}` : `(${trimmed})${suffix}`;
 }
+
+/**
+ * Turns `count` dice of a single success pool into special dice (`:h`, V5 Hunger): `5d10>=6`
+ * with 2 becomes `3d10>=6 + 2d10:h>=6`, never more special dice than the pool has. A notation
+ * that already has special dice is returned unchanged (a re-roll from history keeps its split);
+ * `null` when the notation is not one success pool.
+ */
+export function withSpecialDice(notation: string, count: number): string | null {
+    const trimmed = notation.trim();
+    if (!isSuccessPool(trimmed)) return null;
+    if (trimmed.includes(':h')) return trimmed;
+    const parts = splitTopLevel(trimmed);
+    if (parts.length !== 1) return null;
+    const match = parts[0]!.trim().match(/^(\d*)d(\d+)(.*)$/);
+    if (!match) return null;
+    const [, rawSize, sides, modifiers] = match as unknown as [string, string, string, string];
+    const size = parseInt(rawSize || '1', 10);
+    const special = Math.min(Math.max(0, Math.trunc(count)), size);
+    if (special === 0) return trimmed;
+    const regular = size - special;
+    const specialPart = `${special}d${sides}:h${modifiers}`;
+    return regular > 0 ? `${regular}d${sides}${modifiers} + ${specialPart}` : specialPart;
+}

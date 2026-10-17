@@ -1,0 +1,81 @@
+module: 'Vampire: the Masquerade 5e'
+views:
+    sheet: Full sheet
+    brief: Brief
+sections:
+    vampire: Vampire
+    blood: Blood
+    bane: Clan bane
+    disciplines: Disciplines
+    disciplineList: Disciplines
+    powers: Powers
+    rituals: Rituals, ceremonies, and formulas
+    purpose: Aims and convictions
+    aims: Aims
+    bloodPotency: Blood Potency
+fields:
+    concept: Concept
+    chronicle: Chronicle
+    sire: Sire
+    clan: Clan
+    generation: Generation
+    predatorType: Predator type
+    predatorGrants: What the predator type gives
+    ambition: Ambition
+    desire: Desire
+    hunger: Hunger
+    humanity: Humanity
+    stains: Stains
+    bloodPotency: Blood Potency
+    baneVariant: Bane
+    bane: Bane
+    compulsion: Compulsion
+    discipline: Discipline
+    power: Power
+    ritual: Ritual
+    level: Level
+    note: Notes
+    bloodSurge: Blood surge, extra dice
+    mend: Mend per Rouse, Superficial
+    powerBonus: Discipline bonus, dice
+    rouseReroll: Re-roll Rouse up to level
+    baneSeverity: Bane severity
+    feedingPenalty: Feeding
+    potencyRange: Blood Potency for this generation
+baneVariants:
+    usual: Usual
+    variant: Variant
+marks:
+    stain: Stain
+potency:
+    outside: "Outside this generation's range"
+    feeding:
+        none: No penalty
+        b2: Animal and bagged blood slake half Hunger
+        b3: Animal and bagged blood slake no Hunger
+        b4: Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger
+        b5: Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2
+        b7: Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2
+        b9: Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3
+        b10: Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3
+rouse:
+    action: Rouse check
+remorse:
+    action: Remorse check
+catalogColumns:
+    summary: Summary
+    level: Level
+    discipline: Discipline
+    rouse: Rouse checks
+    amalgam: Amalgam
+    kind: Kind
+    bane: Bane
+    variantBane: Variant bane
+    compulsion: Compulsion
+    disciplines: Disciplines
+    grants: Grants
+    powers: Powers
+ritualKinds:
+    ritual: Ritual
+    ceremony: Ceremony
+    formula: Formula

@@ -19,7 +19,74 @@ primitives:
     removePreset: Удалить пресет
     degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
-    visibleWhen: Показывать только при совпадении значения
+    visibleWhen: Показывать только при условии
+    elementButton: Кнопка
+    paletteButton: Кнопка
+    paletteButtonHint: 'Бросает кубы и меняет значения: проверка Rouse, трата очка'
+    buttonIcon: Значок
+    buttonIcons:
+        dice: Кубики
+        droplet: Капля
+        heart: Сердце
+        flame: Пламя
+        sparkles: Искры
+        skull: Череп
+    buttonRoll: Бросать кубы
+    buttonNotation: Какие кубы
+    buttonNotationHint: 'Нотация кубов; {…} вычисляет число по формуле: {max(1, 10 - humanity)}d10>=6'
+    buttonCount: Бросков за нажатие
+    buttonReroll: Перебросить провал один раз, пока
+    buttonSuccessAt: Бросок успешен при итоге от
+    buttonGameDice: 'Бросать кубами игры (кубы Голода V5)'
+    buttonOnSuccess: При успехе (или без броска)
+    buttonOnFailure: При провале
+    buttonAlways: После всех бросков
+    buttonChangeTarget: Значение
+    buttonChangeOp: Изменение
+    buttonOpAdd: Прибавить
+    buttonOpSet: Сделать равным
+    buttonChangeAmount: Величина
+    buttonAddChange: 'Добавить изменение: {outcome}'
+    buttonRemoveChange: 'Убрать изменение {index}: {outcome}'
+    buttonSuccessText: Текст при успехе
+    buttonFailureText: Текст при провале
+    buttonAvailableWhen: Доступна, пока
+    rowButtons: Кнопки строк
+    rowButtonsHint: 'Кнопка появится в каждой строке; её формулы читают строку как row.<колонка>.'
+    rowButtonsAdd: Добавить кнопку строки
+    rowButtonsRemove: 'Убрать «{label}»'
+    rowButtonNew: Кнопка
+    fromCatalog: Из каталога
+    fromCatalogHint: Показывает текст записи каталога, которую называет другое значение
+    fromCatalogCatalog: Каталог
+    fromCatalogEntry: Запись по значению
+    fromCatalogEntryHint: 'Ключ значения с именем записи: клан, тип хищника'
+    fromCatalogText: Текст
+    fromCatalogAlternative: Другой текст, пока выполняется формула
+    fromCatalogAlternativeText: Другой текст
+    fromCatalogWhen: Пока
+    fromCatalogMode: Показывает
+    fromCatalogModeSuggest: Подсказку, пока читатель не напишет своё
+    fromCatalogModeShow: Только текст (вписать нельзя)
+    marksFromEnd: Отметки другого значения с конца
+    marksFromEndHint: 'Никогда на заполненной клетке: Человечность и пятна'
+    marksFromEndValue: Значение отметок
+    marksFromEndName: Название отметки
+    limitByParent: Ограничить по родителю
+    limitByParentHint: 'Записи, принадлежащие записям другого списка, не выше их рейтинга: силы по дисциплине'
+    parentList: Список родителей (ключ значения)
+    parentVia: Деталь с родителем
+    parentLevel: Деталь с уровнем
+    parentNoLevel: Без уровня (только родители)
+    limitEntryLevel: Деталь записи с уровнем
+    limitRowLevel: Колонка строки с уровнем
+    limitParentRating: Рейтинг родителя
+    cohortMax: Не больше участников
+    visibleWhenKind: Условие
+    visibleWhenKindValue: Значение совпадает
+    visibleWhenKindFormula: Формула выполняется
+    visibleWhenFormula: Формула
+    visibleWhenFormulaHint: Показывается, пока результат не 0 и не пустой
     visibleWhenCoordinate: Ключ значения
     visibleWhenOperator: Сравнение
     visibleWhenValue: Значение
@@ -101,8 +168,6 @@ editor:
     paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
     paletteList: Список
     paletteListHint: 'Записи по одной или строки таблицы: свои, навыки, достоинства, снаряжение…'
-    paletteTracker: Трекер
-    paletteTrackerHint: 'Клетки с отметками по уровням: здоровье, стресс или любая другая ноша'
     valueSource: Где хранится значение
     sourceCustom: Своё значение (в шаблоне)
     sourceTraits: Характеристики
@@ -210,6 +275,7 @@ editor:
     sampleNote: Пробные данные — точки, клетки и текст, изменённые здесь, не попадают в ваши документы.
     noSampleDocument: Тип документа этого шаблона недоступен, поэтому страницу нельзя показать.
     hiddenByCondition: 'Скрыто условием: показывается, только когда «{coordinate}» = {value}. Сейчас читатель этого не видит.'
+    hiddenByFormula: 'Скрыто условием: показывается, только пока выполняется «{formula}». Сейчас читатель этого не видит.'
     conditionMet: Условие выполнено
     conditionNotMet: Условие не выполнено
     elementIssue: У этого элемента есть проблема

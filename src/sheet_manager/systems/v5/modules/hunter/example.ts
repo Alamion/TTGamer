@@ -8,6 +8,7 @@ import { HunterSchema } from './schema';
  */
 export const LENA_VARGA_DATA = HunterSchema.parse({
     name: 'Lena Varga',
+    metadata: { imageUrl: '/img/lena_varga.webp' },
     concept: 'Night-shift paramedic',
     creed: 'Faithful',
     drive: 'Atonement',

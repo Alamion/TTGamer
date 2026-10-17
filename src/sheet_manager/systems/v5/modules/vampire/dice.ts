@@ -6,13 +6,19 @@ import { type V5DiceLine, v5Outcome } from '../../ruleset/dice';
 const messages = uiMessages.sheet.v5.dice.hunger;
 
 /**
- * Hunger dice (VtM 5e). Only the dice line exists so far; the vampire sheet arrives with
- * T-039 and then lists its definition here.
+ * Hunger dice (VtM 5e): a vampire's sheet rolls replace as many regular dice as its Hunger
+ * (spec 037 D2).
  */
 export const hungerDiceLine: V5DiceLine = {
     id: 'hunger',
     label: messages.line,
-    definitionIds: [],
+    definitionIds: ['vampire'],
+    replaces: {
+        count: (data) => {
+            const hunger = (data as { hunger?: unknown } | null)?.hunger;
+            return typeof hunger === 'number' ? hunger : 0;
+        },
+    },
     outcomes: ({ specialFaces, critical, succeeded }) => {
         const outcomes: DiceOutcome[] = [];
         if (critical && specialFaces.includes(10) && succeeded !== false) {

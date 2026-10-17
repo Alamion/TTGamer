@@ -19,7 +19,74 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
-    visibleWhen: Show only when a value matches
+    visibleWhen: Show only when a condition holds
+    elementButton: Button
+    paletteButton: Button
+    paletteButtonHint: 'Rolls dice and changes values: a Rouse check, spending a point'
+    buttonIcon: Icon
+    buttonIcons:
+        dice: Dice
+        droplet: Drop
+        heart: Heart
+        flame: Flame
+        sparkles: Sparkles
+        skull: Skull
+    buttonRoll: Roll dice
+    buttonNotation: Dice to roll
+    buttonNotationHint: 'Dice notation; {…} computes a number from a formula: {max(1, 10 - humanity)}d10>=6'
+    buttonCount: Rolls per press
+    buttonReroll: Re-roll a failed roll once while
+    buttonSuccessAt: A roll succeeds at a total of
+    buttonGameDice: "Roll with the game's dice (V5 Hunger dice)"
+    buttonOnSuccess: On a success (or without a roll)
+    buttonOnFailure: On a failure
+    buttonAlways: After all rolls
+    buttonChangeTarget: Value
+    buttonChangeOp: Change
+    buttonOpAdd: Add
+    buttonOpSet: Set to
+    buttonChangeAmount: Amount
+    buttonAddChange: 'Add a change: {outcome}'
+    buttonRemoveChange: 'Remove change {index}: {outcome}'
+    buttonSuccessText: Text on a success
+    buttonFailureText: Text on a failure
+    buttonAvailableWhen: Available while
+    rowButtons: Row buttons
+    rowButtonsHint: 'Every row gets the button; its formulas read the row as row.<column>.'
+    rowButtonsAdd: Add a row button
+    rowButtonsRemove: 'Remove {label}'
+    rowButtonNew: Button
+    fromCatalog: From catalog
+    fromCatalogHint: Shows a text of the catalog entry another value names
+    fromCatalogCatalog: Catalog
+    fromCatalogEntry: Entry named by
+    fromCatalogEntryHint: 'The value key holding the name: a clan, a predator type'
+    fromCatalogText: Text
+    fromCatalogAlternative: Another text while a formula holds
+    fromCatalogAlternativeText: Other text
+    fromCatalogWhen: While
+    fromCatalogMode: Shows
+    fromCatalogModeSuggest: A suggestion until the reader writes their own
+    fromCatalogModeShow: The text only (readers cannot type)
+    marksFromEnd: Marks of another value from the end
+    marksFromEndHint: 'Never on a filled box: Humanity and its stains'
+    marksFromEndValue: Value of the marks
+    marksFromEndName: Mark name
+    limitByParent: Limit by parent
+    limitByParentHint: "Entries that belong to entries of another list, up to that entry's rating: powers by their discipline"
+    parentList: Parent list (value key)
+    parentVia: Detail naming the parent
+    parentLevel: Detail with the level
+    parentNoLevel: No level (parents only)
+    limitEntryLevel: Entry detail with the level
+    limitRowLevel: Row column with the level
+    limitParentRating: Parent's rating
+    cohortMax: Members at most
+    visibleWhenKind: Condition
+    visibleWhenKindValue: A value matches
+    visibleWhenKindFormula: A formula holds
+    visibleWhenFormula: Formula
+    visibleWhenFormulaHint: Shown while the result is not 0 and not empty
     visibleWhenCoordinate: Value key
     visibleWhenOperator: Comparison
     visibleWhenValue: Value
@@ -101,8 +168,6 @@ editor:
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
     paletteList: List
     paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
-    paletteTracker: Tracker
-    paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in
     sourceCustom: Custom value (this template)
     sourceTraits: Traits
@@ -210,6 +275,7 @@ editor:
     sampleNote: Sample data — dots, boxes, and text you change here never reach your documents.
     noSampleDocument: This template's document type is not available, so the page cannot be shown.
     hiddenByCondition: 'Hidden by a condition: shown only when "{coordinate}" is {value}. Readers do not see it now.'
+    hiddenByFormula: 'Hidden by a condition: shown only while "{formula}" holds. Readers do not see it now.'
     conditionMet: Condition met
     conditionNotMet: Condition not met
     elementIssue: This element has an issue

@@ -1,0 +1,220 @@
+_lazy: [summary]
+blood-sorcery-blood-walk:
+    name: 'Blood Walk'
+    summary: "Tasting a vampire's blood reveals their generation, name, and sire; a critical also exposes their Blood Bonds."
+blood-sorcery-clinging-of-the-insect:
+    name: 'Clinging of the Insect'
+    summary: 'Drinking blood mixed with a crushed spider lets the caster crawl on walls and ceilings for a scene.'
+blood-sorcery-craft-bloodstone:
+    name: 'Craft Bloodstone'
+    summary: 'Over three nights an iron pebble soaks up blood and becomes a stone whose direction and distance the caster always senses.'
+blood-sorcery-wake-with-evenings-freshness:
+    name: "Wake with Evening's Freshness"
+    summary: 'A circle of ash around the resting place wakes the caster fully alert if danger comes during the day.'
+blood-sorcery-ward-against-ghouls:
+    name: 'Ward against Ghouls'
+    summary: 'A blood glyph on an object burns and terrifies any ghoul who touches it.'
+blood-sorcery-douse-the-fear:
+    name: 'Douse the Fear'
+    summary: 'Holding a holy object to a flame gives the caster extra dice to resist fear of fire for a night.'
+blood-sorcery-seal-the-brand:
+    name: 'Seal the Brand'
+    summary: "Molten silver over a tattoo, scar, or brand makes that mark a permanent part of the vampire's body."
+blood-sorcery-coax-the-garden:
+    name: 'Coax the Garden'
+    summary: 'Blood and poppy seeds rouse nearby plants to trip, hinder, and grapple everyone but the caster.'
+blood-sorcery-communicate-with-kindred-sire:
+    name: 'Communicate with Kindred Sire'
+    summary: 'Using an object of the sire and a bowl of water, the childe opens a short silent mental link to their sire.'
+blood-sorcery-eyes-of-babel:
+    name: 'Eyes of Babel'
+    summary: "Eating a victim's eye and tongue grants their languages for a week, or a month on a critical."
+blood-sorcery-illuminate-the-trail-of-prey:
+    name: 'Illuminate the Trail of Prey'
+    summary: "A burning blood-soaked ribbon reveals a known person's path over the last day as a glowing trail."
+blood-sorcery-truth-of-blood:
+    name: 'Truth of Blood'
+    summary: "A finger dipped in the subject's mixed blood tells whether each of their statements is true."
+blood-sorcery-ward-against-spirits:
+    name: 'Ward against Spirits'
+    summary: 'A blood and salt glyph harms ghosts and spirits that try to touch or pass through the warded object.'
+blood-sorcery-warding-circle-against-ghouls:
+    name: 'Warding Circle against Ghouls'
+    summary: 'A ward drawn as a circle on the ground that keeps ghouls from crossing it.'
+blood-sorcery-as-fog-on-water:
+    name: 'As Fog on Water'
+    summary: 'The caster can walk silently on the surface of water for the rest of the night.'
+blood-sorcery-calix-secretus:
+    name: 'Calix Secretus'
+    summary: "Stores the caster's blood inside a small object, released later with a command word."
+blood-sorcery-soporific-touch:
+    name: 'Soporific Touch'
+    summary: 'Vitae laced with a narcotic weakens the resistance of whoever touches it against persuasion and mind control.'
+blood-sorcery-dagons-call:
+    name: "Dagon's Call"
+    summary: "After the victim touched the caster's blood, the ritual bursts their blood vessels from afar."
+blood-sorcery-deflection-of-wooden-doom:
+    name: 'Deflection of Wooden Doom'
+    summary: "Until the night ends, the first stake aimed at the caster's heart shatters on their skin."
+blood-sorcery-essence-of-air:
+    name: 'Essence of Air'
+    summary: 'Brews a potion that lets the caster fly or hover at running speed for a scene.'
+blood-sorcery-firewalker:
+    name: 'Firewalker'
+    summary: 'Sacrificing a fingertip halves fire damage to the subject for the rest of the night.'
+blood-sorcery-ward-against-lupines:
+    name: 'Ward against Lupines'
+    summary: 'A blood glyph that burns and terrifies werewolves who touch the warded object.'
+blood-sorcery-warding-circle-against-spirits:
+    name: 'Warding Circle against Spirits'
+    summary: 'A ward drawn as a circle on the ground that keeps ghosts and spirits from crossing it.'
+blood-sorcery-fire-in-the-blood:
+    name: 'Fire in the Blood'
+    summary: "Burning a target's blood sample heats their blood from afar, causing damage and painful physical penalties."
+blood-sorcery-one-with-the-blade:
+    name: 'One with the Blade'
+    summary: 'Dedicates one melee weapon to the caster: it never dulls and can be anointed for bonus dice in combat.'
+blood-sorcery-defense-of-the-sacred-haven:
+    name: 'Defense of the Sacred Haven'
+    summary: 'Blankets an area of up to six meters in shadow that keeps sunlight out while the caster stays inside.'
+blood-sorcery-eyes-of-the-nighthawk:
+    name: 'Eyes of the Nighthawk'
+    summary: 'The caster rides a bird, seeing through its eyes and even using some Disciplines through it.'
+blood-sorcery-incorporeal-passage:
+    name: 'Incorporeal Passage'
+    summary: 'While holding a shard of a broken mirror the caster becomes intangible, harmed only by fire, sun, and magic.'
+blood-sorcery-ward-against-cainites:
+    name: 'Ward against Cainites'
+    summary: 'A blood glyph that burns and terrifies vampires other than the caster who touch the warded object.'
+blood-sorcery-warding-circle-against-lupines:
+    name: 'Warding Circle against Lupines'
+    summary: 'A ward drawn as a circle on the ground that keeps werewolves from crossing it.'
+blood-sorcery-feast-of-ashes:
+    name: 'Feast of Ashes'
+    summary: 'For one night the target vomits any blood they drink and can only ease Hunger by eating ashes.'
+blood-sorcery-guided-memory:
+    name: 'Guided Memory'
+    summary: "Drinking a donor's blood lets the caster relive their memories and borrow a power or Merit for a while."
+blood-sorcery-invisible-chains-of-binding:
+    name: 'Invisible Chains of Binding'
+    summary: 'A prepared chain link thrown at a target pins them in place for hours and hampers their physical defense.'
+blood-sorcery-escape-to-true-sanctuary:
+    name: 'Escape to True Sanctuary'
+    summary: 'Links two painted circles so the caster can step into one and instantly appear in the other.'
+blood-sorcery-heart-of-stone:
+    name: 'Heart of Stone'
+    summary: "Turns the caster's heart to stone: stakes cannot pierce it, but emotion and social ease fade away."
+blood-sorcery-shaft-of-belated-dissolution:
+    name: 'Shaft of Belated Dissolution'
+    summary: 'Makes a rowan stake that eases staking; a strong hit destroys the vampire, a weak one creeps toward the heart.'
+blood-sorcery-warding-circle-against-cainites:
+    name: 'Warding Circle against Cainites'
+    summary: 'A ward drawn as a circle on the ground that keeps vampires from crossing it.'
+blood-sorcery-antebrachia-ignium:
+    name: 'Antebrachia Ignium'
+    summary: "Vitae coating the caster's arms burns instead of them, letting them set foes alight by touch."
+blood-sorcery-dominion:
+    name: 'Dominion'
+    summary: 'Iron seals over every door stop all others from using Animalism, Auspex, Dominate, or Presence in the building.'
+blood-sorcery-edens-bounty:
+    name: "Eden's Bounty"
+    summary: "A corpse laid under a tree draws a little blood from all mortals nearby, slaking the caster's Hunger."
+oblivion-summon-spirit:
+    name: 'Summon Spirit'
+    summary: 'Calls a specific wraith from the Underworld through one of its fetters; it need not obey.'
+oblivion-the-gift-of-false-life:
+    name: 'The Gift of False Life'
+    summary: 'Animates corpses that carry out one simple, repetitive command.'
+oblivion-travelers-call:
+    name: "Traveler's Call"
+    summary: 'A Shalimite priest alerts another cult member to their location with a recurring vision.'
+oblivion-awaken-the-homuncular-servant:
+    name: 'Awaken the Homuncular Servant'
+    summary: 'Turns a severed body part or small dead animal into a loyal spying servant.'
+oblivion-compel-spirit:
+    name: 'Compel Spirit'
+    summary: "Threatening a wraith's fetter forces it to perform tasks for the caster."
+oblivion-host-spirit:
+    name: 'Host Spirit'
+    summary: "Lets a wraith ride in the caster's body, granting physical dice, Health, and its advice and skills."
+oblivion-shambling-hordes:
+    name: 'Shambling Hordes'
+    summary: 'A mortal sacrifice raises aggressive corpses that obey complex orders and attack intruders.'
+oblivion-name-of-the-father:
+    name: 'Name of the Father'
+    summary: 'Invoking Shalim in ancient Greek can later paralyze a victim with despair and blot out their senses.'
+oblivion-bind-the-spirit:
+    name: 'Bind the Spirit'
+    summary: 'Chains a compelled wraith to a place or person, where its emotions bleed into everyone nearby.'
+oblivion-split-the-veil:
+    name: 'Split the Veil'
+    summary: 'A sacrifice tears the veil between worlds, letting wraiths cross into the living world.'
+oblivion-lazarene-blessing:
+    name: 'Lazarene Blessing'
+    summary: 'Places a wraith into a freshly killed body, letting it live again in that flesh.'
+oblivion-ex-nihilo:
+    name: 'Ex Nihilo'
+    summary: 'After the veil is torn, the caster and companions can physically cross into the Shadowlands.'
+oblivion-pit-of-contemplation:
+    name: 'Pit of Contemplation'
+    summary: 'A doorway painted in sacrificial blood opens into Oblivion and pulls victims into endless darkness.'
+thin-blood-alchemy-far-reach:
+    name: 'Far Reach'
+    summary: 'Telekinesis: move, push, or pull a nearby object or person under 100 kg without touching it.'
+thin-blood-alchemy-haze:
+    name: 'Haze'
+    summary: 'A cloud of mist follows the alchemist, hiding their identity and making them harder to shoot.'
+thin-blood-alchemy-profane-hieros-gamos:
+    name: 'Profane Hieros Gamos'
+    summary: "A gruesome procedure followed by daysleep remakes the alchemist's body as the gender they choose."
+thin-blood-alchemy-mercurian-tongue:
+    name: 'Mercurian Tongue'
+    summary: 'The alchemist speaks the native language of the mortal whose blood went into the formula.'
+thin-blood-alchemy-plug-in:
+    name: 'Plug-In'
+    summary: "The alchemist's body carries a weak current that powers lights and small devices by touch."
+thin-blood-alchemy-envelop:
+    name: 'Envelop'
+    summary: 'A mist clings to one target, blinding them and possibly choking a mortal into helplessness.'
+thin-blood-alchemy-friends-list:
+    name: 'Friends List'
+    summary: 'Shows silver threads linking mortals to the vampires they are connected with.'
+thin-blood-alchemy-defractionate:
+    name: 'Defractionate'
+    summary: 'An elixir that restores fractionated bagged blood so any vampire can feed from it.'
+thin-blood-alchemy-mandagloire:
+    name: 'Mandagloire'
+    summary: "A foul gas from the alchemist's blood paralyzes mortals and cramps supernatural beings."
+thin-blood-alchemy-rumor:
+    name: 'Rumor'
+    summary: 'The target comes to agree with one statement of the alchemist and believes it was their own idea.'
+thin-blood-alchemy-tank:
+    name: 'Tank'
+    summary: 'The first damage the alchemist takes in the scene is reduced by five.'
+thin-blood-alchemy-chemically-induced-flashback:
+    name: 'Chemically-Induced Flashback'
+    summary: "Ashe made with the dead vampire's belongings lets the user relive one of that vampire's memories."
+thin-blood-alchemy-concoct-ashe:
+    name: 'Concoct Ashe'
+    summary: "Turns a destroyed vampire's ashes into Ashe, an addictive drug that briefly empowers thin-blood vitae."
+thin-blood-alchemy-airborne-momentum:
+    name: 'Airborne Momentum'
+    summary: "The alchemist can fly or hover at running speed for a scene, carrying up to a person's weight."
+thin-blood-alchemy-short-circuit:
+    name: 'Short Circuit'
+    summary: "A touch silently shorts out electrical equipment, from a car to a building's power."
+thin-blood-alchemy-toxic-personality:
+    name: 'Toxic Personality'
+    summary: 'The alchemist sweats corrosive bile that boosts unarmed attacks and can be spat at foes.'
+thin-blood-alchemy-discipline-channeling:
+    name: 'Discipline Channeling'
+    summary: 'Ashe infused this way grants one Discipline power the destroyed vampire had, for a chapter.'
+thin-blood-alchemy-awaken-the-sleeper:
+    name: 'Awaken the Sleeper'
+    summary: 'An elixir mixed into human blood that rouses a vampire from torpor.'
+thin-blood-alchemy-flowering-amaranth:
+    name: 'Flowering Amaranth'
+    summary: "A ritual shared diablerie: thin-bloods take a dot of one of a full-blooded vampire's clan Disciplines."
+thin-blood-alchemy-moment-of-clarity:
+    name: 'Moment of Clarity'
+    summary: 'The Beast falls quiet for a scene: bonus Mental dice, better resistance to mind powers, no frenzy.'

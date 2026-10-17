@@ -9513,6 +9513,1842 @@
    ]
   }
  },
+ "wod-v5/v5-vampire-sheet": {
+  "ok": true,
+  "data": {
+   "id": "v5-vampire-sheet",
+   "name": "Vampire: the Masquerade 5e — Full sheet",
+   "systemId": "wod-v5",
+   "documentKind": "vampire",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "vampire",
+     "type": "section",
+     "title": "Vampire",
+     "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.vampire",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "portrait",
+       "type": "group",
+       "title": "Portrait",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+       "column": 1,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "portrait-image",
+         "label": "Portrait",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "portrait",
+         "compact": false,
+         "type": "image"
+        }
+       ]
+      },
+      {
+       "id": "identity",
+       "type": "group",
+       "title": "Identity",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+       "column": 2,
+       "hideTitle": true,
+       "collapsible": false,
+       "columns": 2,
+       "children": [
+        {
+         "id": "name-field",
+         "label": "Name",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+         "required": false,
+         "valueKey": "name",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "concept-field",
+         "label": "Concept",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.concept",
+         "required": false,
+         "valueKey": "concept",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "clan-field",
+         "label": "Clan",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.clan",
+         "required": false,
+         "valueKey": "clan",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "generation",
+         "type": "primitive",
+         "bindingKey": "field:generation",
+         "label": "Generation",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation",
+         "compact": false
+        },
+        {
+         "id": "predator-type-field",
+         "label": "Predator type",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorType",
+         "required": false,
+         "valueKey": "predator-type",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "sire-field",
+         "label": "Sire",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.sire",
+         "required": false,
+         "valueKey": "sire",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "chronicle-field",
+         "label": "Chronicle",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.chronicle",
+         "required": false,
+         "valueKey": "chronicle",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        }
+       ]
+      },
+      {
+       "id": "predator",
+       "type": "group",
+       "title": "What the predator type gives",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorGrants",
+       "column": 2,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "predator-grants-field",
+         "label": "What the predator type gives",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorGrants",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "predator-grants",
+         "compact": false,
+         "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-predator-types",
+          "entryFrom": "predator-type",
+          "text": "grants",
+          "mode": "show"
+         },
+         "multiline": false
+        }
+       ]
+      },
+      {
+       "id": "biography",
+       "type": "group",
+       "title": "Biography",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.biography",
+       "column": 2,
+       "collapsible": true,
+       "defaultCollapsed": true,
+       "columns": 2,
+       "children": [
+        {
+         "id": "biography-age-field",
+         "label": "Age",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.age",
+         "column": 1,
+         "required": false,
+         "valueKey": "biography-age",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "biography-date-of-birth-field",
+         "label": "Date of birth",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.dateOfBirth",
+         "column": 2,
+         "required": false,
+         "valueKey": "biography-date-of-birth",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "biography-appearance-field",
+         "label": "Appearance",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.appearance",
+         "column": 1,
+         "required": false,
+         "valueKey": "biography-appearance",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "biography-distinguishing-features-field",
+         "label": "Distinguishing features",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.distinguishingFeatures",
+         "column": 2,
+         "required": false,
+         "valueKey": "biography-distinguishing-features",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "biography-history-field",
+         "label": "History",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.history",
+         "column": 1,
+         "required": false,
+         "valueKey": "biography-history",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "condition",
+     "type": "section",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.condition",
+     "columns": 3,
+     "children": [
+      {
+       "id": "health",
+       "type": "group",
+       "title": "Health",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+       "column": 1,
+       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "health-track",
+         "type": "primitive",
+         "bindingKey": "track:health",
+         "label": "Health",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+         "hideLabel": true,
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "willpower",
+       "type": "group",
+       "title": "Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+       "column": 2,
+       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "willpower-track",
+         "type": "primitive",
+         "bindingKey": "track:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+         "hideLabel": true,
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "blood",
+       "type": "group",
+       "title": "Blood",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.blood",
+       "column": 3,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "hunger",
+         "type": "primitive",
+         "bindingKey": "resource:hunger",
+         "label": "Hunger",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
+         "compact": false
+        },
+        {
+         "id": "blood-potency",
+         "type": "primitive",
+         "bindingKey": "resource:blood-potency",
+         "label": "Blood Potency",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
+         "compact": false
+        },
+        {
+         "id": "humanity",
+         "type": "primitive",
+         "bindingKey": "resource:humanity",
+         "label": "Humanity",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
+         "poolTracker": {
+          "display": "row",
+          "legend": false,
+          "total": true,
+          "marksFromEnd": {
+           "coordinate": "stains",
+           "mark": {
+            "name": "Stain",
+            "nameMessage": "ttgamer.ui.sheet.v5Vampire.marks.stain"
+           }
+          }
+         },
+         "compact": false
+        },
+        {
+         "id": "rouse",
+         "label": "Rouse check",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
+         "icon": "droplet",
+         "roll": {
+          "notation": "1d10>=6",
+          "successAt": 1,
+          "gameDice": false
+         },
+         "onSuccess": [],
+         "onFailure": [
+          {
+           "target": "hunger",
+           "op": "add",
+           "amount": "1"
+          }
+         ],
+         "always": [],
+         "type": "button"
+        },
+        {
+         "id": "remorse",
+         "label": "Remorse check",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
+         "icon": "heart",
+         "availableWhen": "stains > 0",
+         "roll": {
+          "notation": "{max(1, 10 - humanity - stains)}d10>=6",
+          "successAt": 1,
+          "gameDice": false
+         },
+         "onSuccess": [],
+         "onFailure": [
+          {
+           "target": "humanity",
+           "op": "add",
+           "amount": "-1"
+          }
+         ],
+         "always": [
+          {
+           "target": "stains",
+           "op": "set",
+           "amount": "0"
+          }
+         ],
+         "type": "button"
+        }
+       ]
+      },
+      {
+       "id": "blood-potency-effects",
+       "type": "group",
+       "title": "Blood Potency",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.bloodPotency",
+       "column": 3,
+       "collapsible": true,
+       "columns": 2,
+       "children": [
+        {
+         "id": "blood-surge",
+         "label": "Blood surge, extra dice",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodSurge",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)",
+         "prefix": "+"
+        },
+        {
+         "id": "mend",
+         "label": "Mend per Rouse, Superficial",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.mend",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "if(blood-potency >= 10, 5, if(blood-potency >= 8, 4, if(blood-potency >= 4, 3, if(blood-potency >= 2, 2, 1))))"
+        },
+        {
+         "id": "power-bonus",
+         "label": "Discipline bonus, dice",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.powerBonus",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "floor(blood-potency / 2)",
+         "prefix": "+"
+        },
+        {
+         "id": "rouse-reroll",
+         "label": "Re-roll Rouse up to level",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.rouseReroll",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)"
+        },
+        {
+         "id": "bane-severity",
+         "label": "Bane severity",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.baneSeverity",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "ceil(blood-potency / 2)"
+        },
+        {
+         "id": "potency-range",
+         "label": "Blood Potency for this generation",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.potencyRange",
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "if(generation >= 14, 0, if(generation >= 10, 1, if(generation >= 8, 2, if(generation >= 6, 3, if(generation >= 5, 4, 5))))) & \"–\" & if(generation >= 14, 0, if(generation >= 12, 3, if(generation >= 10, 4, if(generation >= 9, 5, if(generation >= 8, 6, if(generation >= 7, 7, if(generation >= 6, 8, if(generation >= 5, 9, 10))))))))"
+        },
+        {
+         "id": "potency-outside",
+         "label": "Blood Potency",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
+         "visibleWhen": {
+          "formula": "or(blood-potency < if(generation >= 14, 0, if(generation >= 10, 1, if(generation >= 8, 2, if(generation >= 6, 3, if(generation >= 5, 4, 5))))), blood-potency > if(generation >= 14, 0, if(generation >= 12, 3, if(generation >= 10, 4, if(generation >= 9, 5, if(generation >= 8, 6, if(generation >= 7, 7, if(generation >= 6, 8, if(generation >= 5, 9, 10)))))))))"
+         },
+         "required": false,
+         "compact": true,
+         "type": "formula",
+         "formula": "\"Outside this generation's range\"",
+         "textMessages": {
+          "Outside this generation's range": "ttgamer.ui.sheet.v5Vampire.potency.outside"
+         }
+        },
+        {
+         "id": "feeding-penalty",
+         "label": "Feeding",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.feedingPenalty",
+         "span": 2,
+         "required": false,
+         "compact": false,
+         "type": "formula",
+         "formula": "if(blood-potency >= 10, \"Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3\", if(blood-potency >= 9, \"Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3\", if(blood-potency >= 7, \"Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2\", if(blood-potency >= 5, \"Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2\", if(blood-potency >= 4, \"Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger\", if(blood-potency >= 3, \"Animal and bagged blood slake no Hunger\", if(blood-potency >= 2, \"Animal and bagged blood slake half Hunger\", \"No penalty\")))))))",
+         "textMessages": {
+          "No penalty": "ttgamer.ui.sheet.v5Vampire.potency.feeding.none",
+          "Animal and bagged blood slake no Hunger; human blood slakes 3 less Hunger; only a kill brings Hunger below 3": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b10",
+          "Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 3": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b9",
+          "Animal and bagged blood slake no Hunger; human blood slakes 2 less Hunger; only a kill brings Hunger below 2": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b7",
+          "Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger; only a kill brings Hunger below 2": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b5",
+          "Animal and bagged blood slake no Hunger; human blood slakes 1 less Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b4",
+          "Animal and bagged blood slake no Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b3",
+          "Animal and bagged blood slake half Hunger": "ttgamer.ui.sheet.v5Vampire.potency.feeding.b2"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "attributes",
+     "type": "section",
+     "title": "Attributes",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills",
+     "columns": 3,
+     "children": [
+      {
+       "id": "attributes-physical",
+       "type": "group",
+       "title": "Physical",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.physical",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "attribute-strength",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:strength",
+         "label": "Strength",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.strength",
+         "compact": false
+        },
+        {
+         "id": "attribute-dexterity",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:dexterity",
+         "label": "Dexterity",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.dexterity",
+         "compact": false
+        },
+        {
+         "id": "attribute-stamina",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:stamina",
+         "label": "Stamina",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.stamina",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "attributes-social",
+       "type": "group",
+       "title": "Social",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.social",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "attribute-charisma",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:charisma",
+         "label": "Charisma",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.charisma",
+         "compact": false
+        },
+        {
+         "id": "attribute-manipulation",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:manipulation",
+         "label": "Manipulation",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.manipulation",
+         "compact": false
+        },
+        {
+         "id": "attribute-composure",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:composure",
+         "label": "Composure",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.composure",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "attributes-mental",
+       "type": "group",
+       "title": "Mental",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.mental",
+       "column": 3,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "attribute-intelligence",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:intelligence",
+         "label": "Intelligence",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.intelligence",
+         "compact": false
+        },
+        {
+         "id": "attribute-wits",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:wits",
+         "label": "Wits",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.wits",
+         "compact": false
+        },
+        {
+         "id": "attribute-resolve",
+         "type": "primitive",
+         "bindingKey": "trait:attributes:resolve",
+         "label": "Resolve",
+         "labelMessage": "ttgamer.ui.sheet.v5.attributes.resolve",
+         "compact": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "skills",
+     "type": "section",
+     "title": "Skills",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#specialties",
+     "columns": 3,
+     "children": [
+      {
+       "id": "skills-physical",
+       "type": "group",
+       "title": "Physical",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.physical",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "skill-athletics",
+         "type": "primitive",
+         "bindingKey": "trait:skills:athletics",
+         "label": "Athletics",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.athletics",
+         "compact": false
+        },
+        {
+         "id": "skill-brawl",
+         "type": "primitive",
+         "bindingKey": "trait:skills:brawl",
+         "label": "Brawl",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.brawl",
+         "compact": false
+        },
+        {
+         "id": "skill-craft",
+         "type": "primitive",
+         "bindingKey": "trait:skills:craft",
+         "label": "Craft",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.craft",
+         "compact": false
+        },
+        {
+         "id": "skill-driving",
+         "type": "primitive",
+         "bindingKey": "trait:skills:driving",
+         "label": "Driving",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.driving",
+         "compact": false
+        },
+        {
+         "id": "skill-firearms",
+         "type": "primitive",
+         "bindingKey": "trait:skills:firearms",
+         "label": "Firearms",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.firearms",
+         "compact": false
+        },
+        {
+         "id": "skill-larceny",
+         "type": "primitive",
+         "bindingKey": "trait:skills:larceny",
+         "label": "Larceny",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.larceny",
+         "compact": false
+        },
+        {
+         "id": "skill-melee",
+         "type": "primitive",
+         "bindingKey": "trait:skills:melee",
+         "label": "Melee",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.melee",
+         "compact": false
+        },
+        {
+         "id": "skill-stealth",
+         "type": "primitive",
+         "bindingKey": "trait:skills:stealth",
+         "label": "Stealth",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.stealth",
+         "compact": false
+        },
+        {
+         "id": "skill-survival",
+         "type": "primitive",
+         "bindingKey": "trait:skills:survival",
+         "label": "Survival",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.survival",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "skills-social",
+       "type": "group",
+       "title": "Social",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.social",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "skill-animal-ken",
+         "type": "primitive",
+         "bindingKey": "trait:skills:animal-ken",
+         "label": "Animal Ken",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.animalKen",
+         "compact": false
+        },
+        {
+         "id": "skill-etiquette",
+         "type": "primitive",
+         "bindingKey": "trait:skills:etiquette",
+         "label": "Etiquette",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.etiquette",
+         "compact": false
+        },
+        {
+         "id": "skill-insight",
+         "type": "primitive",
+         "bindingKey": "trait:skills:insight",
+         "label": "Insight",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.insight",
+         "compact": false
+        },
+        {
+         "id": "skill-intimidation",
+         "type": "primitive",
+         "bindingKey": "trait:skills:intimidation",
+         "label": "Intimidation",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.intimidation",
+         "compact": false
+        },
+        {
+         "id": "skill-leadership",
+         "type": "primitive",
+         "bindingKey": "trait:skills:leadership",
+         "label": "Leadership",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.leadership",
+         "compact": false
+        },
+        {
+         "id": "skill-performance",
+         "type": "primitive",
+         "bindingKey": "trait:skills:performance",
+         "label": "Performance",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.performance",
+         "compact": false
+        },
+        {
+         "id": "skill-persuasion",
+         "type": "primitive",
+         "bindingKey": "trait:skills:persuasion",
+         "label": "Persuasion",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.persuasion",
+         "compact": false
+        },
+        {
+         "id": "skill-streetwise",
+         "type": "primitive",
+         "bindingKey": "trait:skills:streetwise",
+         "label": "Streetwise",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.streetwise",
+         "compact": false
+        },
+        {
+         "id": "skill-subterfuge",
+         "type": "primitive",
+         "bindingKey": "trait:skills:subterfuge",
+         "label": "Subterfuge",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.subterfuge",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "skills-mental",
+       "type": "group",
+       "title": "Mental",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.mental",
+       "column": 3,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "skill-academics",
+         "type": "primitive",
+         "bindingKey": "trait:skills:academics",
+         "label": "Academics",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.academics",
+         "compact": false
+        },
+        {
+         "id": "skill-awareness",
+         "type": "primitive",
+         "bindingKey": "trait:skills:awareness",
+         "label": "Awareness",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.awareness",
+         "compact": false
+        },
+        {
+         "id": "skill-finance",
+         "type": "primitive",
+         "bindingKey": "trait:skills:finance",
+         "label": "Finance",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.finance",
+         "compact": false
+        },
+        {
+         "id": "skill-investigation",
+         "type": "primitive",
+         "bindingKey": "trait:skills:investigation",
+         "label": "Investigation",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.investigation",
+         "compact": false
+        },
+        {
+         "id": "skill-medicine",
+         "type": "primitive",
+         "bindingKey": "trait:skills:medicine",
+         "label": "Medicine",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.medicine",
+         "compact": false
+        },
+        {
+         "id": "skill-occult",
+         "type": "primitive",
+         "bindingKey": "trait:skills:occult",
+         "label": "Occult",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.occult",
+         "compact": false
+        },
+        {
+         "id": "skill-politics",
+         "type": "primitive",
+         "bindingKey": "trait:skills:politics",
+         "label": "Politics",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.politics",
+         "compact": false
+        },
+        {
+         "id": "skill-science",
+         "type": "primitive",
+         "bindingKey": "trait:skills:science",
+         "label": "Science",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.science",
+         "compact": false
+        },
+        {
+         "id": "skill-technology",
+         "type": "primitive",
+         "bindingKey": "trait:skills:technology",
+         "label": "Technology",
+         "labelMessage": "ttgamer.ui.sheet.v5.skills.technology",
+         "compact": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "disciplines",
+     "type": "section",
+     "title": "Disciplines",
+     "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplines",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "discipline-list",
+       "type": "group",
+       "title": "Disciplines",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplineList",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "disciplines-list",
+         "type": "list",
+         "title": "Disciplines",
+         "bindingKey": "list:disciplines",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "power-list",
+       "type": "group",
+       "title": "Powers",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.powers",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "power-list-table",
+         "type": "primitive",
+         "bindingKey": "rows:powers",
+         "label": "Powers",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.powers",
+         "hideLabel": true,
+         "compact": false,
+         "rowButtons": [
+          {
+           "id": "power-rouse",
+           "label": "Rouse check",
+           "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
+           "icon": "droplet",
+           "availableWhen": "row.rouse > 0",
+           "roll": {
+            "notation": "1d10>=6",
+            "count": "row.rouse",
+            "rerollWhen": "row.level <= ceil(blood-potency / 2)",
+            "successAt": 1,
+            "gameDice": false
+           },
+           "onSuccess": [],
+           "onFailure": [
+            {
+             "target": "hunger",
+             "op": "add",
+             "amount": "1"
+            }
+           ],
+           "always": []
+          }
+         ],
+         "limitByParent": {
+          "entryKey": "level",
+          "column": "level",
+          "parentValue": "value"
+         }
+        }
+       ]
+      },
+      {
+       "id": "ritual-list",
+       "type": "group",
+       "title": "Rituals, ceremonies, and formulas",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.rituals",
+       "column": 2,
+       "visibleWhen": {
+        "formula": "rating(disciplines, \"Blood Sorcery\") + rating(disciplines, \"Oblivion\") + rating(disciplines, \"Thin-Blood Alchemy\") > 0"
+       },
+       "collapsible": false,
+       "children": [
+        {
+         "id": "ritual-list-table",
+         "type": "primitive",
+         "bindingKey": "rows:rituals",
+         "label": "Rituals, ceremonies, and formulas",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.rituals",
+         "hideLabel": true,
+         "compact": false,
+         "limitByParent": {
+          "entryKey": "level",
+          "column": "level",
+          "parentValue": "value"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "purpose",
+     "type": "section",
+     "title": "Aims and convictions",
+     "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.purpose",
+     "columns": 2,
+     "children": [
+      {
+       "id": "aims",
+       "type": "group",
+       "title": "Aims",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.aims",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "ambition-field",
+         "label": "Ambition",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.ambition",
+         "required": false,
+         "valueKey": "ambition",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "desire-field",
+         "label": "Desire",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.desire",
+         "required": false,
+         "valueKey": "desire",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      },
+      {
+       "id": "bane",
+       "type": "group",
+       "title": "Clan bane",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.bane",
+       "column": 1,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "bane-variant",
+         "type": "primitive",
+         "bindingKey": "field:bane-variant",
+         "label": "Bane",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.baneVariant",
+         "compact": false
+        },
+        {
+         "id": "bane-field",
+         "label": "Bane",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bane",
+         "required": false,
+         "valueKey": "bane",
+         "compact": false,
+         "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-clans",
+          "entryFrom": "clan",
+          "text": "bane",
+          "alternative": {
+           "text": "variantBane",
+           "when": "bane-variant = \"variant\""
+          },
+          "mode": "suggest"
+         },
+         "multiline": true
+        },
+        {
+         "id": "compulsion-field",
+         "label": "Compulsion",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.compulsion",
+         "required": false,
+         "valueKey": "compulsion",
+         "compact": false,
+         "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-clans",
+          "entryFrom": "clan",
+          "text": "compulsion",
+          "mode": "suggest"
+         },
+         "multiline": true
+        }
+       ]
+      },
+      {
+       "id": "touchstones",
+       "type": "group",
+       "title": "Touchstones and Convictions",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.touchstones",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "touchstones-table",
+         "type": "primitive",
+         "bindingKey": "rows:touchstones",
+         "label": "Touchstones and Convictions",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.touchstones",
+         "hideLabel": true,
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "chronicle",
+       "type": "group",
+       "title": "Chronicle Tenets",
+       "labelMessage": "ttgamer.ui.sheet.v5.fields.chronicleTenets",
+       "column": 2,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "chronicle-tenets-field",
+         "label": "Chronicle Tenets",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.chronicleTenets",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "chronicle-tenets",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "advantages",
+     "type": "section",
+     "title": "Advantages and Flaws",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.advantagesFlaws",
+     "columns": 2,
+     "children": [
+      {
+       "id": "advantages-group",
+       "type": "group",
+       "title": "Advantages",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.advantages",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "advantages-list",
+         "type": "list",
+         "title": "Advantages",
+         "bindingKey": "list:advantages",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "flaws-group",
+       "type": "group",
+       "title": "Flaws",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.flaws",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "flaws-list",
+         "type": "list",
+         "title": "Flaws",
+         "bindingKey": "list:flaws",
+         "columns": 1
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "equipment",
+     "type": "section",
+     "title": "Equipment",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.equipment",
+     "columns": 2,
+     "children": [
+      {
+       "id": "weapons",
+       "type": "group",
+       "title": "Weapons",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
+       "column": 1,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "weapons-items",
+         "type": "primitive",
+         "bindingKey": "equipment:weapons",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "inventory",
+       "type": "group",
+       "title": "Inventory",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.inventory",
+       "column": 2,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "inventory-items",
+         "type": "primitive",
+         "bindingKey": "equipment:inventory",
+         "compact": false
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "other",
+     "type": "section",
+     "title": "Experience and Notes",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.other",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "experience",
+       "type": "group",
+       "title": "Experience",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.experience",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "experience-total-field",
+         "label": "Total experience",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.experienceTotal",
+         "required": false,
+         "valueKey": "experience-total",
+         "compact": false,
+         "type": "number",
+         "min": 0
+        },
+        {
+         "id": "experience-spent-field",
+         "label": "Spent experience",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.experienceSpent",
+         "required": false,
+         "valueKey": "experience-spent",
+         "compact": false,
+         "type": "number",
+         "min": 0
+        },
+        {
+         "id": "experience-left",
+         "label": "Experience left",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.experienceLeft",
+         "required": false,
+         "compact": false,
+         "type": "formula",
+         "formula": "experience-total - experience-spent"
+        }
+       ]
+      },
+      {
+       "id": "notes",
+       "type": "group",
+       "title": "Notes",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.notes",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "notes-field",
+         "label": "Notes",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.notes",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "notes",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-vampire-brief": {
+  "ok": true,
+  "data": {
+   "id": "v5-vampire-brief",
+   "name": "Vampire: the Masquerade 5e — Brief",
+   "systemId": "wod-v5",
+   "documentKind": "vampire",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "identity",
+     "type": "group",
+     "title": "Identity",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "columns": 4,
+     "children": [
+      {
+       "id": "name-field",
+       "label": "Name",
+       "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+       "required": false,
+       "valueKey": "name",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "concept-field",
+       "label": "Concept",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.concept",
+       "required": false,
+       "valueKey": "concept",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "clan-field",
+       "label": "Clan",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.clan",
+       "required": false,
+       "valueKey": "clan",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "generation",
+       "type": "primitive",
+       "bindingKey": "field:generation",
+       "label": "Generation",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation",
+       "compact": true
+      },
+      {
+       "id": "predator-type-field",
+       "label": "Predator type",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorType",
+       "required": false,
+       "valueKey": "predator-type",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      }
+     ]
+    },
+    {
+     "id": "condition",
+     "type": "group",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.condition",
+     "collapsible": false,
+     "layout": "area",
+     "columns": 2,
+     "children": [
+      {
+       "id": "health-track",
+       "type": "primitive",
+       "bindingKey": "track:health",
+       "label": "Health",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+       "column": 1,
+       "compact": true
+      },
+      {
+       "id": "willpower-track",
+       "type": "primitive",
+       "bindingKey": "track:willpower",
+       "label": "Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+       "column": 1,
+       "compact": true
+      },
+      {
+       "id": "hunger",
+       "type": "primitive",
+       "bindingKey": "resource:hunger",
+       "label": "Hunger",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
+       "column": 2,
+       "compact": true
+      },
+      {
+       "id": "blood-potency",
+       "type": "primitive",
+       "bindingKey": "resource:blood-potency",
+       "label": "Blood Potency",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
+       "column": 2,
+       "compact": true
+      },
+      {
+       "id": "humanity",
+       "type": "primitive",
+       "bindingKey": "resource:humanity",
+       "label": "Humanity",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
+       "column": 2,
+       "poolTracker": {
+        "display": "strip",
+        "legend": false,
+        "total": true,
+        "marksFromEnd": {
+         "coordinate": "stains",
+         "mark": {
+          "name": "Stain",
+          "nameMessage": "ttgamer.ui.sheet.v5Vampire.marks.stain"
+         }
+        }
+       },
+       "compact": true
+      },
+      {
+       "id": "rouse",
+       "label": "Rouse check",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
+       "icon": "droplet",
+       "roll": {
+        "notation": "1d10>=6",
+        "successAt": 1,
+        "gameDice": false
+       },
+       "onSuccess": [],
+       "onFailure": [
+        {
+         "target": "hunger",
+         "op": "add",
+         "amount": "1"
+        }
+       ],
+       "always": [],
+       "type": "button",
+       "column": 2
+      },
+      {
+       "id": "remorse",
+       "label": "Remorse check",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
+       "icon": "heart",
+       "availableWhen": "stains > 0",
+       "roll": {
+        "notation": "{max(1, 10 - humanity - stains)}d10>=6",
+        "successAt": 1,
+        "gameDice": false
+       },
+       "onSuccess": [],
+       "onFailure": [
+        {
+         "target": "humanity",
+         "op": "add",
+         "amount": "-1"
+        }
+       ],
+       "always": [
+        {
+         "target": "stains",
+         "op": "set",
+         "amount": "0"
+        }
+       ],
+       "type": "button",
+       "column": 2
+      }
+     ]
+    },
+    {
+     "id": "attributes",
+     "type": "group",
+     "title": "Attributes",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
+     "collapsible": false,
+     "layout": "area",
+     "columns": 3,
+     "children": [
+      {
+       "id": "attribute-strength",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:strength",
+       "label": "Strength",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.strength",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-dexterity",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:dexterity",
+       "label": "Dexterity",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.dexterity",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-stamina",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:stamina",
+       "label": "Stamina",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.stamina",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-charisma",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:charisma",
+       "label": "Charisma",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.charisma",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-manipulation",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:manipulation",
+       "label": "Manipulation",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.manipulation",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-composure",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:composure",
+       "label": "Composure",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.composure",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-intelligence",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:intelligence",
+       "label": "Intelligence",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.intelligence",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-wits",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:wits",
+       "label": "Wits",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.wits",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "attribute-resolve",
+       "type": "primitive",
+       "bindingKey": "trait:attributes:resolve",
+       "label": "Resolve",
+       "labelMessage": "ttgamer.ui.sheet.v5.attributes.resolve",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      }
+     ]
+    },
+    {
+     "id": "skills",
+     "type": "group",
+     "title": "Skills",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
+     "collapsible": true,
+     "layout": "area",
+     "columns": 3,
+     "children": [
+      {
+       "id": "skill-athletics",
+       "type": "primitive",
+       "bindingKey": "trait:skills:athletics",
+       "label": "Athletics",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.athletics",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-brawl",
+       "type": "primitive",
+       "bindingKey": "trait:skills:brawl",
+       "label": "Brawl",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.brawl",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-craft",
+       "type": "primitive",
+       "bindingKey": "trait:skills:craft",
+       "label": "Craft",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.craft",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-driving",
+       "type": "primitive",
+       "bindingKey": "trait:skills:driving",
+       "label": "Driving",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.driving",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-firearms",
+       "type": "primitive",
+       "bindingKey": "trait:skills:firearms",
+       "label": "Firearms",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.firearms",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-larceny",
+       "type": "primitive",
+       "bindingKey": "trait:skills:larceny",
+       "label": "Larceny",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.larceny",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-melee",
+       "type": "primitive",
+       "bindingKey": "trait:skills:melee",
+       "label": "Melee",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.melee",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-stealth",
+       "type": "primitive",
+       "bindingKey": "trait:skills:stealth",
+       "label": "Stealth",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.stealth",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-survival",
+       "type": "primitive",
+       "bindingKey": "trait:skills:survival",
+       "label": "Survival",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.survival",
+       "column": 1,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-animal-ken",
+       "type": "primitive",
+       "bindingKey": "trait:skills:animal-ken",
+       "label": "Animal Ken",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.animalKen",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-etiquette",
+       "type": "primitive",
+       "bindingKey": "trait:skills:etiquette",
+       "label": "Etiquette",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.etiquette",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-insight",
+       "type": "primitive",
+       "bindingKey": "trait:skills:insight",
+       "label": "Insight",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.insight",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-intimidation",
+       "type": "primitive",
+       "bindingKey": "trait:skills:intimidation",
+       "label": "Intimidation",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.intimidation",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-leadership",
+       "type": "primitive",
+       "bindingKey": "trait:skills:leadership",
+       "label": "Leadership",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.leadership",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-performance",
+       "type": "primitive",
+       "bindingKey": "trait:skills:performance",
+       "label": "Performance",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.performance",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-persuasion",
+       "type": "primitive",
+       "bindingKey": "trait:skills:persuasion",
+       "label": "Persuasion",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.persuasion",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-streetwise",
+       "type": "primitive",
+       "bindingKey": "trait:skills:streetwise",
+       "label": "Streetwise",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.streetwise",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-subterfuge",
+       "type": "primitive",
+       "bindingKey": "trait:skills:subterfuge",
+       "label": "Subterfuge",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.subterfuge",
+       "column": 2,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-academics",
+       "type": "primitive",
+       "bindingKey": "trait:skills:academics",
+       "label": "Academics",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.academics",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-awareness",
+       "type": "primitive",
+       "bindingKey": "trait:skills:awareness",
+       "label": "Awareness",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.awareness",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-finance",
+       "type": "primitive",
+       "bindingKey": "trait:skills:finance",
+       "label": "Finance",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.finance",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-investigation",
+       "type": "primitive",
+       "bindingKey": "trait:skills:investigation",
+       "label": "Investigation",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.investigation",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-medicine",
+       "type": "primitive",
+       "bindingKey": "trait:skills:medicine",
+       "label": "Medicine",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.medicine",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-occult",
+       "type": "primitive",
+       "bindingKey": "trait:skills:occult",
+       "label": "Occult",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.occult",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-politics",
+       "type": "primitive",
+       "bindingKey": "trait:skills:politics",
+       "label": "Politics",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.politics",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-science",
+       "type": "primitive",
+       "bindingKey": "trait:skills:science",
+       "label": "Science",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.science",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "skill-technology",
+       "type": "primitive",
+       "bindingKey": "trait:skills:technology",
+       "label": "Technology",
+       "labelMessage": "ttgamer.ui.sheet.v5.skills.technology",
+       "column": 3,
+       "compact": true,
+       "shortForm": true
+      }
+     ]
+    },
+    {
+     "id": "disciplines",
+     "type": "group",
+     "title": "Disciplines",
+     "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplines",
+     "collapsible": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "disciplines-list",
+       "type": "list",
+       "title": "Disciplines",
+       "bindingKey": "list:disciplines",
+       "columns": 1
+      }
+     ]
+    },
+    {
+     "id": "weapons",
+     "type": "group",
+     "title": "Weapons",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "weapons-items",
+       "type": "primitive",
+       "bindingKey": "equipment:weapons",
+       "compact": false
+      }
+     ]
+    }
+   ]
+  }
+ },
  "wod-v5/v5-core-sheet": {
   "ok": true,
   "data": {

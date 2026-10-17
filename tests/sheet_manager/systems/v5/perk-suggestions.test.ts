@@ -16,7 +16,7 @@ const catalog = perksBinding.catalog!;
 function suggest(locale: string, row: Record<string, unknown>, edges: string[]) {
     const all = rowSuggestions(CATALOG_BINDINGS, catalog, locale);
     const data = { edges: edges.map((name, index) => ({ id: `e${index}`, name })) };
-    return suggestionsForRow(CATALOG_BINDINGS, catalog, all, row, data, locale);
+    return suggestionsForRow(CATALOG_BINDINGS, catalog, undefined, all, row, data, locale);
 }
 
 describe('perk suggestions follow the hunter’s Edges', () => {

@@ -1,20 +1,46 @@
 /**
- * Template formula engine (feature 006, contracts/formula-grammar.md): arithmetic expressions
- * over value coordinates, plus the `min(a, b, …)` / `max(a, b, …)` functions. Pure and deterministic — no UI, store, or system
- * imports; errors are values, never throws. A bare coordinate is a valid formula, so one
- * mechanism covers direct value links and computed formulas (`maxFrom`, FR-12/FR-13).
+ * Template formula engine (feature 006, contracts/formula-grammar.md; spec 038): expressions over
+ * value coordinates with arithmetic, comparisons (1 or 0), texts joined by `&`, rounding,
+ * `if`/`and`/`or`/`not`, `rating(list, "Name")`, and `row.<column>` inside table rows. Pure and
+ * deterministic — no UI, store, or system imports; errors are values, never throws. A bare
+ * coordinate is a valid formula, so one mechanism covers direct value links and computed formulas.
  */
+
+type ArithmeticOp = '+' | '-' | '*' | '/';
+type ComparisonOp = '<' | '<=' | '>' | '>=' | '=' | '!=';
+type BinaryOp = ArithmeticOp | ComparisonOp | '&';
 
 export type Expr =
     | { kind: 'num'; value: number }
+    | { kind: 'str'; value: string }
     | { kind: 'coord'; path: string }
-    | { kind: 'bin'; op: '+' | '-' | '*' | '/'; left: Expr; right: Expr }
+    | { kind: 'row'; column: string }
+    | { kind: 'bin'; op: BinaryOp; left: Expr; right: Expr }
     | { kind: 'neg'; operand: Expr }
     | { kind: 'call'; fn: FormulaFunction; args: Expr[] };
 
-export type FormulaFunction = 'min' | 'max';
+export type FormulaFunction =
+    'min' | 'max' | 'ceil' | 'floor' | 'round' | 'abs' | 'if' | 'and' | 'or' | 'not' | 'rating';
 
-const FUNCTIONS: ReadonlySet<string> = new Set<FormulaFunction>(['min', 'max']);
+/** Argument counts: exact, or at least `min`. */
+const ARITY: Readonly<Record<FormulaFunction, { exact?: number; min?: number }>> = {
+    min: { min: 1 },
+    max: { min: 1 },
+    ceil: { exact: 1 },
+    floor: { exact: 1 },
+    round: { exact: 1 },
+    abs: { exact: 1 },
+    if: { exact: 3 },
+    and: { min: 1 },
+    or: { min: 1 },
+    not: { exact: 1 },
+    rating: { exact: 2 },
+};
+
+const FUNCTIONS: ReadonlySet<string> = new Set(Object.keys(ARITY));
+
+/** A formula's result: a number or a text (spec 038 D1). */
+export type FormulaValue = number | string;
 
 export type FormulaEvaluationError =
     'unknown-coordinate' | 'non-numeric' | 'division-by-zero' | 'circular';
@@ -22,14 +48,28 @@ export type FormulaEvaluationError =
 export type FormulaEvaluationResult =
     { ok: true; value: number } | { ok: false; error: FormulaEvaluationError; coordinate?: string };
 
+export type FormulaValueResult =
+    | { ok: true; value: FormulaValue }
+    | { ok: false; error: FormulaEvaluationError; coordinate?: string };
+
 export type FormulaParseResult =
     | { ok: true; expr: Expr; coords: string[] }
     | { ok: false; error: { message: string; position: number } };
 
+/** What a formula may read besides coordinates. */
+export interface FormulaScope {
+    /** The table row the formula runs on (`row.<column>`). */
+    row?: (column: string) => FormulaValue | undefined;
+    /** `rating(list, "Name")`: the summed rating of the list's entries with that name. */
+    rating?: (listCoordinate: string, name: string) => number | undefined;
+}
+
 type Token =
     | { kind: 'num'; value: number; position: number }
+    | { kind: 'str'; value: string; position: number }
     | { kind: 'coord'; path: string; position: number }
-    | { kind: 'op'; op: '+' | '-' | '*' | '/'; position: number }
+    | { kind: 'row'; column: string; position: number }
+    | { kind: 'op'; op: BinaryOp; position: number }
     | { kind: 'lparen'; position: number }
     | { kind: 'rparen'; position: number }
     | { kind: 'comma'; position: number }
@@ -38,6 +78,8 @@ type Token =
 const COORDINATE_PATTERN = /[a-z][a-z0-9]*(?:-[a-z0-9]+)*/y;
 const POOL_PARTS = new Set(['current', 'max']);
 const NUMBER_PATTERN = /\d+(?:\.\d+)?/y;
+/** Two-character operators first, so `<=` is not read as `<` then `=`. */
+const OPERATORS: readonly BinaryOp[] = ['<=', '>=', '!=', '<', '>', '=', '+', '-', '*', '/', '&'];
 
 function tokenize(source: string): Token[] | { message: string; position: number } {
     const tokens: Token[] = [];
@@ -48,24 +90,23 @@ function tokenize(source: string): Token[] | { message: string; position: number
             position += 1;
             continue;
         }
-        if (char === '(') {
-            tokens.push({ kind: 'lparen', position });
+        if (char === '(' || char === ')' || char === ',') {
+            const kind = char === '(' ? 'lparen' : char === ')' ? 'rparen' : 'comma';
+            tokens.push({ kind, position });
             position += 1;
             continue;
         }
-        if (char === ')') {
-            tokens.push({ kind: 'rparen', position });
-            position += 1;
+        if (char === '"') {
+            const end = source.indexOf('"', position + 1);
+            if (end < 0) return { message: 'Unclosed string: add the closing "', position };
+            tokens.push({ kind: 'str', value: source.slice(position + 1, end), position });
+            position = end + 1;
             continue;
         }
-        if (char === ',') {
-            tokens.push({ kind: 'comma', position });
-            position += 1;
-            continue;
-        }
-        if ('+-*/'.includes(char)) {
-            tokens.push({ kind: 'op', op: char as '+' | '-' | '*' | '/', position });
-            position += 1;
+        const op = OPERATORS.find((candidate) => source.startsWith(candidate, position));
+        if (op) {
+            tokens.push({ kind: 'op', op, position });
+            position += op.length;
             continue;
         }
         if (/\d/.test(char)) {
@@ -91,12 +132,18 @@ function tokenize(source: string): Token[] | { message: string; position: number
             if (source[position] === '.') {
                 COORDINATE_PATTERN.lastIndex = position + 1;
                 const part = COORDINATE_PATTERN.exec(source);
+                if (path === 'row' && part && !POOL_PARTS.has(part[0])) {
+                    tokens.push({ kind: 'row', column: part[0], position: start });
+                    position = COORDINATE_PATTERN.lastIndex;
+                    continue;
+                }
                 if (!part || !POOL_PARTS.has(part[0])) {
                     return { message: `Invalid coordinate suffix after "${path}."`, position };
                 }
                 path = `${path}.${part[0]}`;
                 position = COORDINATE_PATTERN.lastIndex;
             }
+            // A coordinate token records where it ends (`renameFormulaCoordinates` relies on it).
             tokens.push({ kind: 'coord', path, position });
             continue;
         }
@@ -116,7 +163,12 @@ function isParseError(value: Parsed): value is ParseError {
     return (value as ParseError).message !== undefined && (value as Expr).kind === undefined;
 }
 
-/** Recursive-descent parser over the token stream (precedence: unary → multiplicative → additive). */
+const COMPARISONS: ReadonlySet<BinaryOp> = new Set(['<', '<=', '>', '>=', '=', '!=']);
+
+/**
+ * Recursive-descent parser over the token stream. Precedence, loosest first: comparison →
+ * `&` → additive → multiplicative → unary.
+ */
 class FormulaParser {
     private cursor = 0;
     private readonly tokens: readonly Token[];
@@ -126,33 +178,40 @@ class FormulaParser {
     }
 
     parseExpression(): Parsed {
-        const first = this.parseTerm();
-        if (isParseError(first)) return first;
-        let left = first;
-        while (this.peek()?.kind === 'op') {
-            const opToken = this.peek()!;
-            if (!this.isAdditive(opToken)) break;
-            this.cursor += 1;
-            const right = this.parseTerm();
-            if (isParseError(right)) return right;
-            left = { kind: 'bin', op: opToken.op, left, right };
-        }
-        return left;
+        const left = this.parseJoin();
+        if (isParseError(left)) return left;
+        const token = this.peek();
+        if (token?.kind !== 'op' || !COMPARISONS.has(token.op)) return left;
+        this.cursor += 1;
+        const right = this.parseJoin();
+        if (isParseError(right)) return right;
+        return { kind: 'bin', op: token.op, left, right };
+    }
+
+    private parseJoin(): Parsed {
+        return this.parseLevel(['&'], () => this.parseAdditive());
+    }
+
+    private parseAdditive(): Parsed {
+        return this.parseLevel(['+', '-'], () => this.parseTerm());
     }
 
     private parseTerm(): Parsed {
-        const first = this.parseFactor();
+        return this.parseLevel(['*', '/'], () => this.parseFactor());
+    }
+
+    private parseLevel(ops: readonly BinaryOp[], next: () => Parsed): Parsed {
+        const first = next();
         if (isParseError(first)) return first;
         let left = first;
-        while (this.peek()?.kind === 'op') {
-            const opToken = this.peek()!;
-            if (!this.isMultiplicative(opToken)) break;
+        for (;;) {
+            const token = this.peek();
+            if (token?.kind !== 'op' || !ops.includes(token.op)) return left;
             this.cursor += 1;
-            const right = this.parseFactor();
+            const right = next();
             if (isParseError(right)) return right;
-            left = { kind: 'bin', op: opToken.op, left, right };
+            left = { kind: 'bin', op: token.op, left, right };
         }
-        return left;
     }
 
     private parseFactor(): Parsed {
@@ -173,60 +232,84 @@ class FormulaParser {
         const token = this.peek();
         if (!token)
             return { message: 'Unexpected end of formula', position: Number.MAX_SAFE_INTEGER };
-        if (token.kind === 'num') {
-            this.cursor += 1;
-            return { kind: 'num', value: token.value };
-        }
-        if (token.kind === 'coord') {
-            this.cursor += 1;
-            return { kind: 'coord', path: token.path };
-        }
-        if (token.kind === 'fn') {
-            this.cursor += 1;
-            const open = this.peek();
-            if (!open || open.kind !== 'lparen') {
-                return { message: `Expected "(" after ${token.fn}`, position: token.position };
-            }
-            this.cursor += 1;
-            const args: Expr[] = [];
-            for (;;) {
-                const argument = this.parseExpression();
-                if (isParseError(argument)) return argument;
-                args.push(argument);
-                const separator = this.peek();
-                if (separator?.kind === 'comma') {
-                    this.cursor += 1;
-                    continue;
+        switch (token.kind) {
+            case 'num':
+            case 'str':
+                this.cursor += 1;
+                return { kind: token.kind, value: token.value } as Expr;
+            case 'coord':
+                this.cursor += 1;
+                return { kind: 'coord', path: token.path };
+            case 'row':
+                this.cursor += 1;
+                return { kind: 'row', column: token.column };
+            case 'fn':
+                return this.parseCall(token);
+            case 'lparen': {
+                this.cursor += 1;
+                const inner = this.parseExpression();
+                if (isParseError(inner)) return inner;
+                const closing = this.peek();
+                if (!closing || closing.kind !== 'rparen') {
+                    return {
+                        message: 'Missing closing parenthesis',
+                        position: closing?.position ?? token.position,
+                    };
                 }
-                if (separator?.kind === 'rparen') {
-                    this.cursor += 1;
-                    break;
-                }
-                return {
-                    message: 'Missing closing parenthesis',
-                    position: separator?.position ?? token.position,
-                };
+                this.cursor += 1;
+                return inner;
             }
-            return { kind: 'call', fn: token.fn, args };
-        }
-        if (token.kind === 'lparen') {
-            this.cursor += 1;
-            const inner = this.parseExpression();
-            if (isParseError(inner)) return inner;
-            const closing = this.peek();
-            if (!closing || closing.kind !== 'rparen') {
+            default:
                 return {
-                    message: 'Missing closing parenthesis',
-                    position: closing?.position ?? token.position,
+                    message: 'Expected a number, text, coordinate, or parenthesis',
+                    position: token.position,
                 };
-            }
-            this.cursor += 1;
-            return inner;
         }
-        return {
-            message: 'Expected a number, coordinate, or parenthesis',
-            position: token.position,
-        };
+    }
+
+    private parseCall(token: Extract<Token, { kind: 'fn' }>): Parsed {
+        this.cursor += 1;
+        const open = this.peek();
+        if (!open || open.kind !== 'lparen') {
+            return { message: `Expected "(" after ${token.fn}`, position: token.position };
+        }
+        this.cursor += 1;
+        const args: Expr[] = [];
+        for (;;) {
+            const argument = this.parseExpression();
+            if (isParseError(argument)) return argument;
+            args.push(argument);
+            const separator = this.peek();
+            if (separator?.kind === 'comma') {
+                this.cursor += 1;
+                continue;
+            }
+            if (separator?.kind === 'rparen') {
+                this.cursor += 1;
+                break;
+            }
+            return {
+                message: 'Missing closing parenthesis',
+                position: separator?.position ?? token.position,
+            };
+        }
+        const arity = ARITY[token.fn];
+        if (arity.exact !== undefined && args.length !== arity.exact) {
+            return {
+                message: `${token.fn} takes ${arity.exact} argument${arity.exact === 1 ? '' : 's'}`,
+                position: token.position,
+            };
+        }
+        if (
+            token.fn === 'rating' &&
+            (args[0]?.kind !== 'coord' || args[0].path.includes('.') || args[1]?.kind !== 'str')
+        ) {
+            return {
+                message: 'rating takes a list and a name in quotes: rating(list, "Name")',
+                position: token.position,
+            };
+        }
+        return { kind: 'call', fn: token.fn, args };
     }
 
     private peek(): Token | undefined {
@@ -240,20 +323,12 @@ class FormulaParser {
     consumed(): number {
         return this.cursor;
     }
-
-    private isAdditive(token: Token): token is Extract<Token, { kind: 'op' }> {
-        return token.kind === 'op' && (token.op === '+' || token.op === '-');
-    }
-
-    private isMultiplicative(token: Token): token is Extract<Token, { kind: 'op' }> {
-        return token.kind === 'op' && (token.op === '*' || token.op === '/');
-    }
 }
 
 /**
  * Rewrites the coordinates a formula reads (`rename` returns the new base name, or undefined to
- * keep it); pool parts (`.current`, `.max`) and everything else stay as written. A formula that
- * does not tokenize is returned unchanged.
+ * keep it); pool parts (`.current`, `.max`), row columns, and everything else stay as written. A
+ * formula that does not tokenize is returned unchanged.
  */
 export function renameFormulaCoordinates(
     source: string,
@@ -284,23 +359,32 @@ export function parseFormula(source: string): FormulaParseResult {
     const expr = parser.parseExpression();
     if (isParseError(expr)) return { ok: false, error: expr };
     if (!parser.atEnd()) {
+        const next = tokens[parser.consumed()]!;
         return {
             ok: false,
             error: {
-                message: 'Unexpected trailing input',
-                position: tokens[parser.consumed()]!.position,
+                message:
+                    next.kind === 'op' && COMPARISONS.has(next.op)
+                        ? 'Only one comparison per expression: use and(…) or or(…)'
+                        : 'Unexpected trailing input',
+                position: next.position,
             },
         };
     }
     return { ok: true, expr, coords: collectDependencies(expr) };
 }
 
-/** Extracts every coordinate path referenced by the expression (authoring picker + cycles). */
+/**
+ * Extracts every coordinate path the expression reads (authoring picker + cycles); a `rating` list
+ * counts, row columns do not (they belong to the row, not the page).
+ */
 export function collectDependencies(expr: Expr): string[] {
     const coords = new Set<string>();
     const walk = (node: Expr): void => {
         switch (node.kind) {
             case 'num':
+            case 'str':
+            case 'row':
                 break;
             case 'coord':
                 coords.add(node.path);
@@ -321,66 +405,167 @@ export function collectDependencies(expr: Expr): string[] {
     return [...coords];
 }
 
-/**
- * Evaluates the AST against a coordinate resolver. Any unknown coordinate, non-finite
- * result, or division by zero surfaces as an explicit error — never a silent fallback number
- * (spec FR-15).
- */
-export function evaluateFormula(
-    expr: Expr,
-    resolve: (path: string) => number | undefined
-): FormulaEvaluationResult {
-    const evalNode = (node: Expr): FormulaEvaluationResult => {
-        switch (node.kind) {
-            case 'num':
-                return { ok: true, value: node.value };
-            case 'coord': {
-                const resolved = resolve(node.path);
-                if (resolved === undefined) {
-                    return { ok: false, error: 'unknown-coordinate', coordinate: node.path };
-                }
-                if (!Number.isFinite(resolved)) return { ok: false, error: 'non-numeric' };
-                return { ok: true, value: resolved };
+/** A condition holds for a non-zero number or a non-empty text. */
+export function formulaTruthy(value: FormulaValue): boolean {
+    return typeof value === 'number' ? value !== 0 : value.length > 0;
+}
+
+type Resolver = (path: string) => FormulaValue | undefined;
+
+const NON_NUMERIC = { ok: false, error: 'non-numeric' } as const;
+
+function evaluateNode(node: Expr, resolve: Resolver, scope: FormulaScope): FormulaValueResult {
+    const numbers = (args: readonly Expr[]): number[] | FormulaValueResult => {
+        const result: number[] = [];
+        for (const argument of args) {
+            const value = evaluateNode(argument, resolve, scope);
+            if (!value.ok) return value;
+            if (typeof value.value !== 'number') return NON_NUMERIC;
+            result.push(value.value);
+        }
+        return result;
+    };
+    switch (node.kind) {
+        case 'num':
+        case 'str':
+            return { ok: true, value: node.value };
+        case 'coord':
+        case 'row': {
+            const path = node.kind === 'row' ? `row.${node.column}` : node.path;
+            const resolved = node.kind === 'row' ? scope.row?.(node.column) : resolve(node.path);
+            if (resolved === undefined) {
+                return { ok: false, error: 'unknown-coordinate', coordinate: path };
             }
-            case 'neg': {
-                const inner = evalNode(node.operand);
-                return inner.ok ? { ok: true, value: -inner.value } : inner;
+            if (typeof resolved === 'number' && !Number.isFinite(resolved)) return NON_NUMERIC;
+            return { ok: true, value: resolved };
+        }
+        case 'neg': {
+            const inner = numbers([node.operand]);
+            return Array.isArray(inner) ? { ok: true, value: -inner[0]! } : inner;
+        }
+        case 'call':
+            return evaluateCall(node.fn, node.args, resolve, scope, numbers);
+        case 'bin': {
+            const left = evaluateNode(node.left, resolve, scope);
+            if (!left.ok) return left;
+            const right = evaluateNode(node.right, resolve, scope);
+            if (!right.ok) return right;
+            const [a, b] = [left.value, right.value];
+            if (node.op === '&') return { ok: true, value: `${a}${b}` };
+            if (node.op === '=' || node.op === '!=') {
+                const same = typeof a === typeof b ? a === b : String(a) === String(b);
+                return { ok: true, value: (node.op === '=') === same ? 1 : 0 };
             }
-            case 'call': {
-                const values: number[] = [];
-                for (const argument of node.args) {
-                    const result = evalNode(argument);
-                    if (!result.ok) return result;
-                    values.push(result.value);
-                }
-                return {
-                    ok: true,
-                    value: node.fn === 'min' ? Math.min(...values) : Math.max(...values),
-                };
-            }
-            case 'bin': {
-                const left = evalNode(node.left);
-                if (!left.ok) return left;
-                const right = evalNode(node.right);
-                if (!right.ok) return right;
-                switch (node.op) {
-                    case '+':
-                        return { ok: true, value: left.value + right.value };
-                    case '-':
-                        return { ok: true, value: left.value - right.value };
-                    case '*':
-                        return { ok: true, value: left.value * right.value };
-                    case '/':
-                        return right.value === 0
-                            ? { ok: false, error: 'division-by-zero' }
-                            : { ok: true, value: left.value / right.value };
-                }
+            if (typeof a !== 'number' || typeof b !== 'number') return NON_NUMERIC;
+            switch (node.op) {
+                case '+':
+                    return { ok: true, value: a + b };
+                case '-':
+                    return { ok: true, value: a - b };
+                case '*':
+                    return { ok: true, value: a * b };
+                case '/':
+                    return b === 0
+                        ? { ok: false, error: 'division-by-zero' }
+                        : { ok: true, value: a / b };
+                case '<':
+                    return { ok: true, value: a < b ? 1 : 0 };
+                case '<=':
+                    return { ok: true, value: a <= b ? 1 : 0 };
+                case '>':
+                    return { ok: true, value: a > b ? 1 : 0 };
+                case '>=':
+                    return { ok: true, value: a >= b ? 1 : 0 };
             }
         }
+    }
+}
+
+function evaluateCall(
+    fn: FormulaFunction,
+    args: readonly Expr[],
+    resolve: Resolver,
+    scope: FormulaScope,
+    numbers: (args: readonly Expr[]) => number[] | FormulaValueResult
+): FormulaValueResult {
+    const truth = (argument: Expr): boolean | FormulaValueResult => {
+        const value = evaluateNode(argument, resolve, scope);
+        return value.ok ? formulaTruthy(value.value) : value;
     };
-    const result = evalNode(expr);
-    if (result.ok && !Number.isFinite(result.value)) return { ok: false, error: 'non-numeric' };
+    switch (fn) {
+        case 'if': {
+            // Only the chosen branch is read: the other may name a value that does not exist.
+            const condition = truth(args[0]!);
+            if (typeof condition !== 'boolean') return condition;
+            return evaluateNode(condition ? args[1]! : args[2]!, resolve, scope);
+        }
+        case 'and':
+        case 'or': {
+            for (const argument of args) {
+                const value = truth(argument);
+                if (typeof value !== 'boolean') return value;
+                if (value === (fn === 'or')) return { ok: true, value: fn === 'or' ? 1 : 0 };
+            }
+            return { ok: true, value: fn === 'and' ? 1 : 0 };
+        }
+        case 'not': {
+            const value = truth(args[0]!);
+            return typeof value === 'boolean' ? { ok: true, value: value ? 0 : 1 } : value;
+        }
+        case 'rating': {
+            const list = (args[0] as Extract<Expr, { kind: 'coord' }>).path;
+            const name = (args[1] as Extract<Expr, { kind: 'str' }>).value;
+            const value = scope.rating?.(list, name);
+            return value === undefined
+                ? { ok: false, error: 'unknown-coordinate', coordinate: list }
+                : { ok: true, value };
+        }
+        default: {
+            const values = numbers(args);
+            if (!Array.isArray(values)) return values;
+            const [first] = values as [number];
+            const value =
+                fn === 'min'
+                    ? Math.min(...values)
+                    : fn === 'max'
+                      ? Math.max(...values)
+                      : fn === 'ceil'
+                        ? Math.ceil(first)
+                        : fn === 'floor'
+                          ? Math.floor(first)
+                          : fn === 'round'
+                            ? Math.round(first)
+                            : Math.abs(first);
+            return { ok: true, value };
+        }
+    }
+}
+
+/**
+ * Evaluates the AST to a number or a text. Any unknown coordinate, non-finite result, or division
+ * by zero surfaces as an explicit error — never a silent fallback value (spec FR-15).
+ */
+export function evaluateFormulaValue(
+    expr: Expr,
+    resolve: Resolver,
+    scope: FormulaScope = {}
+): FormulaValueResult {
+    const result = evaluateNode(expr, resolve, scope);
+    if (result.ok && typeof result.value === 'number' && !Number.isFinite(result.value)) {
+        return NON_NUMERIC;
+    }
     return result;
+}
+
+/** Numbers only (bounds, lengths, maxima): a text result is "not a number". */
+export function evaluateFormula(
+    expr: Expr,
+    resolve: Resolver,
+    scope: FormulaScope = {}
+): FormulaEvaluationResult {
+    const result = evaluateFormulaValue(expr, resolve, scope);
+    if (!result.ok) return result;
+    return typeof result.value === 'number' ? { ok: true, value: result.value } : NON_NUMERIC;
 }
 
 export interface FormulaDependencyEntry {

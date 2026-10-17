@@ -1,0 +1,448 @@
+_lazy: [summary]
+animalism-bond-famulus:
+    name: 'Bond Famulus'
+    summary: 'Feed an animal your Blood over three nights to make it a loyal famulus; eases other Animalism on it. Pool: Charisma + Animal Ken'
+animalism-sense-the-beast:
+    name: 'Sense the Beast'
+    summary: 'Sense hostility and the Beast in others, and spot supernatural creatures. Pool: Resolve + Animalism vs Composure + Subterfuge'
+animalism-feral-whispers:
+    name: 'Feral Whispers'
+    summary: 'Talk with one kind of animal and call or ask them for favors; free with your famulus. Pool: Manipulation/Charisma + Animalism'
+animalism-animal-succulence:
+    name: 'Animal Succulence'
+    summary: 'Animal blood slakes more Hunger than usual, and ranks of Blood Potency limit it less.'
+animalism-quell-the-beast:
+    name: 'Quell the Beast'
+    summary: 'Stare down a person to drain their aggression: mortals go apathetic, vampires calm down. Pool: Charisma + Animalism vs Stamina + Resolve'
+animalism-unliving-hive:
+    name: 'Unliving Hive'
+    summary: 'Your Animalism reaches insect swarms, which can nest in your body; a swarm can serve as famulus.'
+animalism-subsume-the-spirit:
+    name: 'Subsume the Spirit'
+    summary: "Leave your body and take over an animal's mind and body; free with your famulus. Pool: Manipulation + Animalism"
+animalism-animal-dominion:
+    name: 'Animal Dominion'
+    summary: 'Command whole flocks or packs of one animal type at once for a scene or a single task. Pool: Charisma + Animalism'
+animalism-drawing-out-the-beast:
+    name: 'Drawing Out the Beast'
+    summary: 'Push your fury or terror frenzy into someone nearby instead of resisting it. Pool: Wits + Animalism vs Composure + Resolve'
+animalism-animal-messenger:
+    name: 'Animal Messenger'
+    summary: 'Your famulus carries a one-sentence spoken message to a named person, tracking them down if needed. One Rouse per night.'
+animalism-messengers-command:
+    name: "Messenger's Command"
+    summary: "Your famulus messenger can deliver a Compel or Mesmerize command when it meets the target's eyes."
+animalism-plague-of-beasts:
+    name: 'Plague of Beasts'
+    summary: 'Animals harass a target all night: Skill penalty, easier to track. Pool: Manipulation + Animalism vs Composure + Animal Ken'
+animalism-sway-the-flock:
+    name: 'Sway the Flock'
+    summary: 'Set the mood of all animals over a wide area for a night, from drowsy to murderous. Pool: Composure + Animalism'
+animalism-coax-the-bestial-temper:
+    name: 'Coax the Bestial Temper'
+    summary: 'Hum to raise or lower frenzy Difficulty for all vampires within earshot. Pool: Manipulation + Animalism'
+auspex-heightened-senses:
+    name: 'Heightened Senses'
+    summary: 'Add Auspex to perception rolls and sense beyond human limits; sudden overload can impair you. Pool: Wits + Resolve'
+auspex-sense-the-unseen:
+    name: 'Sense the Unseen'
+    summary: 'Notice hidden supernatural things: Obfuscate, ghosts, spying, dormant magic. Pool: Wits or Resolve + Auspex'
+auspex-premonition:
+    name: 'Premonition'
+    summary: 'Flashes of insight hint at danger or clues; can be called on deliberately for a Rouse Check. Pool: Resolve + Auspex'
+auspex-scry-the-soul:
+    name: 'Scry the Soul'
+    summary: "Read a target's aura: mood, nature, diablerie, supernatural traits. Pool: Intelligence + Auspex vs Composure + Subterfuge"
+auspex-share-the-senses:
+    name: 'Share the Senses'
+    summary: 'Tap into the senses of someone who has drunk your Blood or whose blood you drank. Pool: Resolve + Auspex'
+auspex-spirits-touch:
+    name: "Spirit's Touch"
+    summary: 'Touch an object or place to read the emotions and events left on it. Pool: Intelligence + Auspex'
+auspex-clairvoyance:
+    name: 'Clairvoyance'
+    summary: 'Gather information about your surroundings, a city district at most, through intuition. Pool: Intelligence + Auspex'
+auspex-possession:
+    name: 'Possession'
+    summary: 'Take over the body of a mortal while your own lies helpless. Pool: Resolve + Auspex vs Resolve + Intelligence'
+auspex-telepathy:
+    name: 'Telepathy'
+    summary: "Send thoughts freely and read a target's surface thoughts and memories; vampires cost Willpower. Pool: Resolve + Auspex vs Wits + Subterfuge"
+auspex-panacea:
+    name: 'Panacea'
+    summary: "Soothe another's mind, healing their Willpower damage and calming mortals. Pool: Composure + Auspex"
+auspex-reveal-temperament:
+    name: 'Reveal Temperament'
+    summary: "Smell Resonance and Dyscrasias in a mortal, or a vampire's latest victim. Pool: Intelligence + Auspex vs Composure + Subterfuge"
+auspex-fatal-flaw:
+    name: 'Fatal Flaw'
+    summary: "Spot a target's weakest defense and gain bonus dice against it. Pool: Intelligence + Auspex vs Composure/Stamina + Subterfuge"
+auspex-unburdening-the-bestial-soul:
+    name: 'Unburdening the Bestial Soul'
+    summary: 'Over a scene, strip Stains from another vampire or shield them from new ones; costs a Stain. Pool: Composure + Auspex vs Humanity'
+celerity-cats-grace:
+    name: "Cat's Grace"
+    summary: 'Automatically keep your balance on narrow ledges, wires and similar footing.'
+celerity-rapid-reflexes:
+    name: 'Rapid Reflexes'
+    summary: 'Defend against ranged attacks without cover penalties and take one extra minor action per turn.'
+celerity-fleetness:
+    name: 'Fleetness'
+    summary: 'Add Celerity to non-combat Dexterity rolls and to defense once per turn.'
+celerity-blink:
+    name: 'Blink'
+    summary: 'Dash up to about 50 meters in a straight line in a turn and still act on arrival. Pool: Dexterity + Athletics'
+celerity-traversal:
+    name: 'Traversal'
+    summary: 'Run up walls or across liquids for a short distance. Pool: Dexterity + Athletics'
+celerity-draught-of-elegance:
+    name: 'Draught of Elegance'
+    summary: 'Others who drink your Blood gain half your Celerity and its powers for a while.'
+celerity-unerring-aim:
+    name: 'Unerring Aim'
+    summary: 'Slow the world down for one ranged attack, which the target cannot defend against.'
+celerity-lightning-strike:
+    name: 'Lightning Strike'
+    summary: 'Make one close-combat attack too fast to be defended against.'
+celerity-split-second:
+    name: 'Split Second'
+    summary: "Override the Storyteller's narration to react first, within a few seconds of action."
+celerity-rush-job:
+    name: 'Rush Job'
+    summary: 'Finish long Skill tasks in seconds and treat some full actions as minor ones; no use in fights.'
+celerity-weaving:
+    name: 'Weaving'
+    summary: 'No pool loss when dodging several ranged attacks, and add Celerity to those dodges.'
+celerity-blurred-momentum:
+    name: 'Blurred Momentum'
+    summary: 'Attacks scoring fewer successes than your Celerity miss you, even surprise ones. Rouse each turn.'
+celerity-unseen-strike:
+    name: 'Unseen Strike'
+    summary: 'Vanish, Blink to a foe and strike them as a surprise attack. Pool: Dexterity + Celerity vs Wits + Awareness'
+dominate-cloud-memory:
+    name: 'Cloud Memory'
+    summary: 'Make a person forget the last moment or so. Pool: Charisma + Dominate vs Wits + Resolve'
+dominate-compel:
+    name: 'Compel'
+    summary: 'Give a one-word command obeyed at once and briefly. Pool: Charisma + Dominate vs Intelligence + Resolve'
+dominate-mesmerize:
+    name: 'Mesmerize'
+    summary: 'Issue a more complex command the target carries out. Pool: Manipulation + Dominate vs Intelligence + Resolve'
+dominate-dementation:
+    name: 'Dementation'
+    summary: 'Talk a target into madness, stirring hallucinations and dread. Pool: Manipulation + Dominate vs Composure + Intelligence'
+dominate-the-forgetful-mind:
+    name: 'The Forgetful Mind'
+    summary: "Rewrite a target's memories through conversation. Pool: Manipulation + Dominate vs Intelligence + Resolve"
+dominate-submerged-directive:
+    name: 'Submerged Directive'
+    summary: 'Mesmerize commands can lie dormant until a chosen trigger sets them off.'
+dominate-rationalize:
+    name: 'Rationalize'
+    summary: 'Victims believe their Dominated actions were their own choice.'
+dominate-mass-manipulation:
+    name: 'Mass Manipulation'
+    summary: 'Use another Dominate power on a whole group who see your eyes, rolling vs the strongest.'
+dominate-terminal-decree:
+    name: 'Terminal Decree'
+    summary: 'Commands can drive victims to harm or kill themselves; they get to resist instead of failing outright.'
+dominate-slavish-devotion:
+    name: 'Slavish Devotion'
+    summary: 'Others trying to Dominate your thralls take a penalty equal to your Fortitude.'
+dominate-domitors-favor:
+    name: "Domitor's Favor"
+    summary: 'For a month, your blood-bound thralls defy you at a penalty and cannot spend Willpower to do so.'
+dominate-ancestral-dominion:
+    name: 'Ancestral Dominion'
+    summary: 'Command a vampire of your lineage without eye contact or words. Pool: Manipulation + Dominate vs Resolve + Occult'
+dominate-implant-suggestion:
+    name: 'Implant Suggestion'
+    summary: "Change a target's opinion or desire for a scene. Pool: Manipulation + Dominate vs Composure + Resolve"
+fortitude-resilience:
+    name: 'Resilience'
+    summary: 'Add Fortitude to your Health track.'
+fortitude-unswayable-mind:
+    name: 'Unswayable Mind'
+    summary: 'Add Fortitude to rolls resisting coercion, mind control and Dominate.'
+fortitude-toughness:
+    name: 'Toughness'
+    summary: 'Subtract Fortitude from Superficial damage before halving it.'
+fortitude-enduring-beasts:
+    name: 'Enduring Beasts'
+    summary: 'Give your famulus or other animals extra Health equal to your Fortitude; others cost a Rouse. Pool: Stamina + Animalism'
+fortitude-defy-bane:
+    name: 'Defy Bane'
+    summary: 'Turn Aggravated damage into Superficial, fire and sunlight included; can trigger reflexively. Pool: Wits + Survival'
+fortitude-fortify-the-inner-facade:
+    name: 'Fortify the Inner Facade'
+    summary: 'Powers that read your mind or aura face higher Difficulty, or you add Fortitude to resist.'
+fortitude-draught-of-endurance:
+    name: 'Draught of Endurance'
+    summary: 'Others who drink your Blood gain half your Fortitude and its powers for a while.'
+fortitude-flesh-of-marble:
+    name: 'Flesh of Marble'
+    summary: 'Ignore the first source of physical damage each turn, fire included but not sunlight.'
+fortitude-prowess-from-pain:
+    name: 'Prowess from Pain'
+    summary: 'No wound penalties, and each Health damage raises a Physical Attribute (capped by Blood Surge).'
+fortitude-earths-perseverance:
+    name: "Earth's Perseverance"
+    summary: 'Become immovable: nothing can shift you unless you choose to move.'
+fortitude-invigorating-vitae:
+    name: 'Invigorating Vitae'
+    summary: 'Your Blood heals living beings much better: three Aggravated per Rouse given instead of one.'
+fortitude-valeren:
+    name: 'Valeren'
+    summary: "Mend another vampire's Health damage by laying on your power. Pool: Intelligence + Fortitude"
+fortitude-gorgons-scales:
+    name: "Gorgon's Scales"
+    summary: "Gain a defense set by your last feeding's Resonance: vs staking, fire, Auspex, or sunlight."
+obfuscate-cloak-of-shadows:
+    name: 'Cloak of Shadows'
+    summary: 'Stay unseen while standing still in cover or shadow.'
+obfuscate-silence-of-death:
+    name: 'Silence of Death'
+    summary: 'Silence every sound you make.'
+obfuscate-unseen-passage:
+    name: 'Unseen Passage'
+    summary: 'Move about while staying unseen, unless you draw attention.'
+obfuscate-ghost-in-the-machine:
+    name: 'Ghost in the Machine'
+    summary: 'Your Obfuscate also fools cameras, recordings and live video.'
+obfuscate-mask-of-a-thousand-faces:
+    name: 'Mask of a Thousand Faces'
+    summary: 'Appear as an unremarkable stranger of your choosing.'
+obfuscate-conceal:
+    name: 'Conceal'
+    summary: 'Hide an object, up to a house in size, from notice. Pool: Intelligence + Obfuscate'
+obfuscate-vanish:
+    name: 'Vanish'
+    summary: 'Use Cloak of Shadows or Unseen Passage even while watched. Pool: Wits + Obfuscate vs Wits + Awareness'
+obfuscate-cloak-the-gathering:
+    name: 'Cloak the Gathering'
+    summary: 'Extend your Obfuscate powers over companions.'
+obfuscate-impostors-guise:
+    name: "Impostor's Guise"
+    summary: 'Take on the look of a specific person after studying them. Pool: Wits + Obfuscate; Manipulation + Performance'
+obfuscate-chimerstry:
+    name: 'Chimerstry'
+    summary: 'Flash a brief one-sense hallucination that distracts onlookers, even in combat. Pool: Manipulation + Obfuscate vs Composure + Wits'
+obfuscate-fata-morgana:
+    name: 'Fata Morgana'
+    summary: 'Craft an elaborate, harmless multi-sense hallucination for a scene. Pool: Manipulation + Obfuscate'
+obfuscate-mental-maze:
+    name: 'Mental Maze'
+    summary: "Trap a victim's sense of direction so they cannot find the way out of a building. Pool: Charisma + Obfuscate vs Wits + Resolve"
+obfuscate-mind-masque:
+    name: 'Mind Masque'
+    summary: 'Show a false persona to anyone reading your mind or aura. Pool: Intelligence + Obfuscate'
+potence-lethal-body:
+    name: 'Lethal Body'
+    summary: 'Passive: unarmed blows can deal Aggravated damage to mortals and ignore one armor point per Potence dot.'
+potence-soaring-leap:
+    name: 'Soaring Leap'
+    summary: 'Passive: jump from standing up to 3 m per Potence dot upward and 5 m per dot forward.'
+potence-prowess:
+    name: 'Prowess'
+    summary: 'For a scene, add Potence to unarmed damage and to feats of Strength.'
+potence-relentless-grasp:
+    name: 'Relentless Grasp'
+    summary: 'For a scene, add Potence as automatic successes to holding on to anything, including keeping a grapple.'
+potence-brutal-feed:
+    name: 'Brutal Feed'
+    summary: 'Drain a mortal in about a turn; each Hunger slaked deals 1 Aggravated to them (Superficial to vampires).'
+potence-spark-of-rage:
+    name: 'Spark of Rage'
+    summary: 'Add Potence to inciting violence, or make a vampire test fury frenzy (Diff 3). Manipulation + Potence vs Composure + Intelligence.'
+potence-uncanny-grip:
+    name: 'Uncanny Grip'
+    summary: 'For a scene, climb most non-metal surfaces automatically and hang from walls or ceilings, leaving marks.'
+potence-wrecker:
+    name: 'Wrecker'
+    summary: 'Requires Prowess. Prowess counts Potence twice for feats that break or destroy inanimate objects.'
+potence-draught-of-might:
+    name: 'Draught of Might'
+    summary: "Whoever drinks the user's Blood gains Potence powers up to half the donor's dots, rounded down, for a while."
+potence-crash-down:
+    name: 'Crash Down'
+    summary: 'Requires Soaring Leap. Landing hits everyone within 3 m; Strength + Potence vs Dexterity + Athletics, may knock down.'
+potence-earthshock:
+    name: 'Earthshock'
+    summary: 'Once per scene, a ground strike knocks everyone within 5 m off balance or prone; Dexterity + Athletics (Diff 3) to resist.'
+potence-fist-of-caine:
+    name: 'Fist of Caine'
+    summary: 'For a scene, Brawl attacks deal Aggravated damage to mortals and supernatural beings alike.'
+potence-subtle-hammer:
+    name: 'Subtle Hammer'
+    summary: 'Passive: unarmed attacks and feats of strength become two-dice minor actions, one per turn; tiny motions carry full force.'
+presence-awe:
+    name: 'Awe'
+    summary: 'Add Presence to Persuasion, Performance and other charm rolls; aware targets resist with Composure + Intelligence.'
+presence-daunt:
+    name: 'Daunt'
+    summary: 'Add Presence to Intimidation; attacking the user needs a Resolve + Composure roll (Diff 2). Not with Awe at once.'
+presence-eyes-of-the-serpent:
+    name: 'Eyes of the Serpent'
+    summary: 'Eye contact freezes a mortal in place; a vampire needs Charisma + Presence vs Wits + Composure and can break free with Willpower.'
+presence-lingering-kiss:
+    name: 'Lingering Kiss'
+    summary: 'Mortals fed on crave the Kiss; add Presence to Charisma pools against them until they resist weekly with Willpower.'
+presence-melpominee:
+    name: 'Melpominee'
+    summary: 'Awe, Daunt, Dread Gaze, Entrancement and Majesty work by voice alone on anyone in earshot; not via recordings.'
+presence-dread-gaze:
+    name: 'Dread Gaze'
+    summary: 'Bare fangs to terrify one target into fleeing or freezing. Charisma + Presence vs Composure + Resolve.'
+presence-entrancement:
+    name: 'Entrancement'
+    summary: 'One person becomes infatuated for hours; add Presence to Social pools against them. Charisma + Presence vs Composure + Wits.'
+presence-thrown-voice:
+    name: 'Thrown Voice'
+    summary: 'For a scene, project the voice from any visible point, or leave it in a place to keep luring or scaring.'
+presence-true-loves-face:
+    name: "True Love's Face"
+    summary: 'Appear to one mortal as someone they feel strongly about; add Presence to shifting resonance. Manipulation + Presence vs Composure + Wits.'
+presence-irresistible-voice:
+    name: 'Irresistible Voice'
+    summary: "Passive: the user's voice alone is enough for Dominate; does not work through phones or recordings."
+presence-summon:
+    name: 'Summon'
+    summary: 'Call someone previously affected or who tasted your Blood to come to you. Manipulation + Presence vs Composure + Intelligence.'
+presence-suffuse-the-edifice:
+    name: 'Suffuse the Edifice'
+    summary: 'Extend Awe, Daunt or Majesty through a building, affecting everyone inside or looking at it. Pool as the power used.'
+presence-majesty:
+    name: 'Majesty'
+    summary: 'Onlookers cannot act against the user except to save themselves. They resist with Composure + Resolve vs Charisma + Presence.'
+presence-star-magnetism:
+    name: 'Star Magnetism'
+    summary: 'Awe, Daunt and Entrancement work over live video or phone; costs one extra Rouse Check.'
+protean-eyes-of-the-beast:
+    name: 'Eyes of the Beast'
+    summary: 'Glowing eyes see in total darkness, even supernatural; +2 dice to Intimidation against mortals.'
+protean-weight-of-the-feather:
+    name: 'Weight of the Feather'
+    summary: 'Become nearly weightless: immune to falls, collisions and throws. Reflexive use needs Wits + Survival (Diff 3).'
+protean-feral-weapons:
+    name: 'Feral Weapons'
+    summary: 'For a scene, claws or fangs grow: +2 Brawl damage, Aggravated to mortals, Superficial damage is not halved.'
+protean-vicissitude:
+    name: 'Vicissitude'
+    summary: 'Reshape own flesh: move Physical dots, grow weapons or armor, change looks. Resolve + Protean; each change costs a dot.'
+protean-earth-meld:
+    name: 'Earth Meld'
+    summary: 'Sink into natural ground for the day, aware of surroundings while awake; leaves carried items behind.'
+protean-shapechange:
+    name: 'Shapechange'
+    summary: 'Take the form of one animal of similar size, gaining its Physical Attributes, senses and limits.'
+protean-fleshcrafting:
+    name: 'Fleshcrafting'
+    summary: 'Requires Vicissitude. Apply Vicissitude changes to another body. Resolve + Protean vs Stamina + Resolve if unwilling.'
+protean-metamorphosis:
+    name: 'Metamorphosis'
+    summary: 'Requires Shapechange. Gain a second animal form of any size, such as a bat, rat or snake.'
+protean-horrid-form:
+    name: 'Horrid Form'
+    summary: 'Requires Vicissitude. Become a monster with free Vicissitude changes equal to Protean; criticals are messy.'
+protean-mist-form:
+    name: 'Mist Form'
+    summary: 'Turn into mist over three turns (faster with extra Rouse Checks, up to three); only fire, sun and magic harm it.'
+protean-the-unfettered-heart:
+    name: 'The Unfettered Heart'
+    summary: 'Passive: the heart wanders in the chest; staking is much harder, and a staked user may push the stake out.'
+protean-one-with-the-land:
+    name: 'One with the Land'
+    summary: 'Requires Earth Meld. Meld into any surface and sense events within about 1 km through nearby animals.'
+protean-the-heart-of-darkness:
+    name: 'The Heart of Darkness'
+    summary: 'Pull out and store own heart: immune to staking, +2 dice against frenzy, -2 to Remorse; costs 2 Aggravated.'
+blood-sorcery-corrosive-vitae:
+    name: 'Corrosive Vitae'
+    summary: 'Spilled Blood eats through dead matter, about 35 cm per Rouse Check over minutes; steel only pits.'
+blood-sorcery-a-taste-for-blood:
+    name: 'A Taste for Blood'
+    summary: 'Taste blood to learn resonance, creature type and Blood Potency. Resolve + Blood Sorcery (Diff 3).'
+blood-sorcery-extinguish-vitae:
+    name: 'Extinguish Vitae'
+    summary: "Raise a visible vampire's Hunger by 1 (2 on a critical). Intelligence + Blood Sorcery vs Stamina + Composure."
+blood-sorcery-scour-secrets:
+    name: 'Scour Secrets'
+    summary: 'Blood rapidly searches texts or files for a chosen subject. Intelligence + Blood Sorcery, Difficulty by how hidden it is.'
+blood-sorcery-blood-of-potency:
+    name: 'Blood of Potency'
+    summary: 'Temporarily raise Blood Potency by 1 (2 on a critical), even past the generation limit. Resolve + Blood Sorcery.'
+blood-sorcery-scorpions-touch:
+    name: "Scorpion's Touch"
+    summary: 'Turn Blood into a contact poison for blades or spit. Strength + Blood Sorcery vs Stamina + Occult or Fortitude.'
+blood-sorcery-theft-of-vitae:
+    name: 'Theft of Vitae'
+    summary: "Open a mortal's artery at range and feed from across the room, faster than normal. Wits + Blood Sorcery vs Wits + Occult."
+blood-sorcery-blood-aegis:
+    name: 'Blood Aegis'
+    summary: 'A floating sheet of Blood reduces incoming ranged damage by 5 per Rouse Check spent, for a scene.'
+blood-sorcery-baals-caress:
+    name: "Baal's Caress"
+    summary: "Like Scorpion's Touch, but deals Aggravated damage to all and may send vampires to torpor; kills mortals."
+blood-sorcery-cauldron-of-blood:
+    name: 'Cauldron of Blood'
+    summary: "Boil a touched victim's blood; Aggravated damage and Hunger for vampires, costs Stains. Resolve + Blood Sorcery vs Composure + Occult."
+oblivion-ashes-to-ashes:
+    name: 'Ashes to Ashes'
+    summary: 'Vitae dissolves a corpse; an animated one resists. Stamina + Oblivion vs Stamina + Medicine or Fortitude.'
+oblivion-the-binding-fetter:
+    name: 'The Binding Fetter'
+    summary: 'For a scene, sense objects and places that anchor ghosts, with -2 to Dexterity and Wits rolls. Wits + Oblivion.'
+oblivion-oblivions-sight:
+    name: "Oblivion's Sight"
+    summary: 'For a scene, black eyes see in darkness and spot ghosts not hiding; -2 dice to Social with mortals.'
+oblivion-shadow-cloak:
+    name: 'Shadow Cloak'
+    summary: 'Passive: shadows mask the user, giving +2 dice to Stealth and to Intimidation against mortals.'
+oblivion-arms-of-ahriman:
+    name: 'Arms of Ahriman'
+    summary: 'Shadow arms strike or grapple distant targets while the user concentrates. Wits + Oblivion, plus half Potence to damage.'
+oblivion-fatal-prediction:
+    name: 'Fatal Prediction'
+    summary: 'Curse a mortal to suffer Aggravated harm within 24 hours, one per margin. Resolve + Oblivion vs Wits + Occult.'
+oblivion-shadow-cast:
+    name: 'Shadow Cast'
+    summary: 'Conjure a supernatural shadow from the body to fuel other powers; those in it take +1 Willpower damage.'
+oblivion-where-the-veil-thins:
+    name: 'Where the Veil Thins'
+    summary: 'Sense how thin the veil to the dead is nearby, needed to benefit from it. Intelligence + Oblivion (Diff 3).'
+oblivion-fatal-precognition:
+    name: 'Fatal Precognition'
+    summary: "See a vision of a non-vampire's death; thwarting it becomes harder. Resolve + Oblivion (Diff 3+)."
+oblivion-aura-of-decay:
+    name: 'Aura of Decay'
+    summary: 'For a scene, rot spreads 5 m around: plants die, food spoils, the living sicken. Stamina + Oblivion vs Stamina + Medicine.'
+oblivion-passion-feast:
+    name: 'Passion Feast'
+    summary: "Feed on a wraith's passions to reduce Hunger. Resolve + Oblivion vs Resolve + Composure."
+oblivion-shadow-perspective:
+    name: 'Shadow Perspective'
+    summary: 'For up to a scene, see and hear through any shadow in line of sight, undetectably.'
+oblivion-shadow-servant:
+    name: 'Shadow Servant'
+    summary: 'Detach part of own shadow as a mindless servant that spies or unnerves, banished by bright light.'
+oblivion-touch-of-oblivion:
+    name: 'Touch of Oblivion'
+    summary: 'A touch withers flesh: 2 Aggravated damage and a crippling injury. Strength + Brawl to grip an evading target.'
+oblivion-necrotic-plague:
+    name: 'Necrotic Plague'
+    summary: 'Infect a mortal by touch with a supernatural disease dealing Aggravated damage each scene. Intelligence + Oblivion.'
+oblivion-stygian-shroud:
+    name: 'Stygian Shroud'
+    summary: 'Spread darkness over an area: -3 dice to all inside, and mortals within take Superficial damage each turn.'
+oblivion-shadow-step:
+    name: 'Shadow Step'
+    summary: 'Step into one shadow and emerge from another in sight a turn later, possibly bringing someone along.'
+oblivion-skuld-fulfilled:
+    name: 'Skuld Fulfilled'
+    summary: "Bring back a past illness or injury, or strip a ghoul's agelessness. Stamina + Oblivion vs Stamina x 2."
+oblivion-tenebrous-avatar:
+    name: 'Tenebrous Avatar'
+    summary: 'Become a living shadow that slides along surfaces, smothers victims, and is harmed only by fire and sunlight.'
+oblivion-withering-spirit:
+    name: 'Withering Spirit'
+    summary: "Touch erodes the victim's spirit: 2 Aggravated Willpower per margin, may cost Stains. Resolve + Oblivion vs Resolve + Occult."

@@ -21,10 +21,14 @@ export function getShownDocument(): RollSource | null {
 export function useShownDocumentPublisher(source: RollSource | null): void {
     const systemId = source?.systemId;
     const definitionId = source?.definitionId;
+    const specialDice = source?.specialDice;
     useEffect(() => {
         useShownDocumentStore.setState({
-            source: systemId && definitionId ? { systemId, definitionId } : null,
+            source:
+                systemId && definitionId
+                    ? { systemId, definitionId, ...(specialDice ? { specialDice } : {}) }
+                    : null,
         });
         return () => useShownDocumentStore.setState({ source: null });
-    }, [systemId, definitionId]);
+    }, [systemId, definitionId, specialDice]);
 }

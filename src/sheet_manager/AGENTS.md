@@ -134,12 +134,33 @@ appropriate for layout/manager operations that explicitly manage the collection.
   (a plugin without it shows no stat dice button; Star Wars declares the classic
   `systems/wod-like/dicePool.ts`, V5 its own 6+ pool), and an optional `reading` (V5:
   `systems/v5/ruleset/dice.ts`) adds critical pairs and reads special-dice outcomes. Each V5 module
-  contributes its dice line (`modules/hunter/dice.ts` Desperation, `modules/vampire/dice.ts` Hunger,
-  awaiting the vampire sheet). Primitives resolve the builder with `useDocumentTraitDiceRoll()`, and
-  so do template ratings with a die; the die is `StatDiceButton` (used by `StatDot` and
-  `RatingRow`), which sends the document as the roll source (`useDocumentRollSource()`), and
-  `SheetWorkspace` publishes the shown document (`integrations/sheet-dice/shownDocument.ts`).
-  Publisher badges never appear on dice surfaces.
+  contributes its dice line (`modules/hunter/dice.ts` Desperation, `modules/vampire/dice.ts`
+  Hunger). A line with `replaces` turns pool dice into its special dice when the pool is rolled
+  (Hunger: as many as the vampire's Hunger, spec 037): the roll source carries `specialDice`
+  (`RollReadingRules.specialDice`, read by `useDocumentRollSource()` and the shown document) and the
+  reading's `prepare` splits the merged pool with `withSpecialDice`. Primitives resolve the builder
+  with `useDocumentTraitDiceRoll()`, and so do template ratings with a die; the die is
+  `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
+  (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
+  (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
+- Bindings say where a document keeps its data; everything a page computes, shows, or does lives in
+  the template as elements an author can configure (constitution VI, spec 038). A system never adds
+  a behavior only its own code can produce: `tests/sheet_manager/shipped-parity.test.tsx` fails when
+  a shipped element uses a property the editor shows no setting for.
+- Buttons (`type: 'button'`, and `rowButtons` on tables and built-in rows) roll and write:
+  `runButton.ts` is the pure press (availability, `{formula}` notation segments, count, re-roll,
+  success at a total, changes within bounds, `always`); `SheetButton.tsx` rolls through
+  `useSheetDiceActions` (special dice only with `roll.gameDice`), writes through `applyWrites`, and
+  offers Undo for 8 s. `diceRollerStore.roll` resolves `null` for a cancelled 3D roll, and the press
+  stops there. Built-in rows and values reach the page through `PageScopeContext`.
+- The vampire (`modules/vampire/`, kind `vampire` so its bindings never collide with the hunter's
+  `character`): its mechanics are template elements in `templates/mechanics.ts` — Rouse and Remorse
+  buttons and a power's Rouse row button, Blood Potency effects as formula fields (texts translated
+  through `textMessages`), bane, compulsion, and predator grants as From catalog texts, Humanity as
+  a rating-mode value drawn as a tracker with stains from the end, powers and rituals limited by
+  their discipline (`limitByParent`) and shown by a `rating()` formula. Its five catalogs keep names
+  in code and long texts in `catalogText/` (loaded on demand); they declare the texts From catalog
+  fields can show (`withTexts`).
 - Shipped view ids are unique across systems (prefix them with the system, e.g. `v5-hunter-sheet`);
   edited defaults are keyed `systemId:viewId` (T-046, template store v5).
 - The Star Wars system is a setting on the WoD 2e ruleset (`systems/wod2e/ruleset/`: engine schema
@@ -172,8 +193,8 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   changed records at once, coalesced within a task, and flushes on `pagehide`. `changedAt` moves at
   most once per 5 s per document. Two tabs merge the index by id (newer `updatedAt` wins).
 - **Delete is a tombstone.** Deleting removes the entry and lists the id in `pendingPurge`; the next
-  start's sweep removes exactly those records (and portraits). A record with no entry and no
-  tombstone gets its entry rebuilt, never deleted. Folders use the same list.
+  start's sweep removes exactly those records (and their device images). A record with no entry and
+  no tombstone gets its entry rebuilt, never deleted. Folders use the same list.
 - **Migration.** `migrateToIndexedState` writes `universal-character-storage:v4-backup` first, is
   idempotent, and a failure blocks saving until reload; the backup goes after two clean launches.
   T-114 removes it all (after 2027-04-13).

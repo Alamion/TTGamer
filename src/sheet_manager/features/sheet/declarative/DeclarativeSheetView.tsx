@@ -56,12 +56,17 @@ import {
     useTemplateEditorOverlay,
 } from './editorOverlay';
 import { formulaErrorMessage } from './formulaMessages';
+import { useFromCatalogText } from './fromCatalog';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
+import { PageScopeContext } from './PageScope';
+import { ScoreTracker } from './PoolTracker';
 import { PrimitiveNodeView, SystemListView } from './primitives';
+import { SheetButton } from './SheetButton';
 import { ShortLabelScope } from './ShortLabelScope';
+import { aboveParent, offeredByParent, parentRatings } from './tableParent';
 
 const editor = uiMessages.sheet.templates.editor;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -103,7 +108,7 @@ function spanClass(span: number, columns: number, proportional: boolean): string
 }
 
 function FieldCell({
-    field,
+    field: placed,
     pageApi,
     value,
 }: {
@@ -112,6 +117,10 @@ function FieldCell({
     value: unknown;
 }) {
     const template = pageApi.template!;
+    const catalogText = useFromCatalogText(placed, pageApi);
+    // A From catalog text stands in, muted, while the field is empty (spec 038 D9).
+    const field: TemplateField =
+        placed.type === 'text' && catalogText ? { ...placed, placeholder: catalogText } : placed;
     // Feature 005 review: a field whose shared value key matches a document data address
     // operates on the document data — the interface is identical to custom (value-bag) fields.
     const bridged = resolveDataBindingByCoordinate(
@@ -119,8 +128,11 @@ function FieldCell({
         template.documentKind,
         fieldValueKey(field)
     );
+    if (field.type === 'text' && field.fromCatalog?.mode === 'show') {
+        return <CatalogTextOutput field={field} text={catalogText} />;
+    }
     if (bridged?.kind === 'field') {
-        return <BoundFieldCell field={field} binding={bridged} />;
+        return <BoundFieldCell field={field} binding={bridged} catalogText={catalogText} />;
     }
     if (bridged) {
         return (
@@ -146,6 +158,10 @@ function FieldCell({
                 )}
             </div>
         );
+    }
+
+    if (field.type === 'rating' && field.presentation === 'tracker') {
+        return <RatingScoreTracker field={field} pageApi={pageApi} value={value} />;
     }
 
     const control = templateFieldControl(field.type);
@@ -263,9 +279,69 @@ function FieldCell({
  * its own control and presentation (multiline, placeholder, hidden label); only the storage is
  * the document instead of the template value bag.
  */
-function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
+/** A rating drawn as boxes, with another value's marks from the end (spec 038 D10). */
+function RatingScoreTracker({
+    field,
+    pageApi,
+    value,
+}: {
+    field: Extract<TemplateField, { type: 'rating' }>;
+    pageApi: UseTemplatePageResult;
+    value: unknown;
+}) {
+    const marksKey = field.poolTracker?.marksFromEnd?.coordinate;
+    const marks = marksKey ? pageApi.formulaState.evaluate(marksKey) : undefined;
+    const limit = pageApi.formulaState.maxima.get(field.id)?.resolvedMax;
+    return (
+        <ScoreTracker
+            label={field.label}
+            hideLabel={field.hideLabel ?? false}
+            state={{
+                value: typeof value === 'number' ? value : field.min,
+                marks: marks?.ok && typeof marks.value === 'number' ? marks.value : 0,
+            }}
+            length={Math.min(limit ?? field.max, field.max)}
+            override={field.poolTracker ?? { display: 'row', legend: false, total: true }}
+            disabled={pageApi.disabled}
+            onChange={(next) =>
+                pageApi.applyWrites([
+                    { target: fieldValueKey(field), value: Math.max(field.min, next.value) },
+                    ...(marksKey ? [{ target: marksKey, value: next.marks }] : []),
+                ])
+            }
+        />
+    );
+}
+
+/** A From catalog text shown, never stored (spec 038 D9, mode `show`). */
+function CatalogTextOutput({ field, text }: { field: TemplateField; text: string | undefined }) {
+    return field.compact ? (
+        <div className="grid min-w-24 flex-1 basis-24 gap-0">
+            <span className={BRIEF.caption}>{field.label}</span>
+            <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
+        </div>
+    ) : (
+        <LabeledField field={field}>
+            <output className="block whitespace-pre-line py-1.5 text-sm text-textPrimary">
+                {text || '—'}
+            </output>
+        </LabeledField>
+    );
+}
+
+function BoundFieldCell({
+    field,
+    binding,
+    catalogText,
+}: {
+    field: TemplateField;
+    binding: FieldBinding;
+    /** A From catalog suggestion shown while the field is empty (spec 038). */
+    catalogText?: string;
+}) {
     const bound = useBoundDocument();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
+    const fallback = catalogText;
     const stored = bound
         ? binding.adapter
             ? binding.adapter.read(bound.data)
@@ -281,6 +357,8 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
     }, [binding.syncsTitle, unnamed, setTitle, stored]);
     if (!bound) return null;
     const { readOnly } = bound;
+    // A From catalog text stands in, muted, while the field is empty (spec 038 D9).
+    const shown = fallback ? { ...field, placeholder: fallback } : field;
     // Document-owned images follow the portrait rules (site-relative paths allowed; the image
     // control still checks safety), not the stricter HTTPS-only template value rules.
     const value = binding.valueType === 'image' ? stored : coerceStoredValue(field, stored);
@@ -344,7 +422,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                 />
             ) : (
                 createElement(templateFieldControl(field.type), {
-                    field,
+                    field: shown,
                     value,
                     onChange,
                     disabled: readOnly,
@@ -361,6 +439,7 @@ function TableBlock({
     node: Extract<TemplateNode, { type: 'table' }>;
     pageApi: UseTemplatePageResult;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const stored = pageApi.values[tableValueKey(node)];
     const rows =
         typeof stored === 'object' &&
@@ -372,6 +451,7 @@ function TableBlock({
     const rowEntries = Object.entries(rows).sort(([left], [right]) => Number(left) - Number(right));
     const blockKey = tableValueKey(node);
     const movable = !pageApi.disabled && rowEntries.length > 1;
+    const rowButtons = node.rowButtons ?? [];
     /** A row is called by its first column when that holds text, else by its position. */
     const rowName = (row: Record<string, unknown>, position: number) => {
         const first = node.columns[0] ? row[node.columns[0].id] : undefined;
@@ -381,6 +461,15 @@ function TableBlock({
         node.columns.flatMap((column) => {
             const runtime = pageApi.resolveCatalogField(column);
             return runtime ? [[column.id, runtime] as const] : [];
+        })
+    );
+    // Catalog columns under a parent list (spec 038): picks up to each parent's rating.
+    const parents = new Map(
+        node.columns.flatMap((column) => {
+            const parent = column.type === 'select' ? column.binding?.parent : undefined;
+            if (!parent) return [];
+            const list = pageApi.ratedList(parent.list);
+            return [[column.id, { parent, list, ratings: parentRatings(list, locale) }] as const];
         })
     );
     /**
@@ -445,6 +534,13 @@ function TableBlock({
                                 {column.label}
                             </th>
                         ))}
+                        {rowButtons.length > 0 && (
+                            <th
+                                scope="col"
+                                aria-label={rowButtons.map(({ label }) => label).join(', ')}
+                                className="w-8 border-b border-border px-1 py-2"
+                            />
+                        )}
                         <th
                             scope="col"
                             aria-label={translate(editor.remove)}
@@ -481,6 +577,18 @@ function TableBlock({
                                 const Control = templateFieldControl(column.type);
                                 const catalog = catalogs.get(column.id);
                                 const picked = row[pickLabelKey(column.id)];
+                                const parent = parents.get(column.id);
+                                const cell = row[column.id];
+                                const above =
+                                    parent && catalog && typeof cell === 'string'
+                                        ? aboveParent(
+                                              catalog.catalogId,
+                                              cell,
+                                              parent.parent,
+                                              parent.list,
+                                              parent.ratings
+                                          )
+                                        : null;
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
                                         <Control
@@ -497,7 +605,15 @@ function TableBlock({
                                             disabled={pageApi.disabled}
                                             {...(catalog
                                                 ? {
-                                                      catalogOptions: catalog.options,
+                                                      catalogOptions: parent
+                                                          ? offeredByParent(
+                                                                catalog.options,
+                                                                catalog.catalogId,
+                                                                parent.parent,
+                                                                parent.list,
+                                                                parent.ratings
+                                                            )
+                                                          : catalog.options,
                                                       ...(typeof picked === 'string'
                                                           ? { pickedLabel: picked }
                                                           : {}),
@@ -511,9 +627,26 @@ function TableBlock({
                                             onOpenDocument={pageApi.openDocument}
                                             previewSource={pageApi.previewSource}
                                         />
+                                        {above && (
+                                            <p className="text-[11px] text-error">
+                                                {translate(rowMessages.aboveParent, above)}
+                                            </p>
+                                        )}
                                     </td>
                                 );
                             })}
+                            {rowButtons.length > 0 && (
+                                <td className="whitespace-nowrap px-1 py-1.5 align-top">
+                                    {rowButtons.map((button) => (
+                                        <SheetButton
+                                            key={button.id}
+                                            button={button}
+                                            row={row}
+                                            rowName={rowName(row, position)}
+                                        />
+                                    ))}
+                                </td>
+                            )}
                             <td className="px-1 py-1.5 align-top">
                                 <button
                                     type="button"
@@ -639,6 +772,7 @@ const NodeView = memo(function NodeView({
     }
 
     if (node.type === 'table') return <TableBlock node={node} pageApi={pageApi} />;
+    if (node.type === 'button') return <SheetButton button={node} />;
     if (node.type === 'list') return <ListView node={node} pageApi={pageApi} />;
 
     if (node.type === 'primitive') {
@@ -897,6 +1031,7 @@ export function DeclarativeSheetView({
     );
     const values = pageApi.values;
     const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
+    const pageScope = useMemo(() => ({ pageApi, template: localized }), [pageApi, localized]);
 
     return (
         <div
@@ -913,7 +1048,9 @@ export function DeclarativeSheetView({
         >
             <TermHintProvider>
                 <OverlayVersionContext.Provider value={version}>
-                    <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                    <PageScopeContext.Provider value={pageScope}>
+                        <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                    </PageScopeContext.Provider>
                 </OverlayVersionContext.Provider>
             </TermHintProvider>
         </div>

@@ -43,7 +43,11 @@ function remapCoordinates(node: TemplateNode, renamed: ReadonlyMap<string, strin
                 carrier[key] = renameFormulaCoordinates(formula, rename);
             }
         }
-        const condition = carrier.visibleWhen as { coordinate?: string } | undefined;
+        const condition = carrier.visibleWhen as
+            { coordinate?: string; formula?: string } | undefined;
+        if (condition?.formula) {
+            condition.formula = renameFormulaCoordinates(condition.formula, rename);
+        }
         if (condition?.coordinate) {
             const [base, ...part] = condition.coordinate.split('.');
             const next = rename(base!);

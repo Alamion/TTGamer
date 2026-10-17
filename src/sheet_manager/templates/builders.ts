@@ -2,9 +2,11 @@ import type {
     CatalogBinding,
     CustomTemplate,
     GroupNode,
+    LimitByParent,
     ListNode,
     PoolTrackerOverride,
     PrimitiveNode,
+    RowButton,
     SectionNode,
     TableNode,
     TemplateField,
@@ -186,6 +188,9 @@ export function primitive(
             maxMembers?: number;
             /** Track bindings: the page's tracker settings (spec 018). */
             tracker?: TrackerOverride;
+            /** Built-in rows (spec 038): buttons on each row, and the limit by the parent row. */
+            rowButtons?: RowButton[];
+            limitByParent?: LimitByParent;
         } = {}
 ): PrimitiveNode {
     return {
@@ -204,6 +209,8 @@ export function primitive(
         ...(options.maxMinFrom ? { maxMinFrom: options.maxMinFrom } : {}),
         ...(options.maxMembers ? { cohort: { maxMembers: options.maxMembers } } : {}),
         ...(options.tracker ? { tracker: options.tracker } : {}),
+        ...(options.rowButtons ? { rowButtons: options.rowButtons } : {}),
+        ...(options.limitByParent ? { limitByParent: options.limitByParent } : {}),
     };
 }
 

@@ -8,7 +8,7 @@ import { systemRegistry } from './index';
  */
 
 export type DocumentBindingKind =
-    'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment' | 'rows';
+    'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment' | 'rows' | 'action';
 
 interface BindingBase {
     key: string;
@@ -69,6 +69,10 @@ export interface ListBinding extends BindingBase {
     positiveTerm?: 'merit' | 'advantage';
     /** Translated list title (the plain `label` is the fallback). */
     translation?: TranslationDescriptor;
+    /** Trait lists: show the specialization/experienced/practiced flags (default true). */
+    flags?: boolean;
+    /** Trait lists: the name input's placeholder (default "Custom skill"). */
+    placeholder?: TranslationDescriptor;
 }
 
 /** Raw document-data entry for a new list item, shaped by the list's entry shape. */
@@ -315,6 +319,7 @@ export interface RowsCatalogParent {
     entryKey: string;
     catalogId: string;
     column: string;
+    /** Records naming the parents (rows, or list entries under their `column`). */
     namedBy?: { dataKey: string; column: string };
 }
 
@@ -387,6 +392,10 @@ export function listNumericCoordinates(
         ) {
             coordinates.push({ coordinate: binding.coordinate, label: binding.label });
         } else if (binding.kind === 'resource') {
+            // A single value (V5 Hunger, Humanity) reads by its bare name too (spec 038).
+            if (binding.mode === 'rating') {
+                coordinates.push({ coordinate: binding.coordinate, label: binding.label });
+            }
             coordinates.push({
                 coordinate: `${binding.coordinate}.current`,
                 label: `${binding.label} (current)`,
@@ -422,7 +431,9 @@ export function readBoundNumber(
             };
         }
         if (binding.kind === 'field' && binding.coordinate === path) {
-            const stored = readDataPath(data, binding.path);
+            const stored = binding.adapter
+                ? binding.adapter.read(data)
+                : readDataPath(data, binding.path);
             if (binding.numeric) return { bound: true, value: binding.numeric(stored) };
             if (binding.valueType === 'number') {
                 return { bound: true, value: typeof stored === 'number' ? stored : 0 };
@@ -430,7 +441,7 @@ export function readBoundNumber(
         }
         if (binding.kind === 'resource' && binding.coordinate === head) {
             const stored = data[binding.dataKey];
-            if (binding.mode === 'rating') {
+            if (binding.mode !== 'pool') {
                 return {
                     bound: true,
                     value: part === 'max' || typeof stored !== 'number' ? undefined : stored,
@@ -510,7 +521,7 @@ export function boundWriteUpdate(
             };
         }
         case 'resource': {
-            if (binding.mode === 'rating') {
+            if (binding.mode !== 'pool') {
                 return {
                     [binding.dataKey]:
                         typeof value === 'number' ? clampInt(value, 0, binding.maximum) : 0,

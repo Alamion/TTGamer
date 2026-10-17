@@ -110,6 +110,27 @@ export function removeColumn(
 const TRUE_WORDS = new Set(['yes', 'y', 'true', 'да', '1', '+']);
 const FALSE_WORDS = new Set(['no', 'n', 'false', 'нет', '0', '-']);
 
+/** Points an `entry` column at the catalog its cells name (spec 038). */
+export function setColumnCatalog(
+    catalog: UserCatalog,
+    columnId: string,
+    catalogId: string | undefined,
+    now: string
+): CatalogEditResult {
+    return done(
+        catalog,
+        {
+            columns: catalog.columns.map((column) => {
+                if (column.id !== columnId) return column;
+                const { catalogId: _old, ...rest } = column;
+                void _old;
+                return catalogId ? { ...rest, catalogId } : rest;
+            }),
+        },
+        now
+    );
+}
+
 /** A cell value converted to another column type; `undefined` when it cannot convert. */
 export function convertValue(
     value: CatalogCellValue,
@@ -118,6 +139,9 @@ export function convertValue(
     switch (to) {
         case 'text':
             return typeof value === 'boolean' ? (value ? 'yes' : 'no') : String(value);
+        // An entry is named by its id or name; other cells cannot name one.
+        case 'entry':
+            return typeof value === 'string' ? value : undefined;
         case 'number': {
             if (typeof value === 'number') return value;
             if (typeof value === 'boolean') return value ? 1 : 0;

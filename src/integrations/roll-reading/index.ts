@@ -28,13 +28,22 @@ interface Applicable {
     rules: RollReadingRules;
     line: string;
     difficulty: number | null;
+    /** Pool dice the rolling document turns into special dice (V5 Hunger). */
+    specialDice?: number;
 }
 
 function readingForSource(systems: SystemLookup, source: RollSource | null | undefined) {
     if (!source) return null;
     const rules = systems.getSystem(source.systemId)?.dice?.reading;
     const line = rules?.lineFor(source.definitionId);
-    return rules && line ? { rules, line, difficulty: null } : null;
+    return rules && line
+        ? {
+              rules,
+              line,
+              difficulty: null,
+              ...(source.specialDice ? { specialDice: source.specialDice } : {}),
+          }
+        : null;
 }
 
 /**
@@ -76,6 +85,7 @@ export function createRollReader(
             if (!applicable) return null;
             const prepared = applicable.rules.prepare(notation, {
                 criticalPairs: settings.v5CriticalPairs,
+                ...(applicable.specialDice ? { specialDice: applicable.specialDice } : {}),
             });
             if (prepared === null) return null;
             const context: ReadingContext = {

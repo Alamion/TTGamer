@@ -251,6 +251,10 @@ catalogTable:
         text: Текст
         number: Число
         toggle: Флажок
+        entry: Запись каталога
+    columnCatalog: 'Каталог колонки {column}'
+    brokenEntry: 'Нет записи «{value}» в каталоге {catalog}'
+    noCatalog: '— выберите каталог —'
     limits:
         entries: В каталоге может быть не больше {limit} записей.
         columns: В каталоге может быть не больше {limit} колонок.

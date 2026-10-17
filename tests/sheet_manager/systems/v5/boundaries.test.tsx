@@ -75,13 +75,13 @@ describe('V5 ruleset and module boundaries (US5)', () => {
 
     it('lets a second V5 module register beside hunter without touching the ruleset', () => {
         const kinds: ReadonlySet<string> = new Set(['character']);
-        const VampireSchema = z.object({
+        const WerewolfSchema = z.object({
             ...V5CoreShape,
-            hunger: z.number().int().min(0).max(5).default(1),
+            rage: z.number().int().min(0).max(5).default(1),
         });
-        const vampireSheet = {
-            id: 'v5-vampire-sheet',
-            name: 'Vampire',
+        const werewolfSheet = {
+            id: 'v5-werewolf-sheet',
+            name: 'Werewolf',
             systemId: SystemIdSchema.parse('wod-v5'),
             documentKind: DocumentKindSchema.parse('character'),
             schemaVersion: TEMPLATE_SCHEMA_VERSION,
@@ -92,32 +92,32 @@ describe('V5 ruleset and module boundaries (US5)', () => {
             documents: [
                 ...v5System.documents,
                 {
-                    id: DocumentDefinitionIdSchema.parse('vampire'),
+                    id: DocumentDefinitionIdSchema.parse('werewolf'),
                     kind: DocumentKindSchema.parse('character'),
-                    label: { id: 'test.vampire', message: 'Vampire' },
+                    label: { id: 'test.werewolf', message: 'Werewolf' },
                     schemaVersion: 1,
-                    schema: VampireSchema,
-                    createDefault: () => VampireSchema.parse({}),
-                    defaultViewId: DocumentViewIdSchema.parse('v5-vampire-sheet'),
+                    schema: WerewolfSchema,
+                    createDefault: () => WerewolfSchema.parse({}),
+                    defaultViewId: DocumentViewIdSchema.parse('v5-werewolf-sheet'),
                     views: [
                         {
-                            id: DocumentViewIdSchema.parse('v5-vampire-sheet'),
-                            label: { id: 'test.vampire.sheet', message: 'Sheet' },
-                            layout: { type: 'declarative', templateId: 'v5-vampire-sheet' },
+                            id: DocumentViewIdSchema.parse('v5-werewolf-sheet'),
+                            label: { id: 'test.werewolf.sheet', message: 'Sheet' },
+                            layout: { type: 'declarative', templateId: 'v5-werewolf-sheet' },
                         },
                     ],
                     module: {
-                        id: 'vampire',
-                        label: { id: 'test.vampire.module', message: 'Vampire' },
+                        id: 'werewolf',
+                        label: { id: 'test.werewolf.module', message: 'Werewolf' },
                         policies: ['dark-pack'],
                     },
                 },
             ],
-            defaultTemplates: [...(v5System.defaultTemplates ?? []), vampireSheet],
+            defaultTemplates: [...(v5System.defaultTemplates ?? []), werewolfSheet],
         };
         const registry = new SystemRegistry([starWarsWodSystem, plugin]);
         expect(
-            resolveDocumentPolicies(registry, { systemId: 'wod-v5', definitionId: 'vampire' }).map(
+            resolveDocumentPolicies(registry, { systemId: 'wod-v5', definitionId: 'werewolf' }).map(
                 ({ id }) => id
             )
         ).toEqual(['dark-pack']);
@@ -127,14 +127,14 @@ describe('V5 ruleset and module boundaries (US5)', () => {
                 id: 'vamp',
                 kind: 'character',
                 systemId: 'wod-v5',
-                definitionId: 'vampire',
+                definitionId: 'werewolf',
                 schemaVersion: 1,
                 metadata: {},
-                data: { ...createV5CoreDefault(), hunger: 2 },
+                data: { ...createV5CoreDefault(), rage: 2 },
             }).envelope.data
-        ).toMatchObject({ hunger: 2 });
+        ).toMatchObject({ rage: 2 });
 
-        // The shared page parts render against a vampire-shaped document with V5 bindings.
+        // The shared page parts render against a werewolf-shaped document with V5 bindings.
         useDocumentStore.setState({
             documents: [
                 {
@@ -145,12 +145,12 @@ describe('V5 ruleset and module boundaries (US5)', () => {
                     schemaVersion: 1,
                     metadata: { title: 'Vamp', tags: [] },
                     templateValues: {},
-                    data: { ...createV5CoreDefault(), hunger: 2 },
+                    data: { ...createV5CoreDefault(), rage: 2 },
                 } as never,
             ],
             currentDocumentId: 'vamp',
         });
-        render(createElement(DeclarativeSheetView, { template: vampireSheet }));
+        render(createElement(DeclarativeSheetView, { template: werewolfSheet }));
         expect(screen.getByRole('group', { name: 'Willpower' })).toBeTruthy();
     }, 20_000);
 });

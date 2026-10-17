@@ -1,7 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { useMemo } from 'react';
+import { clsx } from 'clsx';
+import { useContext, useMemo } from 'react';
 
 import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
@@ -58,7 +59,8 @@ import {
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
-import { PoolTracker } from './PoolTracker';
+import { PageScopeContext } from './PageScope';
+import { PoolTracker, ScoreTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
 import { moveItem } from './rowOrder';
 import { EnumField, RowsBody } from './RowsBody';
@@ -217,8 +219,8 @@ function TraitListBindingView({
                 onChange(items.map((item) => (item.id === id ? { ...item, label, value } : item)))
             }
             size="md"
-            showFlags
-            placeholder={placeholder}
+            showFlags={binding.flags ?? true}
+            placeholder={binding.placeholder ? translate(binding.placeholder) : placeholder}
             catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={traitDiceRoll}
@@ -687,6 +689,7 @@ function PrimitiveResourceBody({
     maxState?: PrimitiveMaxState;
 }) {
     const bound = useBoundDocument();
+    const scope = useContext(PageScopeContext);
     const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
@@ -697,6 +700,34 @@ function PrimitiveResourceBody({
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
             : Math.min(maxState.resolvedMax, descriptor.maximum);
+    if (node.poolTracker && descriptor.mode === 'rating' && scope) {
+        // A single value as boxes, with a second value's marks from the end (spec 038 D10).
+        const marksKey = node.poolTracker.marksFromEnd?.coordinate;
+        const read = (coordinate: string) => {
+            const result = scope.pageApi.formulaState.evaluate(coordinate);
+            return result.ok && typeof result.value === 'number' ? result.value : 0;
+        };
+        const stored = bound.data[descriptor.dataKey];
+        return (
+            <ScoreTracker
+                label={label}
+                hideLabel={node.hideLabel ?? false}
+                state={{
+                    value: typeof stored === 'number' ? stored : 0,
+                    marks: marksKey ? read(marksKey) : 0,
+                }}
+                length={Math.max(0, effectiveMax)}
+                override={node.poolTracker}
+                disabled={readOnly}
+                onChange={(next) =>
+                    scope.pageApi.applyWrites([
+                        { target: descriptor.coordinate, value: next.value },
+                        ...(marksKey ? [{ target: marksKey, value: next.marks }] : []),
+                    ])
+                }
+            />
+        );
+    }
     const stored = bound.data[descriptor.dataKey];
     const pair =
         descriptor.mode === 'rating'
@@ -752,9 +783,17 @@ function PrimitiveResourceBody({
         );
     }
     if (node.compact) {
+        const asPool = descriptor.mode === 'pool' && !node.part;
+        // A rating's term row is a size container (zero intrinsic width): where a brief column
+        // wraps its cells as chips, it takes a width or the next cell covers it.
         return (
-            <div className="grid min-w-0 grid-cols-1 gap-1">
-                {descriptor.mode === 'pool' && !node.part ? (
+            <div
+                className={clsx(
+                    'grid min-w-0 grid-cols-1 gap-1',
+                    !asPool && !shortLabel && '@md/brief:w-40'
+                )}
+            >
+                {asPool ? (
                     <CompactResource
                         label={label}
                         current={pair.current}

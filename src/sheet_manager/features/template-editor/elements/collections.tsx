@@ -7,6 +7,7 @@ import { fallbackRowName, RowMoveControls } from '../../../components/controls/R
 import type { ListNode, TableNode } from '../../../types/template';
 import { listIsNamed, listItemField, TEMPLATE_LIMITS } from '../../../types/template';
 import type { NodeUpdates } from '../model/types';
+import { RowButtonsSetting } from '../panels/ButtonSettings';
 import { ListCatalogPicker } from '../panels/CatalogBindingEditor';
 import { FieldEditor } from '../panels/FieldEditor';
 import { ToggleRow } from '../panels/LayoutControls';
@@ -46,14 +47,20 @@ export function tableSettings(node: TableNode, callbacks: NodeEdits): GroupedSet
             </>
         ),
         value: (
-            <KeyField
-                label={settingLabel('valueKey')}
-                hint={t(editor.rowsKeyHint)}
-                help="sharedValueKey"
-                setting="valueKey"
-                value={node.valueKey ?? ''}
-                onChange={(valueKey) => update({ valueKey })}
-            />
+            <>
+                <KeyField
+                    label={settingLabel('valueKey')}
+                    hint={t(editor.rowsKeyHint)}
+                    help="sharedValueKey"
+                    setting="valueKey"
+                    value={node.valueKey ?? ''}
+                    onChange={(valueKey) => update({ valueKey })}
+                />
+                <RowButtonsSetting
+                    buttons={node.rowButtons ?? []}
+                    onChange={(rowButtons) => update({ rowButtons })}
+                />
+            </>
         ),
         limits: (
             <div className="grid grid-cols-2 gap-2">
