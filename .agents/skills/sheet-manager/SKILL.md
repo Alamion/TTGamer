@@ -82,7 +82,9 @@ detail.
   `ambition`, `desire`, `redemption`, `creedFields`, `edges` (`{ id, name, note }` ≤ 20), `perks`
   (`{ id, name, edge, note }` ≤ 60; a picked book Perk fills its Edge name), `despair`, and the cell
   values `desperation` / `danger` (0–5, per-hunter copies until cells exist). Example document:
-  `modules/hunter/example.ts` (Lena Varga, used by docs).
+  `modules/hunter/example.ts` (Lena Varga, used by docs). The vampire example is
+  `modules/vampire/example.ts` (Mirela Voss, the Vampire docs' running example; a test keeps her a
+  legal starting character).
 - `systems/v5/modules/vampire/schema.ts` — `VampireSchema` (kind `vampire`) = core + `concept`,
   `chronicle`, `sire`, `clan`, `generation` (4–16), `predatorType`, `ambition`, `desire`, `hunger`
   (0–5), `humanity` (0–10) and `stains` (never more than the boxes Humanity leaves), `bloodPotency`

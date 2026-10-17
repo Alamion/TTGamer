@@ -1,0 +1,46 @@
+---
+sidebar_position: 4
+title: Blood Potency
+description: What a vampire's Blood Potency gives and costs, how Generation limits it, and where the sheet shows it.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { TemplatePreview, vampireExampleDocument } from '@site/src/sheet_manager/docsEmbeds';
+
+# Blood Potency
+
+:::tip[In short]
+**Blood Potency** (0–10) is the strength of your vampire's Blood. Higher potency gives more dice from a Blood Surge, faster healing, stronger Disciplines, and rerolls on Rouse checks — but a heavier Bane and a pickier diet. The sheet works all of it out for you.
+:::
+
+## What it changes
+
+| As Blood Potency rises… | What happens                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blood Surge**         | A Rouse check adds more dice to one roll: one die at first, up to five at the top.                                                    |
+| **Mending**             | Each Rouse check heals more superficial damage.                                                                                       |
+| **Discipline bonus**    | Discipline pools gain dice.                                                                                                           |
+| **Rouse reroll**        | A failed Rouse check for a power of a low enough level is rerolled once.                                                              |
+| **Bane severity**       | Your clan's Bane grows stronger.                                                                                                      |
+| **Feeding**             | Animal and bagged blood slake less, then nothing; humans slake less; killing becomes the only way to bring Hunger down to its lowest. |
+
+Blood Potency 0 means a thin-blood: no Bane, and a body almost as frail as a mortal's.
+
+## How it grows
+
+Blood Potency rises slowly with age, or with experience. It cannot climb above what your **Generation** allows: the 12th and 13th Generations stay at 3 or below, older Generations reach higher. Long sleep in torpor can lower it again.
+
+## On your sheet
+
+The **Blood Potency** group under Condition lists every effect for your current value: Blood Surge dice, mending, Discipline bonus, the highest power level a Rouse check rerolls for, Bane severity, and what feeding still works. **Blood Potency for this generation** shows the range your Generation allows, with a warning when you are outside it.
+
+The power buttons in the **Powers** table use the reroll rule by themselves.
+
+<TWWrapper>
+    <TemplatePreview
+        document={vampireExampleDocument()}
+        systemId="wod-v5"
+        template="v5-vampire-sheet"
+        node="blood-potency-effects"
+    />
+</TWWrapper>

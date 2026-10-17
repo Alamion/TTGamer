@@ -1,0 +1,108 @@
+---
+sidebar_position: 3.31
+title: Quickstart
+description: Play a first Vampire night in twenty minutes — the one roll, Hunger dice, Rouse checks, Humanity, and a ten-minute vampire.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+import { TemplateFragment } from '@site/src/sheet_manager/docsEmbeds';
+
+# Quickstart
+
+:::tip[In short]
+Roll **Attribute + Skill** in ten-sided dice, count **6+**, pairs of 10s count four. As many of those dice as your **Hunger** become **Hunger dice**: a 10 on one can make a win messy, a 1 on one can make a failure bestial. Using your Blood calls for a **Rouse check**, which may raise Hunger.
+:::
+
+## What you need
+
+- A vampire sheet open in the [Sheet Manager](/universal_sheet) (a second tab works well).
+- A handful of ten-sided dice, or the site's dice roller.
+- Two to five players and a Storyteller.
+
+## The one roll you need to know
+
+1. The Storyteller names an **Attribute** and a **Skill**. Add their dots: that is your pool.
+2. Swap as many of those dice as your **Hunger** for Hunger dice (a different colour). With Hunger 2 and a pool of seven, you roll five normal dice and two Hunger dice.
+3. Each die showing **6 or more** is a success; **each pair of 10s** is worth four.
+4. Reach the **Difficulty** (usually 2–4 successes) and you succeed.
+5. Once per roll, spend a point of **Willpower** to reroll up to three failed _normal_ dice. Hunger dice are never rerolled.
+
+:::note[Example: Mirela]
+Mirela talks her way past a doorman: **Charisma 3 + Persuasion 3**, plus a die for her _Seduction_ specialty. Her Hunger is 2, so two of the seven dice are Hunger dice. The Difficulty is 3.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10>=6@8,6,2,3,9 + 2d10:h>=6@7,1'} variant="details" preroll />
+</TWWrapper>
+
+<br />
+<br />
+
+Four successes: she is in. The 1 on a Hunger die does nothing, because the roll succeeded.
+:::
+
+Rolling from the sheet does the swap for you: click a trait and the dice panel turns as many dice as your Hunger into Hunger dice. Details: [Dice Pools](../rules/dice-pools.mdx) and [Hunger and Rouse checks](./reference/hunger-rouse.mdx).
+
+## When the Beast rolls
+
+- **Messy critical:** you win with a pair of 10s and at least one of them is on a Hunger die. You get what you wanted, but like an animal would — someone sees, something breaks, or your conscience takes a Stain.
+- **Bestial failure:** you fail and at least one Hunger die shows a 1. The Beast shows itself; usually you have to act out a **Compulsion** of your clan for the rest of the scene.
+
+## Using your Blood
+
+- Waking each night, healing, a burst of strength or speed, and most Discipline powers call for a **Rouse check**: roll one die. On a 6 or more nothing happens; otherwise your Hunger rises by one.
+- At Hunger 5 you cannot rouse your Blood on purpose. Feed first.
+- Feeding lowers Hunger. Without killing, a young vampire can only bring it down to 1.
+- On the sheet, the **Rouse check** button rolls the die and raises Hunger on a failure; each Discipline power that costs Blood has its own button, which rolls as many checks as the power costs.
+
+## Humanity
+
+- **Humanity** (starting at 7) is how much of a person your vampire still is.
+- Doing something monstrous marks **Stains** on the Humanity track, from its far end.
+- At the end of the session, if you have Stains, press **Remorse check**: on a success the Stains fade; on a failure you lose a dot of Humanity, and the Stains fade anyway.
+
+Details: [Humanity and Stains](./reference/humanity-stains.mdx).
+
+## Make a vampire in ten minutes
+
+| Step | What to do                                                                  | Detail                                                          |
+| ---- | --------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1    | Name, concept, sire, an **Ambition** (long-term) and a **Desire** (tonight) | [Concept](./first-vampire/02-concept-sire.mdx)                  |
+| 2    | Pick a **clan**; note its Bane and Compulsion                               | [Clan](./first-vampire/03-clan.mdx)                             |
+| 3    | Attributes: one at 4, three at 3, four at 2, one at 1                       | [Attributes](./first-vampire/04-attributes.mdx)                 |
+| 4    | Skills: pick a spread (below), plus one free Specialty                      | [Skills](./first-vampire/05-skills-specialties.mdx)             |
+| 5    | Two clan **Disciplines** at 2 and 1, one power per dot                      | [Disciplines](./first-vampire/06-disciplines.mdx)               |
+| 6    | A **predator type**: a Specialty, a Discipline dot, Advantages and Flaws    | [Predator type](./first-vampire/07-predator-type.mdx)           |
+| 7    | 7 points of Advantages, 2 points of Flaws                                   | [Advantages and Flaws](./first-vampire/08-advantages-flaws.mdx) |
+| 8    | One to three **Convictions**, each with a **Touchstone**; Humanity 7        | [Convictions](./first-vampire/09-convictions-touchstones.mdx)   |
+| 9    | Generation and Blood Potency, Hunger 1, Health and Willpower                | [Blood and finishing](./first-vampire/10-blood-finishing.mdx)   |
+
+Skill spreads (choose one):
+
+| Spread             | At 4 | At 3 | At 2 | At 1 |
+| ------------------ | ---- | ---- | ---- | ---- |
+| Jack of all trades | —    | 1    | 8    | 10   |
+| Balanced           | —    | 3    | 5    | 7    |
+| Specialist         | 1    | 3    | 3    | 3    |
+
+Academics, Craft, Performance, and Science each come with a Specialty of their own if you take any dots in them.
+
+<TWWrapper>
+    <TemplateFragment systemId="wod-v5" template="v5-vampire-sheet" node="identity" />
+</TWWrapper>
+
+## Your first night
+
+> **Storyteller:** You wake in the studio. The light under the door is gone; the city is yours again. Make your Rouse check.
+>
+> **Mirela's player:** A 4. Hunger goes up to 2.
+>
+> **Storyteller:** You can feel it — the pulse of the woman locking up the café downstairs. What do you do?
+>
+> **Mirela's player:** Nothing. Not the gallery staff, not the neighbours. I go to the opening tonight.
+
+## Where next
+
+- New to all of this? Walk through [Your first vampire](./first-vampire/).
+- Want every box explained? See [Reading the sheet](./reference/reading-the-sheet.mdx).
+- Rolling questions? [Dice Pools](../rules/dice-pools.mdx).

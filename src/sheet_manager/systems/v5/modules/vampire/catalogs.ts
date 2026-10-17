@@ -35,83 +35,95 @@ export const VAMPIRE_CATALOG_IDS = {
     predatorTypes: 'v5-vampire-predator-types',
 } as const;
 
-const DISCIPLINE_NAME_BY_ID: Readonly<Record<string, string>> = Object.fromEntries(
-    VAMPIRE_DISCIPLINE_ENTRIES.map(({ id, name }) => [id, name])
-);
-
 export const VAMPIRE_CLANS_CATALOG = withTexts(
     defineCatalog(
         VAMPIRE_CATALOG_IDS.clans,
-        VAMPIRE_CLAN_ENTRIES.map((entry) => ({
-            ...entry,
-            disciplineNames: entry.disciplines
-                .map((id) => DISCIPLINE_NAME_BY_ID[id] ?? id)
-                .join(', '),
-        })),
+        VAMPIRE_CLAN_ENTRIES,
         [textDetail('name', 'Name')],
         undefined,
-        { columns: [{ key: 'disciplineNames', header: columns.disciplines }] }
+        {
+            columns: [
+                {
+                    key: 'disciplines',
+                    header: columns.disciplines,
+                    entriesOf: VAMPIRE_CATALOG_IDS.disciplines,
+                },
+            ],
+        }
     ),
     lazy('summary', 'bane', 'variantBane', 'compulsion')
 );
 
-export const VAMPIRE_DISCIPLINES_CATALOG = defineCatalog(
-    VAMPIRE_CATALOG_IDS.disciplines,
-    VAMPIRE_DISCIPLINE_ENTRIES,
-    [textDetail('name', 'Name')],
-    undefined,
-    {
-        columns: [],
-        children: {
-            catalogId: VAMPIRE_CATALOG_IDS.powers,
-            key: 'discipline',
-            header: columns.powers,
-        },
-    }
+export const VAMPIRE_DISCIPLINES_CATALOG = withTexts(
+    defineCatalog(
+        VAMPIRE_CATALOG_IDS.disciplines,
+        VAMPIRE_DISCIPLINE_ENTRIES,
+        [textDetail('name', 'Name')],
+        undefined,
+        {
+            columns: [],
+            children: {
+                catalogId: VAMPIRE_CATALOG_IDS.powers,
+                key: 'discipline',
+                header: columns.powers,
+            },
+        }
+    ),
+    lazy('summary')
 );
 
 /** Powers: a pick fills the row's level, Rouse cost, and catalog id; the parent fills itself. */
-export const VAMPIRE_POWERS_CATALOG = defineCatalog(
-    VAMPIRE_CATALOG_IDS.powers,
-    VAMPIRE_POWER_ENTRIES,
-    [
-        textDetail('name', 'Name'),
-        textDetail('discipline', 'Discipline id'),
-        textDetail('level', 'Level'),
-        textDetail('rouse', 'Rouse checks'),
-        textDetail('id', 'Entry id'),
-    ],
-    undefined,
-    {
-        columns: [
-            { key: 'level', header: columns.level, filter: true },
-            { key: 'rouse', header: columns.rouse },
-            { key: 'amalgam', header: columns.amalgam },
+export const VAMPIRE_POWERS_CATALOG = withTexts(
+    defineCatalog(
+        VAMPIRE_CATALOG_IDS.powers,
+        VAMPIRE_POWER_ENTRIES,
+        [
+            textDetail('name', 'Name'),
+            textDetail('discipline', 'Discipline id'),
+            textDetail('level', 'Level'),
+            textDetail('rouse', 'Rouse checks'),
+            textDetail('id', 'Entry id'),
         ],
-    }
+        undefined,
+        {
+            columns: [
+                { key: 'level', header: columns.level, filter: true },
+                { key: 'rouse', header: columns.rouse },
+                {
+                    key: 'amalgam',
+                    header: columns.amalgam,
+                    entriesOf: VAMPIRE_CATALOG_IDS.disciplines,
+                },
+            ],
+        }
+    ),
+    lazy('summary')
 );
 
-export const VAMPIRE_RITUALS_CATALOG = defineCatalog(
-    VAMPIRE_CATALOG_IDS.rituals,
-    VAMPIRE_RITUAL_ENTRIES,
-    [
-        textDetail('name', 'Name'),
-        textDetail('discipline', 'Discipline id'),
-        textDetail('level', 'Level'),
-        textDetail('id', 'Entry id'),
-    ],
-    undefined,
-    {
-        columns: [
-            {
-                key: 'kind',
-                header: columns.kind,
-                labels: uiMessages.sheet.v5Vampire.ritualKinds,
-                filter: true,
-            },
-            { key: 'level', header: columns.level, filter: true },
+export const VAMPIRE_RITUALS_CATALOG = withTexts(
+    defineCatalog(
+        VAMPIRE_CATALOG_IDS.rituals,
+        VAMPIRE_RITUAL_ENTRIES,
+        [
+            textDetail('name', 'Name'),
+            textDetail('discipline', 'Discipline id'),
+            textDetail('level', 'Level'),
+            textDetail('id', 'Entry id'),
         ],
-    }
+        undefined,
+        {
+            columns: [
+                {
+                    key: 'kind',
+                    header: columns.kind,
+                    labels: uiMessages.sheet.v5Vampire.ritualKinds,
+                    filter: true,
+                },
+                { key: 'level', header: columns.level, filter: true },
+            ],
+        }
+    ),
+    lazy('summary')
 );
 
 export const VAMPIRE_PREDATOR_TYPES_CATALOG = withTexts(

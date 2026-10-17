@@ -67,7 +67,7 @@ describe('V5 documentation format', () => {
                         '<br />',
                     ]);
                 });
-                if (/first-hunter\/0[2-9]-/.test(name)) {
+                if (/first-(hunter\/0[2-9]|vampire\/(0[2-9]|10))-/.test(name)) {
                     expect(source, `${name}: sheet embed`).toMatch(
                         /<TemplateFragment systemId="wod-v5"/
                     );

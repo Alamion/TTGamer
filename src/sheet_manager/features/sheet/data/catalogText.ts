@@ -51,14 +51,8 @@ export function catalogTextField(
     return text?.[locale]?.[entryId]?.[field] ?? text?.en?.[entryId]?.[field];
 }
 
-/**
- * A catalog's long fields in the reader's language: `undefined` while loading, then a reader
- * `(entryId, field) => text`.
- */
-export function useCatalogText(
-    catalogId: string | undefined
-): ((entryId: string, field: string) => string | undefined) | undefined {
-    const locale = useDocusaurusContext().i18n.currentLocale;
+/** A catalog's loaded long fields, the same object on every render; `undefined` while loading. */
+export function useLoadedCatalogText(catalogId: string | undefined): CatalogText | undefined {
     const [, setLoads] = useState(0);
     useEffect(() => {
         if (!catalogId || loaded.has(catalogId)) return;
@@ -70,7 +64,18 @@ export function useCatalogText(
             active = false;
         };
     }, [catalogId]);
-    const text = catalogId ? loaded.get(catalogId) : undefined;
+    return catalogId ? loaded.get(catalogId) : undefined;
+}
+
+/**
+ * A catalog's long fields in the reader's language: `undefined` while loading, then a reader
+ * `(entryId, field) => text`.
+ */
+export function useCatalogText(
+    catalogId: string | undefined
+): ((entryId: string, field: string) => string | undefined) | undefined {
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    const text = useLoadedCatalogText(catalogId);
     if (!text) return undefined;
     return (entryId, field) => catalogTextField(text, locale, entryId, field);
 }

@@ -160,9 +160,10 @@ template module under the system's `templates/` built with the neutral builders,
   the section molecules take their name suggestions as a `catalog` prop. `dataKey` equipment
   bindings may declare `catalog: { catalogIds, fills }` (detail key → item field; `name` and string
   details are written localized).
-- Catalogs may declare `browse` (columns with header descriptors, `labels`, `filter`, optional
-  `children`) for the docs `CatalogBrowser`; `entryText(entry, key, lang)` localizes any string
-  property from `translations/source/<locale>/data/<catalogId>.yaml`.
+- Catalogs may declare `browse` (columns with header descriptors, `labels`, `filter`, `entriesOf`
+  for values naming another catalog's entries, optional `children`) for the docs `CatalogBrowser`;
+  `entryText(entry, key, lang)` localizes any string property from
+  `translations/source/<locale>/data/<catalogId>.yaml`.
 - Vehicle system slots are a bag table capped at 10 rows (not pre-seeded slots); crew-station
   references render placeholders in previews (static sources hold one document).
 - Binding keys are not literal types (bindings are built at runtime per system); integrity relies on

@@ -17,6 +17,7 @@ import {
 import { LayoutSketch } from './features/docs/LayoutSketch';
 import { LibraryStorybook } from './features/docs/LibraryStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
+import { catalogTextField, useLoadedCatalogText } from './features/sheet/data/catalogText';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
 import { CreateCharacterButton } from './features/sheet/shell/CreateCharacterButton';
 import { GameTermsMenu } from './features/sheet/shell/GameTermsMenu';
@@ -31,6 +32,7 @@ import { characterDocumentFromBase } from './systems/star-wars-wod/characterDocu
 import { starWarsExampleDocument, vehicleDamageDocument } from './systems/star-wars-wod/examples';
 import type { StarWarsCharacter } from './systems/star-wars-wod/schema';
 import { LENA_VARGA_DOCUMENT } from './systems/v5/modules/hunter/example';
+import { MIRELA_VOSS_DOCUMENT } from './systems/v5/modules/vampire/example';
 import type { ConditionMark } from './types/condition';
 import type { UnknownDocumentEnvelope } from './types/document';
 import type { CustomTemplate, TemplateNode } from './types/template';
@@ -111,7 +113,7 @@ export function TemplateFragment(props: FragmentTarget) {
                 <p className="text-sm text-textSecondary">
                     {translate(uiMessages.sheet.templates.page.embedNoDocument)}
                 </p>
-                {fragment.documentKind === 'character' && definition && (
+                {definition && (
                     <CreateCharacterButton
                         systemId={fragment.systemId}
                         definitionId={definition.id}
@@ -242,6 +244,11 @@ export function hunterExampleDocument(): UnknownDocumentEnvelope {
     return LENA_VARGA_DOCUMENT;
 }
 
+/** Read-only example vampire (Mirela Voss) used across the Vampire documentation. */
+export function vampireExampleDocument(): UnknownDocumentEnvelope {
+    return MIRELA_VOSS_DOCUMENT;
+}
+
 /** A fixed example document for documentation previews (e.g. `wampa::preset`). */
 export function exampleDocument(id: string): UnknownDocumentEnvelope | undefined {
     const document = starWarsExampleDocument(id);
@@ -300,7 +307,7 @@ const isDescriptor = (value: unknown): value is Descriptor =>
 
 /**
  * A reference table of catalog entry names with their own-words summaries (`summary`
- * descriptors on entries). `groupBy` groups rows by an entry property (heading from the
+ * descriptors on entries, or a `summary` long text loaded on demand). `groupBy` groups rows by an entry property (heading from the
  * entry's `<groupBy>Label` descriptor); `childCatalogId` lists child entries whose
  * `childFilterKey` equals the row's id (e.g. an Edge's Perks).
  */
@@ -318,6 +325,8 @@ export function CatalogSummaryTable({
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = CATALOG_BINDINGS.get(catalogId);
     const children = childCatalogId ? CATALOG_BINDINGS.get(childCatalogId) : undefined;
+    const lazySummary = catalog?.texts?.some((text) => text.key === 'summary' && text.lazy);
+    const longTexts = useLoadedCatalogText(lazySummary ? catalogId : undefined);
     if (!catalog || (childCatalogId && !children)) {
         reportSheetIssue({
             code: 'catalog-unavailable',
@@ -362,7 +371,14 @@ export function CatalogSummaryTable({
                                     <tr key={entry.id}>
                                         <th scope="row">{catalog.entryLabel(entry, locale)}</th>
                                         <td>
-                                            {isDescriptor(summary) && translate(summary)}
+                                            {isDescriptor(summary)
+                                                ? translate(summary)
+                                                : catalogTextField(
+                                                      longTexts,
+                                                      locale,
+                                                      entry.id,
+                                                      'summary'
+                                                  )}
                                             {childNames && childNames.length > 0 && (
                                                 <div>
                                                     <em>{childNames.join(' · ')}</em>

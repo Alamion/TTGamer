@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { runVerifier } from '../../../scripts/i18n-verifier/run';
-import { FIXTURE_FILES, fixtureOptions } from './fixture';
+import { FIXTURE_FILES, fixtureOptions, GATED_CONFIG } from './fixture';
 import { findingsOf } from './helpers';
 
 describe('content rules', () => {
@@ -39,6 +39,30 @@ describe('content rules', () => {
         const run = await runVerifier(await fixtureOptions(), { rules: ['docs-terms'] });
         expect(findingsOf(run.findings, 'docs-terms')).toEqual([
             'i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/index.mdx:12 | first mention of "Уклонение" without "(Dodge)"',
+        ]);
+    });
+
+    it('docs-terms: a line glossary covers its own folder, and a longer term hides a shorter one', async () => {
+        const ru = 'i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/';
+        const files = {
+            ...FIXTURE_FILES,
+            'translations/glossary/v5-vampire.yaml':
+                '- id: sun-dodge\n  en: Sun Dodge\n  ru: Уклонение от солнца\n  refs: [ttgamer.ui.sheet.sunDodge]\n',
+            'docs/wod-v5/vampire/index.mdx': '# Vampire\n\nSun Dodge.\n',
+            'docs/wod-v5/hunter/index.mdx': '# Hunter\n\nSun Dodge.\n',
+            [ru + 'vampire/index.mdx']: '# Вампир\n\nУклонение от солнца (Sun Dodge) спасает.\n',
+            [ru + 'hunter/index.mdx']: '# Охотник\n\nУклонение от солнца не для охотников.\n',
+        };
+        const config = {
+            ...GATED_CONFIG,
+            glossaryDocs: { ...GATED_CONFIG.glossaryDocs, 'v5-vampire': ['wod-v5/vampire'] },
+        };
+        const run = await runVerifier(await fixtureOptions(files, config), {
+            rules: ['docs-terms'],
+        });
+        expect(findingsOf(run.findings, 'docs-terms')).toEqual([
+            ru + 'hunter/index.mdx:3 | first mention of "Уклонение" without "(Dodge)"',
+            ru + 'index.mdx:12 | first mention of "Уклонение" without "(Dodge)"',
         ]);
     });
 

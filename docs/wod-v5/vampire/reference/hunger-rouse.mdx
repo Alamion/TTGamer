@@ -1,0 +1,76 @@
+---
+sidebar_position: 2
+title: Hunger and Rouse Checks
+description: Hunger dice, messy criticals, bestial failures, Compulsions, Rouse checks, and feeding.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+import { TemplatePreview, vampireExampleDocument } from '@site/src/sheet_manager/docsEmbeds';
+
+# Hunger and Rouse Checks
+
+:::tip[In short]
+**Hunger** (0–5) replaces that many dice of every pool with **Hunger dice**. Using your Blood calls for a **Rouse check**, which raises Hunger on a failure. **Feeding** lowers it.
+:::
+
+## Hunger dice
+
+Before you roll, swap as many dice of your pool as your current Hunger for Hunger dice. They count successes like any other die, with three differences:
+
+- Willpower never rerolls them.
+- A **10** on a Hunger die that is part of a critical makes it a **messy critical**.
+- A **1** on a Hunger die in a roll that fails makes it a **bestial failure**.
+
+Willpower rolls and Remorse checks never use Hunger dice. On the site, a roll from a vampire sheet swaps the dice for you, draws Hunger dice in their own colour, and names a messy critical or a bestial failure in the result ([Dice Pools](../../rules/dice-pools.mdx)).
+
+## Messy critical
+
+You succeed, and impressively — but the Beast did it. The Storyteller and you decide what it cost: a Stain on your Humanity, a breach of the Masquerade, a broken door or a broken bone, a lost dot of an Advantage. The bigger the win, the bigger the mess.
+
+:::note[Example: Mirela]
+Mirela forces a stuck window before the guard comes back: **Strength 1 + Athletics 1**, plus a die from a Blood Surge. Two of the three dice are Hunger dice.
+
+<TWWrapper>
+    <InlineRoll notation={'1d10>=6@10 + 2d10:h>=6@10,2'} variant="details" preroll />
+</TWWrapper>
+
+<br />
+<br />
+
+A pair of 10s, and one of them on a Hunger die: a messy critical. The window opens — with the frame torn out of the wall.
+:::
+
+## Bestial failure and Compulsions
+
+When the roll fails and a Hunger die shows a 1, the Beast shows itself. Most often you must act out a **Compulsion** for the rest of the scene: your clan's (written on your sheet under **Bane**) or a general one the Storyteller picks — hunger, violence, the urge to dominate, or to flee. Groups that prefer fewer urges can take harm, a lost Advantage dot, or a point of Hunger instead.
+
+A roll that succeeds is never a bestial failure, whatever the Hunger dice show.
+
+## Rouse checks
+
+Roll one die: **6 or more** and your Hunger stays where it is; anything else and it rises by one, after the effect happens. You make a Rouse check:
+
+- when you wake each night;
+- for a **Blood Surge** (extra dice on one roll), to **mend** wounds, or to look alive (the Blush of Life);
+- for most Discipline powers — as many checks as the power costs.
+
+At Hunger 5 you cannot rouse your Blood on purpose. If something forces a check at Hunger 5, you risk a hunger frenzy.
+
+**On the sheet:** the **Rouse check** button under **Blood** rolls one check and raises Hunger on a failure. In the **Powers** table, a power that costs Blood has its own button: it rolls as many checks as the power costs, and rerolls a failure when your Blood Potency allows it for the power's level ([Blood Potency](./blood-potency.mdx)).
+
+<TWWrapper>
+    <TemplatePreview
+        document={vampireExampleDocument()}
+        systemId="wod-v5"
+        template="v5-vampire-sheet"
+        node="blood"
+    />
+</TWWrapper>
+
+<br />
+<br />
+
+## Feeding
+
+Drinking blood lowers Hunger. A sip lowers it by one, a long careful drink by two, and only draining and killing a person brings it to 0: without killing, a young vampire stops at 1. Animal and bagged blood barely help, and stop helping at all once Blood Potency grows (see the Blood Potency group on your sheet). Your predator type describes how and where you usually feed.

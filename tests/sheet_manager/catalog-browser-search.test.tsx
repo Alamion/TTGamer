@@ -35,3 +35,19 @@ describe('catalog browser search', () => {
         expect(screen.queryAllByText(russianSecond)).toHaveLength(0);
     });
 });
+
+describe('catalog browser columns and long texts', () => {
+    it('names entries of another catalog in the reader language', () => {
+        setTestLocale('ru');
+        render(createElement(CatalogBrowser, { catalogId: 'v5-vampire-clans' }));
+        expect(screen.getAllByText('Ясновидение, Стремительность, Внушительность').length).toBe(1);
+    });
+
+    it('shows long texts in the detail panel once they load', async () => {
+        render(createElement(CatalogBrowser, { catalogId: 'v5-vampire-clans' }));
+        fireEvent.click(screen.getByText('Toreador'));
+        expect(
+            await screen.findByText(/^Obsession: entranced by one beautiful thing/)
+        ).toBeTruthy();
+    });
+});

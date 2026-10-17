@@ -1,0 +1,90 @@
+# Vampire: the Masquerade 5e book terms (T-121). Format: see v5.yaml. Russian forms follow the
+# sheet (spec 037); names without a published Russian source wait for the maintainer's review.
+- id: ambition
+  en: Ambition
+  ru: Цель
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.ambition
+- id: desire
+  en: Desire
+  ru: Желание
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.desire
+- id: clan
+  en: Clan
+  ru: Клан
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.clan
+- id: sire
+  en: Sire
+  ru: Сир
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.sire
+- id: generation
+  en: Generation
+  ru: Поколение
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.generation
+- id: predator-type
+  en: Predator type
+  ru: Тип хищника
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.predatorType
+- id: bane
+  en: Bane
+  ru: Проклятие
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.bane
+      - ttgamer.ui.sheet.v5Vampire.fields.baneVariant
+- id: bane-severity
+  en: Bane severity
+  ru: Тяжесть проклятия
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.baneSeverity
+- id: compulsion
+  en: Compulsion
+  ru: Побуждение
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.compulsion
+- id: humanity
+  en: Humanity
+  ru: Человечность
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.humanity
+- id: stains
+  en: Stains
+  ru: Пятна
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.stains
+- id: blood-potency
+  en: Blood Potency
+  ru: Сила крови
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.bloodPotency
+      - ttgamer.ui.sheet.v5Vampire.sections.bloodPotency
+- id: disciplines
+  en: Disciplines
+  ru: Дисциплины
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.sections.disciplines
+      - ttgamer.ui.sheet.v5Vampire.sections.disciplineList
+- id: discipline
+  en: Discipline
+  ru: Дисциплина
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.fields.discipline
+- id: powers
+  en: Powers
+  ru: Способности
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.sections.powers
+- id: rouse-check
+  en: Rouse check
+  ru: Проверка жажды
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.rouse.action
+- id: remorse-check
+  en: Remorse check
+  ru: Проверка раскаяния
+  refs:
+      - ttgamer.ui.sheet.v5Vampire.remorse.action

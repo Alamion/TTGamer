@@ -5,7 +5,13 @@ function escape(text: string): string {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/** FR-020: the first mention of a glossary term on a Russian page reads "ru (en)". */
+const covers = (scopes: readonly string[], page: string) =>
+    scopes.some((scope) => page === scope || page.startsWith(scope + '/'));
+
+/**
+ * FR-020: the first mention of a glossary term on a Russian page reads "ru (en)". A longer term
+ * that contains a shorter one ("Сила крови", "Сила") hides it: only the longer one is checked.
+ */
 export const docsTermsRule: Rule = {
     id: 'docs-terms',
     area: 'docs',
@@ -23,13 +29,26 @@ export const docsTermsRule: Rule = {
         }));
         for (const page of pages) {
             const lines = proseLines(page.content);
-            const tree = page.page.split('/')[0];
-            for (const { term, pattern, english } of terms) {
-                if (!(context.config.glossaryDocs[term.system] ?? []).includes(tree)) continue;
+            const used = terms.filter(({ term }) =>
+                covers(context.config.glossaryDocs[term.system] ?? [], page.page)
+            );
+            for (const { term, pattern, english } of used) {
+                const longer = used.filter(
+                    (other) =>
+                        other.term.ru.length > term.ru.length &&
+                        other.term.ru.toLowerCase().includes(term.ru.toLowerCase())
+                );
                 for (const line of lines) {
-                    const match = pattern.exec(line.text);
+                    const text = longer.reduce(
+                        (masked, other) =>
+                            masked.replace(new RegExp(other.pattern.source, 'giu'), (found) =>
+                                '\u2007'.repeat(found.length)
+                            ),
+                        line.text
+                    );
+                    const match = pattern.exec(text);
                     if (!match) continue;
-                    const after = line.text.slice(match.index + match[0].length);
+                    const after = text.slice(match.index + match[0].length);
                     if (!english.test(after)) {
                         findings.push({
                             rule: 'docs-terms',

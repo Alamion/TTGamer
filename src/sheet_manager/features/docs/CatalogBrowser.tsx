@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { reportSheetIssue } from '../../diagnostics';
 import type { CatalogBindingEntry, CatalogBrowseColumn, CatalogMessage } from '../../systems';
 import { CATALOG_BINDINGS } from '../sheet/data/catalogBindings';
+import { catalogTextField, useLoadedCatalogText } from '../sheet/data/catalogText';
 
 const messages = uiMessages.sheet.catalogBrowser;
 
@@ -26,6 +27,18 @@ function cellText(
     lang: string
 ): string {
     const value = (entry as unknown as Record<string, unknown>)[column.key];
+    const named = column.entriesOf ? CATALOG_BINDINGS.get(column.entriesOf) : undefined;
+    if (named && (typeof value === 'string' || Array.isArray(value))) {
+        return ([] as unknown[])
+            .concat(value)
+            .map((item) => {
+                const [id = '', suffix] = String(item).split(':');
+                const target = named.entries.find((candidate) => candidate.id === id);
+                const name = target ? named.entryLabel(target, lang) : id;
+                return suffix ? `${name} ${suffix}` : name;
+            })
+            .join(', ');
+    }
     if (isMessage(value)) return translate(value);
     if (typeof value === 'string' && column.labels?.[value]) {
         return translate(column.labels[value]);
@@ -36,13 +49,16 @@ function cellText(
 
 /**
  * A searchable documentation table over any catalog that declares `browse` (plugin-owned
- * columns, filters, and child entries). Names and texts follow the reader's locale.
+ * columns, filters, and child entries). Names and texts follow the reader's locale; the
+ * catalog's long texts load on demand and show in the detail panel.
  */
 export function CatalogBrowser({ catalogId }: { catalogId: string }) {
     const lang = useDocusaurusContext().i18n.currentLocale;
     const catalog = CATALOG_BINDINGS.get(catalogId);
     const browse = catalog?.browse;
     const children = browse?.children ? CATALOG_BINDINGS.get(browse.children.catalogId) : undefined;
+    const longTexts = useMemo(() => catalog?.texts?.filter((text) => text.lazy) ?? [], [catalog]);
+    const loadedTexts = useLoadedCatalogText(longTexts.length > 0 ? catalogId : undefined);
 
     const rows = useMemo<BrowserRow[]>(() => {
         if (!catalog || !browse) return [];
@@ -52,6 +68,12 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
             bookName: entry.name,
             ...Object.fromEntries(
                 browse.columns.map((column) => [column.key, cellText(catalog, entry, column, lang)])
+            ),
+            ...Object.fromEntries(
+                longTexts.map((text) => [
+                    text.key,
+                    catalogTextField(loadedTexts, lang, entry.id, text.key) ?? '',
+                ])
             ),
             children: children
                 ? children.entries
@@ -64,7 +86,7 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
                       .map((child) => children.entryLabel(child, lang))
                 : [],
         }));
-    }, [catalog, browse, children, lang]);
+    }, [catalog, browse, children, lang, longTexts, loadedTexts]);
 
     if (!catalog || !browse || (browse.children && !children)) {
         reportSheetIssue({
@@ -112,6 +134,18 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
                                     {translate(column.header)}
                                 </dt>
                                 <dd className="m-0 text-textPrimary">{String(row[column.key])}</dd>
+                            </div>
+                        ) : null
+                    )}
+                    {longTexts.map((text) =>
+                        row[text.key] ? (
+                            <div key={text.key}>
+                                <dt className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
+                                    {typeof text.label === 'string'
+                                        ? text.label
+                                        : translate(text.label)}
+                                </dt>
+                                <dd className="m-0 text-textPrimary">{String(row[text.key])}</dd>
                             </div>
                         ) : null
                     )}
