@@ -193,8 +193,8 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   changed records at once, coalesced within a task, and flushes on `pagehide`. `changedAt` moves at
   most once per 5 s per document. Two tabs merge the index by id (newer `updatedAt` wins).
 - **Delete is a tombstone.** Deleting removes the entry and lists the id in `pendingPurge`; the next
-  start's sweep removes exactly those records (and portraits). A record with no entry and no
-  tombstone gets its entry rebuilt, never deleted. Folders use the same list.
+  start's sweep removes exactly those records (and their device images). A record with no entry and
+  no tombstone gets its entry rebuilt, never deleted. Folders use the same list.
 - **Migration.** `migrateToIndexedState` writes `universal-character-storage:v4-backup` first, is
   idempotent, and a failure blocks saving until reload; the backup goes after two clean launches.
   T-114 removes it all (after 2027-04-13).

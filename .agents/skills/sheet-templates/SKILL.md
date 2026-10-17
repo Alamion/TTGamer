@@ -69,7 +69,9 @@ template up by id — `getTemplate(id)` only sees user templates.
 - Read path: `coerceStoredValue` converts values stored before a field type change; the store data
   is never mutated by rendering.
 - Images: `{source:'device', blobId}` (IndexedDB via `persistence/portraitStorage.ts`) or
-  `{source:'url', url}` (HTTPS only). Device values are stripped from JSON exports.
+  `{source:'url', url}` (HTTPS only). Device values are stripped from JSON exports. A blob lives
+  while its document names it (`deviceImageIdsOf`: the portrait and every page value, list entries
+  included): a write or reset that drops it deletes it, and the purge deletes the rest.
 
 ## Diagnostics (debug here first)
 

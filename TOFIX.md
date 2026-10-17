@@ -27,13 +27,3 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 **Evidence:** The webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`, so it is visible to browser DevTools. Affected surfaces: `src/integrations/roll-sharing/queue.ts`, `src/dice_roller/store/diceRollerStore.ts`, `src/dice_roller/components/DiceRollerSettingsModal.tsx`, `src/dice_roller/components/RollSharingSubscription.tsx`. A Matrix hookshot address is a secret in the same way.
 
 **Recommendation:** Remove the client-side delivery and POST to an authenticated backend endpoint that proxies the message to the chosen service with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
-
-## 🟢 Medium
-
-### F-009 — Device images in page values are never deleted
-
-**Area:** sheet documents (image fields of custom pages, image storage)
-
-**Evidence:** An image field on a custom page stores an uploaded picture as a `device` blob (`fieldControls.tsx`, `savePortrait`); replacing or removing the picture, resetting the document, or deleting it leaves the blob in IndexedDB, because only the bound portrait (`metadata.portraitId`) is ever passed to `deletePortrait` (`documentStore.ts`, `documentBoot.ts`). Each replaced picture keeps up to 10 MB on the device.
-
-**Recommendation:** Collect the device blob ids a document's page values reference and delete the ones a write, reset, or purge stops referencing, the way the portrait is handled; or sweep unreferenced blobs at start.

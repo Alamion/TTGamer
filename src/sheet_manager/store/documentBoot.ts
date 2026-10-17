@@ -3,8 +3,8 @@ import { repairFolders } from '../features/documents/operations';
 import { deletePortrait } from '../persistence/portraitStorage';
 import {
     countCleanLaunch,
+    deviceImageIdsOf,
     listRecordIds,
-    portraitIdOf,
     purgedIds,
     readEnvelope,
     readRecord,
@@ -64,7 +64,7 @@ export function repairFolderLoops(api: BootApi): number {
     return count;
 }
 
-/** Removes the records (and portraits) of deleted documents that were not restored. */
+/** Removes the records (and images) of deleted documents that were not restored. */
 export async function purgeDeleted(api: BootApi): Promise<void> {
     const { pendingPurge } = api.getState();
     if (pendingPurge.length === 0) return;
@@ -75,9 +75,9 @@ export async function purgeDeleted(api: BootApi): Promise<void> {
             continue;
         }
         try {
-            const portraitId = portraitIdOf(await readRecord(id));
+            const images = deviceImageIdsOf(await readRecord(id));
             await removeRecord(id);
-            if (portraitId) await deletePortrait(portraitId);
+            await Promise.all([...images].map((imageId) => deletePortrait(imageId)));
             done.add(id);
             purgedIds.add(id);
         } catch (error) {
