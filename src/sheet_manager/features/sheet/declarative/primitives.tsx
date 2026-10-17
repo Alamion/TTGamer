@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { clsx } from 'clsx';
 import { useMemo } from 'react';
 
 import { generateId } from '../../../../shared/utils/random';
@@ -705,7 +706,13 @@ function PrimitiveResourceBody({
         const marks = typeof marksRaw === 'number' ? marksRaw : 0;
         return (
             <div className="grid gap-1">
-                <span className={node.hideLabel ? 'sr-only' : 'text-sm text-textPrimary'}>
+                <span
+                    className={clsx(
+                        node.hideLabel && 'sr-only',
+                        !node.hideLabel && node.compact && 'text-xs text-textSecondary',
+                        !node.hideLabel && !node.compact && 'text-sm text-textPrimary'
+                    )}
+                >
                     {label}
                 </span>
                 <ScoreTrack
@@ -790,8 +797,10 @@ function PrimitiveResourceBody({
         );
     }
     if (node.compact) {
+        // A term row is a size container (zero intrinsic width): where a brief column wraps
+        // its cells as chips, the cell takes a width or the next cell covers it.
         return (
-            <div className="grid min-w-0 grid-cols-1 gap-1">
+            <div className="grid min-w-0 grid-cols-1 gap-1 @md/brief:w-40">
                 {descriptor.mode === 'pool' && !node.part ? (
                     <CompactResource
                         label={label}

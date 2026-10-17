@@ -51,7 +51,7 @@ export const vampireBriefTemplate: CustomTemplate = {
                         vampire.sections.disciplineList.message
                     ),
                 ],
-                { labelMessage: vampire.sections.disciplines }
+                { collapsible: true, labelMessage: vampire.sections.disciplines }
             )
         ),
         dense(equipmentGroup('weapons'), { collapsed: true }),

@@ -66,11 +66,10 @@ describe('element registry (spec 025, US3)', () => {
         ).toBe('notes');
     });
 
-    it('offers group, field, list, and tracker in the "+" menu', () => {
-        expect(PALETTE.map(({ key }) => key)).toEqual(['group', 'field', 'list', 'tracker']);
+    it('offers group, field, and list in the "+" menu (a tracker is a field type)', () => {
+        expect(PALETTE.map(({ key }) => key)).toEqual(['group', 'field', 'list']);
         expect(PALETTE[0]!.build(true).type).toBe('section');
         expect(PALETTE[0]!.build(false).type).toBe('group');
-        expect(PALETTE[3]!.build(false).type).toBe('tracker');
     });
 
     it('fails the type check when a type has no entry', () => {

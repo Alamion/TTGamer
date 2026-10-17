@@ -154,17 +154,8 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
     reference: field('reference'),
     image: field('image'),
     formula: field('formula'),
-    tracker: {
-        ...field('tracker'),
-        palette: {
-            key: 'tracker',
-            label: editor.paletteTracker,
-            hint: editor.paletteTrackerHint,
-            // An own tracker; its Source setting switches it to a game's built-in track.
-            build: () =>
-                newField('tracker', translate(uiMessages.sheet.templates.tracker.defaultLabel)),
-        },
-    },
+    // Not in the "+" menu: a field becomes a tracker through its Type setting.
+    tracker: field('tracker'),
 };
 
 export function elementEditor<N extends TemplateNode>(node: N): ElementEditor<N> {
@@ -172,9 +163,9 @@ export function elementEditor<N extends TemplateNode>(node: N): ElementEditor<N>
 }
 
 /** The "+" menu in display order. */
-export const PALETTE: readonly PaletteEntry[] = (
-    ['section', 'text', 'list', 'tracker'] as const
-).map((type) => ELEMENT_EDITORS[type].palette!);
+export const PALETTE: readonly PaletteEntry[] = (['section', 'text', 'list'] as const).map(
+    (type) => ELEMENT_EDITORS[type].palette!
+);
 
 export const KIND_NAMES = {
     section: editor.kindSection,

@@ -145,16 +145,13 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the four element kinds with descriptions', () => {
+    it('offers exactly the three element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['group', 'field', 'list', 'tracker']);
-        expect(
-            screen.getByText('Boxes to mark by level: health, stress, or any other burden')
-        ).not.toBeNull();
+        expect(options).toEqual(['group', 'field', 'list']);
         const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });
@@ -172,8 +169,14 @@ describe('add-element menu and element sources', () => {
         ).toEqual(['group']);
         expect(addFromRootMenu('field').getAttribute('data-node-type')).toBe('text');
         expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
-        // The tracker is an own-value field; its Source can switch it to a built-in track.
-        const tracker = addFromRootMenu('tracker');
+        // A tracker is a field of the Tracker type (not in the menu); its Source can switch it
+        // to a built-in track.
+        const added = addFromRootMenu('field');
+        const addedId = added.getAttribute('data-outline-row')!;
+        fireEvent.change(within(settings(addedId)).getByLabelText('Field type'), {
+            target: { value: 'tracker' },
+        });
+        const tracker = outlineRow(addedId);
         expect(tracker.getAttribute('data-node-type')).toBe('tracker');
         expect(tracker.getAttribute('aria-current')).toBe('true');
         const trackerId = tracker.getAttribute('data-outline-row')!;

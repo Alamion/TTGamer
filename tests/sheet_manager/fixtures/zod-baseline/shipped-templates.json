@@ -11134,7 +11134,7 @@
      "type": "group",
      "title": "Disciplines",
      "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplines",
-     "collapsible": false,
+     "collapsible": true,
      "layout": "area",
      "children": [
       {

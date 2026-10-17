@@ -101,8 +101,6 @@ editor:
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
     paletteList: List
     paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
-    paletteTracker: Tracker
-    paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in
     sourceCustom: Custom value (this template)
     sourceTraits: Traits
