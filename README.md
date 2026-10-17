@@ -16,6 +16,7 @@ site that works in the browser and keeps your data on your device.
 | Star Wars on World of Darkness 2nd Ed. | character, droid, creature, vehicle, fodder group |
 | World of Darkness 2nd Edition          | character                                         |
 | Hunter: the Reckoning 5th Edition      | character                                         |
+| Vampire: the Masquerade 5th Edition    | character                                         |
 | World of Darkness 5th Edition          | mortal                                            |
 
 - **Documents, not just characters.** Keep them in folders, search and filter them, undo a move or
@@ -42,8 +43,8 @@ site that works in the browser and keeps your data on your device.
 ### Documentation
 
 - Rules for **Star Wars WoD 2e** (a fan conversion of the Star Wars galaxy to the Vampire 2nd
-  Edition engine) and **World of Darkness V5** with **Hunter: the Reckoning**, written in the
-  project's own words.
+  Edition engine) and **World of Darkness V5** with **Hunter: the Reckoning** and **Vampire: the
+  Masquerade**, written in the project's own words.
 - Searchable catalogs (species, Force powers, merits and flaws, equipment, vehicles, creatures,
   and more), rolls you can click in the text, and live sheet examples.
 - A **site guide** that explains the sheet, the documents window, the dice roller, the template
@@ -69,8 +70,8 @@ reference.
 
 Each game comes with its own terms, and they do not carry over from one game to another:
 
-- **World of Darkness 5th Edition** (including Hunter: the Reckoning) appears under Paradox
-  Interactive's Dark Pack policy: see the
+- **World of Darkness 5th Edition** (including Hunter: the Reckoning and Vampire: the Masquerade)
+  appears under Paradox Interactive's Dark Pack policy: see the
   [Dark Pack notice](https://ttgamer.vercel.app/docs/wod-v5/dark-pack). Its sheets show the Dark
   Pack badge, and exported files carry the notice.
 - **The Star Wars conversion and classic World of Darkness 2nd Edition** are outside the Dark Pack.
