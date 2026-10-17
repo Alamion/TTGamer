@@ -1,5 +1,30 @@
 # Changelog
 
+## v3.29.0
+
+### Minor feat
+
+- **Vampire: the Masquerade 5e (spec 037, T-039)**: a new V5 line with a full sheet and a brief. Hunger turns that many dice of every sheet roll into Hunger dice, and the roll names a messy critical or a bestial failure; Humanity shares its row of boxes with Stains; Blood Potency lists what it gives (Blood Surge, mending, Discipline bonus, Rouse rerolls, Bane severity, feeding) and warns when it is outside what the Generation allows. The clan's Bane (usual or variant) and Compulsion and what the predator type gives follow the chosen clan and type until you write your own; powers and rituals are offered up to their Discipline's dots. Five catalogs in English and Russian: 16 clans, 12 Disciplines, 149 powers, 73 rituals, ceremonies, and formulas, 16 predator types
+- **Rouse and Remorse with one press (spec 038)**: the **Rouse check** button rolls a die and raises Hunger on a failure; each power that costs Blood has its own button that rolls as many checks as it costs and rerolls with Blood Potency; the **Remorse check** at the end of a session rolls the right number of dice, takes a dot of Humanity on a failure, and clears the Stains. The message after a roll says what changed and offers **Undo** for a few seconds
+- **Vampire documentation (T-121)**: a quickstart, a ten-step guided creation with the example vampire Mirela Voss, and a reference for the sheet, Hunger and Rouse checks, Humanity and Stains, Blood Potency, clans, Disciplines and powers, predator types, and a glossary, in English and Russian. Catalog tables in the documentation now show long texts (summaries, banes, compulsions) and name related entries in your language
+- **Buttons in the template editor (spec 038)**: a new **Button** element in the + menu and buttons on table rows. A button can roll (notation with formulas, repeats, a reroll condition, a success rule, game dice on or off), then add to or set values within their limits on success, on failure, or always, and can be available only while a formula holds
+- **Richer formulas (spec 038)**: `ceil`, `floor`, `round`, `abs`, `if`, `and`, `or`, `not`, comparisons, texts joined with `&`, `rating(list, "Name")` for the dots of a named list entry, and `row.<column>` inside a table row. **Show when** can now take a formula
+- **From catalog (spec 038)**: a text field can show an entry's text from a catalog — read-only, or as a suggestion until you write your own — with an alternative text while a formula holds
+- **Trackers with marks from the end (spec 038)**: a rating or a single value can be drawn as a tracker that marks a second value from its far end, never over filled boxes (right click, Shift+Enter, or a long press)
+- **Rows limited by their parent (spec 038)**: your catalogs can have a column that names an entry of another catalog, and catalog choices and table rows can be limited by the dots of their parent row
+- **Portraits** for the example hunter Lena Varga and the example vampire Mirela Voss
+
+### Fix
+
+- **Device images**: a document's images stored on the device are deleted when the document stops naming them, not only its portrait (F-009)
+- **The + menu**: a tracker is chosen as a field type, no longer as a separate element
+
+### Chore
+
+- **Every shipped sheet can be rebuilt in the editor (spec 038)**: a test fails when a shipped template uses a property the template editor cannot set; the vampire's code-only mechanics were replaced by ordinary elements. The sheet page grew by about 11.8 KB gzip, over its 10 KB budget
+- **README (T-119)**: describes the project as it is today, with screenshots retaken by a script
+- **Russian terms**: the Vampire pages have their own glossary; term hints are checked per line of documentation, and a longer term (Сила крови) no longer counts as a mention of a shorter one (Сила)
+
 ## v3.28.1
 
 ### Chore
