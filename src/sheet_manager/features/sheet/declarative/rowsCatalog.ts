@@ -3,6 +3,7 @@ import { normalizeSearchText } from '@site/src/shared/utils/normalizeSearchText'
 import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { bookNameOf, type CatalogBindingEntry } from '../../../systems';
 import type { RowsBinding, RowsCatalogParent } from '../../../systems/templateBindings';
+import type { LimitByParent } from '../../../types/template';
 import { readDetailValue } from '../data/catalogBindings';
 
 type RowsCatalog = NonNullable<RowsBinding['catalog']>;
@@ -11,7 +12,7 @@ type Catalogs = Pick<ReadonlyMap<string, CatalogBindingEntry>, 'get'>;
 /** A name-column suggestion; `parentId` is set when the catalog declares a parent. */
 export interface RowSuggestion extends CatalogEntry {
     parentId?: string;
-    /** The entry's level when the parent declares a `limit`. */
+    /** The entry's level when the page limits rows by their parent. */
     level?: number;
 }
 
@@ -33,7 +34,8 @@ export function parentName(
 export function rowSuggestions(
     catalogs: Catalogs,
     catalog: RowsCatalog,
-    locale: string
+    locale: string,
+    limit?: LimitByParent
 ): RowSuggestion[] {
     return catalog.catalogIds.flatMap((catalogId) => {
         const binding = catalogs.get(catalogId);
@@ -41,9 +43,7 @@ export function rowSuggestions(
             const parentId = catalog.parent
                 ? readDetailValue(entry, catalog.parent.entryKey)
                 : undefined;
-            const level = catalog.parent?.limit
-                ? Number(readDetailValue(entry, catalog.parent.limit.entryKey))
-                : NaN;
+            const level = limit ? Number(readDetailValue(entry, limit.entryKey)) : NaN;
             return {
                 id: `${catalogId}/${entry.id}`,
                 name: binding!.pickLabel(entry, locale),
@@ -113,14 +113,15 @@ const namedRecords = (parent: RowsCatalogParent, data: Readonly<Record<string, u
 function parentValues(
     catalogs: Catalogs,
     parent: RowsCatalogParent,
+    limit: LimitByParent | undefined,
     data: Readonly<Record<string, unknown>>,
     locale: string
 ): Map<string, { name: string; value: number }> {
     const values = new Map<string, { name: string; value: number }>();
-    if (!parent.limit || !parent.namedBy) return values;
+    if (!limit || !parent.namedBy) return values;
     for (const record of namedRecords(parent, data)) {
         const name = cellText(record, parent.namedBy.column);
-        const value = Number(record[parent.limit.parentValue]);
+        const value = Number(record[limit.parentValue]);
         if (!name.trim() || !Number.isFinite(value)) continue;
         for (const id of parentIdsNamed(catalogs, parent, [name], locale)) {
             const known = values.get(id);
@@ -137,15 +138,16 @@ function parentValues(
 export function rowAboveLimit(
     catalogs: Catalogs,
     catalog: RowsCatalog,
+    limit: LimitByParent | undefined,
     row: Readonly<Record<string, unknown>>,
     data: Readonly<Record<string, unknown>>,
     locale: string
 ): { parent: string; dots: number } | null {
     const parent = catalog.parent;
-    if (!parent?.limit) return null;
-    const level = Number(cellText(row, parent.limit.column));
+    if (!parent || !limit) return null;
+    const level = Number(cellText(row, limit.column));
     if (!Number.isFinite(level) || level <= 0) return null;
-    const values = parentValues(catalogs, parent, data, locale);
+    const values = parentValues(catalogs, parent, limit, data, locale);
     for (const id of parentIdsNamed(catalogs, parent, [cellText(row, parent.column)], locale)) {
         const known = values.get(id);
         if (known && level > known.value) return { parent: known.name, dots: known.value };
@@ -160,6 +162,7 @@ export function rowAboveLimit(
 export function suggestionsForRow(
     catalogs: Catalogs,
     catalog: RowsCatalog,
+    limit: LimitByParent | undefined,
     all: readonly RowSuggestion[],
     row: Readonly<Record<string, unknown>>,
     data: Readonly<Record<string, unknown>>,
@@ -173,7 +176,7 @@ export function suggestionsForRow(
         : namedRecords(parent, data).map((named) => cellText(named, parent.namedBy!.column));
     const ids = parentIdsNamed(catalogs, parent, names, locale);
     if (ids.size === 0) return all;
-    const values = parentValues(catalogs, parent, data, locale);
+    const values = parentValues(catalogs, parent, limit, data, locale);
     return all.filter((suggestion) => {
         if (!suggestion.parentId || !ids.has(suggestion.parentId)) return false;
         const dots = values.get(suggestion.parentId)?.value;

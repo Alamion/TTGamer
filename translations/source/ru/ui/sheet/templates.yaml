@@ -72,6 +72,15 @@ editor:
     marksFromEndHint: 'Никогда на заполненной клетке: Человечность и пятна'
     marksFromEndValue: Значение отметок
     marksFromEndName: Название отметки
+    limitByParent: Ограничить по родителю
+    limitByParentHint: 'Записи, принадлежащие записям другого списка, не выше их рейтинга: силы по дисциплине'
+    parentList: Список родителей (ключ значения)
+    parentVia: Деталь с родителем
+    parentLevel: Деталь с уровнем
+    parentNoLevel: Без уровня (только родители)
+    limitEntryLevel: Деталь записи с уровнем
+    limitRowLevel: Колонка строки с уровнем
+    limitParentRating: Рейтинг родителя
     visibleWhenKind: Условие
     visibleWhenKindValue: Значение совпадает
     visibleWhenKindFormula: Формула выполняется

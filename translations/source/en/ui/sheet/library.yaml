@@ -251,6 +251,10 @@ catalogTable:
         text: Text
         number: Number
         toggle: Toggle
+        entry: Entry of a catalog
+    columnCatalog: 'Catalog of {column}'
+    brokenEntry: 'No entry "{value}" in {catalog}'
+    noCatalog: '— choose a catalog —'
     limits:
         entries: A catalog holds at most {limit} entries.
         columns: A catalog holds at most {limit} columns.

@@ -7,7 +7,7 @@ import { anyCatalog, defineCatalog, textDetail } from '@site/src/sheet_manager/s
 import type { RowsBinding } from '@site/src/sheet_manager/systems/templateBindings';
 import { describe, expect, it } from 'vitest';
 
-/** A parent's dots limit the levels offered and mark rows above them (spec 037, D3). */
+/** A parent's dots limit the levels offered and mark rows above them (spec 037 D3, spec 038). */
 
 const schools = defineCatalog(
     'test-schools',
@@ -43,17 +43,21 @@ const catalog: NonNullable<RowsBinding['catalog']> = {
         catalogId: 'test-schools',
         column: 'school',
         namedBy: { dataKey: 'schools', column: 'name' },
-        limit: { entryKey: 'level', column: 'level', parentValue: 'value' },
     },
 };
+
+/** The page's limit (spec 038): spells up to their school's dots. */
+const limit = { entryKey: 'level', column: 'level', parentValue: 'value' };
 
 const data = (dots: Record<string, number>) => ({
     schools: Object.entries(dots).map(([name, value], index) => ({ id: `s${index}`, name, value })),
 });
 
 function offered(row: Record<string, unknown>, dots: Record<string, number>) {
-    const all = rowSuggestions(catalogs, catalog, 'en');
-    return suggestionsForRow(catalogs, catalog, all, row, data(dots), 'en').map(({ name }) => name);
+    const all = rowSuggestions(catalogs, catalog, 'en', limit);
+    return suggestionsForRow(catalogs, catalog, limit, all, row, data(dots), 'en').map(
+        ({ name }) => name
+    );
 }
 
 describe('rows catalog parent limit', () => {
@@ -73,6 +77,7 @@ describe('rows catalog parent limit', () => {
             rowAboveLimit(
                 catalogs,
                 catalog,
+                limit,
                 { name: 'Blaze', school: 'Fire', level: '3' },
                 rows,
                 'en'
@@ -82,6 +87,7 @@ describe('rows catalog parent limit', () => {
             rowAboveLimit(
                 catalogs,
                 catalog,
+                limit,
                 { name: 'Spark', school: 'Fire', level: '1' },
                 rows,
                 'en'
@@ -91,8 +97,34 @@ describe('rows catalog parent limit', () => {
             rowAboveLimit(
                 catalogs,
                 catalog,
+                limit,
                 { name: 'Own', school: 'Shadow', level: '5' },
                 rows,
+                'en'
+            )
+        ).toBeNull();
+    });
+
+    it('limits nothing when the page sets no limit', () => {
+        const all = rowSuggestions(catalogs, catalog, 'en');
+        expect(
+            suggestionsForRow(
+                catalogs,
+                catalog,
+                undefined,
+                all,
+                { school: 'Fire' },
+                data({ Fire: 1 }),
+                'en'
+            )
+        ).toHaveLength(3);
+        expect(
+            rowAboveLimit(
+                catalogs,
+                catalog,
+                undefined,
+                { name: 'Blaze', school: 'Fire', level: '3' },
+                data({ Fire: 1 }),
                 'en'
             )
         ).toBeNull();

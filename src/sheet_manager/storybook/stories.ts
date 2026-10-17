@@ -547,6 +547,40 @@ export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
     updatedAt: '2026-09-27T00:00:00.000Z',
 });
 
+const SAMPLE_RITES_ID = 'user-catalog-storybk2';
+const RITE_RELIC = 'c-relic001';
+const RITE_LEVEL = 'c-level001';
+
+/** Rites that belong to relics (a parent column) with a level: a table limits them (spec 038). */
+const SAMPLE_RITES: UserCatalog = UserCatalogSchema.parse({
+    id: SAMPLE_RITES_ID,
+    name: 'Sample rites',
+    owner: { rulesetId: ENGINE.systemId },
+    columns: [
+        { id: RITE_RELIC, name: 'Relic', type: 'entry', catalogId: SAMPLE_CATALOG_ID },
+        { id: RITE_LEVEL, name: 'Level', type: 'number' },
+    ],
+    entries: [
+        {
+            id: 'e-dirge001',
+            name: 'Dirge',
+            values: { [RITE_RELIC]: 'e-bonefl01', [RITE_LEVEL]: 1 },
+        },
+        {
+            id: 'e-wake0001',
+            name: 'Wake the Dead',
+            values: { [RITE_RELIC]: 'e-bonefl01', [RITE_LEVEL]: 3 },
+        },
+        {
+            id: 'e-gaze0001',
+            name: 'Far Gaze',
+            values: { [RITE_RELIC]: 'e-mirror01', [RITE_LEVEL]: 2 },
+        },
+    ],
+    createdAt: '2026-10-17T00:00:00.000Z',
+    updatedAt: '2026-10-17T00:00:00.000Z',
+});
+
 const userCatalogFields = story(
     'user-catalog',
     'Your own catalog',
@@ -624,7 +658,29 @@ const userCatalogFields = story(
                 { id: 'relic-item-cursed', type: 'toggle', label: 'Cursed' },
             ],
         },
-    ]
+        {
+            id: 'rite-table',
+            type: 'table',
+            title: 'Rites, limited by the relics carried',
+            columns: [
+                {
+                    id: 'rite',
+                    type: 'select',
+                    label: 'Rite',
+                    options: [{ id: 'placeholder', label: 'Placeholder' }],
+                    binding: {
+                        catalogId: SAMPLE_RITES_ID,
+                        parent: { list: 'relic-list', via: RITE_RELIC, level: RITE_LEVEL },
+                    },
+                },
+            ],
+        },
+    ],
+    // One relic carried at 2: the rite table offers its rites up to level 2.
+    {
+        'relic-list': [{ id: 'carried-flute', label: 'Bone Flute', value: 2 }],
+        'rite-table': { '0': {} },
+    }
 );
 
 const collections = story(
@@ -811,11 +867,7 @@ export function bindingSignature(binding: DocumentBindingDescriptor): string {
         case 'equipment':
             return `equipment:${binding.sectionId}`;
         case 'rows':
-            return [
-                'rows',
-                binding.catalog?.parent?.limit ? ':limit' : '',
-                binding.actions?.length ? ':actions' : '',
-            ].join('');
+            return ['rows', binding.actions?.length ? ':actions' : ''].join('');
         default:
             return binding.kind;
     }
@@ -1157,7 +1209,7 @@ let allStories: readonly ElementStory[] | undefined;
 
 /** Every story, handwritten first; bound parts are built on first use (the registry is ready). */
 export function listElementStories(): readonly ElementStory[] {
-    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG]);
+    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG, SAMPLE_RITES]);
     allStories ??= [...HANDWRITTEN_STORIES, ...boundPartStories()];
     return allStories;
 }

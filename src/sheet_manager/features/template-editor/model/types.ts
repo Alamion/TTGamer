@@ -1,5 +1,6 @@
 import type {
     CustomTemplate,
+    LimitByParent,
     PoolTrackerOverride,
     PrimitivePreset,
     PrimitiveTrackOverride,
@@ -48,6 +49,7 @@ export type NodeUpdates = {
     presets?: PrimitivePreset[];
     /** Spec 038: buttons on table and built-in rows, and a page button's own settings. */
     rowButtons?: RowButton[];
+    limitByParent?: LimitByParent;
 } & Partial<Omit<RowButton, 'id' | 'label'>>;
 
 export type EditorDraft = CustomTemplate;

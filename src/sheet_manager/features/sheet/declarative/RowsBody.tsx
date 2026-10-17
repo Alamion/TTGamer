@@ -123,6 +123,8 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const { document } = useDocumentSource();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
+    // Rows above their parent's rating (spec 038): the page decides, the binding names the parent.
+    const limit = catalog?.parent ? node.limitByParent : undefined;
     // Actions shown on each row (spec 037 D6, a power's Rouse check).
     const actions = (descriptor.actions ?? [])
         .map((key) =>
@@ -130,8 +132,8 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
         )
         .filter((binding): binding is ActionBinding => binding?.kind === 'action');
     const suggestions = useMemo(
-        () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale) : []),
-        [catalog, locale]
+        () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale, limit) : []),
+        [catalog, locale, limit]
     );
     if (!bound) return null;
     const rows = (
@@ -253,6 +255,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                             ? rowAboveLimit(
                                                   CATALOG_LOOKUP,
                                                   catalog,
+                                                  limit,
                                                   row,
                                                   bound.data,
                                                   locale
@@ -288,6 +291,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                         ...suggestionsForRow(
                                                             CATALOG_LOOKUP,
                                                             catalog,
+                                                            limit,
                                                             suggestions,
                                                             row,
                                                             bound.data,

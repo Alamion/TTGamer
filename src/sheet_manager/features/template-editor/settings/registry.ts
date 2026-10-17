@@ -96,6 +96,8 @@ export const SETTINGS = {
     rowButtons: { group: 'value', label: editor.rowButtons },
     fromCatalog: { group: 'value', label: editor.fromCatalog },
     marksFromEnd: { group: 'look', label: editor.marksFromEnd },
+    parent: { group: 'value', label: editor.limitByParent },
+    limitByParent: { group: 'value', label: editor.limitByParent },
     poolTracker: { group: 'look', label: editor.displayTracker },
     // Value
     valueKey: { group: 'value', label: editor.valueKey, identity: true },

@@ -219,8 +219,22 @@ export const CatalogFillRuleSchema = z.object({
     disabled: z.boolean().optional(),
 });
 
+/**
+ * Table rows whose catalog entries belong to entries of another list's catalog (spec 038): the
+ * parent `list` (its value key or a game list), the entry detail naming the parent (`via`), and
+ * optionally the detail holding the entry's level, kept at or below the parent's rating.
+ */
+export const CatalogParentSchema = z.object({
+    list: templateIdentifierSchema,
+    via: z.string().min(1).max(64),
+    level: z.string().min(1).max(64).optional(),
+});
+
+export type CatalogParent = z.infer<typeof CatalogParentSchema>;
+
 export const CatalogBindingSchema = z.object({
     catalogId: templateIdentifierSchema,
+    parent: CatalogParentSchema.optional(),
     fills: z
         .record(z.string().min(1).max(64), CatalogFillRuleSchema)
         .refine((fills) => Object.keys(fills).length <= TEMPLATE_LIMITS.fillMappingsPerField, {
@@ -717,6 +731,18 @@ const rowButtonsShape = {
     rowButtons: z.array(RowButtonSchema).max(TEMPLATE_LIMITS.rowButtonsMax).optional(),
 };
 
+/**
+ * Entries limited by their parent row (spec 038, a power by its discipline's dots): the entry's
+ * level (`entryKey`), the row's level (`column`), and the parent record's rating (`parentValue`).
+ */
+export const LimitByParentSchema = z.object({
+    entryKey: z.string().min(1).max(64),
+    column: z.string().min(1).max(64),
+    parentValue: z.string().min(1).max(64),
+});
+
+export type LimitByParent = z.infer<typeof LimitByParentSchema>;
+
 /** A button on the page (spec 038, US1). */
 const ButtonNodeSchema = z.object({
     ...buttonShape,
@@ -761,6 +787,8 @@ const PrimitiveNodeSchema = z.object({
     ...maxFromShape,
     /** Built-in rows (`rows:*`): buttons on each row (spec 038). */
     ...rowButtonsShape,
+    /** Built-in rows under a parent list: picks and rows above the parent's rating (spec 038). */
+    limitByParent: LimitByParentSchema.optional(),
 });
 
 /** Custom list (FR-17): own value coordinate OR a system-owned list — identical interface. */

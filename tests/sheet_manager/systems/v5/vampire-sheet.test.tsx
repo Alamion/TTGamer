@@ -234,10 +234,12 @@ describe('vampire power suggestions', () => {
         ) as RowsBinding;
 
     it('offers the powers of the vampire’s disciplines up to their dots', () => {
-        const all = rowSuggestions(CATALOG_BINDINGS, powers.catalog!, 'en');
+        const limit = { entryKey: 'level', column: 'level', parentValue: 'value' };
+        const all = rowSuggestions(CATALOG_BINDINGS, powers.catalog!, 'en', limit);
         const offered = suggestionsForRow(
             CATALOG_BINDINGS,
             powers.catalog!,
+            limit,
             all,
             { discipline: '' },
             { disciplines: [{ id: 'd1', name: 'Auspex', value: 2 }] },

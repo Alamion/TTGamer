@@ -85,12 +85,16 @@ A name that matches no entry shows nothing.
 
 ### Your own catalogs \{#your-catalogs}
 
-Make your own catalogs in the [library](./library.mdx): **New catalog** on a setting, or on a ruleset when every setting on those rules should share it. A catalog is a small table: every entry has a **Name** and a value in each of your columns — **Text**, **Number**, or **Toggle**. Add entries one by one, or **Paste rows** copied from a spreadsheet: one entry per line, the name first, then the columns in order. Changing a column's type warns before values that do not fit are emptied.
+Make your own catalogs in the [library](./library.mdx): **New catalog** on a setting, or on a ruleset when every setting on those rules should share it. A catalog is a small table: every entry has a **Name** and a value in each of your columns — **Text**, **Number**, **Toggle**, or **Entry of a catalog**. Add entries one by one, or **Paste rows** copied from a spreadsheet: one entry per line, the name first, then the columns in order. Changing a column's type warns before values that do not fit are emptied.
 
 The catalog picker lists **This setting**'s catalogs, then the catalogs of its rules, then the game's own. Pages of another setting or of other rules cannot bind yours. Use a catalog in three places:
 
 - a **Choice** field: picking an entry fills the fields you map its columns to;
 - a table column set to **Choice**: open **Settings** of the column; its columns fill the other columns of the same row only;
 - a list with named entries: **Suggest from catalog** offers entries while the reader types a name, and **Value from** copies a column into the entry: a number column into a number, a rating, or a resource's current value; a text column into a text; a toggle column into a toggle. Typing a name that is not in the catalog still works.
+
+An **Entry of a catalog** column says which entry of another catalog each entry belongs to — a rite to its relic, a power to its discipline: pick the column's catalog under its type, then an entry in each cell. A cell whose entry was deleted keeps its value and is marked.
+
+**Limit by parent** on a catalog choice keeps rows to the parents on the page: name the **Parent list** (a list whose entries follow the parent catalog), the **Detail naming the parent** (the entry column), and, if entries have levels, the **Detail with the level**. The choice then offers only entries of the parents in the list, up to each parent's rating; with no parent in the list it offers everything. A row picked before the rating dropped stays and is marked "above" its parent. The game's own lists of rows (V5 powers) take the same limit in their settings.
 
 Documents remember which entry they picked: renaming the entry renames it on every sheet. Deleting an entry or the whole catalog keeps the picked name on the sheets, and the fields go back to their own list of options. Moving a catalog to a place some pages cannot see is confirmed first and names those pages. The game's own catalogs are listed in the library read-only.

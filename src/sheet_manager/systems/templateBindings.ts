@@ -356,12 +356,6 @@ export interface RowsCatalogParent {
     column: string;
     /** Records naming the parents (rows, or list entries under their `column`). */
     namedBy?: { dataKey: string; column: string };
-    /**
-     * Entries above their parent's value (a power above its discipline's dots, spec 037 D3):
-     * the entry's `entryKey` and the row's `column` hold the level, the `namedBy` record's
-     * `parentValue` the dots. Suggestions above it are hidden; a stored row above it is marked.
-     */
-    limit?: { entryKey: string; column: string; parentValue: string };
 }
 
 /** What an action asks of the sheet while it runs. */

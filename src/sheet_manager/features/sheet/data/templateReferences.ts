@@ -233,6 +233,16 @@ export function validateTemplateReferences(
             });
             return;
         }
+        const parent = field.binding.parent;
+        if (parent && !coordinates.has(parent.list)) {
+            issues.push({
+                code: 'unknown-value',
+                nodeId: field.id,
+                key: parent.list,
+                setting: 'parent',
+                group: 'value',
+            });
+        }
         if (siblingColumns === 'list-entry') return;
         const details = new Set(catalog.fillableDetails.map(({ key }) => key));
         for (const [detailKey, rule] of Object.entries(field.binding.fills)) {

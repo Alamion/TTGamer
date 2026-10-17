@@ -5,6 +5,7 @@ import { CatalogBindingEditor } from '../CatalogBindingEditor';
 import { ToggleRow } from '../LayoutControls';
 import { TrackerSourceSelect, ValueSourceSelect } from '../SourceControls';
 import { FromCatalogSetting } from './FromCatalogSetting';
+import { CatalogParentSetting } from './ParentSetting';
 import { ReferenceKindsControl } from './ReferenceKindsControl';
 import { editor, t } from './shared';
 import type { FieldContext } from './types';
@@ -62,6 +63,18 @@ export function valueSettings({
                         setting={key('multiple')}
                         onChange={(checked) => update({ multiple: checked })}
                     />
+                    {!several && field.binding && (
+                        <CatalogParentSetting
+                            catalogId={field.binding.catalogId}
+                            value={field.binding.parent}
+                            setting={key('parent')}
+                            onChange={(parent) => {
+                                const { parent: _old, ...binding } = field.binding!;
+                                void _old;
+                                update({ binding: parent ? { ...binding, parent } : binding });
+                            }}
+                        />
+                    )}
                     {!several && (
                         <CatalogBindingEditor
                             callbacks={{

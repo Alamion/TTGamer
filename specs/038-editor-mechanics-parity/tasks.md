@@ -121,18 +121,18 @@ Undo (spec US1).
 
 **Check**: user catalogs of parents and children, Limit by parent in a user table (spec US5).
 
-- [ ] T028 [US5] Tests first in `tests/sheet_manager/catalog-parent.test.ts`: `entry` columns parse
+- [x] T028 [US5] Tests first in `tests/sheet_manager/catalog-parent.test.ts`: `entry` columns parse
       and validate, a broken parent link, picks filtered by the parent row's rating, the
       above-parent mark kept, built-in rows with `limitByParent` (from
       `tests/sheet_manager/rows-catalog-limit.test.ts`)
-- [ ] T029 [US5] Column type `entry` (`catalogId`) in `src/sheet_manager/systems/userCatalogs.ts`
+- [x] T029 [US5] Column type `entry` (`catalogId`) in `src/sheet_manager/systems/userCatalogs.ts`
       and the catalog editor (column type choice, entry picker, broken-link mark)
-- [ ] T030 [US5] `binding.parent {list, limit?}` on catalog-bound select columns
+- [x] T030 [US5] `binding.parent {list, limit?}` on catalog-bound select columns
       (`src/sheet_manager/types/template.ts`) and `limitByParent` on rows primitives; move the
       filtering of `decl/rowsCatalog.ts` to read the template's limit
-- [ ] T031 [US5] Editor settings for both in `editor/panels/field/SelectOptions.tsx` and
+- [x] T031 [US5] Editor settings for both in `editor/panels/field/SelectOptions.tsx` and
       `editor/panels/PrimitiveConfig.tsx`; editor tests; storybook story; translations
-- [ ] T032 [US5] Run `yarn verify` and commit the story
+- [x] T032 [US5] Run `yarn verify` and commit the story
 
 ## User Story 6 - The vampire sheet on configurable elements (P1)
 

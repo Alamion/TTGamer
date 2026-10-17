@@ -147,7 +147,6 @@ const disciplinesParent = {
     catalogId: VAMPIRE_CATALOG_IDS.disciplines,
     column: 'discipline',
     namedBy: { dataKey: 'disciplines', column: 'name' },
-    limit: { entryKey: 'level', column: 'level', parentValue: 'value' },
 };
 
 const powersRows: RowsBinding = {

@@ -7,6 +7,7 @@ import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { systemRegistry } from '../../../systems';
+import type { CatalogBindingEntry } from '../../../systems/catalogs';
 import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type { SystemListShape } from '../../../systems/templateBindings';
 import {
@@ -53,7 +54,7 @@ import {
     type FormulaValueResult,
     parseFormula,
 } from './formula';
-import { listRating, ratedEntries } from './listRating';
+import { listRating, ratedEntries, type RatedEntry } from './listRating';
 import { moveTableRow } from './rowOrder';
 
 export type TemplatePageStatus = 'none' | 'ready' | 'missing';
@@ -151,6 +152,8 @@ export interface UseTemplatePageResult {
     ) => void;
     /** Writes by storage coordinate (valueKey); resolves template field ids internally. */
     setValue: (fieldOrKey: string, value: unknown) => void;
+    /** A list's named ratings and catalog (rows limited by a parent list, spec 038). */
+    ratedList: (coordinate: string) => RatedList | undefined;
     /**
      * Rewrites a custom list's entries from their current stored state (spec 016), so entry
      * callbacks stay stable instead of closing over one render's array.
@@ -205,19 +208,39 @@ function ratingOf(
     coordinate: string,
     name: string
 ): number | undefined {
+    const list = ratedListOf(template, values, documentData, coordinate);
+    return list ? listRating(list.entries, name, list.catalog) : undefined;
+}
+
+/** A list's named ratings and its catalog: a template list or a game's built-in list. */
+export interface RatedList {
+    entries: RatedEntry[];
+    catalog: CatalogBindingEntry | undefined;
+}
+
+function ratedListOf(
+    template: CustomTemplate,
+    values: TemplatePageValues,
+    documentData: Readonly<Record<string, unknown>> | undefined,
+    coordinate: string
+): RatedList | undefined {
     const list = collectListNodes(template).find(
         (node) => (node.valueKey ?? node.id) === coordinate && !node.bindingKey
     );
     if (list) {
-        const catalog = list.catalog ? getCatalogBinding(list.catalog.catalogId) : undefined;
-        return listRating(ratedEntries(values[coordinate]), name, catalog);
+        return {
+            entries: ratedEntries(values[coordinate]),
+            catalog: list.catalog ? getCatalogBinding(list.catalog.catalogId) : undefined,
+        };
     }
     const binding = listDocumentBindings(template.systemId, template.documentKind).find(
         (candidate) => candidate.kind === 'list' && candidate.dataKey === coordinate
     );
     if (binding?.kind !== 'list') return undefined;
-    const catalog = binding.catalog ? getCatalogBinding(binding.catalog.catalogId) : undefined;
-    return listRating(ratedEntries(documentData?.[binding.dataKey]), name, catalog);
+    return {
+        entries: ratedEntries(documentData?.[binding.dataKey]),
+        catalog: binding.catalog ? getCatalogBinding(binding.catalog.catalogId) : undefined,
+    };
 }
 
 export interface UseTemplatePageOptions {
@@ -879,10 +902,17 @@ export function useTemplatePage(
         updateTemplateValues,
     ]);
 
+    const ratedList = useCallback(
+        (coordinate: string) =>
+            template ? ratedListOf(template, values, documentData, coordinate) : undefined,
+        [template, values, documentData]
+    );
+
     // One stable object per state, so memoized node views skip unchanged renders.
     return useMemo<UseTemplatePageResult>(
         () => ({
             addRow,
+            ratedList,
             applyWrites,
             isVisible,
             openDocument,
@@ -904,6 +934,7 @@ export function useTemplatePage(
         }),
         [
             addRow,
+            ratedList,
             applyWrites,
             isVisible,
             openDocument,

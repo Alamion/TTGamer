@@ -199,6 +199,8 @@ function rowsGroup(
                     label: title.message,
                     labelMessage: title,
                     hideLabel: true,
+                    // Powers and rituals up to their discipline's dots (spec 037 D3, spec 038).
+                    limitByParent: { entryKey: 'level', column: 'level', parentValue: 'value' },
                 }),
             ],
             { column, labelMessage: title }

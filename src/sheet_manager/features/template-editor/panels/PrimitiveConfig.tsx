@@ -12,6 +12,7 @@ import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
 import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
 import { RowButtonsSetting } from './ButtonSettings';
+import { RowsLimitSetting } from './field/ParentSetting';
 import { ToggleRow } from './LayoutControls';
 import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { ShortFormSettings } from './ShortFormSettings';
@@ -128,6 +129,12 @@ export function primitiveSettings({
                 </SettingField>
             ) : (
                 <ValueSourceSelect node={node} onReplace={onReplace} />
+            )}
+            {descriptor?.kind === 'rows' && descriptor.catalog?.parent && (
+                <RowsLimitSetting
+                    value={node.limitByParent}
+                    onChange={(limitByParent) => update({ limitByParent })}
+                />
             )}
             {descriptor?.kind === 'rows' && (
                 <RowButtonsSetting

@@ -295,6 +295,7 @@ const BUTTON_KEYS: ReadonlySet<string> = new Set([
     'failureText',
     'failureMessage',
     'rowButtons',
+    'limitByParent',
 ]);
 
 export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {

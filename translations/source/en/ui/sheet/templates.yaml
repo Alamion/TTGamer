@@ -72,6 +72,15 @@ editor:
     marksFromEndHint: 'Never on a filled box: Humanity and its stains'
     marksFromEndValue: Value of the marks
     marksFromEndName: Mark name
+    limitByParent: Limit by parent
+    limitByParentHint: "Entries that belong to entries of another list, up to that entry's rating: powers by their discipline"
+    parentList: Parent list (value key)
+    parentVia: Detail naming the parent
+    parentLevel: Detail with the level
+    parentNoLevel: No level (parents only)
+    limitEntryLevel: Entry detail with the level
+    limitRowLevel: Row column with the level
+    limitParentRating: Parent's rating
     visibleWhenKind: Condition
     visibleWhenKindValue: A value matches
     visibleWhenKindFormula: A formula holds

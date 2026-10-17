@@ -10306,7 +10306,12 @@
          "label": "Powers",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.powers",
          "hideLabel": true,
-         "compact": false
+         "compact": false,
+         "limitByParent": {
+          "entryKey": "level",
+          "column": "level",
+          "parentValue": "value"
+         }
         }
        ]
       },
@@ -10330,7 +10335,12 @@
          "label": "Rituals, ceremonies, and formulas",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.rituals",
          "hideLabel": true,
-         "compact": false
+         "compact": false,
+         "limitByParent": {
+          "entryKey": "level",
+          "column": "level",
+          "parentValue": "value"
+         }
         }
        ]
       }

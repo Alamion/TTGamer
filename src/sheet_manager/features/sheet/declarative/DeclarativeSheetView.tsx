@@ -66,6 +66,7 @@ import { ScoreTracker } from './PoolTracker';
 import { PrimitiveNodeView, SystemListView } from './primitives';
 import { SheetButton } from './SheetButton';
 import { ShortLabelScope } from './ShortLabelScope';
+import { aboveParent, offeredByParent, parentRatings } from './tableParent';
 
 const editor = uiMessages.sheet.templates.editor;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -451,6 +452,7 @@ function TableBlock({
     node: Extract<TemplateNode, { type: 'table' }>;
     pageApi: UseTemplatePageResult;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const stored = pageApi.values[tableValueKey(node)];
     const rows =
         typeof stored === 'object' &&
@@ -472,6 +474,15 @@ function TableBlock({
         node.columns.flatMap((column) => {
             const runtime = pageApi.resolveCatalogField(column);
             return runtime ? [[column.id, runtime] as const] : [];
+        })
+    );
+    // Catalog columns under a parent list (spec 038): picks up to each parent's rating.
+    const parents = new Map(
+        node.columns.flatMap((column) => {
+            const parent = column.type === 'select' ? column.binding?.parent : undefined;
+            if (!parent) return [];
+            const list = pageApi.ratedList(parent.list);
+            return [[column.id, { parent, list, ratings: parentRatings(list, locale) }] as const];
         })
     );
     /**
@@ -579,6 +590,18 @@ function TableBlock({
                                 const Control = templateFieldControl(column.type);
                                 const catalog = catalogs.get(column.id);
                                 const picked = row[pickLabelKey(column.id)];
+                                const parent = parents.get(column.id);
+                                const cell = row[column.id];
+                                const above =
+                                    parent && catalog && typeof cell === 'string'
+                                        ? aboveParent(
+                                              catalog.catalogId,
+                                              cell,
+                                              parent.parent,
+                                              parent.list,
+                                              parent.ratings
+                                          )
+                                        : null;
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
                                         <Control
@@ -595,7 +618,15 @@ function TableBlock({
                                             disabled={pageApi.disabled}
                                             {...(catalog
                                                 ? {
-                                                      catalogOptions: catalog.options,
+                                                      catalogOptions: parent
+                                                          ? offeredByParent(
+                                                                catalog.options,
+                                                                catalog.catalogId,
+                                                                parent.parent,
+                                                                parent.list,
+                                                                parent.ratings
+                                                            )
+                                                          : catalog.options,
                                                       ...(typeof picked === 'string'
                                                           ? { pickedLabel: picked }
                                                           : {}),
@@ -609,6 +640,11 @@ function TableBlock({
                                             onOpenDocument={pageApi.openDocument}
                                             previewSource={pageApi.previewSource}
                                         />
+                                        {above && (
+                                            <p className="text-[11px] text-error">
+                                                {translate(rowMessages.aboveParent, above)}
+                                            </p>
+                                        )}
                                     </td>
                                 );
                             })}
