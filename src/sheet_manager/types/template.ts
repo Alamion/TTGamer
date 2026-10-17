@@ -250,38 +250,6 @@ const SelectFieldSchema = z.object({
     binding: CatalogBindingSchema.optional(),
 });
 
-/** Trait-row flags a rating may show, in display order (S, P, E). */
-export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
-
-export type RatingFlag = (typeof RATING_FLAGS)[number];
-
-const RatingFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('rating'),
-    min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
-    // The retired "boxes" style was paler dots; stored templates keep working as dots.
-    presentation: z
-        .preprocess((value) => (value === 'boxes' ? 'dots' : value), z.enum(['dots', 'number']))
-        .default('dots'),
-    /** Free text between the label and the value (for example a specialization). */
-    textInput: z.boolean().optional(),
-    /** "current / maximum" after the value. */
-    showNumbers: z.boolean().optional(),
-    /** Die symbol rolling the value through the document system's trait pool. */
-    dice: z.boolean().optional(),
-    /** Trait-row flags shown on the dot style. */
-    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
-    ...maxFromShape,
-});
-
-const ReferenceFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('reference'),
-    targetKinds: z.array(DocumentKindSchema).min(1).max(20),
-    multiple: z.boolean().default(false),
-});
-
 /** Palette fills a tracker mark may take; they follow the theme. Any other fill is `#rrggbb`. */
 export const TRACKER_PALETTE_FILLS = [
     'secondary',
@@ -334,9 +302,56 @@ export const PoolTrackerOverrideSchema = z.object({
         .optional(),
     legend: z.boolean().default(false),
     total: z.boolean().default(true),
+    /**
+     * Spec 038 D10: a second value marked from the last box backward, never on a filled box
+     * (V5 Humanity and stains). Single values only (ratings, rating-mode built-in values).
+     */
+    marksFromEnd: z
+        .object({
+            coordinate: templateIdentifierSchema,
+            mark: TrackerMarkOverrideSchema.optional(),
+        })
+        .optional(),
 });
 
 export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
+
+/** Trait-row flags a rating may show, in display order (S, P, E). */
+export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
+
+export type RatingFlag = (typeof RATING_FLAGS)[number];
+
+const RatingFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('rating'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
+    // The retired "boxes" style was paler dots; stored templates keep working as dots.
+    presentation: z
+        .preprocess(
+            (value) => (value === 'boxes' ? 'dots' : value),
+            z.enum(['dots', 'number', 'tracker'])
+        )
+        .default('dots'),
+    /** Presentation `tracker` (spec 038): its look, and marks of a second value from the end. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+    /** Free text between the label and the value (for example a specialization). */
+    textInput: z.boolean().optional(),
+    /** "current / maximum" after the value. */
+    showNumbers: z.boolean().optional(),
+    /** Die symbol rolling the value through the document system's trait pool. */
+    dice: z.boolean().optional(),
+    /** Trait-row flags shown on the dot style. */
+    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
+    ...maxFromShape,
+});
+
+const ReferenceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('reference'),
+    targetKinds: z.array(DocumentKindSchema).min(1).max(20),
+    multiple: z.boolean().default(false),
+});
 
 const ResourceFieldSchema = z.object({
     ...fieldBaseShape,

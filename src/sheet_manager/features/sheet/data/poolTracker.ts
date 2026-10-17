@@ -142,3 +142,115 @@ export function poolTrackerModel(input: {
         hidden: 0,
     };
 }
+
+/** A single value drawn as boxes with a second value's marks from the end (spec 038 D10). */
+export interface ScoreState {
+    value: number;
+    marks: number;
+}
+
+const SCORE_MARK_ID = 'score-mark';
+
+/**
+ * A press on box `index` of a score: a fill sets the value (the last filled box lowers it), an
+ * outline marks from the end up to that box or clears marks down to it. `refused` when a mark
+ * would land on a filled box; the value never covers a mark.
+ */
+export function markScore(
+    state: ScoreState,
+    length: number,
+    index: number,
+    layer: TrackerLayer
+): ScoreState | 'refused' {
+    const box = index + 1;
+    if (layer === 'fill') {
+        const wanted = box === state.value ? box - 1 : box;
+        return { value: Math.max(0, Math.min(wanted, length - state.marks)), marks: state.marks };
+    }
+    if (box <= state.value) return 'refused';
+    const firstMarked = length - state.marks + 1;
+    return { value: state.value, marks: box >= firstMarked ? length - box : length - box + 1 };
+}
+
+/** Marks that no longer fit beside a raised value shrink (stains, spec 037 D7). */
+export function fitScore(state: ScoreState, length: number): ScoreState {
+    const value = Math.max(0, Math.min(state.value, length));
+    return { value, marks: Math.max(0, Math.min(state.marks, length - value)) };
+}
+
+export function scoreTrackerModel(input: {
+    label: string;
+    hideLabel: boolean;
+    state: ScoreState;
+    length: number;
+    override: PoolTrackerOverride | undefined;
+}): TrackerModel {
+    const { state, length, override } = input;
+    const text = uiMessages.sheet.tracks.tracker;
+    const current = override?.marks?.current;
+    const mark = override?.marksFromEnd?.mark;
+    const levels = Array.from({ length: Math.max(0, length) }, (_, index) => ({
+        id: `p${index + 1}`,
+        name: String(index + 1),
+        value: '',
+    }));
+    const ids = levels.map(({ id }) => id);
+    const marks = Object.fromEntries(ids.slice(0, state.value).map((id) => [id, CURRENT_MARK_ID]));
+    const outlines = Object.fromEntries(
+        ids.slice(Math.max(0, length - state.marks)).map((id) => [id, SCORE_MARK_ID])
+    );
+    return {
+        label: input.label,
+        hideLabel: input.hideLabel,
+        display: override?.display ?? 'row',
+        marks: [
+            {
+                id: CURRENT_MARK_ID,
+                name: current?.name || input.label,
+                symbol: current?.symbol ?? '',
+                fill: current?.fill ?? 'primary',
+                layer: 'fill',
+            },
+            {
+                id: SCORE_MARK_ID,
+                name: mark?.name || translate(text.scoreMark),
+                symbol: mark?.symbol ?? '╱',
+                fill: mark?.fill ?? 'error',
+                layer: 'outline',
+            },
+        ],
+        levels,
+        valueColumn: { title: '', show: false },
+        columns: [
+            {
+                id: POOL_COLUMN_ID,
+                kind: 'marks',
+                title: '',
+                covered: ids,
+                repeatable: false,
+                canAdd: false,
+                canRemove: false,
+                copies: [
+                    {
+                        id: POOL_COLUMN_ID,
+                        label: '',
+                        marks,
+                        outlines,
+                        texts: {},
+                        out: false,
+                        total:
+                            state.marks > 0
+                                ? `${state.value} · ${state.marks}`
+                                : String(state.value),
+                        hasValues: state.value > 0 || state.marks > 0,
+                    },
+                ],
+            },
+        ],
+        total: override?.total ?? true,
+        legend: override?.legend ?? false,
+        readingLayer: 'fill',
+        hasOutlines: true,
+        hidden: 0,
+    };
+}

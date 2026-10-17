@@ -49,7 +49,6 @@ import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { AreaLayoutContext, forArea } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
-import { ButtonScopeContext } from './ButtonScope';
 import { useCatalogSuggestions } from './catalogSuggestions';
 import {
     OverlayVersionContext,
@@ -62,6 +61,8 @@ import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult }
 import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
+import { PageScopeContext } from './PageScope';
+import { ScoreTracker } from './PoolTracker';
 import { PrimitiveNodeView, SystemListView } from './primitives';
 import { SheetButton } from './SheetButton';
 import { ShortLabelScope } from './ShortLabelScope';
@@ -156,6 +157,10 @@ function FieldCell({
                 )}
             </div>
         );
+    }
+
+    if (field.type === 'rating' && field.presentation === 'tracker') {
+        return <RatingScoreTracker field={field} pageApi={pageApi} value={value} />;
     }
 
     const control = templateFieldControl(field.type);
@@ -273,6 +278,40 @@ function FieldCell({
  * its own control and presentation (multiline, placeholder, hidden label); only the storage is
  * the document instead of the template value bag.
  */
+/** A rating drawn as boxes, with another value's marks from the end (spec 038 D10). */
+function RatingScoreTracker({
+    field,
+    pageApi,
+    value,
+}: {
+    field: Extract<TemplateField, { type: 'rating' }>;
+    pageApi: UseTemplatePageResult;
+    value: unknown;
+}) {
+    const marksKey = field.poolTracker?.marksFromEnd?.coordinate;
+    const marks = marksKey ? pageApi.formulaState.evaluate(marksKey) : undefined;
+    const limit = pageApi.formulaState.maxima.get(field.id)?.resolvedMax;
+    return (
+        <ScoreTracker
+            label={field.label}
+            hideLabel={field.hideLabel ?? false}
+            state={{
+                value: typeof value === 'number' ? value : field.min,
+                marks: marks?.ok && typeof marks.value === 'number' ? marks.value : 0,
+            }}
+            length={Math.min(limit ?? field.max, field.max)}
+            override={field.poolTracker ?? { display: 'row', legend: false, total: true }}
+            disabled={pageApi.disabled}
+            onChange={(next) =>
+                pageApi.applyWrites([
+                    { target: fieldValueKey(field), value: Math.max(field.min, next.value) },
+                    ...(marksKey ? [{ target: marksKey, value: next.marks }] : []),
+                ])
+            }
+        />
+    );
+}
+
 /** A From catalog text shown, never stored (spec 038 D9, mode `show`). */
 function CatalogTextOutput({ field, text }: { field: TemplateField; text: string | undefined }) {
     return field.compact ? (
@@ -969,7 +1008,7 @@ export function DeclarativeSheetView({
     );
     const values = pageApi.values;
     const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
-    const buttonScope = useMemo(() => ({ pageApi, template: localized }), [pageApi, localized]);
+    const pageScope = useMemo(() => ({ pageApi, template: localized }), [pageApi, localized]);
 
     return (
         <div
@@ -986,9 +1025,9 @@ export function DeclarativeSheetView({
         >
             <TermHintProvider>
                 <OverlayVersionContext.Provider value={version}>
-                    <ButtonScopeContext.Provider value={buttonScope}>
+                    <PageScopeContext.Provider value={pageScope}>
                         <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
-                    </ButtonScopeContext.Provider>
+                    </PageScopeContext.Provider>
                 </OverlayVersionContext.Provider>
             </TermHintProvider>
         </div>

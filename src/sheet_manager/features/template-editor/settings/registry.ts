@@ -95,6 +95,8 @@ export const SETTINGS = {
     availableWhen: { group: 'visibility', label: editor.buttonAvailableWhen },
     rowButtons: { group: 'value', label: editor.rowButtons },
     fromCatalog: { group: 'value', label: editor.fromCatalog },
+    marksFromEnd: { group: 'look', label: editor.marksFromEnd },
+    poolTracker: { group: 'look', label: editor.displayTracker },
     // Value
     valueKey: { group: 'value', label: editor.valueKey, identity: true },
     bindingKey: { group: 'value', identity: true },

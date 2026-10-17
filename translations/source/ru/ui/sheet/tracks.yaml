@@ -14,6 +14,9 @@ tracker:
     lockedTitle: '{level} — нельзя опустить ниже {n}'
     poolPoint: Очко
     poolMaximum: Максимум
+    scoreMark: Отметка
+    scoreMarkRefused: '{mark} ставится на пустую клетку: сначала уменьшите значение.'
+    scoreSummary: '{name}: {value} из {length}, отмечено {marks}'
     brushOn: 'Отмечать клетки: {mark}'
     brushOff: 'Перестать отмечать: {mark}'
     brushStatus: 'Отмечаем «{mark}»: щелчок ставит отметку на клетку или снимает её. Щёлкните ещё раз или нажмите Escape, чтобы закончить.'

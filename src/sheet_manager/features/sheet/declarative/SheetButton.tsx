@@ -10,11 +10,11 @@ import { useDocumentRollSource } from '../../../hooks/useDocumentSource';
 import type { CustomTemplate, RowButton } from '../../../types/template';
 import { listTemplateFormulaCoordinates } from '../data/templateReferences';
 import { useBoundDocument } from './boundDocument';
-import { ButtonScopeContext } from './ButtonScope';
 import { buttonTarget, readNumber } from './buttonTargets';
 import type { FormulaEvaluationError, FormulaValue } from './formula';
 import { formulaErrorMessage } from './formulaMessages';
 import type { FormulaRun, UseTemplatePageResult } from './hooks';
+import { PageScopeContext } from './PageScope';
 import { type ButtonRunResult, runButton } from './runButton';
 
 const messages = uiMessages.sheet.documents.button;
@@ -53,7 +53,7 @@ export function SheetButton(props: {
     row?: Readonly<Record<string, unknown>>;
     rowName?: string;
 }) {
-    const scope = useContext(ButtonScopeContext);
+    const scope = useContext(PageScopeContext);
     return scope ? <ScopedButton {...props} {...scope} /> : null;
 }
 

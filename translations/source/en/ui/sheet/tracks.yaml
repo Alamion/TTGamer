@@ -14,6 +14,9 @@ tracker:
     lockedTitle: '{level} — cannot go below {n}'
     poolPoint: Point
     poolMaximum: Maximum
+    scoreMark: Mark
+    scoreMarkRefused: '{mark} goes on an empty box: lower the value first.'
+    scoreSummary: '{name}: {value} of {length}, {marks} marked'
     brushOn: 'Mark boxes with {mark}'
     brushOff: 'Stop marking with {mark}'
     brushStatus: 'Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop.'

@@ -361,7 +361,7 @@ describe('editor layout and presentation controls', () => {
         expect(find('max-fp')?.maxMinFrom).toBeUndefined();
     });
 
-    it('offers the tracker display only on pool resources', () => {
+    it('offers the tracker display on single-value resources too (spec 038)', () => {
         render(
             createElement(TemplateEditorDialog, {
                 base: {
@@ -384,6 +384,6 @@ describe('editor layout and presentation controls', () => {
                 onClose: () => {},
             })
         );
-        expect(within(panel('dark')).queryByRole('group', { name: 'Display' })).toBeNull();
+        expect(within(panel('dark')).queryByRole('group', { name: 'Display' })).not.toBeNull();
     });
 });

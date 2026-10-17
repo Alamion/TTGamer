@@ -146,7 +146,7 @@ describe('rating settings (spec 014)', () => {
         selectInOutline('luck');
         const panel = settings('luck');
         const style = within(panel).getByLabelText('Presentation') as HTMLSelectElement;
-        expect([...style.options].map(({ value }) => value)).toEqual(['dots', 'number']);
+        expect([...style.options].map(({ value }) => value)).toEqual(['dots', 'number', 'tracker']);
 
         fireEvent.click(within(panel).getByLabelText('Text input (for example a specialization)'));
         fireEvent.click(within(panel).getByLabelText('Show current / maximum'));

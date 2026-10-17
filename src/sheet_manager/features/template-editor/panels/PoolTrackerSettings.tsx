@@ -9,6 +9,7 @@ import {
     type PoolTrackerOverride,
     TEMPLATE_LIMITS,
 } from '../../../types/template';
+import { useEditorModel } from '../session/EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { MarkColorPicker } from './tracker/MarkColorPicker';
 
@@ -37,10 +38,14 @@ type PoolMarkKey = 'current' | 'max';
 export function PoolTrackerSettings({
     value,
     onChange,
+    single = false,
 }: {
     value: PoolTrackerOverride;
     onChange: (next: PoolTrackerOverride) => void;
+    /** A single value (a rating): no maximum mark; marks of a second value from the end. */
+    single?: boolean;
 }) {
+    const { coordinateListId } = useEditorModel();
     const setMark = (key: PoolMarkKey, patch: Record<string, string | undefined>) => {
         const mark = { ...value.marks?.[key], ...patch };
         for (const field of Object.keys(mark) as (keyof typeof mark)[]) {
@@ -122,9 +127,70 @@ export function PoolTrackerSettings({
             </div>
             <div className="grid gap-2">
                 {markRow('current')}
-                {markRow('max')}
-                <p className="text-[11px] text-textSecondary">{t(editor.poolLayerFixed)}</p>
+                {!single && markRow('max')}
+                {!single && (
+                    <p className="text-[11px] text-textSecondary">{t(editor.poolLayerFixed)}</p>
+                )}
             </div>
+            {single && (
+                <div className="grid gap-2">
+                    <ToggleRow
+                        checked={value.marksFromEnd !== undefined}
+                        label={t(editor.marksFromEnd)}
+                        hint={t(editor.marksFromEndHint)}
+                        setting="marksFromEnd"
+                        onChange={(checked) =>
+                            onChange({
+                                ...value,
+                                marksFromEnd: checked ? { coordinate: 'marks' } : undefined,
+                            })
+                        }
+                    />
+                    {value.marksFromEnd && (
+                        <div className="grid gap-1 pl-5">
+                            <label className="grid gap-1 text-xs font-semibold text-textPrimary">
+                                {t(editor.marksFromEndValue)}
+                                <input
+                                    value={value.marksFromEnd.coordinate}
+                                    list={coordinateListId}
+                                    spellCheck={false}
+                                    onChange={(event) =>
+                                        onChange({
+                                            ...value,
+                                            marksFromEnd: {
+                                                ...value.marksFromEnd!,
+                                                coordinate: event.target.value,
+                                            },
+                                        })
+                                    }
+                                    className={`${inputClasses} font-mono font-normal`}
+                                />
+                            </label>
+                            <label className="grid gap-1 text-xs font-semibold text-textPrimary">
+                                {t(editor.marksFromEndName)}
+                                <input
+                                    value={value.marksFromEnd.mark?.name ?? ''}
+                                    placeholder={t(tracks.scoreMark)}
+                                    maxLength={TEMPLATE_LIMITS.trackerNameMax}
+                                    onChange={(event) =>
+                                        onChange({
+                                            ...value,
+                                            marksFromEnd: {
+                                                ...value.marksFromEnd!,
+                                                mark: {
+                                                    ...value.marksFromEnd!.mark,
+                                                    name: event.target.value || undefined,
+                                                },
+                                            },
+                                        })
+                                    }
+                                    className={`${inputClasses} font-normal`}
+                                />
+                            </label>
+                        </div>
+                    )}
+                </div>
+            )}
             <ToggleRow
                 checked={value.legend}
                 hint={t(text.legendHint)}

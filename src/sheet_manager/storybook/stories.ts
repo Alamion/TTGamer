@@ -361,6 +361,16 @@ const fields = story(
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
                 {
+                    id: 'rating-tracker',
+                    type: 'rating',
+                    label: 'Rating as a tracker, marks from the end',
+                    max: 10,
+                    presentation: 'tracker',
+                    poolTracker: {
+                        marksFromEnd: { coordinate: 'number-plain', mark: { name: 'Stain' } },
+                    },
+                },
+                {
                     id: 'resource-tracker',
                     type: 'resource',
                     label: 'Resource as a tracker (minimum 1)',
@@ -468,7 +478,7 @@ const fields = story(
         },
     ],
     // The formulas and computed maxima read these; the error examples stay errors on purpose.
-    { 'number-plain': 4, 'rating-dots': 3, 'rating-number': 2 }
+    { 'number-plain': 4, 'rating-dots': 3, 'rating-number': 2, 'rating-tracker': 5 }
 );
 
 const catalogFields = story(

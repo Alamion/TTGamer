@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
@@ -61,7 +61,8 @@ import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { ActionButton } from './ActionButton';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
-import { PoolTracker } from './PoolTracker';
+import { PageScopeContext } from './PageScope';
+import { PoolTracker, ScoreTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
 import { moveItem } from './rowOrder';
 import { EnumField, RowsBody } from './RowsBody';
@@ -690,6 +691,7 @@ function PrimitiveResourceBody({
     maxState?: PrimitiveMaxState;
 }) {
     const bound = useBoundDocument();
+    const scope = useContext(PageScopeContext);
     const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
@@ -742,6 +744,34 @@ function PrimitiveResourceBody({
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
             : Math.min(maxState.resolvedMax, descriptor.maximum);
+    if (node.poolTracker && descriptor.mode === 'rating' && scope) {
+        // A single value as boxes, with a second value's marks from the end (spec 038 D10).
+        const marksKey = node.poolTracker.marksFromEnd?.coordinate;
+        const read = (coordinate: string) => {
+            const result = scope.pageApi.formulaState.evaluate(coordinate);
+            return result.ok && typeof result.value === 'number' ? result.value : 0;
+        };
+        const stored = bound.data[descriptor.dataKey];
+        return (
+            <ScoreTracker
+                label={label}
+                hideLabel={node.hideLabel ?? false}
+                state={{
+                    value: typeof stored === 'number' ? stored : 0,
+                    marks: marksKey ? read(marksKey) : 0,
+                }}
+                length={Math.max(0, effectiveMax)}
+                override={node.poolTracker}
+                disabled={readOnly}
+                onChange={(next) =>
+                    scope.pageApi.applyWrites([
+                        { target: descriptor.coordinate, value: next.value },
+                        ...(marksKey ? [{ target: marksKey, value: next.marks }] : []),
+                    ])
+                }
+            />
+        );
+    }
     const stored = bound.data[descriptor.dataKey];
     const pair =
         descriptor.mode === 'rating'

@@ -68,6 +68,10 @@ editor:
     fromCatalogMode: Shows
     fromCatalogModeSuggest: A suggestion until the reader writes their own
     fromCatalogModeShow: The text only (readers cannot type)
+    marksFromEnd: Marks of another value from the end
+    marksFromEndHint: 'Never on a filled box: Humanity and its stains'
+    marksFromEndValue: Value of the marks
+    marksFromEndName: Mark name
     visibleWhenKind: Condition
     visibleWhenKindValue: A value matches
     visibleWhenKindFormula: A formula holds

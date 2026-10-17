@@ -47,26 +47,32 @@ export function primitiveSettings({
     const update = (updates: NodeUpdates) => onUpdate(node.id, updates);
     const resource = descriptor?.kind === 'resource';
     const pool = resource && descriptor.mode === 'pool';
-    const asTracker = pool && node.poolTracker !== undefined;
+    // A rating-mode value (V5 Humanity) draws as boxes too, with marks from the end (spec 038).
+    const single = resource && descriptor.mode === 'rating';
+    const asTracker = (pool || single) && node.poolTracker !== undefined;
     // A dots node editing the maximum keeps its minimum on the maximum as a tracker, and back.
     const setDisplay = (tracker: boolean) =>
-        update(
-            tracker
-                ? {
-                      poolTracker: { display: 'row', legend: false, total: true },
-                      part: undefined,
-                      ...(node.part === 'max' && node.minFrom
-                          ? { maxMinFrom: node.minFrom, minFrom: undefined }
-                          : {}),
-                  }
-                : {
-                      poolTracker: undefined,
-                      maxMinFrom: undefined,
-                      ...(node.maxMinFrom && !node.minFrom
-                          ? { minFrom: node.maxMinFrom, part: 'max' as const }
-                          : {}),
-                  }
-        );
+        single
+            ? update({
+                  poolTracker: tracker ? { display: 'row', legend: false, total: true } : undefined,
+              })
+            : update(
+                  tracker
+                      ? {
+                            poolTracker: { display: 'row', legend: false, total: true },
+                            part: undefined,
+                            ...(node.part === 'max' && node.minFrom
+                                ? { maxMinFrom: node.minFrom, minFrom: undefined }
+                                : {}),
+                        }
+                      : {
+                            poolTracker: undefined,
+                            maxMinFrom: undefined,
+                            ...(node.maxMinFrom && !node.minFrom
+                                ? { minFrom: node.maxMinFrom, part: 'max' as const }
+                                : {}),
+                        }
+              );
     const bindingLabel = descriptor ? editor.trackerSource : primitives.binding;
 
     const content = (
@@ -179,7 +185,7 @@ export function primitiveSettings({
 
     const look = (
         <>
-            {pool && (
+            {(pool || single) && (
                 <div
                     role="group"
                     aria-label={t(editor.primitiveDisplay)}
@@ -232,6 +238,7 @@ export function primitiveSettings({
             {asTracker && node.poolTracker && (
                 <div data-setting-list="" data-setting="tracker" tabIndex={-1}>
                     <PoolTrackerSettings
+                        single={single}
                         value={node.poolTracker}
                         onChange={(poolTracker) => update({ poolTracker })}
                     />

@@ -1,8 +1,9 @@
-import type { TemplateField } from '../../../../types/template';
+import { TEMPLATE_LIMITS, type TemplateField } from '../../../../types/template';
 import { inputClasses } from '../../settings/inputClasses';
 import { settingLabel } from '../../settings/registry';
 import { SettingField } from '../../settings/SettingField';
 import { ToggleRow } from '../LayoutControls';
+import { PoolTrackerSettings } from '../PoolTrackerSettings';
 import { TrackerSettings } from '../TrackerSettings';
 import { RatingSwitches } from './RatingSwitches';
 import { ResourceDisplay } from './ResourceDisplay';
@@ -23,18 +24,40 @@ export function lookSettings({ field, prefix, several, key, isTraitSource, updat
                             <select
                                 {...control}
                                 value={field.presentation}
-                                onChange={(event) =>
+                                onChange={(event) => {
+                                    const presentation = event.target
+                                        .value as typeof field.presentation;
                                     update({
-                                        presentation: event.target.value as 'dots' | 'number',
-                                    })
-                                }
+                                        presentation,
+                                        poolTracker:
+                                            presentation === 'tracker'
+                                                ? (field.poolTracker ?? {
+                                                      display: 'row',
+                                                      legend: false,
+                                                      total: true,
+                                                  })
+                                                : undefined,
+                                    });
+                                }}
                                 className={inputClasses}
                             >
                                 <option value="dots">{t(editor.ratingDots)}</option>
                                 <option value="number">{t(editor.ratingNumber)}</option>
+                                {!several && field.max <= TEMPLATE_LIMITS.trackerLevelsMax && (
+                                    <option value="tracker">{t(editor.displayTracker)}</option>
+                                )}
                             </select>
                         )}
                     </SettingField>
+                    {field.presentation === 'tracker' && field.poolTracker && (
+                        <div data-setting-list="" data-setting={key('tracker')} tabIndex={-1}>
+                            <PoolTrackerSettings
+                                single
+                                value={field.poolTracker}
+                                onChange={(poolTracker) => update({ poolTracker })}
+                            />
+                        </div>
+                    )}
                     <RatingSwitches
                         field={field}
                         onUpdate={update}

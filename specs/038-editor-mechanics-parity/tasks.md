@@ -102,20 +102,20 @@ Undo (spec US1).
 
 **Check**: a 10-box tracker with marks from the end, set by mouse and keyboard (spec US4).
 
-- [ ] T023 [US4] Tests first in `tests/sheet_manager/pool-tracker-marks-from-end.test.tsx` (moving
+- [x] T023 [US4] Tests first in `tests/sheet_manager/pool-tracker-marks-from-end.test.tsx` (moving
       `tests/sheet_manager/score-track.test.tsx` cases): fills from the start, marks from the end,
       refusal with a message on a filled box, right click / Shift+Enter / long press, arrows,
       accessible description, marks shrink when the value rises
-- [ ] T024 [US4] Schema: `marksFromEnd {coordinate, mark?}` on `PoolTrackerOverrideSchema`; rating
+- [x] T024 [US4] Schema: `marksFromEnd {coordinate, mark?}` on `PoolTrackerOverrideSchema`; rating
       presentation `tracker` with `poolTracker` (`src/sheet_manager/types/template.ts`)
-- [ ] T025 [US4] Single-value mode and marks from the end in
+- [x] T025 [US4] Single-value mode and marks from the end in
       `src/sheet_manager/features/sheet/data/poolTracker.ts` and `decl/PoolTracker.tsx`; use it for
       rating fields (`decl/fieldControls.tsx`) and rating-mode resource primitives
       (`decl/primitives.tsx`); clamp the marks on write
-- [ ] T026 [US4] Editor: Display "Tracker" for ratings and rating-mode built-in resources and the
+- [x] T026 [US4] Editor: Display "Tracker" for ratings and rating-mode built-in resources and the
       "Marks from the end" setting in `editor/panels/PrimitiveConfig.tsx` and
       `editor/panels/field/LookSettings.tsx`; editor tests
-- [ ] T027 [US4] Storybook story and translations; run `yarn verify` and commit the story
+- [x] T027 [US4] Storybook story and translations; run `yarn verify` and commit the story
 
 ## User Story 5 - Rows limited by their parent row (P3)
 

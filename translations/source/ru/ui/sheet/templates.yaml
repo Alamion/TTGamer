@@ -68,6 +68,10 @@ editor:
     fromCatalogMode: Показывает
     fromCatalogModeSuggest: Подсказку, пока читатель не напишет своё
     fromCatalogModeShow: Только текст (вписать нельзя)
+    marksFromEnd: Отметки другого значения с конца
+    marksFromEndHint: 'Никогда на заполненной клетке: Человечность и пятна'
+    marksFromEndValue: Значение отметок
+    marksFromEndName: Название отметки
     visibleWhenKind: Условие
     visibleWhenKindValue: Значение совпадает
     visibleWhenKindFormula: Формула выполняется

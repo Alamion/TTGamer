@@ -494,7 +494,8 @@ function RatingFieldControlRender({
             hideLabel={field.hideLabel}
             labelPosition={fieldLabelPosition(field)}
             required={field.required}
-            presentation={field.presentation}
+            // A tracker look is drawn by the page (it writes two values); here it reads as dots.
+            presentation={field.presentation === 'tracker' ? 'dots' : field.presentation}
             value={current}
             clampedFrom={stored !== undefined && stored > effectiveMax ? stored : undefined}
             min={field.min}
