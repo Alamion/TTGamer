@@ -5,7 +5,13 @@
         "target": "es2023",
         "lib": ["ES2023", "DOM", "DOM.Iterable"],
         "module": "esnext",
-        "types": ["node"],
+        // The README screenshots import example documents from src/ (T-119).
+        "paths": {
+            "@site/*": ["./*"]
+        },
+        "types": ["@docusaurus/module-type-aliases", "node"],
+        "jsx": "react-jsx",
+        "esModuleInterop": true,
         "skipLibCheck": true,
         "strict": true,
 

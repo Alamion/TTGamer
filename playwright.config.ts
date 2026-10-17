@@ -19,6 +19,16 @@ export default defineConfig({
         { name: 'smoke', testDir: 'tests-e2e/smoke', use: { ...devices['Desktop Chrome'] } },
         // Reported against their budgets, never asserted (spec 026, D7).
         { name: 'timings', testDir: 'tests-e2e/timings', use: { ...devices['Desktop Chrome'] } },
+        // Only for `yarn readme:screenshots`: it rewrites the README images (T-119).
+        ...(process.env.README_SHOTS
+            ? [
+                  {
+                      name: 'readme',
+                      testDir: 'tests-e2e/readme',
+                      use: { colorScheme: 'dark' as const },
+                  },
+              ]
+            : []),
     ],
     webServer: {
         command: IMAGE
