@@ -41,9 +41,10 @@ Tasks are grouped by **area** (logical dependency) and ordered by priority withi
 
 ## UI
 
-| #   | Status | Task                                            | Description                                                                                                                                              | Priority |
-| --- | ------ | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 8   | ⬜     | **Multi-system dice pool tabs**                 | Tracked as root T-015. Add tabs for D&D, Pathfinder, Cthulhu with favorites after renderer session ownership and orchestrator tests (#4–5)               | Low      |
-| 9   | ✅     | **RollHistory body click for favorites/recent** | Clicking a Favorites or Recent entry puts its notation into the input (same as the set-notation button); chat entries still expand.                      | Low      |
-| 10  | ⬜     | **Touch alternatives for secondary actions**    | Add visible or long-press-safe alternatives for right-click reroll/anonymize actions without removing desktop shortcuts                                  | Medium   |
-| 11  | ✅     | **InlineRoll transition contract**              | Prop changes cancel transitions and reset unless `preroll` recalculates; animation duration, rapid changes, and unmount cleanup have fake-timer coverage | Medium   |
+| #   | Status | Task                                            | Description                                                                                                                                                   | Priority |
+| --- | ------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 8   | ⬜     | **Multi-system dice pool tabs**                 | Tracked as root T-015. Add tabs for D&D, Pathfinder, Cthulhu with favorites after renderer session ownership and orchestrator tests (#4–5)                    | Low      |
+| 9   | ✅     | **RollHistory body click for favorites/recent** | Clicking a Favorites or Recent entry puts its notation into the input (same as the set-notation button); chat entries still expand.                           | Low      |
+| 10  | ⬜     | **Touch alternatives for secondary actions**    | Add visible or long-press-safe alternatives for right-click reroll/anonymize actions without removing desktop shortcuts                                       | Medium   |
+| 11  | ✅     | **InlineRoll transition contract**              | Prop changes cancel transitions and reset unless `preroll` recalculates; animation duration, rapid changes, and unmount cleanup have fake-timer coverage      | Medium   |
+| 18  | ⬜     | **Dice roll patterns from the library**         | Tracked as root T-122. GM-defined house roll patterns (e.g. V5 `d10!>=6f=1`) stored in the library and used by sheet rolls instead of the system default pool | Medium   |
