@@ -81,17 +81,17 @@ leaves the next copy unchanged.
 **Check**: at 360 px create a Hunter named "Ana" with the keyboard, then by touch, with no sideways
 scrolling.
 
-- [ ] T017 [US4] Extend `tests/sheet_manager/document-create-dialog.test.tsx`: arrows move the
+- [x] T017 [US4] Extend `tests/sheet_manager/document-create-dialog.test.tsx`: arrows move the
       active option, `Enter` → name → create, `Escape` clears then closes, a single match is chosen,
       the live count, the two steps with **Back** below 640 px, a chosen user type deleted while
       open (choice cleared, **Create** disabled), and five keystrokes at 50 kinds (SC-001)
-- [ ] T018 [US4] Implement keyboard flow, the polite live region, the single-match choice, clearing
+- [x] T018 [US4] Implement keyboard flow, the polite live region, the single-match choice, clearing
       a deleted choice, and the phone steps (full screen, sticky search and **Create**, 32 px touch
       rows) in `DocumentCreateDialog.tsx` (D3, D4)
-- [ ] T019 [US4] Add a smoke test `tests-e2e/smoke/create-dialog.spec.ts`: at 360 px create a named
+- [x] T019 [US4] Add a smoke test `tests-e2e/smoke/create-dialog.spec.ts`: at 360 px create a named
       vampire from Mirela by keyboard; no element wider than the window, kind rows at least 32 px
       tall (SC-004)
-- [ ] T020 [US4] Run `yarn verify` and the smoke test, commit the story
+- [x] T020 [US4] Run `yarn verify` and the smoke test, commit the story
 
 ## User Story 5 - Create buttons in the documentation (P3)
 

@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
-import { ChevronDown, ChevronRight, Folder, Search } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Folder, Search } from 'lucide-react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
@@ -163,9 +163,27 @@ function CreateDialogContent({
         setPreferences((current) => ({ ...current, folded: next }));
     };
 
+    // Below 640 px the dialog shows the kinds, then the chosen kind's details (D4).
+    const [step, setStep] = useState<'kinds' | 'details'>('kinds');
+    // Focus moves after the step's pane is shown (a hidden field cannot take it).
+    const focusNextRef = useRef<'name' | 'search' | undefined>(undefined);
+    useEffect(() => {
+        const target = focusNextRef.current;
+        if (!target) return;
+        focusNextRef.current = undefined;
+        if (target === 'name') nameRef.current?.focus();
+        else document.getElementById(`${idBase}-search`)?.focus();
+    });
+
     const choose = (choice: CreateChoice, then?: 'focus-details') => {
         setSelectedKey(choice.key);
-        if (then) nameRef.current?.focus();
+        setStep('details');
+        if (then) focusNextRef.current = 'name';
+    };
+
+    const back = () => {
+        setStep('kinds');
+        focusNextRef.current = 'search';
     };
 
     const changeQuery = (next: string) => {
@@ -244,7 +262,7 @@ function CreateDialogContent({
                 event.preventDefault();
                 changeQuery('');
             }}
-            className="fixed left-1/2 top-1/2 z-[9999] flex h-[min(36rem,calc(100dvh-2rem))] w-[min(52rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface p-4 shadow-xl focus:outline-hidden sm:p-6"
+            className="fixed inset-0 z-[9999] flex flex-col bg-bgSurface p-4 focus:outline-hidden sm:inset-auto sm:left-1/2 sm:top-1/2 sm:h-[min(36rem,calc(100dvh-2rem))] sm:w-[min(52rem,calc(100%-2rem))] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-lg sm:border sm:border-border sm:p-6 sm:shadow-xl"
         >
             <Dialog.Title className="text-lg font-semibold text-textPrimary">
                 {translate(labels.title)}
@@ -253,7 +271,13 @@ function CreateDialogContent({
                 {translate(labels.prompt)}
             </Dialog.Description>
             <div className="mt-4 grid min-h-0 flex-1 gap-4 sm:grid-cols-[minmax(16rem,1fr)_20rem]">
-                <div className="flex min-h-0 flex-col gap-2">
+                <div
+                    data-step="kinds"
+                    className={clsx(
+                        'min-h-0 flex-col gap-2',
+                        step === 'kinds' ? 'flex' : 'hidden sm:flex'
+                    )}
+                >
                     <div className="relative">
                         <Search
                             className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-textSecondary"
@@ -345,8 +369,20 @@ function CreateDialogContent({
                 </div>
                 <section
                     aria-label={translate(labels.details)}
-                    className="flex min-h-0 flex-col gap-3 overflow-y-auto"
+                    data-step="details"
+                    className={clsx(
+                        'min-h-0 flex-col gap-3 overflow-y-auto',
+                        step === 'details' ? 'flex' : 'hidden sm:flex'
+                    )}
                 >
+                    <button
+                        type="button"
+                        onClick={back}
+                        className="flex min-h-8 items-center gap-1 self-start rounded-sm px-1 text-sm text-textSecondary hover:bg-bgBase sm:hidden"
+                    >
+                        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                        {translate(labels.back)}
+                    </button>
                     {selected ? (
                         <div>
                             <h3 className="m-0 text-base font-semibold text-textPrimary">
@@ -418,7 +454,7 @@ function CreateDialogContent({
                             </span>
                         </button>
                     </div>
-                    <div className="mt-auto flex justify-end gap-2">
+                    <div className="sticky bottom-0 mt-auto flex justify-end gap-2 bg-bgSurface pt-2">
                         <Dialog.Close asChild>
                             <button
                                 type="button"

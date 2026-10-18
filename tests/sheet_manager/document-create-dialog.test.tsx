@@ -2,7 +2,7 @@
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
 import { CREATE_DIALOG_STORAGE_KEY } from '@site/src/sheet_manager/features/documents/createChoices';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -207,5 +207,84 @@ describe('starting from an example (spec 039, US3)', () => {
         fireEvent.click(screen.getByRole('radio', { name: 'Mirela Voss (example)' }));
         type('hunter');
         expect(screen.getByRole('radio', { name: 'Blank' })).toHaveProperty('checked', true);
+    });
+});
+
+describe('keyboard and phone (spec 039, US4)', () => {
+    it('walks the visible kinds with the arrows and creates with Enter, Enter', () => {
+        open();
+        fireEvent.keyDown(search(), { key: 'ArrowDown' });
+        fireEvent.keyDown(search(), { key: 'ArrowDown' });
+        const active = search().getAttribute('aria-activedescendant')!;
+        expect(document.getElementById(active)?.getAttribute('data-kind')).toBe(kinds()[1]);
+        fireEvent.keyDown(search(), { key: 'ArrowUp' });
+        fireEvent.keyDown(search(), { key: 'ArrowUp' });
+        // Up from the first row wraps to the last.
+        expect(
+            document.getElementById(search().getAttribute('aria-activedescendant')!)?.textContent
+        ).toMatch(/^Habitat|^Ledger/);
+        fireEvent.keyDown(search(), { key: 'ArrowDown' });
+        fireEvent.keyDown(search(), { key: 'Enter' });
+        expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Name' }));
+        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
+        expect(useDocumentStore.getState().entries[0]!.definitionId).toBe('wod2e-character');
+    });
+
+    it('clears the search with the first Escape and closes with the second', () => {
+        const onOpenChange = vi.fn();
+        open({ onOpenChange });
+        type('vamp');
+        fireEvent.keyDown(search(), { key: 'Escape' });
+        expect((search() as HTMLInputElement).value).toBe('');
+        expect(onOpenChange).not.toHaveBeenCalled();
+        fireEvent.keyDown(search(), { key: 'Escape' });
+        expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+
+    it('announces the number of matching kinds', () => {
+        open();
+        const live = document.querySelector('[aria-live="polite"]')!;
+        expect(live.textContent).toBe('');
+        type('habitat');
+        expect(live.textContent).toBe('2 kinds');
+        type('vamp');
+        expect(live.textContent).toBe('1 kind');
+    });
+
+    it('creates a kind with a unique three-letter prefix in five keystrokes at 50 kinds (SC-001)', () => {
+        resetUserKinds();
+        seedUserKinds(40);
+        open();
+        expect(kinds()).toHaveLength(50);
+        type('v');
+        type('va');
+        type('vam');
+        fireEvent.keyDown(search(), { key: 'Enter' });
+        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
+        expect(useDocumentStore.getState().entries[0]!.definitionId).toBe('vampire');
+    });
+
+    it('clears a chosen user type deleted while the dialog is open', () => {
+        open();
+        fireEvent.click(screen.getByRole('option', { name: /Ledger 3/ }));
+        expect(screen.getByRole('heading', { name: 'Ledger 3' })).toBeTruthy();
+        act(() => resetUserKinds());
+        expect(screen.queryByRole('option', { name: /Ledger 3/ })).toBeNull();
+        expect(screen.getByText('Choose a kind of document first.')).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Create' })).toHaveProperty('disabled', true);
+    });
+
+    it('shows the kinds, then the details with a way back, as two steps on a phone', () => {
+        open();
+        const kindsStep = () => document.querySelector('[data-step="kinds"]')!;
+        const detailsStep = () => document.querySelector('[data-step="details"]')!;
+        expect(kindsStep().className).toMatch(/(^| )flex( |$)/);
+        expect(detailsStep().className).toMatch(/(^| )hidden( |$)/);
+        fireEvent.click(document.querySelector('[data-kind="wod-v5/hunter"]')!);
+        expect(kindsStep().className).toMatch(/(^| )hidden( |$)/);
+        expect(detailsStep().className).toMatch(/(^| )flex( |$)/);
+        fireEvent.click(screen.getByRole('button', { name: 'Back to kinds' }));
+        expect(kindsStep().className).toMatch(/(^| )flex( |$)/);
+        expect(document.activeElement).toBe(search());
     });
 });
