@@ -221,9 +221,6 @@ describe('the simple-foe roll (spec 040, US2)', () => {
             seed({ ...RUIZ, difficulty: 3 }, 'v5-storyteller-brief');
             render(createElement(CharacterSheet));
             expect(button().disabled).toBe(false);
-            expect(screen.getByText('Pool (2 × Difficulty)').parentElement!.textContent).toMatch(
-                /6$/
-            );
         },
         RENDER_TIMEOUT
     );

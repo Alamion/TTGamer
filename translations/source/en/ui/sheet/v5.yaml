@@ -104,7 +104,6 @@ storyteller:
         physical: Physical
         social: Social
         mental: Mental
-        foePool: Pool (2 × Difficulty)
     kinds:
         mortal: Mortal
         ghoul: Ghoul
@@ -112,7 +111,7 @@ storyteller:
         supernatural: Supernatural
         other: Other
     sections:
-        allPools: Dice pools
+        allPools: Pools and condition
         pools: Standard dice pools
         exceptional: Exceptional dice pools
         powers: Disciplines and powers

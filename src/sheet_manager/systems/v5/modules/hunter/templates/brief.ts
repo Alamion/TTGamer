@@ -3,7 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { dense, group } from '../../../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../../../types/template';
-import { memberOfGroup } from '../../../core/group';
+import { memberOfBriefGroup } from '../../../core/group';
 import {
     compactTraitsGroup,
     equipmentGroup,
@@ -47,6 +47,6 @@ export const hunterBriefTemplate: CustomTemplate = {
         compactTraitsGroup('skills', { collapsible: true }),
         dense(hunterEdgesGroup()),
         dense(equipmentGroup('weapons'), { collapsed: true }),
-        memberOfGroup(true),
+        memberOfBriefGroup(),
     ],
 };

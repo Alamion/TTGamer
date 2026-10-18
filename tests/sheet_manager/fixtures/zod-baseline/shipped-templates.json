@@ -8124,6 +8124,21 @@
          "label": "Track Willpower",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
          "compact": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -8971,39 +8986,6 @@
        ]
       }
      ]
-    },
-    {
-     "id": "member-of-section",
-     "type": "section",
-     "title": "Member of",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "children": [
-      {
-       "id": "member-of",
-       "type": "group",
-       "title": "Member of",
-       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-       "hideTitle": true,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "member-of-field",
-         "label": "Member of",
-         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-         "hideLabel": true,
-         "required": false,
-         "valueKey": "member-of",
-         "compact": false,
-         "type": "reference",
-         "targetKinds": [
-          "v5-group"
-         ],
-         "multiple": true,
-         "incoming": true
-        }
-       ]
-      }
-     ]
     }
    ]
   }
@@ -9721,6 +9703,21 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -10841,39 +10838,6 @@
        ]
       }
      ]
-    },
-    {
-     "id": "member-of-section",
-     "type": "section",
-     "title": "Member of",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "children": [
-      {
-       "id": "member-of",
-       "type": "group",
-       "title": "Member of",
-       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-       "hideTitle": true,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "member-of-field",
-         "label": "Member of",
-         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-         "hideLabel": true,
-         "required": false,
-         "valueKey": "member-of",
-         "compact": false,
-         "type": "reference",
-         "targetKinds": [
-          "v5-group"
-         ],
-         "multiple": true,
-         "incoming": true
-        }
-       ]
-      }
-     ]
     }
    ]
   }
@@ -11589,6 +11553,20 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -12283,39 +12261,6 @@
        ]
       }
      ]
-    },
-    {
-     "id": "member-of-section",
-     "type": "section",
-     "title": "Member of",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "children": [
-      {
-       "id": "member-of",
-       "type": "group",
-       "title": "Member of",
-       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-       "hideTitle": true,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "member-of-field",
-         "label": "Member of",
-         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-         "hideLabel": true,
-         "required": false,
-         "valueKey": "member-of",
-         "compact": false,
-         "type": "reference",
-         "targetKinds": [
-          "v5-group"
-         ],
-         "multiple": true,
-         "incoming": true
-        }
-       ]
-      }
-     ]
     }
    ]
   }
@@ -12821,6 +12766,7 @@
      "type": "section",
      "title": "Storyteller character",
      "labelMessage": "ttgamer.ui.sheet.v5.storyteller.section",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters",
      "columns": 2,
      "columnWidths": [
       1,
@@ -12855,6 +12801,7 @@
        "column": 2,
        "hideTitle": true,
        "collapsible": false,
+       "columns": 2,
        "children": [
         {
          "id": "name-field",
@@ -12878,161 +12825,13 @@
          "id": "concept-field",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+         "span": 2,
          "required": false,
          "valueKey": "concept",
          "compact": false,
          "type": "text",
          "multiline": false
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "id": "pools-section",
-     "type": "section",
-     "title": "Dice pools",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.allPools",
-     "columns": 2,
-     "children": [
-      {
-       "id": "pools",
-       "type": "group",
-       "title": "Standard dice pools",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
-       "span": 2,
-       "collapsible": false,
-       "columns": 3,
-       "children": [
-        {
-         "id": "pool-physical",
-         "type": "primitive",
-         "bindingKey": "trait:pools:physical",
-         "label": "Physical",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
-         "column": 1,
-         "compact": false
         },
-        {
-         "id": "pool-social",
-         "type": "primitive",
-         "bindingKey": "trait:pools:social",
-         "label": "Social",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
-         "column": 2,
-         "compact": false
-        },
-        {
-         "id": "pool-mental",
-         "type": "primitive",
-         "bindingKey": "trait:pools:mental",
-         "label": "Mental",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
-         "column": 3,
-         "compact": false
-        }
-       ]
-      },
-      {
-       "id": "exceptional",
-       "type": "group",
-       "title": "Exceptional dice pools",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "exceptional-list",
-         "type": "list",
-         "title": "Exceptional dice pools",
-         "bindingKey": "list:exceptional",
-         "columns": 1
-        }
-       ]
-      },
-      {
-       "id": "powers",
-       "type": "group",
-       "title": "Disciplines and powers",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "powers-list",
-         "type": "list",
-         "title": "Disciplines and powers",
-         "bindingKey": "list:powers",
-         "columns": 1
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "id": "condition",
-     "type": "section",
-     "title": "Condition",
-     "labelMessage": "ttgamer.ui.sheet.v5.sections.condition",
-     "docsPath": "/docs/wod-v5/rules/damage-willpower",
-     "columns": 2,
-     "children": [
-      {
-       "id": "health",
-       "type": "group",
-       "title": "Health",
-       "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
-       "column": 1,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "health-track",
-         "type": "primitive",
-         "bindingKey": "track:health",
-         "label": "Health",
-         "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
-         "hideLabel": true,
-         "compact": false
-        }
-       ]
-      },
-      {
-       "id": "willpower",
-       "type": "group",
-       "title": "Willpower",
-       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
-       "column": 2,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "willpower-track",
-         "type": "primitive",
-         "bindingKey": "track:willpower",
-         "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
-         "hideLabel": true,
-         "compact": false
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "id": "simple-foe-section",
-     "type": "section",
-     "title": "Simple foe",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
-     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#simple-foes",
-     "children": [
-      {
-       "id": "simple-foe",
-       "type": "group",
-       "title": "Simple foe",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
-       "hideTitle": true,
-       "collapsible": false,
-       "columns": 3,
-       "children": [
         {
          "id": "difficulty",
          "type": "primitive",
@@ -13040,15 +12839,6 @@
          "label": "Difficulty",
          "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
          "compact": false
-        },
-        {
-         "id": "foe-pool",
-         "label": "Pool (2 × Difficulty)",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.foePool",
-         "required": false,
-         "compact": false,
-         "type": "formula",
-         "formula": "difficulty * 2"
         },
         {
          "id": "simple-foe-roll",
@@ -13065,23 +12855,122 @@
          "onFailure": [],
          "always": [],
          "type": "button"
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       }
      ]
     },
     {
-     "id": "notes-section",
+     "id": "pools-section",
      "type": "section",
-     "title": "Special notes",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
+     "title": "Pools and condition",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.allPools",
+     "columns": 3,
      "children": [
+      {
+       "id": "pools",
+       "type": "group",
+       "title": "Standard dice pools",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "pool-physical",
+         "type": "primitive",
+         "bindingKey": "trait:pools:physical",
+         "label": "Physical",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
+         "compact": false
+        },
+        {
+         "id": "pool-social",
+         "type": "primitive",
+         "bindingKey": "trait:pools:social",
+         "label": "Social",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
+         "compact": false
+        },
+        {
+         "id": "pool-mental",
+         "type": "primitive",
+         "bindingKey": "trait:pools:mental",
+         "label": "Mental",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
+         "compact": false
+        },
+        {
+         "id": "health-track",
+         "type": "primitive",
+         "bindingKey": "track:health",
+         "label": "Health",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+         "compact": false
+        },
+        {
+         "id": "willpower-track",
+         "type": "primitive",
+         "bindingKey": "track:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "exceptional",
+       "type": "group",
+       "title": "Exceptional dice pools",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "exceptional-list",
+         "type": "list",
+         "title": "Exceptional dice pools",
+         "bindingKey": "list:exceptional",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "powers",
+       "type": "group",
+       "title": "Disciplines and powers",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "powers-list",
+         "type": "list",
+         "title": "Disciplines and powers",
+         "bindingKey": "list:powers",
+         "columns": 1
+        }
+       ]
+      },
       {
        "id": "notes",
        "type": "group",
        "title": "Special notes",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
-       "collapsible": false,
+       "span": 3,
+       "collapsible": true,
        "children": [
         {
          "id": "notes-field",
@@ -13093,39 +12982,6 @@
          "compact": false,
          "type": "text",
          "multiline": true
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "id": "member-of-section",
-     "type": "section",
-     "title": "Member of",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "children": [
-      {
-       "id": "member-of",
-       "type": "group",
-       "title": "Member of",
-       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-       "hideTitle": true,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "member-of-field",
-         "label": "Member of",
-         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-         "hideLabel": true,
-         "required": false,
-         "valueKey": "member-of",
-         "compact": false,
-         "type": "reference",
-         "targetKinds": [
-          "v5-group"
-         ],
-         "multiple": true,
-         "incoming": true
         }
        ]
       }
@@ -13201,7 +13057,6 @@
      "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 3,
      "children": [
       {
        "id": "pool-physical",
@@ -13291,15 +13146,6 @@
        "label": "Difficulty",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
        "compact": true
-      },
-      {
-       "id": "foe-pool",
-       "label": "Pool (2 × Difficulty)",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.foePool",
-       "required": false,
-       "compact": true,
-       "type": "formula",
-       "formula": "difficulty * 2"
       },
       {
        "id": "simple-foe-roll",
@@ -13413,7 +13259,6 @@
        "type": "group",
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
-       "column": 1,
        "collapsible": true,
        "children": [
         {
@@ -13433,7 +13278,6 @@
        "type": "group",
        "title": "Identity",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
-       "column": 2,
        "hideTitle": true,
        "collapsible": false,
        "children": [
@@ -13470,21 +13314,14 @@
          "presentation": "dots"
         }
        ]
-      }
-     ]
-    },
-    {
-     "id": "members-section",
-     "type": "section",
-     "title": "Members",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
-     "children": [
+      },
       {
        "id": "members",
        "type": "group",
        "title": "Members",
-       "hideTitle": true,
-       "collapsible": false,
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+       "span": 2,
+       "collapsible": true,
        "children": [
         {
          "id": "members-field",
@@ -13505,28 +13342,20 @@
          "multiple": true
         }
        ]
-      }
-     ]
-    },
-    {
-     "id": "about",
-     "type": "section",
-     "title": "Description",
-     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
-     "children": [
+      },
       {
        "id": "about-group",
        "type": "group",
        "title": "Description",
-       "hideTitle": true,
-       "collapsible": false,
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
+       "span": 2,
+       "collapsible": true,
        "columns": 2,
        "children": [
         {
          "id": "group-about-field",
          "label": "Description",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
-         "column": 1,
          "required": false,
          "valueKey": "group-about",
          "compact": false,
@@ -13537,7 +13366,6 @@
          "id": "group-goals-field",
          "label": "Goals",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
-         "column": 2,
          "required": false,
          "valueKey": "group-goals",
          "compact": false,
@@ -13548,7 +13376,6 @@
          "id": "group-resources-field",
          "label": "Resources and holdings",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
-         "column": 1,
          "required": false,
          "valueKey": "group-resources",
          "compact": false,
@@ -13559,7 +13386,6 @@
          "id": "group-notes-field",
          "label": "Notes",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.notes",
-         "column": 2,
          "required": false,
          "valueKey": "group-notes",
          "compact": false,
@@ -13590,13 +13416,11 @@
      "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 2,
      "children": [
       {
        "id": "name-field",
        "label": "Name",
        "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
-       "column": 1,
        "required": false,
        "valueKey": "name",
        "compact": true,
@@ -13607,7 +13431,6 @@
        "id": "group-kind-field",
        "label": "Kind of group",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
-       "column": 2,
        "required": false,
        "valueKey": "group-kind",
        "compact": true,
@@ -13618,7 +13441,6 @@
        "id": "threat-field",
        "label": "Threat",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
-       "column": 1,
        "required": false,
        "valueKey": "threat",
        "compact": true,

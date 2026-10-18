@@ -11,7 +11,6 @@ import {
 import {
     type CustomTemplate,
     type GroupNode,
-    type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
     type TemplateField,
     type TemplateNode,
@@ -89,20 +88,20 @@ const identity = (compact = false) =>
     group(
         'identity',
         v5.sections.identity.message,
-        compact
-            ? [
-                  // Placed in columns: five dots in a row of flowing cells shrink to nothing.
-                  v5Text('name', 'name', v5.fields.name, { compact, column: 1 }),
-                  field('group-kind', labels.fields.kind, { compact, column: 2 }),
-                  { ...THREAT, compact, column: 1 },
-              ]
-            : [
-                  v5Text('name', 'name', v5.fields.name),
-                  field('group-kind', labels.fields.kind),
-                  THREAT,
-              ],
-        { hideTitle: true, labelMessage: v5.sections.identity, ...(compact ? { columns: 2 } : {}) }
+        [
+            v5Text('name', 'name', v5.fields.name, { compact }),
+            field('group-kind', labels.fields.kind, { compact }),
+            { ...THREAT, compact },
+        ],
+        { hideTitle: true, labelMessage: v5.sections.identity }
     );
+
+/** The portrait card placed by the section's flow (its own helper places it in column 1). */
+function flowingPortrait(): GroupNode {
+    const portrait = portraitGroup(1);
+    delete portrait.column;
+    return portrait;
+}
 
 /** A brief's folded block of one long text. */
 const foldedText = (id: string, label: { id: string; message: string }) =>
@@ -129,42 +128,41 @@ function page(id: string, name: string, children: TemplateNode[]): CustomTemplat
     };
 }
 
+/**
+ * One section (a group has few fields): the portrait beside the identity card, then the members
+ * and the description, which fold (the list grows, the texts are rarely needed in play).
+ */
 export const v5GroupSheetTemplate = page('v5-group-sheet', 'Group — Full sheet', [
     section(
         'group',
         labels.section.message,
         undefined,
-        [portraitGroup(1), { ...identity(), column: 2 }],
-        { columns: 2, columnWidths: [1, 2], labelMessage: labels.section }
-    ),
-    section(
-        'members-section',
-        labels.fields.members.message,
-        undefined,
-        [group('members', labels.fields.members.message, [members()], { hideTitle: true })],
-        { labelMessage: labels.fields.members }
-    ),
-    section(
-        'about',
-        labels.fields.about.message,
-        undefined,
         [
-            group(
-                'about-group',
-                labels.fields.about.message,
-                [
-                    field('group-about', labels.fields.about, { multiline: true, column: 1 }),
-                    field('group-goals', labels.fields.goals, { multiline: true, column: 2 }),
-                    field('group-resources', labels.fields.resources, {
-                        multiline: true,
-                        column: 1,
-                    }),
-                    field('group-notes', labels.fields.notes, { multiline: true, column: 2 }),
-                ],
-                { columns: 2, hideTitle: true }
-            ),
+            flowingPortrait(),
+            identity(),
+            {
+                ...group('members', labels.fields.members.message, [members()], {
+                    labelMessage: labels.fields.members,
+                    collapsible: true,
+                }),
+                span: 2,
+            },
+            {
+                ...group(
+                    'about-group',
+                    labels.fields.about.message,
+                    [
+                        field('group-about', labels.fields.about, { multiline: true }),
+                        field('group-goals', labels.fields.goals, { multiline: true }),
+                        field('group-resources', labels.fields.resources, { multiline: true }),
+                        field('group-notes', labels.fields.notes, { multiline: true }),
+                    ],
+                    { columns: 2, collapsible: true, labelMessage: labels.fields.about }
+                ),
+                span: 2,
+            },
         ],
-        { labelMessage: labels.fields.about }
+        { columns: 2, columnWidths: [1, 2], labelMessage: labels.section }
     ),
 ]);
 
@@ -217,20 +215,12 @@ export function memberOfField(compact = false): TemplateField {
     } as TemplateField;
 }
 
-/** The "Member of" block every V5 character page ends with; a brief folds it under a heading. */
-export function memberOfGroup(compact = false): GroupNode {
-    // The heading of the brief's group or of the sheet's section names the list.
-    const listField = { ...memberOfField(compact), hideLabel: true };
-    const block = group('member-of', labels.memberOf.message, [listField], {
-        labelMessage: labels.memberOf,
-        hideTitle: !compact,
-    });
-    return compact ? dense(block, { collapsed: true }) : block;
-}
-
-/** The full sheet's "Member of" section. */
-export function memberOfSection(): SectionNode {
-    return section('member-of-section', labels.memberOf.message, undefined, [memberOfGroup()], {
-        labelMessage: labels.memberOf,
-    });
+/** A V5 character brief's "Member of", folded under its heading (the heading names the list). */
+export function memberOfBriefGroup(): GroupNode {
+    return dense(
+        group('member-of', labels.memberOf.message, [{ ...memberOfField(true), hideLabel: true }], {
+            labelMessage: labels.memberOf,
+        }),
+        { collapsed: true }
+    );
 }

@@ -9,7 +9,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
-import { memberOfSection } from '../../../core/group';
+import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -70,6 +70,7 @@ export function vampireIdentityGroup(options: { compact?: boolean; column?: numb
                 : [
                       v5Text('sire', 'sire', vampire.fields.sire),
                       v5Text('chronicle', 'chronicle', vampire.fields.chronicle),
+                      { ...memberOfField(), span: 2 },
                   ]),
         ],
         {
@@ -282,6 +283,5 @@ export const vampireSheetTemplate: CustomTemplate = {
         advantagesSection(),
         equipmentSection(),
         otherSection(),
-        memberOfSection(),
     ],
 };

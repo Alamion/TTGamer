@@ -199,3 +199,12 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
   "Brief look"): tight list rows in brief groups, compact text and enum fields in the caption look,
   compact reference lists, a die beside a pool's short chip, and a one-line number look of
   `StatDot`.
+- **Second review (composition)**: the maintainer's rule for full sheets (sections of five or more
+  fields → cards of three or more → fields; collapsible only for parts that grow without bound or
+  that play rarely needs) is now in the `sheet-templates` skill. The Storyteller sheet is two
+  sections (the character: portrait and an identity card with the Difficulty, its roll, and "Member
+  of"; pools and condition: standard pools with Health and Willpower, exceptional pools, powers,
+  notes), the group sheet one; "Member of" moved into the identity card of every V5 full sheet, the
+  simple foe's pool field was dropped (the button names the roll). A compact rating among a brief's
+  flowing cells had no width of its own (`.term-row` is an inline-size container) and now takes at
+  least 12rem. The brief block as its own element is T-125.

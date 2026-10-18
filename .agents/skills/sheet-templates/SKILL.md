@@ -144,6 +144,21 @@ mode used inside brief views (for trackers it reads as the `line` display). A br
 `layout: 'area'` on its groups (columns from the sheet area's width, no box) and `shortForm` on
 ratings (a short label; the full name stays the input's name); see `src/sheet_manager/AGENTS.md`.
 
+**Composition of shipped pages** (the maintainer's rule for every character sheet):
+
+- A full sheet is **sections → cards → fields**. A section is a large part with at least five
+  fields; a card (a `group` with its own surface) is a subsection with at least three fields; fields
+  sit in cards, not loose in a section. A part too small for a section joins a card of a section
+  that fits it (for example "Member of" in the identity card). The shared portrait card is the one
+  allowed smaller card.
+- A brief has no sections and no cards: its brief groups (`dense()`) are plain separators between
+  clearly different kinds of fields (attributes apart from skills), not a group per field.
+- Collapsible (`collapsible`, on a brief `dense(..., { collapsed: true })`) only for parts that grow
+  without bound (inventory, member and power lists) or that play rarely needs (biography, long
+  descriptions and notes). Everything used every scene stays open.
+- Planned: the brief group becomes its own element type, offered only on brief pages (backlog
+  T-125); until then it is a group with `layout: 'area'`.
+
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`); lists,
 rows, and field suggestions reference it by catalog id.

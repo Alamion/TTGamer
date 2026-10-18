@@ -8,7 +8,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
-import { memberOfSection } from '../../../core/group';
+import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -56,6 +56,7 @@ export function hunterIdentityGroup(options: { compact?: boolean; column?: numbe
             v5Text('creed', 'creed', hunter.fields.creed, { compact }),
             v5Text('drive', 'drive', hunter.fields.drive, { compact }),
             trackResourcesToggle(hunter.fields.trackResources, compact),
+            ...(compact ? [] : [{ ...memberOfField(), span: 2 }]),
         ],
         {
             ...(options.column ? { column: options.column } : {}),
@@ -237,6 +238,5 @@ export const hunterSheetTemplate: CustomTemplate = {
         { ...advantagesSection(), docsPath: HUNTER_DOCS.advantages },
         { ...equipmentSection(), docsPath: HUNTER_DOCS.equipment },
         otherSection(),
-        memberOfSection(),
     ],
 };

@@ -104,7 +104,6 @@ storyteller:
         physical: Физический
         social: Социальный
         mental: Ментальный
-        foePool: Пул (2 × Сложность)
     kinds:
         mortal: Смертный
         ghoul: Гуль
@@ -112,7 +111,7 @@ storyteller:
         supernatural: Сверхъестественное
         other: Другое
     sections:
-        allPools: Пулы
+        allPools: Пулы и состояние
         pools: Стандартные пулы
         exceptional: Особые пулы
         powers: Дисциплины и силы

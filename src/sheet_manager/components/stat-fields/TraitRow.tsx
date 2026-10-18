@@ -259,8 +259,8 @@ export function CustomTraitList({
 }: CustomTraitListProps) {
     const movable = onMove !== undefined && !compact && !disabled && items.length > 1;
     const nameClasses = clsx(
-        'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors',
-        compact ? 'min-w-0 py-0' : 'py-0.5'
+        'min-w-0 flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors',
+        compact ? 'py-0' : 'py-0.5'
     );
     return (
         <div

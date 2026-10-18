@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { dense, formula, group, list, primitive, section } from '../../../templates/builders';
+import { dense, group, list, primitive, section } from '../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type ButtonNode,
@@ -9,7 +9,7 @@ import {
     type TemplateNode,
 } from '../../../types/template';
 import { portraitGroup, trackGroup, V5_DOCS, v5Text } from '../ruleset/templateParts';
-import { memberOfGroup, memberOfSection } from './group';
+import { memberOfBriefGroup, memberOfField } from './group';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
 /**
@@ -57,12 +57,6 @@ const nameAndType = (compact = false) => [
 const concept = (compact = false) =>
     v5Text('concept', 'concept', storyteller.fields.concept, { compact });
 
-const identity = () =>
-    group('identity', v5.sections.identity.message, [...nameAndType(), concept()], {
-        hideTitle: true,
-        labelMessage: v5.sections.identity,
-    });
-
 /** The brief's identity: name and type share a row, the concept takes the next one whole. */
 const briefIdentity = () => [
     dense(
@@ -79,50 +73,44 @@ const briefIdentity = () => [
     ),
 ];
 
-/** The Difficulty, the pool it gives (twice the Difficulty), and the roll of that pool. */
-const simpleFoe = (compact = false) =>
+/** The brief's simple foe: the Difficulty and the roll of twice it (the button says so). */
+const simpleFoe = () =>
     group(
         'simple-foe',
         storyteller.sections.simpleFoe.message,
         [
-            bound('difficulty', 'field:difficulty', storyteller.fields.difficulty, { compact }),
-            formula('foe-pool', storyteller.fields.foePool.message, 'difficulty * 2', {
-                labelMessage: storyteller.fields.foePool,
-                compact,
+            bound('difficulty', 'field:difficulty', storyteller.fields.difficulty, {
+                compact: true,
             }),
             simpleFoeButton(),
         ],
-        {
-            labelMessage: storyteller.sections.simpleFoe,
-            hideTitle: !compact,
-            ...(compact ? {} : { columns: 3 }),
-        }
+        { labelMessage: storyteller.sections.simpleFoe }
     );
 
-/** Physical, Social, Mental: rows with their names on a sheet, short chips in a brief. */
-const pools = (compact = false) =>
+/** The brief's Physical, Social, and Mental: short chips with their dice. */
+const briefPools = () =>
     group(
         'pools',
         storyteller.sections.pools.message,
-        (['physical', 'social', 'mental'] as const).map((key, index) =>
+        (['physical', 'social', 'mental'] as const).map((key) =>
             bound(`pool-${key}`, `trait:pools:${key}`, storyteller.fields[key], {
-                compact,
-                shortForm: compact,
-                ...(compact ? {} : { column: index + 1 }),
+                compact: true,
+                shortForm: true,
             })
         ),
-        { labelMessage: storyteller.sections.pools, hideTitle: compact, columns: 3 }
+        { labelMessage: storyteller.sections.pools, hideTitle: true }
     );
 
-const traitList = (id: 'exceptional' | 'powers', column?: number) =>
+/** A list that grows with the character: its card folds on the full sheet. */
+const traitList = (id: 'exceptional' | 'powers', collapsible = false) =>
     group(
         id,
         storyteller.sections[id].message,
         [list(`${id}-list`, { bindingKey: `list:${id}` }, storyteller.sections[id].message)],
-        { labelMessage: storyteller.sections[id], ...(column ? { column } : {}) }
+        { labelMessage: storyteller.sections[id], collapsible }
     );
 
-const notes = () =>
+const notes = (options: { collapsible?: boolean } = {}) =>
     group(
         'notes',
         storyteller.sections.notes.message,
@@ -132,10 +120,49 @@ const notes = () =>
                 hideLabel: true,
             }),
         ],
-        { labelMessage: storyteller.sections.notes }
+        { labelMessage: storyteller.sections.notes, ...options }
     );
 
-const SIMPLE_FOE_DOCS = '/docs/wod-v5/storyteller/storyteller-characters#simple-foes';
+const STORYTELLER_DOCS = '/docs/wod-v5/storyteller/storyteller-characters';
+
+const trackRow = (id: 'health' | 'willpower') =>
+    primitive(`${id}-track`, `track:${id}`, {
+        label: v5.sections[id].message,
+        labelMessage: v5.sections[id],
+    });
+
+/**
+ * The full sheet's identity card: name and type, the concept, the simple foe's Difficulty with
+ * its roll, and the groups the character belongs to.
+ */
+const identityCard = () =>
+    group(
+        'identity',
+        v5.sections.identity.message,
+        [
+            ...nameAndType(),
+            { ...concept(), span: 2 },
+            bound('difficulty', 'field:difficulty', storyteller.fields.difficulty),
+            simpleFoeButton(),
+            { ...memberOfField(), span: 2 },
+        ],
+        { hideTitle: true, labelMessage: v5.sections.identity, columns: 2, column: 2 }
+    );
+
+/** The standard pools card holds the whole stat block of the rules: pools, Health, Willpower. */
+const standardCard = () =>
+    group(
+        'pools',
+        storyteller.sections.pools.message,
+        [
+            ...(['physical', 'social', 'mental'] as const).map((key) =>
+                bound(`pool-${key}`, `trait:pools:${key}`, storyteller.fields[key])
+            ),
+            trackRow('health'),
+            trackRow('willpower'),
+        ],
+        { labelMessage: storyteller.sections.pools, docsPath: V5_DOCS.damage }
+    );
 
 function page(id: string, name: string, children: TemplateNode[]): CustomTemplate {
     return {
@@ -155,35 +182,22 @@ export const v5StorytellerSheetTemplate = page(
         section(
             'storyteller',
             storyteller.section.message,
-            undefined,
-            [portraitGroup(1), { ...identity(), column: 2 }],
+            STORYTELLER_DOCS,
+            [portraitGroup(1), identityCard()],
             { columns: 2, columnWidths: [1, 2], labelMessage: storyteller.section }
         ),
         section(
             'pools-section',
             storyteller.sections.allPools.message,
             undefined,
-            [{ ...pools(), span: 2 }, traitList('exceptional'), traitList('powers')],
-            { columns: 2, labelMessage: storyteller.sections.allPools }
+            [
+                standardCard(),
+                traitList('exceptional', true),
+                traitList('powers', true),
+                { ...notes({ collapsible: true }), span: 3 },
+            ],
+            { columns: 3, labelMessage: storyteller.sections.allPools }
         ),
-        section(
-            'condition',
-            v5.sections.condition.message,
-            V5_DOCS.damage,
-            [trackGroup('health', { column: 1 }), trackGroup('willpower', { column: 2 })],
-            { columns: 2, labelMessage: v5.sections.condition }
-        ),
-        section(
-            'simple-foe-section',
-            storyteller.sections.simpleFoe.message,
-            SIMPLE_FOE_DOCS,
-            [simpleFoe()],
-            { labelMessage: storyteller.sections.simpleFoe }
-        ),
-        section('notes-section', storyteller.sections.notes.message, undefined, [notes()], {
-            labelMessage: storyteller.sections.notes,
-        }),
-        memberOfSection(),
     ]
 );
 
@@ -192,7 +206,7 @@ export const v5StorytellerBriefTemplate = page(
     'Storyteller character — Brief',
     [
         ...briefIdentity(),
-        dense(pools(true)),
+        dense(briefPools()),
         dense(
             group(
                 'condition',
@@ -205,9 +219,9 @@ export const v5StorytellerBriefTemplate = page(
             )
         ),
         dense(traitList('exceptional')),
-        dense(simpleFoe(true)),
+        dense(simpleFoe()),
         dense(traitList('powers'), { collapsed: true }),
         dense(notes(), { collapsed: true }),
-        memberOfGroup(true),
+        memberOfBriefGroup(),
     ]
 );

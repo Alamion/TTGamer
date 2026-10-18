@@ -270,7 +270,14 @@ function FieldCell({
     // Ratings are trait rows (spec 014); trackers draw their own label beside their controls.
     if (field.type === 'rating' || field.type === 'tracker') {
         return (
-            <div className="grid grid-cols-1 gap-1">
+            // A rating row is an inline-size container with no width of its own: among a brief's
+            // flowing cells it gets one, or its dots narrow into pills.
+            <div
+                className={clsx(
+                    'grid grid-cols-1 gap-1',
+                    field.compact && 'min-w-48 flex-1 basis-48'
+                )}
+            >
                 {controlElement}
                 {field.description && (
                     <span className="text-xs text-textSecondary">{field.description}</span>
