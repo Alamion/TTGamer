@@ -9,6 +9,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
+import { memberOfSection } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -276,5 +277,6 @@ export const vampireSheetTemplate: CustomTemplate = {
         advantagesSection(),
         equipmentSection(),
         otherSection(),
+        memberOfSection(),
     ],
 };

@@ -61,32 +61,32 @@ open its brief beside a vampire at 400 px with no sideways scrolling.
 **Check**: group "Church of the Red Dawn" with two Storyteller characters and a vampire; each
 member's brief lists the church; following a link opens the member.
 
-- [ ] T013 [US3] Extend `tests/sheet_manager/reference-scope.test.ts`: a ruleset-level V5 page
+- [x] T013 [US3] Extend `tests/sheet_manager/reference-scope.test.ts`: a ruleset-level V5 page
       offers mortal, storyteller, group, hunter, and vampire; Hunter and Vampire pages and user
       settings keep today's targets
-- [ ] T014 [US3] Change `scopedKinds` in `src/sheet_manager/features/sheet/data/referenceScope.ts`
+- [x] T014 [US3] Change `scopedKinds` in `src/sheet_manager/features/sheet/data/referenceScope.ts`
       so a ruleset-level page (no module, no user setting) offers every kind of the ruleset (D6)
-- [ ] T015 [US3] Write `tests/sheet_manager/linked-from.test.ts`: documents of the given kinds found
+- [x] T015 [US3] Write `tests/sheet_manager/linked-from.test.ts`: documents of the given kinds found
       through index entries and loaded by id, same system and setting only, a link under a renamed
       key still found, bound of 200 with `linked-from-truncated`; and
       `tests/sheet_manager/linked-from.perf.test.ts`: 50 groups, 30 members, under 200 ms (SC-004)
-- [ ] T016 [US3] Implement `src/sheet_manager/features/documents/linkedFrom.ts` and the report code
+- [x] T016 [US3] Implement `src/sheet_manager/features/documents/linkedFrom.ts` and the report code
       in `src/sheet_manager/diagnostics.ts` (D7)
-- [ ] T017 [US3] Add `V5GroupSchema`, `v5GroupDefinition` (kind and id `v5-group`, in
+- [x] T017 [US3] Add `V5GroupSchema`, `v5GroupDefinition` (kind and id `v5-group`, in
       `coreDefinitions`), and its full page and brief (kind of group, description, goals, resources,
       threat 1–5, notes, `members` reference field over every V5 kind, the group itself left out of
       its choices) in `src/sheet_manager/systems/v5/core/group.ts` and `core/templates.ts` (D1, D6)
-- [ ] T018 [US3] Add `incoming` to `ReferenceFieldSchema` in `src/sheet_manager/types/template.ts`,
+- [x] T018 [US3] Add `incoming` to `ReferenceFieldSchema` in `src/sheet_manager/types/template.ts`,
       render it read-only through `linkedFrom` in
       `src/sheet_manager/features/sheet/declarative/fieldControls.tsx`, offer it in the reference
       field's editor settings, add a storybook variant in
       `docs/dev/storybook/template-elements.mdx`, and place a "Member of" incoming field (target
       `v5-group`) on the Storyteller, mortal, hunter, and vampire briefs and full pages (D7)
-- [ ] T019 [US3] Write `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds, the
+- [x] T019 [US3] Write `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds, the
       group not offered as its own member, a deleted member shows as gone and is removable, two
       groups listed on one member, a group inside a group, an incoming reference field built in the
       template editor works; add the group brief at 400 px to the brief smoke test
-- [ ] T020 [US3] Run `yarn verify` and commit the story
+- [x] T020 [US3] Run `yarn verify` and commit the story
 
 ## User Story 4 - Vampires and hunters met as antagonists (P2)
 

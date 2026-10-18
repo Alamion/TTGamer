@@ -8959,6 +8959,38 @@
        ]
       }
      ]
+    },
+    {
+     "id": "member-of-section",
+     "type": "section",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "children": [
+      {
+       "id": "member-of",
+       "type": "group",
+       "title": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
+        }
+       ]
+      }
+     ]
     }
    ]
   }
@@ -9507,6 +9539,31 @@
        "type": "primitive",
        "bindingKey": "equipment:weapons",
        "compact": false
+      }
+     ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
       }
      ]
     }
@@ -10738,6 +10795,38 @@
        ]
       }
      ]
+    },
+    {
+     "id": "member-of-section",
+     "type": "section",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "children": [
+      {
+       "id": "member-of",
+       "type": "group",
+       "title": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
+        }
+       ]
+      }
+     ]
     }
    ]
   }
@@ -11343,6 +11432,31 @@
        "type": "primitive",
        "bindingKey": "equipment:weapons",
        "compact": false
+      }
+     ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
       }
      ]
     }
@@ -12101,6 +12215,38 @@
        ]
       }
      ]
+    },
+    {
+     "id": "member-of-section",
+     "type": "section",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "children": [
+      {
+       "id": "member-of",
+       "type": "group",
+       "title": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
+        }
+       ]
+      }
+     ]
     }
    ]
   }
@@ -12562,6 +12708,31 @@
        "compact": false
       }
      ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
     }
    ]
   }
@@ -12849,6 +13020,38 @@
        ]
       }
      ]
+    },
+    {
+     "id": "member-of-section",
+     "type": "section",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "children": [
+      {
+       "id": "member-of",
+       "type": "group",
+       "title": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
+        }
+       ]
+      }
+     ]
     }
    ]
   }
@@ -13055,6 +13258,320 @@
        "hideLabel": true,
        "required": false,
        "valueKey": "notes",
+       "compact": false,
+       "type": "text",
+       "multiline": true
+      }
+     ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-group-sheet": {
+  "ok": true,
+  "data": {
+   "id": "v5-group-sheet",
+   "name": "Group — Full sheet",
+   "systemId": "wod-v5",
+   "documentKind": "v5-group",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "group",
+     "type": "section",
+     "title": "Group",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.section",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "portrait",
+       "type": "group",
+       "title": "Portrait",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+       "column": 1,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "portrait-image",
+         "label": "Portrait",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "portrait",
+         "compact": false,
+         "type": "image"
+        }
+       ]
+      },
+      {
+       "id": "identity",
+       "type": "group",
+       "title": "Identity",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+       "column": 2,
+       "hideTitle": true,
+       "collapsible": false,
+       "columns": 1,
+       "children": [
+        {
+         "id": "name-field",
+         "label": "Name",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+         "required": false,
+         "valueKey": "name",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "group-kind-field",
+         "label": "Kind of group",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
+         "required": false,
+         "valueKey": "group-kind",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "threat-field",
+         "label": "Threat",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+         "required": false,
+         "valueKey": "threat",
+         "compact": false,
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "members-section",
+     "type": "section",
+     "title": "Members",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+     "children": [
+      {
+       "id": "members",
+       "type": "group",
+       "title": "Members",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "members-field",
+         "label": "Members",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+         "required": false,
+         "valueKey": "members",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "mortal",
+          "storyteller",
+          "character",
+          "vampire",
+          "v5-group"
+         ],
+         "multiple": true
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "about",
+     "type": "section",
+     "title": "Description",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
+     "children": [
+      {
+       "id": "about-group",
+       "type": "group",
+       "title": "Description",
+       "hideTitle": true,
+       "collapsible": false,
+       "columns": 2,
+       "children": [
+        {
+         "id": "group-about-field",
+         "label": "Description",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
+         "column": 1,
+         "required": false,
+         "valueKey": "group-about",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-goals-field",
+         "label": "Goals",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+         "column": 2,
+         "required": false,
+         "valueKey": "group-goals",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-resources-field",
+         "label": "Resources and holdings",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+         "column": 1,
+         "required": false,
+         "valueKey": "group-resources",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-notes-field",
+         "label": "Notes",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.notes",
+         "column": 2,
+         "required": false,
+         "valueKey": "group-notes",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-group-brief": {
+  "ok": true,
+  "data": {
+   "id": "v5-group-brief",
+   "name": "Group — Brief",
+   "systemId": "wod-v5",
+   "documentKind": "v5-group",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "identity",
+     "type": "group",
+     "title": "Identity",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "columns": 3,
+     "children": [
+      {
+       "id": "name-field",
+       "label": "Name",
+       "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+       "required": false,
+       "valueKey": "name",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "group-kind-field",
+       "label": "Kind of group",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
+       "required": false,
+       "valueKey": "group-kind",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "threat-field",
+       "label": "Threat",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+       "required": false,
+       "valueKey": "threat",
+       "compact": true,
+       "type": "rating",
+       "min": 0,
+       "max": 5,
+       "presentation": "dots"
+      }
+     ]
+    },
+    {
+     "id": "members",
+     "type": "group",
+     "title": "Members",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "members-field",
+       "label": "Members",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+       "required": false,
+       "valueKey": "members",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "mortal",
+        "storyteller",
+        "character",
+        "vampire",
+        "v5-group"
+       ],
+       "multiple": true
+      }
+     ]
+    },
+    {
+     "id": "goals",
+     "type": "group",
+     "title": "Goals",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "group-goals-field",
+       "label": "Goals",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+       "required": false,
+       "valueKey": "group-goals",
        "compact": false,
        "type": "text",
        "multiline": true

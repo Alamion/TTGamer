@@ -51,6 +51,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
             'star-wars-wod/fodder-group',
             'wod-v5/v5-character',
             'wod-v5/v5-storyteller',
+            'wod-v5/v5-group',
             'wod-v5/hunter',
             'wod-v5/vampire',
         ]);
@@ -75,6 +76,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         expect(lunar.choices.map(({ key }) => key)).toEqual([
             `wod-v5/v5-character/${LUNAR_ID}`,
             `wod-v5/v5-storyteller/${LUNAR_ID}`,
+            `wod-v5/v5-group/${LUNAR_ID}`,
             `wod-v5/${userKindId(1)}/${LUNAR_ID}`,
             `wod-v5/${userKindId(2)}/${LUNAR_ID}`,
         ]);

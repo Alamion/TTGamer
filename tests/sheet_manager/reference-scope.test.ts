@@ -47,6 +47,7 @@ describe('reference targets per setting', () => {
             'character',
             'mortal',
             'storyteller',
+            'v5-group',
             HUNT_ID,
             SHARED_ID,
         ]);
@@ -62,21 +63,22 @@ describe('reference targets per setting', () => {
         ]);
     });
 
-    it('offers a V5 core page the core and V5-level user types, not the lines', () => {
-        expect(kinds({ systemId: 'wod-v5', documentKind: 'mortal' })).toEqual([
-            'mortal',
-            'storyteller',
-            SHARED_ID,
-        ]);
+    it('offers a V5 core page every V5 kind, the lines included (spec 040)', () => {
+        expect(kinds({ systemId: 'wod-v5', documentKind: 'mortal' })).toEqual(
+            expect.arrayContaining(['character', 'vampire', 'mortal', 'storyteller', SHARED_ID])
+        );
+        // Line user types too: a ruleset-level page names any V5 document.
+        expect(kinds({ systemId: 'wod-v5', documentKind: 'mortal' })).toContain(HUNT_ID);
     });
 
     it('offers a user setting its reused core kinds and its own types only', () => {
         const page = { systemId: 'wod-v5', documentKind: 'mortal', settingId: ASHEN_ID };
-        expect(kinds(page)).toEqual(['mortal', 'storyteller', CULT_ID]);
+        expect(kinds(page)).toEqual(['mortal', 'storyteller', 'v5-group', CULT_ID]);
         // A user type's page belongs to its owner's setting.
         expect(kinds({ systemId: 'wod-v5', documentKind: CULT_ID })).toEqual([
             'mortal',
             'storyteller',
+            'v5-group',
             CULT_ID,
         ]);
     });
@@ -94,15 +96,18 @@ describe('reference targets per setting', () => {
             referenceTargetsOf(systemRegistry, { systemId: 'wod-v5', documentKind: 'mortal' }).map(
                 ({ label }) => label
             );
-        expect(labels()).toEqual(['Mortal', 'Storyteller character', 'Haven']);
+        expect(labels()).toEqual(
+            expect.arrayContaining(['Mortal', 'Storyteller character', 'Haven'])
+        );
         const { types } = useDocumentTypeStore.getState();
         useDocumentTypeStore.setState({
             types: { ...types, [SHARED_ID]: { ...types[SHARED_ID]!, name: 'Mortal' } },
         });
         // Same setting: the settings read the same, so the user's own type is marked.
-        const [core, , user] = labels();
-        expect(core).toBe('World of Darkness 5th Edition · Mortal');
-        expect(user).toBe('World of Darkness 5th Edition · Mortal (yours)');
+        expect(labels().filter((label) => label.includes('Mortal'))).toEqual([
+            'World of Darkness 5th Edition · Mortal',
+            'World of Darkness 5th Edition · Mortal (yours)',
+        ]);
     });
 
     it('tells a line type from a ruleset-level user type of the same name by setting', () => {

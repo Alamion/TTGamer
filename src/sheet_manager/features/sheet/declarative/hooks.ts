@@ -382,10 +382,18 @@ export function useTemplatePage(
     const userTypes = useDocumentTypeStore((state) => state.types);
     const userSettings = useDocumentTypeStore((state) => state.settings);
     const referenceScope = useMemo(
-        () => (template ? referenceScopeOf(systemRegistry, template) : undefined),
+        () =>
+            template
+                ? referenceScopeOf(systemRegistry, {
+                      ...template,
+                      // A shared page shown for a document of a user setting (a core kind without
+                      // a page of its own) links within that setting (spec 040).
+                      settingId: template.settingId ?? document?.metadata.settingId,
+                  })
+                : undefined,
         // userTypes, userSettings: the scope reads the registry overlay, which follows the store.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [template, userTypes, userSettings]
+        [template, document?.metadata.settingId, userTypes, userSettings]
     );
     const documentOptions = useMemo<DocumentOption[]>(
         () =>

@@ -8,6 +8,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
+import { memberOfSection } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -233,5 +234,6 @@ export const hunterSheetTemplate: CustomTemplate = {
         { ...advantagesSection(), docsPath: HUNTER_DOCS.advantages },
         { ...equipmentSection(), docsPath: HUNTER_DOCS.equipment },
         otherSection(),
+        memberOfSection(),
     ],
 };

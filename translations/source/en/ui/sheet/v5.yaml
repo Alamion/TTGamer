@@ -121,3 +121,18 @@ storyteller:
         power: Discipline, Edge, or power
     rollSimpleFoe: Roll as a simple foe
     rollSimpleFoeMessage: Twice the Difficulty, as the rules suggest for a simple foe.
+group:
+    type: Group
+    section: Group
+    views:
+        sheet: Full sheet
+        brief: Brief
+    fields:
+        kind: Kind of group
+        about: Description
+        goals: Goals
+        resources: Resources and holdings
+        threat: Threat
+        notes: Notes
+        members: Members
+    memberOf: Member of

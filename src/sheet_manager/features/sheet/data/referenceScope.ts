@@ -43,7 +43,8 @@ function settingOf(registry: SystemRegistry, template: ReferenceTemplateRef): Te
 /**
  * The kinds of the template's setting (R2): a user setting reuses its ruleset's core kinds and
  * owns its user types; a shipped line adds its module's kinds to the core kinds and ruleset-level
- * user types; a shipped system without a module offers its module-less kinds and user types.
+ * user types; a page of the ruleset itself (no module) offers every kind of the ruleset, its
+ * lines included, so a V5 group can name hunters and vampires (spec 040, D6).
  */
 function scopedKinds(registry: SystemRegistry, template: ReferenceTemplateRef): ScopedKind[] {
     const setting = settingOf(registry, template);
@@ -57,13 +58,13 @@ function scopedKinds(registry: SystemRegistry, template: ReferenceTemplateRef): 
         if (setting.moduleId) {
             return definition.module?.id === setting.moduleId || core.has(definition.id);
         }
-        return !definition.module;
+        return true;
     });
     const owned = Object.values(types).filter(({ owner }) => {
         if ('settingId' in setting)
             return 'settingId' in owner && owner.settingId === setting.settingId;
         if ('settingId' in owner || owner.systemId !== systemId) return false;
-        return !owner.moduleId || owner.moduleId === setting.moduleId;
+        return !owner.moduleId || !setting.moduleId || owner.moduleId === setting.moduleId;
     });
     return [
         ...shipped.map(({ kind }) => ({ systemId, kind: String(kind) })),

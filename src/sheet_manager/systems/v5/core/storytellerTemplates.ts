@@ -9,6 +9,7 @@ import {
     type TemplateNode,
 } from '../../../types/template';
 import { portraitGroup, trackGroup, V5_DOCS, v5Text } from '../ruleset/templateParts';
+import { memberOfGroup, memberOfSection } from './group';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
 /**
@@ -148,6 +149,7 @@ export const v5StorytellerSheetTemplate = page(
         section('notes-section', storyteller.sections.notes.message, undefined, [notes()], {
             labelMessage: storyteller.sections.notes,
         }),
+        memberOfSection(),
     ]
 );
 
@@ -178,5 +180,6 @@ export const v5StorytellerBriefTemplate = page(
         dense(traitList('exceptional')),
         dense(traitList('powers'), { collapsed: true }),
         dense(notes(), { collapsed: true }),
+        memberOfGroup(true),
     ]
 );

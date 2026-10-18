@@ -121,3 +121,18 @@ storyteller:
         power: Дисциплина, дар или сила
     rollSimpleFoe: Бросок простого противника
     rollSimpleFoeMessage: Удвоенная Сложность — так правила предлагают бросать за простого противника.
+group:
+    type: Группа
+    section: Группа
+    views:
+        sheet: Полный лист
+        brief: Краткий лист
+    fields:
+        kind: Что за группа
+        about: Описание
+        goals: Цели
+        resources: Ресурсы и владения
+        threat: Угроза
+        notes: Заметки
+        members: Участники
+    memberOf: Состоит в

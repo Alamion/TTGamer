@@ -4,7 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { ExternalLink, X } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
@@ -23,6 +23,7 @@ import {
 import type { TemplateField } from '../../../types/template';
 import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
+import { LINKED_FROM_LIMIT, useLinkedFrom } from '../../documents/linkedFrom';
 import { useDocumentTraitDiceRoll } from './boundDocument';
 import { PoolTracker } from './PoolTracker';
 import { useShortLabel } from './shortLabels';
@@ -648,7 +649,82 @@ export function ReferenceFieldControl(props: TemplateFieldControlProps) {
     );
 }
 
-function ReferenceFieldControlRender({
+/** A read-only list of the documents linking here (spec 040: a character's groups). */
+function IncomingReferences({
+    field,
+    onOpenDocument,
+}: {
+    field: FieldType<'reference'>;
+    onOpenDocument?: (id: string) => void;
+}) {
+    const { document } = useDocumentSource();
+    const scope = useMemo(
+        () =>
+            document
+                ? {
+                      systemId: document.systemId,
+                      settingId: document.metadata.settingId,
+                      kinds: new Set<string>(field.targetKinds),
+                  }
+                : undefined,
+        [document, field.targetKinds]
+    );
+    const linked = useLinkedFrom(document?.id, scope);
+    if (!linked) {
+        return (
+            <p className="text-sm text-textSecondary" aria-busy="true">
+                {translate(referenceMessages.loadingLinks)}
+            </p>
+        );
+    }
+    if (linked.documents.length === 0) {
+        return (
+            <p className="text-sm text-textSecondary">{translate(referenceMessages.noneLinking)}</p>
+        );
+    }
+    return (
+        <div className="grid gap-1">
+            <ul className="flex flex-wrap gap-1" aria-label={field.label}>
+                {linked.documents.map(({ id, name }) => (
+                    <li
+                        key={id}
+                        className="flex items-center gap-1 rounded-sm border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
+                    >
+                        <span>{name}</span>
+                        {onOpenDocument && (
+                            <button
+                                type="button"
+                                onClick={() => onOpenDocument(id)}
+                                aria-label={translate(referenceMessages.open, { title: name })}
+                                title={translate(referenceMessages.open, { title: name })}
+                                className="rounded-sm p-0.5 text-textSecondary hover:text-primary"
+                            >
+                                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                            </button>
+                        )}
+                    </li>
+                ))}
+            </ul>
+            {linked.truncated && (
+                <p className="text-xs text-textSecondary">
+                    {translate(referenceMessages.truncated, { count: LINKED_FROM_LIMIT })}
+                </p>
+            )}
+        </div>
+    );
+}
+
+function ReferenceFieldControlRender(
+    props: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'reference'> }
+) {
+    return props.field.incoming ? (
+        <IncomingReferences field={props.field} onOpenDocument={props.onOpenDocument} />
+    ) : (
+        <OutgoingReferences {...props} />
+    );
+}
+
+function OutgoingReferences({
     disabled,
     field,
     documentOptions,

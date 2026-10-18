@@ -18,6 +18,7 @@ import {
     trackGroup,
     v5Text,
 } from '../ruleset/templateParts';
+import { memberOfGroup, memberOfSection } from './group';
 
 /**
  * The V5 engine character without a supernatural module (spec 012): the base a user setting on
@@ -76,6 +77,7 @@ export const v5CoreSheetTemplate = page('v5-core-sheet', 'Mortal — Full sheet'
     advantagesSection(),
     equipmentSection(),
     otherSection(),
+    memberOfSection(),
 ]);
 
 export const v5CoreBriefTemplate = page('v5-core-brief', 'Mortal — Brief', [
@@ -100,4 +102,5 @@ export const v5CoreBriefTemplate = page('v5-core-brief', 'Mortal — Brief', [
     compactTraitsGroup('attributes'),
     compactTraitsGroup('skills', { collapsible: true }),
     dense(equipmentGroup('weapons'), { collapsed: true }),
+    memberOfGroup(true),
 ]);

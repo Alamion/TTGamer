@@ -367,6 +367,11 @@ const ReferenceFieldSchema = z.object({
     type: z.literal('reference'),
     targetKinds: z.array(DocumentKindSchema).min(1).max(20),
     multiple: z.boolean().default(false),
+    /**
+     * Read-only (spec 040): lists the documents of `targetKinds` whose values link to this
+     * document ("Member of" a group) instead of storing links of its own.
+     */
+    incoming: z.boolean().optional(),
 });
 
 const ResourceFieldSchema = z.object({

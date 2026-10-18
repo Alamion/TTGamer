@@ -48,7 +48,7 @@ describe('finding the kind (spec 039, US1)', () => {
         expect(expanded('Lunar Colony')).toBe('false');
         expect(kinds()).toEqual(['wod-v5/hunter', 'wod-v5/vampire']);
         openAll();
-        expect(kinds()).toHaveLength(10 + 20 + 2);
+        expect(kinds()).toHaveLength(11 + 20 + 3);
         const v5 = screen.getByRole('group', { name: 'World of Darkness 5th Edition' });
         expect(within(v5).getByRole('group', { name: 'Lunar Colony' })).toBeTruthy();
         expect(within(v5).getAllByRole('option', { name: /^Habitat/ })).toHaveLength(2);
@@ -272,7 +272,7 @@ describe('keyboard and phone (spec 039, US4)', () => {
 
     it('creates a kind with a unique three-letter prefix in five keystrokes at 50 kinds (SC-001)', () => {
         resetUserKinds();
-        seedUserKinds(38);
+        seedUserKinds(36);
         open();
         openAll();
         expect(kinds()).toHaveLength(50);
