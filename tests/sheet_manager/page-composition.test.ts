@@ -22,7 +22,6 @@ const SMALL_CARDS = new Set(['portrait', 'base-portrait']);
  * wrong, so a fix shows up as a failing exception to remove.
  */
 const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {
-    'droid-sheet': ['section force=4', 'card force-resources=1'],
     'creature-sheet': [
         'section abilities=3',
         'loose list list-abilities in abilities',
@@ -54,7 +53,6 @@ const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {
         'section details=3',
         'loose text field-notes in details',
     ],
-    'wod2e-sheet': ['section resources=4', 'card resources-willpower=1', 'card derived-stats=1'],
     'v5-vampire-sheet': ['card predator=1'],
 };
 

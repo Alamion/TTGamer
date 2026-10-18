@@ -4,11 +4,11 @@
 
 ## Foundation
 
-- [ ] T001 Measure the full-sheet heights at 375 and 1280 px on the built site before any change
+- [x] T001 Measure the full-sheet heights at 375 and 1280 px on the built site before any change
       (Star Wars character, droid, creature, vehicle, fodder group, WoD 2e character, V5 vampire);
       record them under "Implementation notes" in `specs/042-sheet-composition-fixes/design.md` (the
       reference of SC-003)
-- [ ] T002 Capture, for each of the seven full sheets today, the value keys and bindings it binds
+- [x] T002 Capture, for each of the seven full sheets today, the value keys and bindings it binds
       plus every formula expression (`formula`, `minFrom`, `maxMinFrom`) and button roll by node id
       into `tests/sheet_manager/fixtures/sheet-bindings-042.json`, generated once from the current
       trees; it is the FR-002/SC-002 reference. Copy today's `full-sheet` tree into
@@ -19,44 +19,44 @@
 **Check**: the three full sheets pass the composition rule, list the same sections in the same order
 apart from Force, and bind every value they bound before.
 
-- [ ] T003 [US1] Tests first: `tests/sheet_manager/shipped-sheet-layout.test.ts` (new) — section
+- [x] T003 [US1] Tests first: `tests/sheet_manager/shipped-sheet-layout.test.ts` (new) — section
       titles of `full-sheet`, `droid-sheet`, and `wod2e-sheet` equal Base, Condition, Attributes,
       Skills, (Force), Advantages, Equipment, Experience and Notes; every sheet listed in the
       binding check binds exactly the value keys, bindings, formulas, and rolls of
       `sheet-bindings-042.json` (the check starts with the three sheets of this story; later stories
       add theirs); remove `droid-sheet` and `wod2e-sheet` from `KNOWN_EXCEPTIONS` in
       `tests/sheet_manager/page-composition.test.ts`
-- [ ] T003a [US1] Test first: `tests/sheet_manager/shipped-sheet-overrides.test.ts` (new) — the
+- [x] T003a [US1] Test first: `tests/sheet_manager/shipped-sheet-overrides.test.ts` (new) — the
       saved `full-sheet-041.json` tree, stored as an edit of `full-sheet`, parses and renders every
       value of a filled character (FR-007)
-- [ ] T004 [US1] Shared builders in `src/sheet_manager/systems/wod2e/ruleset/templateParts.ts`:
+- [x] T004 [US1] Shared builders in `src/sheet_manager/systems/wod2e/ruleset/templateParts.ts`:
       `conditionSection` (card `condition-vitals` "Health and Willpower": health or damage track,
       Willpower, optional Initiative and extra resources; card Virtues), `equipmentSection` (id
       `body`, title Equipment, inventory title, implants optional, folding as today),
       `experienceNotesSection` (id `other`, Experience and Notes); options carry what differs by
       kind (track binding, title, tracker total, docs paths, Willpower pool tracker); existing parts
       the briefs call (`virtuesGroup`, `resourcesGroup`, …) keep their signatures (design D0)
-- [ ] T005 [US1] Star Wars character and droid in
+- [x] T005 [US1] Star Wars character and droid in
       `src/sheet_manager/systems/star-wars-wod/templates/character.ts`: order Base, Condition,
       Attributes, Skills, Force (SW only: Force Skills, Force Powers, Force-derived stats
       `derived-stats` with saber initiative, jumping, running), Advantages, Equipment, Experience
       and Notes; Initiative (Std), Force Points, and Dark Side Resistance in `condition-vitals`;
       remove the droid "Resources" section; brief builders untouched (keep `resourcesGroup` and
       `virtuesGroup` callers of the brief working)
-- [ ] T006 [US1] WoD 2e character in `src/sheet_manager/systems/wod2e/templates.ts`: same shared
+- [x] T006 [US1] WoD 2e character in `src/sheet_manager/systems/wod2e/templates.ts`: same shared
       sections, Initiative in `condition-vitals`, no Derived Stats card; brief untouched
-- [ ] T007 [US1] Titles: `LABEL_MESSAGES` in `character.ts` and the WoD 2e title mapping for
+- [x] T007 [US1] Titles: `LABEL_MESSAGES` in `character.ts` and the WoD 2e title mapping for
       Condition, Health and Willpower, Force-derived stats, Equipment, Experience and Notes; keys in
       `translations/source/en/ui/sheet/templates.yaml` and
       `translations/source/ru/ui/sheet/templates.yaml` (`defaults`), reusing existing keys where the
       text exists
-- [ ] T008 [US1] Fixtures: regenerate only the `templates` part of
+- [x] T008 [US1] Fixtures: regenerate only the `templates` part of
       `tests/sheet_manager/fixtures/star-wars-parity.json` (documents, defaults, dice pools must
       stay byte-equal) and the zod-baseline snapshot
       `tests/sheet_manager/fixtures/zod-baseline/shipped-templates.json`; check its diff touches
       only `full-sheet`, `droid-sheet`, and `wod2e-sheet`; update tests that find moved cards by id
       (`default-templates`, `shipped-parity`, system tests) without weakening them
-- [ ] T009 [US1] Run `yarn verify` and commit the story
+- [x] T009 [US1] Run `yarn verify` and commit the story
 
 ## User Story 2 - Creatures, vehicles, and fodder groups are made of cards (P2)
 

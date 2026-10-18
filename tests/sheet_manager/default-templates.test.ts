@@ -24,13 +24,19 @@ import { takeSheetIssues } from '../setup/sheetIssues';
 import preFeatureCharacterTemplates from './fixtures/character-templates.pre-007.json';
 
 describe('character templates after the builder split (feature 007)', () => {
-    it('produce exactly the pre-refactor trees', () => {
+    it('produce exactly the pre-refactor briefs', () => {
+        // Spec 042 laid the full sheets out anew (their fields are pinned by
+        // `shipped-sheet-layout.test.ts`); spec 041 upgraded the trees to schema 4.
+        const relaidOut = new Set(['full-sheet', 'droid-sheet']);
         const shipped = systemRegistry
             .getSystem('star-wars-wod')!
-            .defaultTemplates!.filter((template) => template.documentKind === 'character');
-        // Spec 041 upgraded the trees to schema 4 (page kinds, brief blocks): same content.
+            .defaultTemplates!.filter(
+                (template) => template.documentKind === 'character' && !relaidOut.has(template.id)
+            );
         expect(JSON.parse(JSON.stringify(shipped))).toEqual(
-            preFeatureCharacterTemplates.map((template) => upgradeTemplate(template).template)
+            preFeatureCharacterTemplates
+                .filter((template) => !relaidOut.has(template.id))
+                .map((template) => upgradeTemplate(template).template)
         );
     });
 });
@@ -94,23 +100,26 @@ describe('explicit default templates (feature 006, R9)', () => {
             (node): node is Extract<CustomTemplate['children'][number], { type: 'section' }> =>
                 node.type === 'section'
         );
+        // Spec 042: the order of the V5 sheets, shared with the droid and the WoD 2e character.
         expect(sections.map(({ title }) => title)).toEqual([
             'Base',
+            'Condition',
             'Attributes',
             'Skills',
-            'Advantages',
             'Force',
-            'Body',
-            'Other',
+            'Advantages',
+            'Equipment',
+            'Experience and Notes',
         ]);
         const docsPaths = sections.map((section) => section.docsPath);
         expect(docsPaths[0]).toContain('/docs/star-wars-wod-2e/quick-start');
-        expect(docsPaths[1]).toContain('attributes-abilities#attributes');
-        expect(docsPaths[2]).toContain('attributes-abilities#abilities');
-        expect(docsPaths[3]).toContain('merits-flaws');
+        expect(docsPaths[1]).toContain('virtues-willpower');
+        expect(docsPaths[2]).toContain('attributes-abilities#attributes');
+        expect(docsPaths[3]).toContain('attributes-abilities#abilities');
         expect(docsPaths[4]).toContain('/character/force');
-        expect(docsPaths[5]).toContain('/equipment');
-        expect(docsPaths[6]).toContain('derived-stats');
+        expect(docsPaths[5]).toContain('merits-flaws');
+        expect(docsPaths[6]).toContain('/equipment');
+        expect(docsPaths[7]).toContain('rewards-advancement');
     });
 
     it('composes system content from first-class elements (no placements, R9)', () => {

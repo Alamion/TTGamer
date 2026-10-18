@@ -152,3 +152,19 @@ composition section drops "known exceptions"; `TODO.md` T-126 done.
 4. An edited shipped Star Wars full sheet saved before → still loads with its own layout; **Reset to
    original** gives the new one.
 5. Every brief of the seven kinds → looks as before.
+
+## Implementation notes
+
+- **T001 heights before the change** (built site, sheet root, 375/1280 px): Star Wars character
+  7926/3473, droid 7322/3353, creature 2724/1657, vehicle 3159/1794, fodder group 2647/1605, WoD 2e
+  character 6871/3113, V5 vampire 7129/3770.
+- **Field contracts** (`tests/sheet_manager/helpers/leafContracts.ts`): every field of a page by
+  node id without its layout keys (`column`, `span`, `hideLabel`). The fixture holds all seven
+  sheets from the start and every story keeps them equal, instead of adding sheets story by story; a
+  track that joins a titled card simply shows its label again (`hideLabel` is layout).
+- **Droid card title**: "Damage and Willpower" (its track is damage); `conditionSection` takes the
+  title, the section's docs link (Star Wars: the virtues and Willpower page), and the card's.
+- **Parity fixture**: only the pages that changed are replaced, by their current schema 4 trees; the
+  untouched briefs stay in their schema 3 form, so the test still upgrades and compares them.
+- **`default-templates.test.ts`**: the pre-007 tree comparison now covers the briefs only (the full
+  sheets are pinned by the field contracts); the composition-order test lists the new order.

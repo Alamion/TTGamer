@@ -563,6 +563,12 @@ defaults:
     darkSideResistance: Dark Side Resistance
     forcePowers: Force Powers
     derivedStats: Derived Stats
+    forceDerivedStats: Force-derived stats
+    condition: Condition
+    healthAndWillpower: Health and Willpower
+    damageAndWillpower: Damage and Willpower
+    equipment: Equipment
+    experienceAndNotes: Experience and Notes
     initiativeStandard: Initiative (Std)
     initiativeLightsaber: Initiative (Saber)
     maxForcePoints: Max Force Points

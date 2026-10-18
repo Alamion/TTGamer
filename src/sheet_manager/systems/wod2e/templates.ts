@@ -17,14 +17,14 @@ import {
     ATTRIBUTE_GROUPS,
     attributesSection,
     baseSection,
-    experienceGroup,
-    notesGroup,
+    conditionSection,
+    equipmentSection,
+    experienceNotesSection,
     resource,
     skillsSection,
     STANDARD_INITIATIVE,
     textFields,
     virtuesGroup,
-    wodSection as section,
 } from './ruleset/templateParts';
 
 export const WOD2E_SYSTEM_ID = 'wod-2e';
@@ -41,68 +41,33 @@ const IDENTITY_FIELDS: ReadonlyArray<[valueKey: string, label: string]> = [
 
 const ABILITY_GROUPS = abilityGroups(WOD2E_ABILITIES);
 
-function resourcesSection(): TemplateNode {
-    return section(
-        'resources',
-        'Resources',
-        undefined,
+/** Health, Willpower, and Initiative beside the virtues (spec 042). */
+function condition(): TemplateNode {
+    return conditionSection(
         [
-            virtuesGroup(WOD2E_VIRTUE_KEYS, 1, undefined),
-            group(
-                'resources-willpower',
-                'Willpower',
-                [
-                    // One tracker: the rating framed, the current points filled (spec 020).
-                    resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                        poolTracker: { display: 'row', legend: false, total: true },
-                    }),
-                ],
-                { column: 2 }
-            ),
+            primitive('track-health', 'track:health', { label: 'Health' }),
+            // One tracker: the rating framed, the current points filled (spec 020).
+            resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                poolTracker: { display: 'row', legend: false, total: true },
+            }),
+            formula('derived-initiative', 'Initiative', STANDARD_INITIATIVE),
         ],
-        2
+        virtuesGroup(WOD2E_VIRTUE_KEYS, 2, undefined)
     );
 }
 
-function bodySection(): TemplateNode {
-    const equipment = (id: string, title: string, bindingKey: string) =>
+function equipment(): TemplateNode {
+    const gear = (id: string, title: string, bindingKey: string) =>
         group(`body-${id}`, title, [primitive(`equipment-${id}`, bindingKey)], {
-            column: 1,
             collapsible: true,
         });
-    return section(
-        'body',
-        'Body',
-        undefined,
+    return equipmentSection(
         [
-            equipment('inventory', 'Inventory', 'equipment:inventory'),
-            equipment('weapons', 'Weapons', 'equipment:weapons'),
-            equipment('armor', 'Armor', 'equipment:armor'),
-            group(
-                'body-health',
-                'Health',
-                [primitive('track-health', 'track:health', { hideLabel: true, label: 'Health' })],
-                { column: 2 }
-            ),
+            gear('inventory', 'Inventory', 'equipment:inventory'),
+            gear('weapons', 'Weapons', 'equipment:weapons'),
+            gear('armor', 'Armor', 'equipment:armor'),
         ],
-        2,
-        [2, 1]
-    );
-}
-
-function otherSection(): TemplateNode {
-    return section(
-        'other',
-        'Other',
-        undefined,
-        [
-            group('derived-stats', 'Derived Stats', [
-                formula('derived-initiative', 'Initiative', STANDARD_INITIATIVE),
-            ]),
-            experienceGroup(undefined),
-            notesGroup(),
-        ],
-        3
+        undefined
     );
 }
 
@@ -229,7 +194,10 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Armor: documentFields.armor,
     Health: documentFields.health,
     Other: defaults.other,
-    'Derived Stats': defaults.derivedStats,
+    Condition: defaults.condition,
+    'Health and Willpower': defaults.healthAndWillpower,
+    Equipment: defaults.equipment,
+    'Experience and Notes': defaults.experienceAndNotes,
     Initiative: defaults.initiativeStandard,
     Experience: defaults.experience,
     'Total XP': defaults.experienceTotal,
@@ -266,12 +234,12 @@ export const wod2eTemplates: readonly CustomTemplate[] = [
     translatable(
         template('wod2e-sheet', 'Full sheet', [
             baseSection(undefined, IDENTITY_FIELDS),
+            condition(),
             attributesSection(undefined),
             skillsSection(ABILITY_GROUPS, undefined),
             advantagesSection(undefined),
-            resourcesSection(),
-            bodySection(),
-            otherSection(),
+            equipment(),
+            experienceNotesSection(undefined),
         ])
     ),
     translatable(denseBrief(template('wod2e-brief', 'Brief', briefChildren()), ['brief-weapons'])),

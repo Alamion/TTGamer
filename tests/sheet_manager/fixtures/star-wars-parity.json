@@ -1676,7 +1676,7 @@
             "name": "Full sheet",
             "systemId": "star-wars-wod",
             "documentKind": "character",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "base",
@@ -1694,7 +1694,6 @@
                                     "type": "image",
                                     "label": "Portrait",
                                     "valueKey": "portrait",
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
@@ -1715,7 +1714,6 @@
                                     "label": "Name",
                                     "valueKey": "name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
                                 },
@@ -1725,7 +1723,6 @@
                                     "label": "Concept",
                                     "valueKey": "concept",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
                                 },
@@ -1735,7 +1732,6 @@
                                     "label": "Species",
                                     "valueKey": "species",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
                                 },
@@ -1745,7 +1741,6 @@
                                     "label": "Player",
                                     "valueKey": "player",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
                                 },
@@ -1755,7 +1750,6 @@
                                     "label": "Nature",
                                     "valueKey": "nature",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label"
                                 },
@@ -1765,7 +1759,6 @@
                                     "label": "Home World",
                                     "valueKey": "home-world",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.homeWorld.label"
                                 },
@@ -1775,7 +1768,6 @@
                                     "label": "Adventure",
                                     "valueKey": "adventure",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.adventure.label"
                                 },
@@ -1785,7 +1777,6 @@
                                     "label": "Demeanor",
                                     "valueKey": "demeanor",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label"
                                 },
@@ -1795,7 +1786,6 @@
                                     "label": "Age",
                                     "valueKey": "age",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
                                 }
@@ -1817,7 +1807,6 @@
                                     "label": "Gender",
                                     "valueKey": "gender",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.gender.label"
                                 },
@@ -1827,7 +1816,6 @@
                                     "label": "Height",
                                     "valueKey": "height",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.height.label"
                                 },
@@ -1837,7 +1825,6 @@
                                     "label": "Build",
                                     "valueKey": "build",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.build.label"
                                 },
@@ -1847,7 +1834,6 @@
                                     "label": "Hair",
                                     "valueKey": "hair",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.hair.label"
                                 },
@@ -1857,7 +1843,6 @@
                                     "label": "Eyes",
                                     "valueKey": "eyes",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.eyes.label"
                                 },
@@ -1867,7 +1852,6 @@
                                     "label": "Features",
                                     "valueKey": "features",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
                                 }
@@ -1888,7 +1872,6 @@
                                     "label": "Biography",
                                     "valueKey": "biography",
                                     "multiline": true,
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "placeholder": "Character biography...",
@@ -1903,6 +1886,118 @@
                     "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                     "columns": 2,
                     "labelMessage": "ttgamer.ui.sheet.base.title"
+                },
+                {
+                    "id": "condition",
+                    "type": "section",
+                    "title": "Condition",
+                    "children": [
+                        {
+                            "id": "condition-vitals",
+                            "type": "group",
+                            "title": "Health and Willpower",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "track-health",
+                                    "type": "primitive",
+                                    "bindingKey": "track:health",
+                                    "label": "Health",
+                                    "tracker": {
+                                        "total": true
+                                    },
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+                                },
+                                {
+                                    "id": "derived-initiative",
+                                    "type": "formula",
+                                    "label": "Initiative (Std)",
+                                    "formula": "wits + alertness",
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
+                                },
+                                {
+                                    "id": "resource-willpower",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:willpower",
+                                    "label": "Willpower",
+                                    "minFrom": "min(passion + self-control, 10)",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                                },
+                                {
+                                    "id": "resource-force-points",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:force-points",
+                                    "label": "Force Points",
+                                    "poolTracker": {
+                                        "display": "row",
+                                        "legend": false,
+                                        "total": true
+                                    },
+                                    "maxMinFrom": "self-control",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+                                },
+                                {
+                                    "id": "resource-dark-side",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:dark-side-resistance",
+                                    "label": "Dark Side Resistance",
+                                    "minFrom": "max(0, min(5 + conscience - passion, 10))",
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
+                                }
+                            ],
+                            "column": 1,
+                            "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.healthAndWillpower"
+                        },
+                        {
+                            "id": "force-virtues",
+                            "type": "group",
+                            "title": "Virtues",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "trait-conscience",
+                                    "type": "rating",
+                                    "label": "Conscience",
+                                    "valueKey": "conscience",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/conscience"
+                                },
+                                {
+                                    "id": "trait-passion",
+                                    "type": "rating",
+                                    "label": "Passion",
+                                    "valueKey": "passion",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/passion"
+                                },
+                                {
+                                    "id": "trait-self-control",
+                                    "type": "rating",
+                                    "label": "Self Control",
+                                    "valueKey": "self-control",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/self-control"
+                                }
+                            ],
+                            "column": 2,
+                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
+                        }
+                    ],
+                    "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                    "columns": 2,
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition"
                 },
                 {
                     "id": "attributes",
@@ -1923,7 +2018,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/strength"
                                 },
@@ -1935,7 +2029,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/dexterity"
                                 },
@@ -1947,7 +2040,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/stamina"
                                 }
@@ -1968,7 +2060,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/charisma"
                                 },
@@ -1980,7 +2071,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/manipulation"
                                 },
@@ -1992,7 +2082,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/appearance"
                                 }
@@ -2013,7 +2102,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/perception"
                                 },
@@ -2025,7 +2113,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/intelligence"
                                 },
@@ -2037,7 +2124,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/wits"
                                 }
@@ -2068,7 +2154,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/alertness"
                                 },
@@ -2080,7 +2165,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/athletics"
                                 },
@@ -2092,7 +2176,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/brawl"
                                 },
@@ -2104,7 +2187,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/command"
                                 },
@@ -2116,7 +2198,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/diplomacy"
                                 },
@@ -2128,7 +2209,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/dodge"
                                 },
@@ -2140,7 +2220,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/empathy"
                                 },
@@ -2152,7 +2231,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/intimidation"
                                 },
@@ -2164,7 +2242,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/streetwise"
                                 },
@@ -2176,7 +2253,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/subterfuge"
                                 },
@@ -2205,7 +2281,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/blaster"
                                 },
@@ -2217,7 +2292,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/gunnery"
                                 },
@@ -2229,7 +2303,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/melee"
                                 },
@@ -2241,7 +2314,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/pilot"
                                 },
@@ -2253,7 +2325,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/programming"
                                 },
@@ -2265,7 +2336,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/repair"
                                 },
@@ -2277,7 +2347,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/ride"
                                 },
@@ -2289,7 +2358,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/security"
                                 },
@@ -2301,7 +2369,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/stealth"
                                 },
@@ -2313,7 +2380,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/survival"
                                 },
@@ -2342,7 +2408,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/astrogation"
                                 },
@@ -2354,7 +2419,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/bureaucracy"
                                 },
@@ -2366,7 +2430,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/cultures"
                                 },
@@ -2378,7 +2441,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/interfaces"
                                 },
@@ -2390,7 +2452,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/investigation"
                                 },
@@ -2402,7 +2463,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/languages"
                                 },
@@ -2414,7 +2474,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/medicine"
                                 },
@@ -2426,7 +2485,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/politics"
                                 },
@@ -2438,7 +2496,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/tech"
                                 },
@@ -2450,7 +2507,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/trade"
                                 },
@@ -2469,67 +2525,6 @@
                     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                     "columns": 3,
                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
-                },
-                {
-                    "id": "advantages",
-                    "type": "section",
-                    "title": "Advantages",
-                    "children": [
-                        {
-                            "id": "advantages-backgrounds",
-                            "type": "group",
-                            "title": "Backgrounds",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "list-backgrounds",
-                                    "type": "list",
-                                    "bindingKey": "list:backgrounds",
-                                    "title": "Backgrounds",
-                                    "columns": 1,
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
-                        },
-                        {
-                            "id": "advantages-merits",
-                            "type": "group",
-                            "title": "Merits",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "list-merits",
-                                    "type": "list",
-                                    "bindingKey": "list:merits",
-                                    "title": "Merits",
-                                    "columns": 1,
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
-                        },
-                        {
-                            "id": "advantages-flaws",
-                            "type": "group",
-                            "title": "Flaws",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "list-flaws",
-                                    "type": "list",
-                                    "bindingKey": "list:flaws",
-                                    "title": "Flaws",
-                                    "columns": 1,
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
-                        }
-                    ],
-                    "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
-                    "columns": 3,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
                 },
                 {
                     "id": "force",
@@ -2550,7 +2545,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:force-skills/control"
                                 },
@@ -2562,7 +2556,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:force-skills/dynamism"
                                 },
@@ -2574,7 +2567,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:force-skills/rapport"
                                 },
@@ -2586,7 +2578,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:force-skills/sense"
                                 },
@@ -2598,7 +2589,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:force-skills/telekinesis"
                                 }
@@ -2606,95 +2596,6 @@
                             "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/character/force#force-skills",
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.forceSkills"
-                        },
-                        {
-                            "id": "force-virtues",
-                            "type": "group",
-                            "title": "Virtues",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "trait-conscience",
-                                    "type": "rating",
-                                    "label": "Conscience",
-                                    "valueKey": "conscience",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/conscience"
-                                },
-                                {
-                                    "id": "trait-passion",
-                                    "type": "rating",
-                                    "label": "Passion",
-                                    "valueKey": "passion",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/passion"
-                                },
-                                {
-                                    "id": "trait-self-control",
-                                    "type": "rating",
-                                    "label": "Self Control",
-                                    "valueKey": "self-control",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/self-control"
-                                }
-                            ],
-                            "column": 2,
-                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
-                        },
-                        {
-                            "id": "force-resources",
-                            "type": "group",
-                            "title": "Resources",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "resource-willpower",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:willpower",
-                                    "compact": false,
-                                    "label": "Willpower",
-                                    "minFrom": "min(passion + self-control, 10)",
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
-                                },
-                                {
-                                    "id": "resource-force-points",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:force-points",
-                                    "compact": false,
-                                    "label": "Force Points",
-                                    "poolTracker": {
-                                        "display": "row",
-                                        "legend": false,
-                                        "total": true
-                                    },
-                                    "maxMinFrom": "self-control",
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
-                                },
-                                {
-                                    "id": "resource-dark-side",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:dark-side-resistance",
-                                    "compact": false,
-                                    "label": "Dark Side Resistance",
-                                    "minFrom": "max(0, min(5 + conscience - passion, 10))",
-                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
-                                }
-                            ],
-                            "column": 2,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
                         },
                         {
                             "id": "force-powers-group",
@@ -2711,9 +2612,46 @@
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers"
                                 }
                             ],
-                            "column": 3,
+                            "column": 2,
                             "docsPath": "/docs/star-wars-wod-2e/character/force#force-powers",
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers"
+                        },
+                        {
+                            "id": "derived-stats",
+                            "type": "group",
+                            "title": "Force-derived stats",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "derived-initiative-saber",
+                                    "type": "formula",
+                                    "label": "Initiative (Saber)",
+                                    "formula": "wits + alertness + control",
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
+                                },
+                                {
+                                    "id": "derived-jumping",
+                                    "type": "formula",
+                                    "label": "Jumping Distance",
+                                    "formula": "max(min(control, telekinesis), 1)",
+                                    "required": false,
+                                    "prefix": "×",
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.jumpingDistance"
+                                },
+                                {
+                                    "id": "derived-running",
+                                    "type": "formula",
+                                    "label": "Running Speed",
+                                    "formula": "max(min(control, telekinesis), 1)",
+                                    "required": false,
+                                    "prefix": "×",
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.runningSpeed"
+                                }
+                            ],
+                            "column": 3,
+                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.forceDerivedStats"
                         }
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/character/force",
@@ -2721,9 +2659,70 @@
                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.force"
                 },
                 {
+                    "id": "advantages",
+                    "type": "section",
+                    "title": "Advantages",
+                    "children": [
+                        {
+                            "id": "advantages-backgrounds",
+                            "type": "group",
+                            "title": "Backgrounds",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "list-backgrounds",
+                                    "type": "list",
+                                    "bindingKey": "list:backgrounds",
+                                    "title": "Backgrounds",
+                                    "columns": 1,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                        },
+                        {
+                            "id": "advantages-merits",
+                            "type": "group",
+                            "title": "Merits",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "list-merits",
+                                    "type": "list",
+                                    "bindingKey": "list:merits",
+                                    "title": "Merits",
+                                    "columns": 1,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                        },
+                        {
+                            "id": "advantages-flaws",
+                            "type": "group",
+                            "title": "Flaws",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "list-flaws",
+                                    "type": "list",
+                                    "bindingKey": "list:flaws",
+                                    "title": "Flaws",
+                                    "columns": 1,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                        }
+                    ],
+                    "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
+                    "columns": 3,
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
+                },
+                {
                     "id": "body",
                     "type": "section",
-                    "title": "Body",
+                    "title": "Equipment",
                     "children": [
                         {
                             "id": "body-inventory",
@@ -2734,12 +2733,11 @@
                                 {
                                     "id": "equipment-inventory",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:inventory",
-                                    "compact": false
+                                    "bindingKey": "equipment:inventory"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory"
                         },
                         {
@@ -2751,12 +2749,11 @@
                                 {
                                     "id": "equipment-weapons",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:weapons",
-                                    "compact": false
+                                    "bindingKey": "equipment:weapons"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
+                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
                         },
                         {
@@ -2768,12 +2765,11 @@
                                 {
                                     "id": "equipment-armor",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:armor",
-                                    "compact": false
+                                    "bindingKey": "equipment:armor"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#armor",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.armor"
                         },
                         {
@@ -2785,97 +2781,23 @@
                                 {
                                     "id": "equipment-implants",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:implants",
-                                    "compact": false
+                                    "bindingKey": "equipment:implants"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
-                        },
-                        {
-                            "id": "body-health",
-                            "type": "group",
-                            "title": "Health",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "track-health",
-                                    "type": "primitive",
-                                    "bindingKey": "track:health",
-                                    "compact": false,
-                                    "hideLabel": true,
-                                    "label": "Health",
-                                    "tracker": {
-                                        "total": true
-                                    },
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
-                                }
-                            ],
                             "column": 2,
-                            "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
                         }
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/equipment",
                     "columns": 2,
-                    "columnWidths": [2, 1],
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment"
                 },
                 {
                     "id": "other",
                     "type": "section",
-                    "title": "Other",
+                    "title": "Experience and Notes",
                     "children": [
-                        {
-                            "id": "derived-stats",
-                            "type": "group",
-                            "title": "Derived Stats",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "derived-initiative",
-                                    "type": "formula",
-                                    "label": "Initiative (Std)",
-                                    "formula": "wits + alertness",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
-                                },
-                                {
-                                    "id": "derived-initiative-saber",
-                                    "type": "formula",
-                                    "label": "Initiative (Saber)",
-                                    "formula": "wits + alertness + control",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
-                                },
-                                {
-                                    "id": "derived-jumping",
-                                    "type": "formula",
-                                    "label": "Jumping Distance",
-                                    "formula": "max(min(control, telekinesis), 1)",
-                                    "compact": false,
-                                    "required": false,
-                                    "prefix": "×",
-                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.jumpingDistance"
-                                },
-                                {
-                                    "id": "derived-running",
-                                    "type": "formula",
-                                    "label": "Running Speed",
-                                    "formula": "max(min(control, telekinesis), 1)",
-                                    "compact": false,
-                                    "required": false,
-                                    "prefix": "×",
-                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.runningSpeed"
-                                }
-                            ],
-                            "columns": 2,
-                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.derivedStats"
-                        },
                         {
                             "id": "experience",
                             "type": "group",
@@ -2888,7 +2810,6 @@
                                     "label": "Total XP",
                                     "valueKey": "experience-total",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceTotal"
                                 },
@@ -2898,7 +2819,6 @@
                                     "label": "Spent",
                                     "valueKey": "experience-spent",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceSpent"
                                 },
@@ -2907,12 +2827,12 @@
                                     "type": "formula",
                                     "label": "Available",
                                     "formula": "experience-total - experience-spent",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAvailable"
                                 }
                             ],
                             "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience"
                         },
                         {
@@ -2927,18 +2847,18 @@
                                     "label": "Notes",
                                     "valueKey": "notes",
                                     "multiline": true,
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                                 }
                             ],
+                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                         }
                     ],
-                    "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
-                    "columns": 3,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
+                    "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                    "columns": 2,
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes"
                 }
             ]
         },
@@ -2947,7 +2867,7 @@
             "name": "Droid sheet",
             "systemId": "star-wars-wod",
             "documentKind": "character",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "base",
@@ -2965,7 +2885,6 @@
                                     "type": "image",
                                     "label": "Portrait",
                                     "valueKey": "portrait",
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
@@ -2986,7 +2905,6 @@
                                     "label": "Name",
                                     "valueKey": "name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
                                 },
@@ -2996,7 +2914,6 @@
                                     "label": "Concept",
                                     "valueKey": "concept",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
                                 },
@@ -3006,7 +2923,6 @@
                                     "label": "Species",
                                     "valueKey": "species",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
                                 },
@@ -3016,7 +2932,6 @@
                                     "label": "Player",
                                     "valueKey": "player",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
                                 },
@@ -3026,7 +2941,6 @@
                                     "label": "Nature",
                                     "valueKey": "nature",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label"
                                 },
@@ -3036,7 +2950,6 @@
                                     "label": "Home World",
                                     "valueKey": "home-world",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.homeWorld.label"
                                 },
@@ -3046,7 +2959,6 @@
                                     "label": "Adventure",
                                     "valueKey": "adventure",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.adventure.label"
                                 },
@@ -3056,7 +2968,6 @@
                                     "label": "Demeanor",
                                     "valueKey": "demeanor",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label"
                                 },
@@ -3066,7 +2977,6 @@
                                     "label": "Age",
                                     "valueKey": "age",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
                                 }
@@ -3088,7 +2998,6 @@
                                     "label": "Gender",
                                     "valueKey": "gender",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.gender.label"
                                 },
@@ -3098,7 +3007,6 @@
                                     "label": "Height",
                                     "valueKey": "height",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.height.label"
                                 },
@@ -3108,7 +3016,6 @@
                                     "label": "Build",
                                     "valueKey": "build",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.build.label"
                                 },
@@ -3118,7 +3025,6 @@
                                     "label": "Hair",
                                     "valueKey": "hair",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.hair.label"
                                 },
@@ -3128,7 +3034,6 @@
                                     "label": "Eyes",
                                     "valueKey": "eyes",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.eyes.label"
                                 },
@@ -3138,7 +3043,6 @@
                                     "label": "Features",
                                     "valueKey": "features",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
                                 }
@@ -3159,7 +3063,6 @@
                                     "label": "Biography",
                                     "valueKey": "biography",
                                     "multiline": true,
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "placeholder": "Character biography...",
@@ -3174,6 +3077,89 @@
                     "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                     "columns": 2,
                     "labelMessage": "ttgamer.ui.sheet.base.title"
+                },
+                {
+                    "id": "condition",
+                    "type": "section",
+                    "title": "Condition",
+                    "children": [
+                        {
+                            "id": "condition-vitals",
+                            "type": "group",
+                            "title": "Damage and Willpower",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "track-health",
+                                    "type": "primitive",
+                                    "bindingKey": "track:droid-damage",
+                                    "label": "Damage",
+                                    "tracker": {
+                                        "total": true
+                                    },
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+                                },
+                                {
+                                    "id": "resource-willpower",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:willpower",
+                                    "label": "Willpower",
+                                    "minFrom": "min(passion + self-control, 10)",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                                }
+                            ],
+                            "column": 1,
+                            "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.damageAndWillpower"
+                        },
+                        {
+                            "id": "force-virtues",
+                            "type": "group",
+                            "title": "Virtues",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "trait-conscience",
+                                    "type": "rating",
+                                    "label": "Conscience",
+                                    "valueKey": "conscience",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/conscience"
+                                },
+                                {
+                                    "id": "trait-passion",
+                                    "type": "rating",
+                                    "label": "Passion",
+                                    "valueKey": "passion",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/passion"
+                                },
+                                {
+                                    "id": "trait-self-control",
+                                    "type": "rating",
+                                    "label": "Self Control",
+                                    "valueKey": "self-control",
+                                    "min": 0,
+                                    "max": 5,
+                                    "presentation": "dots",
+                                    "required": false,
+                                    "labelMessage": "catalog:virtues/self-control"
+                                }
+                            ],
+                            "column": 2,
+                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
+                        }
+                    ],
+                    "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                    "columns": 2,
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition"
                 },
                 {
                     "id": "attributes",
@@ -3194,7 +3180,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/strength"
                                 },
@@ -3206,7 +3191,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/dexterity"
                                 },
@@ -3218,7 +3202,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/stamina"
                                 }
@@ -3239,7 +3222,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/charisma"
                                 },
@@ -3251,7 +3233,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/manipulation"
                                 },
@@ -3263,7 +3244,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/appearance"
                                 }
@@ -3284,7 +3264,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/perception"
                                 },
@@ -3296,7 +3275,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/intelligence"
                                 },
@@ -3308,7 +3286,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/wits"
                                 }
@@ -3339,7 +3316,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/alertness"
                                 },
@@ -3351,7 +3327,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/athletics"
                                 },
@@ -3363,7 +3338,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/brawl"
                                 },
@@ -3375,7 +3349,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/command"
                                 },
@@ -3387,7 +3360,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/diplomacy"
                                 },
@@ -3399,7 +3371,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/dodge"
                                 },
@@ -3411,7 +3382,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/empathy"
                                 },
@@ -3423,7 +3393,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/intimidation"
                                 },
@@ -3435,7 +3404,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/streetwise"
                                 },
@@ -3447,7 +3415,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/subterfuge"
                                 },
@@ -3465,7 +3432,6 @@
                                     "label": "Free points",
                                     "valueKey": "droid-free-talents",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
                                 }
@@ -3486,7 +3452,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/blaster"
                                 },
@@ -3498,7 +3463,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/gunnery"
                                 },
@@ -3510,7 +3474,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/melee"
                                 },
@@ -3522,7 +3485,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/pilot"
                                 },
@@ -3534,7 +3496,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/programming"
                                 },
@@ -3546,7 +3507,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/repair"
                                 },
@@ -3558,7 +3518,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/ride"
                                 },
@@ -3570,7 +3529,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/security"
                                 },
@@ -3582,7 +3540,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/stealth"
                                 },
@@ -3594,7 +3551,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/survival"
                                 },
@@ -3612,7 +3568,6 @@
                                     "label": "Free points",
                                     "valueKey": "droid-free-skills",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
                                 }
@@ -3633,7 +3588,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/astrogation"
                                 },
@@ -3645,7 +3599,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/bureaucracy"
                                 },
@@ -3657,7 +3610,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/cultures"
                                 },
@@ -3669,7 +3621,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/interfaces"
                                 },
@@ -3681,7 +3632,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/investigation"
                                 },
@@ -3693,7 +3643,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/languages"
                                 },
@@ -3705,7 +3654,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/medicine"
                                 },
@@ -3717,7 +3665,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/politics"
                                 },
@@ -3729,7 +3676,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/tech"
                                 },
@@ -3741,7 +3687,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:abilities/trade"
                                 },
@@ -3759,7 +3704,6 @@
                                     "label": "Free points",
                                     "valueKey": "droid-free-knowledges",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
                                 }
@@ -3833,85 +3777,9 @@
                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
                 },
                 {
-                    "id": "force",
-                    "type": "section",
-                    "title": "Resources",
-                    "children": [
-                        {
-                            "id": "force-virtues",
-                            "type": "group",
-                            "title": "Virtues",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "trait-conscience",
-                                    "type": "rating",
-                                    "label": "Conscience",
-                                    "valueKey": "conscience",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/conscience"
-                                },
-                                {
-                                    "id": "trait-passion",
-                                    "type": "rating",
-                                    "label": "Passion",
-                                    "valueKey": "passion",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/passion"
-                                },
-                                {
-                                    "id": "trait-self-control",
-                                    "type": "rating",
-                                    "label": "Self Control",
-                                    "valueKey": "self-control",
-                                    "min": 0,
-                                    "max": 5,
-                                    "presentation": "dots",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "catalog:virtues/self-control"
-                                }
-                            ],
-                            "column": 1,
-                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
-                        },
-                        {
-                            "id": "force-resources",
-                            "type": "group",
-                            "title": "Resources",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "resource-willpower",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:willpower",
-                                    "compact": false,
-                                    "label": "Willpower",
-                                    "minFrom": "min(passion + self-control, 10)",
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
-                                }
-                            ],
-                            "column": 2,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
-                        }
-                    ],
-                    "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-                    "columns": 2,
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
-                },
-                {
                     "id": "body",
                     "type": "section",
-                    "title": "Body",
+                    "title": "Equipment",
                     "children": [
                         {
                             "id": "body-inventory",
@@ -3922,12 +3790,11 @@
                                 {
                                     "id": "equipment-inventory",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:inventory",
-                                    "compact": false
+                                    "bindingKey": "equipment:inventory"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment"
                         },
                         {
@@ -3939,12 +3806,11 @@
                                 {
                                     "id": "equipment-weapons",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:weapons",
-                                    "compact": false
+                                    "bindingKey": "equipment:weapons"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
+                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
                         },
                         {
@@ -3956,12 +3822,11 @@
                                 {
                                     "id": "equipment-armor",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:armor",
-                                    "compact": false
+                                    "bindingKey": "equipment:armor"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#armor",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.armor"
                         },
                         {
@@ -3973,47 +3838,22 @@
                                 {
                                     "id": "equipment-implants",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:implants",
-                                    "compact": false
+                                    "bindingKey": "equipment:implants"
                                 }
                             ],
-                            "column": 1,
                             "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
-                        },
-                        {
-                            "id": "body-health",
-                            "type": "group",
-                            "title": "Damage",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "track-health",
-                                    "type": "primitive",
-                                    "bindingKey": "track:droid-damage",
-                                    "compact": false,
-                                    "hideLabel": true,
-                                    "label": "Damage",
-                                    "tracker": {
-                                        "total": true
-                                    },
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
-                                }
-                            ],
                             "column": 2,
-                            "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
                         }
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/equipment",
                     "columns": 2,
-                    "columnWidths": [2, 1],
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment"
                 },
                 {
                     "id": "other",
                     "type": "section",
-                    "title": "Other",
+                    "title": "Experience and Notes",
                     "children": [
                         {
                             "id": "experience",
@@ -4027,7 +3867,6 @@
                                     "label": "Total XP",
                                     "valueKey": "experience-total",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceTotal"
                                 },
@@ -4037,7 +3876,6 @@
                                     "label": "Spent",
                                     "valueKey": "experience-spent",
                                     "min": 0,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceSpent"
                                 },
@@ -4046,12 +3884,12 @@
                                     "type": "formula",
                                     "label": "Available",
                                     "formula": "experience-total - experience-spent",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAvailable"
                                 }
                             ],
                             "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                            "column": 1,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience"
                         },
                         {
@@ -4066,18 +3904,18 @@
                                     "label": "Notes",
                                     "valueKey": "notes",
                                     "multiline": true,
-                                    "compact": false,
                                     "required": false,
                                     "hideLabel": true,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                                 }
                             ],
+                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                         }
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
                     "columns": 2,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes"
                 }
             ]
         },

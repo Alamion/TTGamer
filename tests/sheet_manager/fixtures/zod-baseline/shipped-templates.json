@@ -218,6 +218,118 @@
      ]
     },
     {
+     "id": "condition",
+     "type": "section",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
+     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+     "columns": 2,
+     "children": [
+      {
+       "id": "condition-vitals",
+       "type": "group",
+       "title": "Health and Willpower",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.healthAndWillpower",
+       "column": 1,
+       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "track-health",
+         "type": "primitive",
+         "bindingKey": "track:health",
+         "label": "Health",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+         "tracker": {
+          "total": true
+         }
+        },
+        {
+         "id": "derived-initiative",
+         "label": "Initiative (Std)",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
+         "required": false,
+         "type": "formula",
+         "formula": "wits + alertness"
+        },
+        {
+         "id": "resource-willpower",
+         "type": "primitive",
+         "bindingKey": "resource:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "minFrom": "min(passion + self-control, 10)"
+        },
+        {
+         "id": "resource-force-points",
+         "type": "primitive",
+         "bindingKey": "resource:force-points",
+         "label": "Force Points",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
+         "poolTracker": {
+          "display": "row",
+          "legend": false,
+          "total": true
+         },
+         "maxMinFrom": "self-control"
+        },
+        {
+         "id": "resource-dark-side",
+         "type": "primitive",
+         "bindingKey": "resource:dark-side-resistance",
+         "label": "Dark Side Resistance",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
+         "minFrom": "max(0, min(5 + conscience - passion, 10))"
+        }
+       ]
+      },
+      {
+       "id": "force-virtues",
+       "type": "group",
+       "title": "Virtues",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
+       "column": 2,
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "trait-conscience",
+         "label": "Conscience",
+         "labelMessage": "catalog:virtues/conscience",
+         "required": false,
+         "valueKey": "conscience",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-passion",
+         "label": "Passion",
+         "labelMessage": "catalog:virtues/passion",
+         "required": false,
+         "valueKey": "passion",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-self-control",
+         "label": "Self Control",
+         "labelMessage": "catalog:virtues/self-control",
+         "required": false,
+         "valueKey": "self-control",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        }
+       ]
+      }
+     ]
+    },
+    {
      "id": "attributes",
      "type": "section",
      "title": "Attributes",
@@ -745,67 +857,6 @@
      ]
     },
     {
-     "id": "advantages",
-     "type": "section",
-     "title": "Advantages",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages",
-     "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
-     "columns": 3,
-     "children": [
-      {
-       "id": "advantages-backgrounds",
-       "type": "group",
-       "title": "Backgrounds",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "list-backgrounds",
-         "type": "list",
-         "title": "Backgrounds",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
-         "bindingKey": "list:backgrounds",
-         "columns": 1
-        }
-       ]
-      },
-      {
-       "id": "advantages-merits",
-       "type": "group",
-       "title": "Merits",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "list-merits",
-         "type": "list",
-         "title": "Merits",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
-         "bindingKey": "list:merits",
-         "columns": 1
-        }
-       ]
-      },
-      {
-       "id": "advantages-flaws",
-       "type": "group",
-       "title": "Flaws",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "list-flaws",
-         "type": "list",
-         "title": "Flaws",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
-         "bindingKey": "list:flaws",
-         "columns": 1
-        }
-       ]
-      }
-     ]
-    },
-    {
      "id": "force",
      "type": "section",
      "title": "Force",
@@ -880,94 +931,11 @@
        ]
       },
       {
-       "id": "force-virtues",
-       "type": "group",
-       "title": "Virtues",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
-       "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "trait-conscience",
-         "label": "Conscience",
-         "labelMessage": "catalog:virtues/conscience",
-         "required": false,
-         "valueKey": "conscience",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-passion",
-         "label": "Passion",
-         "labelMessage": "catalog:virtues/passion",
-         "required": false,
-         "valueKey": "passion",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-self-control",
-         "label": "Self Control",
-         "labelMessage": "catalog:virtues/self-control",
-         "required": false,
-         "valueKey": "self-control",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        }
-       ]
-      },
-      {
-       "id": "force-resources",
-       "type": "group",
-       "title": "Resources",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.resources",
-       "column": 2,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "resource-willpower",
-         "type": "primitive",
-         "bindingKey": "resource:willpower",
-         "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-         "minFrom": "min(passion + self-control, 10)"
-        },
-        {
-         "id": "resource-force-points",
-         "type": "primitive",
-         "bindingKey": "resource:force-points",
-         "label": "Force Points",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
-         "poolTracker": {
-          "display": "row",
-          "legend": false,
-          "total": true
-         },
-         "maxMinFrom": "self-control"
-        },
-        {
-         "id": "resource-dark-side",
-         "type": "primitive",
-         "bindingKey": "resource:dark-side-resistance",
-         "label": "Dark Side Resistance",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
-         "minFrom": "max(0, min(5 + conscience - passion, 10))"
-        }
-       ]
-      },
-      {
        "id": "force-powers-group",
        "type": "group",
        "title": "Force Powers",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers",
-       "column": 3,
+       "column": 2,
        "docsPath": "/docs/star-wars-wod-2e/character/force#force-powers",
        "collapsible": false,
        "children": [
@@ -980,20 +948,114 @@
          "columns": 1
         }
        ]
+      },
+      {
+       "id": "derived-stats",
+       "type": "group",
+       "title": "Force-derived stats",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.forceDerivedStats",
+       "column": 3,
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "derived-initiative-saber",
+         "label": "Initiative (Saber)",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber",
+         "required": false,
+         "type": "formula",
+         "formula": "wits + alertness + control"
+        },
+        {
+         "id": "derived-jumping",
+         "label": "Jumping Distance",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.jumpingDistance",
+         "required": false,
+         "type": "formula",
+         "formula": "max(min(control, telekinesis), 1)",
+         "prefix": "×"
+        },
+        {
+         "id": "derived-running",
+         "label": "Running Speed",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.runningSpeed",
+         "required": false,
+         "type": "formula",
+         "formula": "max(min(control, telekinesis), 1)",
+         "prefix": "×"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "advantages",
+     "type": "section",
+     "title": "Advantages",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages",
+     "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
+     "columns": 3,
+     "children": [
+      {
+       "id": "advantages-backgrounds",
+       "type": "group",
+       "title": "Backgrounds",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "list-backgrounds",
+         "type": "list",
+         "title": "Backgrounds",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
+         "bindingKey": "list:backgrounds",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "advantages-merits",
+       "type": "group",
+       "title": "Merits",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "list-merits",
+         "type": "list",
+         "title": "Merits",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+         "bindingKey": "list:merits",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "advantages-flaws",
+       "type": "group",
+       "title": "Flaws",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "list-flaws",
+         "type": "list",
+         "title": "Flaws",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+         "bindingKey": "list:flaws",
+         "columns": 1
+        }
+       ]
       }
      ]
     },
     {
      "id": "body",
      "type": "section",
-     "title": "Body",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.body",
+     "title": "Equipment",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment",
      "docsPath": "/docs/star-wars-wod-2e/equipment",
      "columns": 2,
-     "columnWidths": [
-      2,
-      1
-     ],
      "children": [
       {
        "id": "body-inventory",
@@ -1016,7 +1078,7 @@
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 1,
+       "column": 2,
        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
        "collapsible": true,
        "children": [
@@ -1048,7 +1110,7 @@
        "type": "group",
        "title": "Implants & Cyberware",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants",
-       "column": 1,
+       "column": 2,
        "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
        "collapsible": true,
        "children": [
@@ -1058,89 +1120,23 @@
          "bindingKey": "equipment:implants"
         }
        ]
-      },
-      {
-       "id": "body-health",
-       "type": "group",
-       "title": "Health",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-       "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "track-health",
-         "type": "primitive",
-         "bindingKey": "track:health",
-         "label": "Health",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-         "hideLabel": true,
-         "tracker": {
-          "total": true
-         }
-        }
-       ]
       }
      ]
     },
     {
      "id": "other",
      "type": "section",
-     "title": "Other",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.other",
-     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
-     "columns": 3,
+     "title": "Experience and Notes",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes",
+     "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+     "columns": 2,
      "children": [
-      {
-       "id": "derived-stats",
-       "type": "group",
-       "title": "Derived Stats",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.derivedStats",
-       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
-       "collapsible": false,
-       "columns": 2,
-       "children": [
-        {
-         "id": "derived-initiative",
-         "label": "Initiative (Std)",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
-         "required": false,
-         "type": "formula",
-         "formula": "wits + alertness"
-        },
-        {
-         "id": "derived-initiative-saber",
-         "label": "Initiative (Saber)",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber",
-         "required": false,
-         "type": "formula",
-         "formula": "wits + alertness + control"
-        },
-        {
-         "id": "derived-jumping",
-         "label": "Jumping Distance",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.jumpingDistance",
-         "required": false,
-         "type": "formula",
-         "formula": "max(min(control, telekinesis), 1)",
-         "prefix": "×"
-        },
-        {
-         "id": "derived-running",
-         "label": "Running Speed",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.runningSpeed",
-         "required": false,
-         "type": "formula",
-         "formula": "max(min(control, telekinesis), 1)",
-         "prefix": "×"
-        }
-       ]
-      },
       {
        "id": "experience",
        "type": "group",
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience",
+       "column": 1,
        "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
        "collapsible": false,
        "children": [
@@ -1177,6 +1173,7 @@
        "type": "group",
        "title": "Notes",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
+       "column": 2,
        "collapsible": false,
        "children": [
         {
@@ -1409,6 +1406,89 @@
          "multiline": true,
          "placeholder": "Character biography...",
          "placeholderMessage": "ttgamer.ui.sheet.base.biographyPlaceholder"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "condition",
+     "type": "section",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
+     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+     "columns": 2,
+     "children": [
+      {
+       "id": "condition-vitals",
+       "type": "group",
+       "title": "Damage and Willpower",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.damageAndWillpower",
+       "column": 1,
+       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "track-health",
+         "type": "primitive",
+         "bindingKey": "track:droid-damage",
+         "label": "Damage",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
+         "tracker": {
+          "total": true
+         }
+        },
+        {
+         "id": "resource-willpower",
+         "type": "primitive",
+         "bindingKey": "resource:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "minFrom": "min(passion + self-control, 10)"
+        }
+       ]
+      },
+      {
+       "id": "force-virtues",
+       "type": "group",
+       "title": "Virtues",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
+       "column": 2,
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "trait-conscience",
+         "label": "Conscience",
+         "labelMessage": "catalog:virtues/conscience",
+         "required": false,
+         "valueKey": "conscience",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-passion",
+         "label": "Passion",
+         "labelMessage": "catalog:virtues/passion",
+         "required": false,
+         "valueKey": "passion",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-self-control",
+         "label": "Self Control",
+         "labelMessage": "catalog:virtues/self-control",
+         "required": false,
+         "valueKey": "self-control",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
         }
        ]
       }
@@ -2030,88 +2110,12 @@
      ]
     },
     {
-     "id": "force",
-     "type": "section",
-     "title": "Resources",
-     "labelMessage": "ttgamer.ui.sheet.documents.fields.resources",
-     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-     "columns": 2,
-     "children": [
-      {
-       "id": "force-virtues",
-       "type": "group",
-       "title": "Virtues",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
-       "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "trait-conscience",
-         "label": "Conscience",
-         "labelMessage": "catalog:virtues/conscience",
-         "required": false,
-         "valueKey": "conscience",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-passion",
-         "label": "Passion",
-         "labelMessage": "catalog:virtues/passion",
-         "required": false,
-         "valueKey": "passion",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-self-control",
-         "label": "Self Control",
-         "labelMessage": "catalog:virtues/self-control",
-         "required": false,
-         "valueKey": "self-control",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        }
-       ]
-      },
-      {
-       "id": "force-resources",
-       "type": "group",
-       "title": "Resources",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.resources",
-       "column": 2,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "resource-willpower",
-         "type": "primitive",
-         "bindingKey": "resource:willpower",
-         "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-         "minFrom": "min(passion + self-control, 10)"
-        }
-       ]
-      }
-     ]
-    },
-    {
      "id": "body",
      "type": "section",
-     "title": "Body",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.body",
+     "title": "Equipment",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment",
      "docsPath": "/docs/star-wars-wod-2e/equipment",
      "columns": 2,
-     "columnWidths": [
-      2,
-      1
-     ],
      "children": [
       {
        "id": "body-inventory",
@@ -2134,7 +2138,7 @@
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 1,
+       "column": 2,
        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
        "collapsible": true,
        "children": [
@@ -2166,7 +2170,7 @@
        "type": "group",
        "title": "Implants & Cyberware",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants",
-       "column": 1,
+       "column": 2,
        "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
        "collapsible": true,
        "children": [
@@ -2176,36 +2180,14 @@
          "bindingKey": "equipment:implants"
         }
        ]
-      },
-      {
-       "id": "body-health",
-       "type": "group",
-       "title": "Damage",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
-       "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "track-health",
-         "type": "primitive",
-         "bindingKey": "track:droid-damage",
-         "label": "Damage",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
-         "hideLabel": true,
-         "tracker": {
-          "total": true
-         }
-        }
-       ]
       }
      ]
     },
     {
      "id": "other",
      "type": "section",
-     "title": "Other",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.other",
+     "title": "Experience and Notes",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes",
      "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
      "columns": 2,
      "children": [
@@ -2214,6 +2196,7 @@
        "type": "group",
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience",
+       "column": 1,
        "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
        "collapsible": false,
        "children": [
@@ -2250,6 +2233,7 @@
        "type": "group",
        "title": "Notes",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
+       "column": 2,
        "collapsible": false,
        "children": [
         {
@@ -5927,6 +5911,95 @@
      ]
     },
     {
+     "id": "condition",
+     "type": "section",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
+     "columns": 2,
+     "children": [
+      {
+       "id": "condition-vitals",
+       "type": "group",
+       "title": "Health and Willpower",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.healthAndWillpower",
+       "column": 1,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "track-health",
+         "type": "primitive",
+         "bindingKey": "track:health",
+         "label": "Health",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+        },
+        {
+         "id": "resource-willpower",
+         "type": "primitive",
+         "bindingKey": "resource:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "poolTracker": {
+          "display": "row",
+          "legend": false,
+          "total": true
+         }
+        },
+        {
+         "id": "derived-initiative",
+         "label": "Initiative",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
+         "required": false,
+         "type": "formula",
+         "formula": "wits + alertness"
+        }
+       ]
+      },
+      {
+       "id": "force-virtues",
+       "type": "group",
+       "title": "Virtues",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
+       "column": 2,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "trait-conscience",
+         "label": "Conscience",
+         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.conscience",
+         "required": false,
+         "valueKey": "conscience",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-self-control",
+         "label": "Self-Control",
+         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.selfControl",
+         "required": false,
+         "valueKey": "self-control",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        },
+        {
+         "id": "trait-courage",
+         "label": "Courage",
+         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.courage",
+         "required": false,
+         "valueKey": "courage",
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        }
+       ]
+      }
+     ]
+    },
+    {
      "id": "attributes",
      "type": "section",
      "title": "Attributes",
@@ -6512,89 +6585,11 @@
      ]
     },
     {
-     "id": "resources",
-     "type": "section",
-     "title": "Resources",
-     "labelMessage": "ttgamer.ui.sheet.documents.fields.resources",
-     "columns": 2,
-     "children": [
-      {
-       "id": "force-virtues",
-       "type": "group",
-       "title": "Virtues",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
-       "column": 1,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "trait-conscience",
-         "label": "Conscience",
-         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.conscience",
-         "required": false,
-         "valueKey": "conscience",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-self-control",
-         "label": "Self-Control",
-         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.selfControl",
-         "required": false,
-         "valueKey": "self-control",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        },
-        {
-         "id": "trait-courage",
-         "label": "Courage",
-         "labelMessage": "ttgamer.ui.sheet.wod2e.traits.courage",
-         "required": false,
-         "valueKey": "courage",
-         "type": "rating",
-         "min": 0,
-         "max": 5,
-         "presentation": "dots"
-        }
-       ]
-      },
-      {
-       "id": "resources-willpower",
-       "type": "group",
-       "title": "Willpower",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-       "column": 2,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "resource-willpower",
-         "type": "primitive",
-         "bindingKey": "resource:willpower",
-         "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-         "poolTracker": {
-          "display": "row",
-          "legend": false,
-          "total": true
-         }
-        }
-       ]
-      }
-     ]
-    },
-    {
      "id": "body",
      "type": "section",
-     "title": "Body",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.body",
+     "title": "Equipment",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment",
      "columns": 2,
-     "columnWidths": [
-      2,
-      1
-     ],
      "children": [
       {
        "id": "body-inventory",
@@ -6616,7 +6611,7 @@
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 1,
+       "column": 2,
        "collapsible": true,
        "children": [
         {
@@ -6640,56 +6635,22 @@
          "bindingKey": "equipment:armor"
         }
        ]
-      },
-      {
-       "id": "body-health",
-       "type": "group",
-       "title": "Health",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-       "column": 2,
-       "collapsible": false,
-       "children": [
-        {
-         "id": "track-health",
-         "type": "primitive",
-         "bindingKey": "track:health",
-         "label": "Health",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-         "hideLabel": true
-        }
-       ]
       }
      ]
     },
     {
      "id": "other",
      "type": "section",
-     "title": "Other",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.other",
-     "columns": 3,
+     "title": "Experience and Notes",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes",
+     "columns": 2,
      "children": [
-      {
-       "id": "derived-stats",
-       "type": "group",
-       "title": "Derived Stats",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.derivedStats",
-       "collapsible": false,
-       "children": [
-        {
-         "id": "derived-initiative",
-         "label": "Initiative",
-         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
-         "required": false,
-         "type": "formula",
-         "formula": "wits + alertness"
-        }
-       ]
-      },
       {
        "id": "experience",
        "type": "group",
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience",
+       "column": 1,
        "collapsible": false,
        "children": [
         {
@@ -6725,6 +6686,7 @@
        "type": "group",
        "title": "Notes",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
+       "column": 2,
        "collapsible": false,
        "children": [
         {
