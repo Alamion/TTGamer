@@ -8,7 +8,7 @@ import type { RulesetNode, SettingNode, TypeNode } from '../sheet/data/libraryTr
 
 /**
  * The create dialog's model (spec 039, D1–D2, D5): the kinds of the library tree in its order,
- * grouped by ruleset and setting, with the device's recent kinds and folded groups.
+ * grouped by ruleset and setting, with the device's recent kinds and fold choices.
  */
 export interface CreateChoice {
     /** `system/definition`, plus `/setting` inside a user setting (the option's `data-kind`). */
@@ -161,6 +161,13 @@ export function filterChoices(groups: readonly ChoiceGroup[], query: string): Ch
         .filter(({ sections }) => sections.length > 0);
 }
 
+/** Whether a heading is open: rulesets by default, the settings inside them only when opened. */
+export const isOpenHeading = (
+    toggled: ReadonlySet<string>,
+    key: string,
+    level: 'group' | 'section'
+): boolean => toggled.has(key) !== (level === 'group');
+
 export const listChoices = (groups: readonly ChoiceGroup[]): CreateChoice[] =>
     groups.flatMap(({ sections }) => sections.flatMap(({ choices }) => choices));
 
@@ -171,8 +178,11 @@ const STORED_KEYS_LIMIT = 200;
 export interface CreatePreferences {
     /** Choice keys, newest first. */
     recent: string[];
-    /** Group and section keys the player folded. */
-    folded: string[];
+    /**
+     * Headings the player turned from their default: rulesets start open, the settings inside
+     * them start folded.
+     */
+    toggled: string[];
 }
 
 const keyList = (value: unknown, limit: number): string[] | undefined =>
@@ -190,7 +200,7 @@ function storage(): Storage | undefined {
 
 /** The device's preferences; anything unreadable is dropped and reported. */
 export function readCreatePreferences(): CreatePreferences {
-    const empty: CreatePreferences = { recent: [], folded: [] };
+    const empty: CreatePreferences = { recent: [], toggled: [] };
     let raw: string | null | undefined;
     try {
         raw = storage()?.getItem(CREATE_DIALOG_STORAGE_KEY);
@@ -203,9 +213,9 @@ export function readCreatePreferences(): CreatePreferences {
         const record =
             parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
         const recent = keyList(record.recent, RECENT_LIMIT);
-        const folded = keyList(record.folded, STORED_KEYS_LIMIT);
-        if (!recent || !folded) throw new Error('unexpected shape');
-        return { recent, folded };
+        const toggled = keyList(record.toggled, STORED_KEYS_LIMIT);
+        if (!recent || !toggled) throw new Error('unexpected shape');
+        return { recent, toggled };
     } catch (error) {
         reportSheetIssue({
             code: 'create-preferences-invalid',

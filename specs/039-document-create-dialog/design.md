@@ -167,3 +167,9 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   **Open** → her copy on the sheet. No page errors. Step 7 (two same-named types in a V5 user
   setting) is covered by `create-choices.test.ts` and `document-create-dialog.test.tsx` rather than
   walked. The dev server was running in Russian, so the walk used a build.
+- **Maintainer review (2026-10-18).** (1) The settings inside a ruleset start folded, the rulesets
+  open: D5's `folded` became `toggled` (headings turned from their default), unreleased so no
+  migration. (2) A copied example's portrait did not load on the Russian site: shipped portraits are
+  site paths (`/img/…`), and the Russian site serves static files under `/ru/`. The image field now
+  puts site paths under the base URL (`sitePortraitUrl`), which also fixes a deployment under a
+  sub-path; the stored value is unchanged.

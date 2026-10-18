@@ -107,6 +107,10 @@ describe('user document types (spec 012, US4)', () => {
     it('lists the type in the create dialog under its setting with its description', () => {
         installType();
         render(createElement(DocumentCreateDialog, { open: true, onOpenChange: () => {} }));
+        // Settings start folded; the search finds the type inside them.
+        fireEvent.change(screen.getByRole('combobox', { name: 'Search kinds' }), {
+            target: { value: 'organization' },
+        });
         const option = screen.getByRole('option', { name: /Organization/ });
         expect(option.closest('[role="group"]')?.getAttribute('aria-labelledby')).toBeTruthy();
         expect(screen.getByText('No description')).not.toBeNull();

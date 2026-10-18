@@ -5,6 +5,9 @@ export async function createDocument(page: Page, definition: string): Promise<vo
     await page.goto('/universal_sheet');
     await page.getByRole('button', { name: 'New', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Create document' });
+    // The settings inside a ruleset start folded.
+    const folded = dialog.locator('button[aria-expanded="false"]');
+    while ((await folded.count()) > 0) await folded.first().click();
     await dialog.locator(`[data-kind="${definition}"]`).click();
     await dialog.getByRole('button', { name: 'Create', exact: true }).click();
     await page.getByLabel('View mode').first().waitFor();

@@ -232,8 +232,9 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   descriptions. The search is a combobox over one listbox (`data-kind="system/definition[/setting]"`
   on options); from 640 px the details pane (start, name, folder through `MoveToPicker`, **Create**)
   sits beside the list, below it the two are steps with **Back**. Device key
-  `ttgamer:create-dialog:v1` holds `{ recent (≤ 5), folded }`; unreadable values and recent kinds
-  that are gone are dropped and reported (`create-preferences-invalid`, `create-recent-missing`).
+  `ttgamer:create-dialog:v1` holds `{ recent (≤ 5), toggled }`: headings turned from their default
+  (rulesets open, the settings inside them folded); unreadable values and recent kinds that are gone
+  are dropped and reported (`create-preferences-invalid`, `create-recent-missing`).
   `onCreated(id, { named, parentId })` lets the documents window skip its rename in place for a
   named document. Docs buttons (`CreateCharacterButton`) use the same path and report a missing kind
   or example as `create-kind-unavailable` with an error message.

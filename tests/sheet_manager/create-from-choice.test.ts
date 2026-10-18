@@ -4,14 +4,18 @@ import {
     createFromChoice,
     CreateUnavailableError,
 } from '@site/src/sheet_manager/features/documents/createFromChoice';
+import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { readDataPath } from '@site/src/sheet_manager/systems/templateBindings';
 import { MIRELA_VOSS_DATA } from '@site/src/sheet_manager/systems/v5/modules/vampire/example';
+import { cleanup, render } from '@testing-library/react';
+import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+import { setTestLocale } from '../stubs/testLocale';
 import { ASHEN_ID, NOW } from './helpers/library';
 
 beforeEach(() => {
@@ -198,5 +202,23 @@ describe('starting from an example (spec 039, US3)', () => {
             )
         ).toThrow(CreateUnavailableError);
         expect(useDocumentStore.getState().entries).toHaveLength(0);
+    });
+});
+
+describe('the copied portrait on the sheet', () => {
+    afterEach(() => {
+        cleanup();
+        setTestLocale('en');
+    });
+
+    it('loads from the Russian site base', () => {
+        setTestLocale('ru');
+        createFromChoice(
+            { systemId: 'wod-v5', definitionId: 'vampire' },
+            { exampleId: 'mirela-voss::example' }
+        );
+        render(createElement(CharacterSheet));
+        const portrait = document.querySelector('[data-template-root] img');
+        expect(portrait?.getAttribute('src')).toBe('/ru/img/mirela_voss.webp');
     });
 });

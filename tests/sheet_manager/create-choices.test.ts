@@ -163,9 +163,9 @@ describe('recent kinds and folds on the device (D5)', () => {
 
     it('ignores and reports unreadable stored preferences', () => {
         window.localStorage.setItem(CREATE_DIALOG_STORAGE_KEY, '{not json');
-        expect(readCreatePreferences()).toEqual({ recent: [], folded: [] });
+        expect(readCreatePreferences()).toEqual({ recent: [], toggled: [] });
         window.localStorage.setItem(CREATE_DIALOG_STORAGE_KEY, JSON.stringify({ recent: 4 }));
-        expect(readCreatePreferences()).toEqual({ recent: [], folded: [] });
+        expect(readCreatePreferences()).toEqual({ recent: [], toggled: [] });
         expect(takeSheetIssues().map(({ code }) => code)).toEqual([
             'create-preferences-invalid',
             'create-preferences-invalid',

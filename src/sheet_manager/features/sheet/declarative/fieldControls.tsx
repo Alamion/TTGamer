@@ -1,4 +1,5 @@
 import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
@@ -17,6 +18,7 @@ import {
     getSafePortraitUrl,
     loadPortrait,
     savePortrait,
+    sitePortraitUrl,
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
@@ -772,6 +774,7 @@ function ReferenceFieldControlRender({
 
 export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldControlProps) {
     const t = (descriptor: { message: string }) => translate(descriptor);
+    const baseUrl = useDocusaurusContext().siteConfig.baseUrl ?? '/';
     const image =
         typeof value === 'object' &&
         value !== null &&
@@ -805,7 +808,10 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
 
     const src =
         image?.source === 'url'
-            ? getSafePortraitUrl(image.url)
+            ? (() => {
+                  const safe = getSafePortraitUrl(image.url);
+                  return safe && sitePortraitUrl(safe, baseUrl);
+              })()
             : image?.source === 'device'
               ? deviceUrl
               : undefined;

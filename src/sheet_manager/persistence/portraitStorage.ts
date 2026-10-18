@@ -19,6 +19,16 @@ async function getStore() {
     });
 }
 
+/**
+ * A site path (`/img/…`, as shipped examples store it) under the site's base URL: the Russian site
+ * and a deployment under a sub-path serve static files below their base (`/ru/img/…`).
+ */
+export function sitePortraitUrl(safe: string, baseUrl: string): string {
+    const base = baseUrl.replace(/\/$/, '');
+    if (!safe.startsWith('/') || !base || safe.startsWith(`${base}/`)) return safe;
+    return `${base}${safe}`;
+}
+
 export function getSafePortraitUrl(value?: string): string | undefined {
     const trimmed = value?.trim();
     if (!trimmed) return undefined;

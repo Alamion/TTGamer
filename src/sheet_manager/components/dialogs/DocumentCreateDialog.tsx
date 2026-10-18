@@ -13,6 +13,7 @@ import {
     createChoices,
     type CreatePreferences,
     filterChoices,
+    isOpenHeading,
     listChoices,
     readCreatePreferences,
     recentChoices,
@@ -110,7 +111,7 @@ function CreateDialogContent({
         () => recent[0]?.key ?? listChoices(groups)[0]?.key
     );
     const selected = selectedKey ? byKey.get(selectedKey) : undefined;
-    const folded = useMemo(() => new Set(preferences.folded), [preferences.folded]);
+    const toggled = useMemo(() => new Set(preferences.toggled), [preferences.toggled]);
     const idBase = useId();
     const plural = usePluralMessage();
 
@@ -119,9 +120,11 @@ function CreateDialogContent({
     for (const choice of recent) rows.push({ id: rowId('recent', choice.key), choice });
     const optionRows = new Map<string, Row>();
     for (const group of shown) {
-        if (!searching && folded.has(group.key)) continue;
+        if (!searching && !isOpenHeading(toggled, group.key, 'group')) continue;
         for (const section of group.sections) {
-            if (!searching && section.name && folded.has(section.key)) continue;
+            if (!searching && section.name && !isOpenHeading(toggled, section.key, 'section')) {
+                continue;
+            }
             for (const choice of section.choices) {
                 const row = { id: rowId('kind', choice.key), choice };
                 rows.push(row);
@@ -155,12 +158,12 @@ function CreateDialogContent({
     }, [activeId]);
 
     const toggleFold = (key: string) => {
-        const next = folded.has(key)
-            ? preferences.folded.filter((other) => other !== key)
-            : [...preferences.folded, key];
-        const stored = { ...readCreatePreferences(), folded: next };
+        const next = toggled.has(key)
+            ? preferences.toggled.filter((other) => other !== key)
+            : [...preferences.toggled, key];
+        const stored = { ...readCreatePreferences(), toggled: next };
         writeCreatePreferences(stored);
-        setPreferences((current) => ({ ...current, folded: next }));
+        setPreferences((current) => ({ ...current, toggled: next }));
     };
 
     // Below 640 px the dialog shows the kinds, then the chosen kind's details (D4).
@@ -334,7 +337,7 @@ function CreateDialogContent({
                                 group={group}
                                 idBase={idBase}
                                 searching={searching}
-                                folded={folded}
+                                toggled={toggled}
                                 onToggle={toggleFold}
                                 renderOption={(choice) => {
                                     const row = optionRows.get(choice.key);
@@ -559,19 +562,19 @@ function ChoiceGroupView({
     group,
     idBase,
     searching,
-    folded,
+    toggled,
     onToggle,
     renderOption,
 }: {
     group: ChoiceGroup;
     idBase: string;
     searching: boolean;
-    folded: ReadonlySet<string>;
+    toggled: ReadonlySet<string>;
     onToggle: (key: string) => void;
     renderOption: (choice: CreateChoice) => ReactNode;
 }) {
     const headingId = `${idBase}-${group.key}`;
-    const expanded = searching || !folded.has(group.key);
+    const expanded = searching || isOpenHeading(toggled, group.key, 'group');
     return (
         <div role="group" aria-labelledby={headingId}>
             <FoldHeading
@@ -585,7 +588,7 @@ function ChoiceGroupView({
                 group.sections.map((section) => {
                     if (!section.name) return section.choices.map(renderOption);
                     const sectionId = `${idBase}-${section.key}`;
-                    const open = searching || !folded.has(section.key);
+                    const open = searching || isOpenHeading(toggled, section.key, 'section');
                     return (
                         <div
                             key={section.key}

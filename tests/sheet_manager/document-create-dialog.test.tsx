@@ -17,6 +17,13 @@ const options = () =>
     within(screen.getByRole('listbox', { name: 'Document kinds' })).queryAllByRole('option');
 const kinds = () => options().map((option) => option.getAttribute('data-kind'));
 const type = (text: string) => fireEvent.change(search(), { target: { value: text } });
+/** Opens every folded heading (the settings inside a ruleset start folded). */
+const openAll = () => {
+    for (let heading = document.querySelector('button[aria-expanded="false"]'); heading;) {
+        fireEvent.click(heading);
+        heading = document.querySelector('button[aria-expanded="false"]');
+    }
+};
 
 beforeEach(() => {
     useDocumentStore.setState({ documents: [], entries: [], folders: [], currentDocumentId: null });
@@ -32,6 +39,15 @@ describe('finding the kind (spec 039, US1)', () => {
     it('opens with the focus in the search and every kind under its ruleset', () => {
         open();
         expect(document.activeElement).toBe(search());
+        // Rulesets start open, the settings inside them folded.
+        const expanded = (name: string) =>
+            screen.getByRole('button', { name }).getAttribute('aria-expanded');
+        expect(expanded('World of Darkness 2nd Edition')).toBe('true');
+        expect(expanded('World of Darkness 5th Edition')).toBe('true');
+        expect(expanded('Star Wars (World of Darkness 2e)')).toBe('false');
+        expect(expanded('Lunar Colony')).toBe('false');
+        expect(kinds()).toEqual(['wod-v5/hunter', 'wod-v5/vampire']);
+        openAll();
         expect(kinds()).toHaveLength(9 + 20 + 1);
         const v5 = screen.getByRole('group', { name: 'World of Darkness 5th Edition' });
         expect(within(v5).getByRole('group', { name: 'Lunar Colony' })).toBeTruthy();
@@ -58,36 +74,37 @@ describe('finding the kind (spec 039, US1)', () => {
         expect(screen.getByText('No kind matches "zzzz".')).toBeTruthy();
         fireEvent.click(screen.getByRole('button', { name: 'Clear search' }));
         expect((search() as HTMLInputElement).value).toBe('');
-        expect(kinds().length).toBeGreaterThan(9);
+        expect(kinds().length).toBeGreaterThan(0);
     });
 
-    it('folds a group and remembers it on the device', () => {
+    it('remembers folded rulesets and opened settings on the device', () => {
         open();
-        const heading = screen.getByRole('button', { name: 'World of Darkness 2nd Edition' });
-        expect(heading.getAttribute('aria-expanded')).toBe('true');
-        fireEvent.click(heading);
-        expect(kinds()).not.toContain('star-wars-wod/droid');
+        fireEvent.click(screen.getByRole('button', { name: 'Star Wars (World of Darkness 2e)' }));
+        expect(kinds()).toContain('star-wars-wod/droid');
+        fireEvent.click(screen.getByRole('button', { name: 'World of Darkness 5th Edition' }));
+        expect(kinds()).not.toContain('wod-v5/vampire');
         cleanup();
 
         open();
-        expect(
-            screen
-                .getByRole('button', { name: 'World of Darkness 2nd Edition' })
-                .getAttribute('aria-expanded')
-        ).toBe('false');
-        expect(kinds()).not.toContain('star-wars-wod/droid');
+        const expanded = (name: string) =>
+            screen.getByRole('button', { name }).getAttribute('aria-expanded');
+        expect(expanded('Star Wars (World of Darkness 2e)')).toBe('true');
+        expect(expanded('World of Darkness 5th Edition')).toBe('false');
+        expect(kinds()).toContain('star-wars-wod/droid');
+        expect(kinds()).not.toContain('wod-v5/vampire');
         // A search shows folded matches.
-        type('droid');
-        expect(kinds()).toEqual(['star-wars-wod/droid']);
-        expect(JSON.parse(window.localStorage.getItem(CREATE_DIALOG_STORAGE_KEY)!).folded).toEqual([
-            'r:wod-2e',
-        ]);
+        type('vamp');
+        expect(kinds()).toEqual(['wod-v5/vampire']);
+        expect(JSON.parse(window.localStorage.getItem(CREATE_DIALOG_STORAGE_KEY)!).toggled).toEqual(
+            ['s:system:star-wars-wod', 'r:wod-v5']
+        );
     });
 
     it('shows the kinds created last under Recent, newest first', () => {
         const create = (key: string) => {
             const onOpenChange = vi.fn();
             open({ onOpenChange });
+            openAll();
             fireEvent.click(document.querySelector(`[data-kind="${key}"]`)!);
             fireEvent.click(screen.getByRole('button', { name: 'Create' }));
             expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -174,6 +191,7 @@ describe('naming and placing it (spec 039, US2)', () => {
 describe('starting from an example (spec 039, US3)', () => {
     it('offers Blank and the examples only for kinds that ship them', () => {
         open();
+        openAll();
         fireEvent.click(document.querySelector('[data-kind="star-wars-wod/droid"]')!);
         expect(screen.queryByRole('group', { name: 'Start from' })).toBeNull();
         fireEvent.click(document.querySelector('[data-kind="star-wars-wod/vehicle"]')!);
@@ -213,6 +231,7 @@ describe('starting from an example (spec 039, US3)', () => {
 describe('keyboard and phone (spec 039, US4)', () => {
     it('walks the visible kinds with the arrows and creates with Enter, Enter', () => {
         open();
+        openAll();
         fireEvent.keyDown(search(), { key: 'ArrowDown' });
         fireEvent.keyDown(search(), { key: 'ArrowDown' });
         const active = search().getAttribute('aria-activedescendant')!;
@@ -255,6 +274,7 @@ describe('keyboard and phone (spec 039, US4)', () => {
         resetUserKinds();
         seedUserKinds(40);
         open();
+        openAll();
         expect(kinds()).toHaveLength(50);
         type('v');
         type('va');
@@ -266,6 +286,7 @@ describe('keyboard and phone (spec 039, US4)', () => {
 
     it('clears a chosen user type deleted while the dialog is open', () => {
         open();
+        openAll();
         fireEvent.click(screen.getByRole('option', { name: /Ledger 3/ }));
         expect(screen.getByRole('heading', { name: 'Ledger 3' })).toBeTruthy();
         act(() => resetUserKinds());
