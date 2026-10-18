@@ -48,13 +48,13 @@ open its brief beside a vampire at 400 px with no sideways scrolling.
 
 **Check**: on "Detective Ruiz" click Firearms 5; five V5 dice roll and the result names him.
 
-- [ ] T010 [US2] Extend `storyteller-sheet.test.tsx`: standard and exceptional pools roll that many
+- [x] T010 [US2] Extend `storyteller-sheet.test.tsx`: standard and exceptional pools roll that many
       dice and name the document, no Hunger or Desperation dice, the difficulty button rolls 2 ×
       difficulty and is hidden at 0
-- [ ] T011 [US2] Add the "Roll 2×N" button (spec 038 button, notation built from `difficulty`,
+- [x] T011 [US2] Add the "Roll 2×N" button (spec 038 button, notation built from `difficulty`,
       `availableWhen` difficulty > 0) to the Storyteller pages in `core/templates.ts`; wire any
       missing roll path the test finds (D5)
-- [ ] T012 [US2] Run the targeted tests and commit the story
+- [x] T012 [US2] Run the targeted tests and commit the story
 
 ## User Story 3 - Groups and who belongs to them (P2)
 

@@ -3,6 +3,14 @@
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
+import {
+    evaluateFormulaValue,
+    parseFormula,
+} from '@site/src/sheet_manager/features/sheet/declarative/formula';
+import {
+    type ButtonRunContext,
+    runButton,
+} from '@site/src/sheet_manager/features/sheet/declarative/runButton';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import {
@@ -10,6 +18,7 @@ import {
     type V5StorytellerData,
     V5StorytellerSchema,
 } from '@site/src/sheet_manager/systems/v5/core/storyteller';
+import { simpleFoeButton } from '@site/src/sheet_manager/systems/v5/core/storytellerTemplates';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -156,6 +165,44 @@ describe('rolling a Storyteller character (spec 040, US2)', () => {
                     (options.origin as { source: { specialDice?: number } }).source.specialDice ?? 0
                 ).toBe(0);
             }
+        },
+        RENDER_TIMEOUT
+    );
+});
+
+describe('the simple-foe roll (spec 040, US2)', () => {
+    it('rolls twice the Difficulty in dice', async () => {
+        const notations: string[] = [];
+        const values: Record<string, number> = { difficulty: 3 };
+        const context: ButtonRunContext = {
+            evaluate: (source) => {
+                const parsed = parseFormula(source);
+                if (!parsed.ok) return { ok: false, error: 'parse' };
+                return evaluateFormulaValue(parsed.expr, (path) => values[path]);
+            },
+            read: (target) => values[target],
+            bounds: () => undefined,
+            roll: async (notation) => {
+                notations.push(notation);
+                return { total: 2 };
+            },
+        };
+        await runButton(simpleFoeButton(), context);
+        expect(notations).toEqual(['6d10>=6']);
+    });
+
+    it(
+        'is available only while the character has a Difficulty',
+        () => {
+            seed({ ...RUIZ, difficulty: 0 }, 'v5-storyteller-brief');
+            render(createElement(CharacterSheet));
+            const button = () =>
+                screen.getByRole('button', { name: 'Roll as a simple foe' }) as HTMLButtonElement;
+            expect(button().disabled).toBe(true);
+            cleanup();
+            seed({ ...RUIZ, difficulty: 3 }, 'v5-storyteller-brief');
+            render(createElement(CharacterSheet));
+            expect(button().disabled).toBe(false);
         },
         RENDER_TIMEOUT
     );
