@@ -147,3 +147,21 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
    Hunger dice; switch on → Hunger 3 again.
 6. Docs → Storyteller characters → copy the cult → the cult and three members appear, linked.
 7. A user setting on V5 → both kinds listed under it in the create dialog.
+
+## Implementation notes
+
+- **D2/D3 — the look is the game's**: the number look of pools and exceptional pools is a binding
+  option (`TraitBinding.presentation`, `ListBinding.presentation`, with `ListBinding.maximum`), not
+  a page setting, as trait bounds already are; the `StatDot` atom gained `presentation: 'number'`
+  and `TraitRow`/`CustomTraitList` pass it on. The editor needs no new setting (the parity test
+  already treats a trait's look as the game's), and the storybook shows the number variants as their
+  own binding shapes.
+- **D3 — skill names**: the `v5-skills` entries carry `nameMessage` (the sheet's skill label); the
+  catalog registry (`features/sheet/data/catalogBindings.ts`) translates such entries, since system
+  modules load in Node scripts without `@docusaurus/Translate`. Exception recorded in
+  `translations/i18n-exceptions.yaml`.
+- **D4 — track length**: no separate "boxes" fields; Health and Willpower are four boxes plus the
+  track's own +/− (`bonus` −3…+11, so 1–15 boxes), the control the player tracks already have.
+- **D10 — docs folder**: the Storyteller pages go to `docs/wod-v5/storyteller/`, and their terms
+  (the pool names, Storyteller character) to `translations/glossary/v5-storyteller.yaml` scoped to
+  that folder: "Physical" and "Social" are ordinary words on the damage page.

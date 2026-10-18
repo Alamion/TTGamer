@@ -32,6 +32,7 @@ describe('catalog binding registry', () => {
                 'v5-vampire-powers',
                 'v5-vampire-rituals',
                 'v5-vampire-predator-types',
+                'v5-skills',
                 'vehicles',
             ].sort()
         );

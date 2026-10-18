@@ -11,6 +11,8 @@ import { StatDot } from './StatDot.tsx';
 import { StatLabel } from './StatLabel.tsx';
 
 interface TraitRowProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     label: string;
     /** Book term of the label (spec 009). */
     term?: TermLink;
@@ -41,6 +43,7 @@ interface TraitRowProps {
 }
 
 export function TraitRow({
+    presentation,
     label,
     term,
     value,
@@ -62,6 +65,7 @@ export function TraitRow({
         <div className={clsx('term-row flex items-end justify-between gap-2 py-1', className)}>
             <StatLabel label={label} tooltip={tooltip} term={term} />
             <StatDot
+                presentation={presentation}
                 value={value}
                 maxValue={maxValue}
                 onChange={onChange}
@@ -81,6 +85,8 @@ export function TraitRow({
 }
 
 interface TraitRowWithInputProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     name: string;
     /** Book term of the label (spec 009). */
     term?: TermLink;
@@ -113,6 +119,7 @@ interface TraitRowWithInputProps {
 }
 
 export function TraitRowWithInput({
+    presentation,
     name,
     term,
     specializationText = '',
@@ -160,6 +167,7 @@ export function TraitRowWithInput({
                     )}
                 />
                 <StatDot
+                    presentation={presentation}
                     value={value}
                     maxValue={maxValue}
                     onChange={onChange}
@@ -180,6 +188,8 @@ export function TraitRowWithInput({
 }
 
 interface CustomTraitListProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     items: Array<{
         id: string;
         label: string;
@@ -226,6 +236,7 @@ const traitListColumns = {
 };
 
 export function CustomTraitList({
+    presentation,
     items,
     onAdd,
     onRemove,
@@ -294,6 +305,7 @@ export function CustomTraitList({
                         />
                     )}
                     <StatDot
+                        presentation={presentation}
                         value={item.value}
                         maxValue={maxValue}
                         onChange={(val, spec, exp, prc) => onChange(item.id, val, spec, exp, prc)}

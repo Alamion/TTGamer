@@ -2,7 +2,12 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { SystemIdSchema } from '../../types/document';
 import type { SystemPlugin } from '../types';
-import { v5CharacterDefinition } from './core/definition';
+import { v5CharacterDefinition, v5StorytellerDefinition } from './core/definition';
+import { storytellerTemplateBindings } from './core/storytellerBindings';
+import {
+    v5StorytellerBriefTemplate,
+    v5StorytellerSheetTemplate,
+} from './core/storytellerTemplates';
 import { v5CoreBriefTemplate, v5CoreSheetTemplate } from './core/templates';
 import { hunterTemplateBindings } from './modules/hunter/bindings';
 import { hunterCatalogs } from './modules/hunter/catalogs';
@@ -17,6 +22,7 @@ import { hungerDiceLine } from './modules/vampire/dice';
 import { vampireBriefTemplate } from './modules/vampire/templates/brief';
 import { vampireSheetTemplate } from './modules/vampire/templates/sheet';
 import { buildV5CoreBindings } from './ruleset/bindings';
+import { v5RulesetCatalogs } from './ruleset/catalogs';
 import { createV5DiceRules } from './ruleset/dice';
 
 /**
@@ -34,7 +40,12 @@ export const v5System: SystemPlugin = {
     id: V5_SYSTEM_ID,
     label: uiMessages.sheet.v5.system,
     policies: ['dark-pack'],
-    documents: [hunterDefinition, vampireDefinition, v5CharacterDefinition],
+    documents: [
+        hunterDefinition,
+        vampireDefinition,
+        v5CharacterDefinition,
+        v5StorytellerDefinition,
+    ],
     defaultTemplates: [
         hunterSheetTemplate,
         hunterBriefTemplate,
@@ -42,15 +53,18 @@ export const v5System: SystemPlugin = {
         vampireBriefTemplate,
         v5CoreSheetTemplate,
         v5CoreBriefTemplate,
+        v5StorytellerSheetTemplate,
+        v5StorytellerBriefTemplate,
     ],
     templateBindings: [
         ...hunterTemplateBindings,
         ...vampireTemplateBindings,
         ...buildV5CoreBindings(new Set(['mortal'])),
+        ...storytellerTemplateBindings,
     ],
-    catalogs: [...hunterCatalogs, ...vampireCatalogs],
+    catalogs: [...v5RulesetCatalogs, ...hunterCatalogs, ...vampireCatalogs],
     dice: createV5DiceRules([hungerDiceLine, desperationDiceLine]),
-    coreDefinitions: [v5CharacterDefinition.id],
+    coreDefinitions: [v5CharacterDefinition.id, v5StorytellerDefinition.id],
 };
 
 export { hunterDefinition } from './modules/hunter/definition';

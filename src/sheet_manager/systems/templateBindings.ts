@@ -33,6 +33,8 @@ export interface TraitBinding extends BindingBase {
      * specialization/experienced/practiced flags of WoD-like systems.
      */
     row?: { specialization?: boolean; flags?: boolean };
+    /** How the game shows the value: dots (default) or a number (pools past five dots). */
+    presentation?: 'dots' | 'number';
 }
 
 /** Translation descriptor as generated in `uiMessages`. */
@@ -47,6 +49,8 @@ export type SystemListShape = 'trait' | 'merit-flaw' | 'named-trait';
 export interface ListCatalogSupport {
     /** Catalog adapter id in features/sheet/data/catalogBindings.ts (copy-on-select). */
     catalogId: string;
+    /** Further catalogs offered together with `catalogId` (an NPC's Disciplines and Edges). */
+    catalogIds?: readonly string[];
     /** Optional option filter (e.g. the merits/flaws split by entry type). */
     catalogFilter?: { key: string; value: string };
 }
@@ -73,6 +77,10 @@ export interface ListBinding extends BindingBase {
     flags?: boolean;
     /** Trait lists: the name input's placeholder (default "Custom skill"). */
     placeholder?: TranslationDescriptor;
+    /** Trait lists: the highest value (default 5). */
+    maximum?: number;
+    /** Trait lists: dots (default) or a number field per entry. */
+    presentation?: 'dots' | 'number';
 }
 
 /** Raw document-data entry for a new list item, shaped by the list's entry shape. */

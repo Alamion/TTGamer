@@ -172,7 +172,7 @@ describe('reference targets (T-075)', () => {
         openPage(HUNTER, [allyField(['character'])]);
         selectInOutline('ally');
         const labels = kinds('ally').map(({ label }) => label);
-        expect(labels).toHaveLength(4);
+        expect(labels).toHaveLength(5);
         expect(labels).toEqual(expect.arrayContaining(['Mortal', 'Cell', 'Haven']));
         expect(labels.join()).not.toMatch(/Creature|Cult|Organization/);
     });

@@ -91,3 +91,33 @@ core:
     views:
         sheet: Полный лист
         brief: Краткий лист
+storyteller:
+    type: Персонаж рассказчика
+    section: Персонаж рассказчика
+    views:
+        sheet: Полный лист
+        brief: Краткий лист
+    fields:
+        concept: Концепция
+        kind: Тип
+        difficulty: Сложность
+        physical: Физический
+        social: Социальный
+        mental: Ментальный
+    kinds:
+        mortal: Смертный
+        ghoul: Гуль
+        animal: Животное
+        supernatural: Сверхъестественное
+        other: Другое
+    sections:
+        pools: Стандартные пулы
+        exceptional: Особые пулы
+        powers: Дисциплины и силы
+        notes: Особенности
+        simpleFoe: Простой противник
+    placeholders:
+        exceptional: Навык или задача
+        power: Дисциплина, дар или сила
+    rollSimpleFoe: Бросок простого противника
+    rollSimpleFoeMessage: Удвоенная Сложность — так правила предлагают бросать за простого противника.

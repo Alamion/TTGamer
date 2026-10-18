@@ -116,7 +116,9 @@ describe('user settings (spec 012, US6)', () => {
             },
         });
         render(createElement(DocumentCreateDialog, { open: true, onOpenChange: () => {} }));
-        fireEvent.click(screen.getByRole('option', { name: 'Mortal · Ashen Realms' }));
+        // The setting holds two core kinds now, under its own folded heading.
+        fireEvent.click(screen.getByRole('button', { name: 'Ashen Realms' }));
+        fireEvent.click(screen.getByRole('option', { name: 'Mortal' }));
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         cleanup();
 

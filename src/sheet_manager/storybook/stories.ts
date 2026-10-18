@@ -849,7 +849,7 @@ const listEntries = story(
 
 /**
  * One variant per binding shape: the kind plus what changes its rendering (pool or rating
- * resource, member or computed-length track, field value type, equipment section).
+ * resource, member or computed-length track, field value type, equipment section, number look).
  */
 export function bindingSignature(binding: DocumentBindingDescriptor): string {
     switch (binding.kind) {
@@ -863,9 +863,12 @@ export function bindingSignature(binding: DocumentBindingDescriptor): string {
             return `equipment:${binding.sectionId}`;
         case 'rows':
             return 'rows';
-        default:
-            return binding.kind;
+        // Values shown as a number field (NPC pools, spec 040) are their own variant.
+        case 'trait':
+        case 'list':
+            return binding.presentation === 'number' ? `${binding.kind}:number` : binding.kind;
     }
+    return (binding as { kind: string }).kind;
 }
 
 function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInput[] {

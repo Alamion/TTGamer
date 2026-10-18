@@ -4,11 +4,11 @@
 
 ## Foundation
 
-- [ ] T001 Add the Storyteller and group strings (fields, types, sections, views, tracking switch,
+- [x] T001 Add the Storyteller and group strings (fields, types, sections, views, tracking switch,
       member-of, difficulty roll) to `translations/source/en/ui/sheet/v5.yaml` and
       `translations/source/ru/ui/sheet/v5.yaml`, the example labels to `ui/sheet/documents.yaml`
       (en + ru), and run `yarn build:translations`
-- [ ] T002 Extend `ListBinding` with `maximum?` (default 5) and `ListCatalogSupport` with
+- [x] T002 Extend `ListBinding` with `maximum?` (default 5) and `ListCatalogSupport` with
       `catalogIds?` in `src/sheet_manager/systems/templateBindings.ts`, honored by the trait list in
       `src/sheet_manager/features/sheet/declarative/primitives.tsx`; tests in
       `tests/sheet_manager/system-list-options.test.tsx` (a 0–15 list, suggestions from two
@@ -20,29 +20,29 @@
 **Check**: create "Detective Ruiz" (3/5/4, Health 5, Willpower 5, Investigation 7, Firearms 5) and
 open its brief beside a vampire at 400 px with no sideways scrolling.
 
-- [ ] T003 [US1] Write `tests/sheet_manager/systems/v5/storyteller.test.ts`: schema defaults,
+- [x] T003 [US1] Write `tests/sheet_manager/systems/v5/storyteller.test.ts`: schema defaults,
       clamped pools (0–15), track lengths 1–15, type enum, difficulty 0–5, bindings resolve,
       `v5-skills` catalog names in en and ru
-- [ ] T004 [US1] Add `V5StorytellerSchema` and its default in
+- [x] T004 [US1] Add `V5StorytellerSchema` and its default in
       `src/sheet_manager/systems/v5/core/storyteller.ts` and the `v5-skills` catalog from
       `V5_SKILL_GROUPS` in `src/sheet_manager/systems/v5/ruleset/catalogs.ts` (D3)
-- [ ] T005 [US1] Add the Storyteller bindings in `src/sheet_manager/systems/v5/core/bindings.ts`:
+- [x] T005 [US1] Add the Storyteller bindings in `src/sheet_manager/systems/v5/core/bindings.ts`:
       pool traits (map `pools`, 0–15, D2), `health-max`/`willpower-max` fields and tracks with that
       length (D4), `difficulty`, `exceptional` (maximum 15, `v5-skills`) and `powers` (catalogs
       `v5-vampire-disciplines`, `v5-hunter-edges`) lists (D3), identity fields with `syncsTitle` on
       the name, portrait, notes
-- [ ] T006 [US1] Write the full page and brief in `src/sheet_manager/systems/v5/core/templates.ts`
+- [x] T006 [US1] Write the full page and brief in `src/sheet_manager/systems/v5/core/templates.ts`
       from `ruleset/templateParts.ts`; pools as number ratings over the bridged coordinates (extend
       the trait primitive with `presentation` if it ignores it, D2, then also offer it in the
       template editor and add a storybook variant in `docs/dev/storybook/template-elements.mdx`)
-- [ ] T007 [US1] Register `v5StorytellerDefinition` (kind `storyteller`, no module, in
+- [x] T007 [US1] Register `v5StorytellerDefinition` (kind `storyteller`, no module, in
       `coreDefinitions`) in `src/sheet_manager/systems/v5/core/definition.ts` and
       `src/sheet_manager/systems/v5/index.ts` (D1)
-- [ ] T008 [US1] Write `tests/sheet_manager/systems/v5/storyteller-sheet.test.tsx`: both pages
+- [x] T008 [US1] Write `tests/sheet_manager/systems/v5/storyteller-sheet.test.tsx`: both pages
       render with the Dark Pack badge, the kind is offered by the create dialog under V5 and in a
       user setting on V5, found by «рассказчик»; extend `tests-e2e/smoke/brief-layout.spec.ts` with
       the Storyteller brief at 400 px and 360 px
-- [ ] T009 [US1] Run `yarn verify` (new schema) and commit the story
+- [x] T009 [US1] Run `yarn verify` (new schema) and commit the story
 
 ## User Story 2 - Roll an NPC's pools from its sheet (P1)
 

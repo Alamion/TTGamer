@@ -91,3 +91,33 @@ core:
     views:
         sheet: Full sheet
         brief: Brief
+storyteller:
+    type: Storyteller character
+    section: Storyteller character
+    views:
+        sheet: Full sheet
+        brief: Brief
+    fields:
+        concept: Concept
+        kind: Type
+        difficulty: Difficulty
+        physical: Physical
+        social: Social
+        mental: Mental
+    kinds:
+        mortal: Mortal
+        ghoul: Ghoul
+        animal: Animal
+        supernatural: Supernatural
+        other: Other
+    sections:
+        pools: Standard dice pools
+        exceptional: Exceptional dice pools
+        powers: Disciplines and powers
+        notes: Special notes
+        simpleFoe: Simple foe
+    placeholders:
+        exceptional: Skill or task
+        power: Discipline, Edge, or power
+    rollSimpleFoe: Roll as a simple foe
+    rollSimpleFoeMessage: Twice the Difficulty, as the rules suggest for a simple foe.

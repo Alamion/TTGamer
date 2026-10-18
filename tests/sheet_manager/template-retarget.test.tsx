@@ -147,6 +147,7 @@ describe('planning a template retarget (T-070)', () => {
         const ashenGroup = groups.find(({ label }) => label === 'Ashen Realms');
         expect(ashenGroup?.options.map(({ value }) => value)).toEqual([
             `wod-v5/mortal/${SETTING_ID}`,
+            `wod-v5/storyteller/${SETTING_ID}`,
         ]);
         const starWars = groups.find(({ options }) =>
             options.some(({ value }) => value === `star-wars-wod/${TYPE_ID}`)

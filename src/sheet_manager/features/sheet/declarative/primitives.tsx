@@ -155,17 +155,18 @@ export function toCatalogEntries(
 /** Catalog entries for a bound list (registry-declared catalog + filter), localized. */
 function listCatalog(binding: ListBinding, locale: string): CatalogEntry[] | undefined {
     if (!binding.catalog) return undefined;
-    const { catalogId, catalogFilter } = binding.catalog;
-    const catalog = getCatalogBinding(catalogId);
-    if (!catalog) {
+    const { catalogId, catalogIds = [], catalogFilter } = binding.catalog;
+    const entries = [catalogId, ...catalogIds].flatMap((id) => {
+        const catalog = getCatalogBinding(id);
+        if (catalog) return toCatalogEntries(catalog, locale, catalogFilter);
         reportSheetIssue({
             code: 'catalog-unavailable',
             message: 'List binding declares a catalog that is not registered',
-            details: { catalogId, bindingKey: binding.key },
+            details: { catalogId: id, bindingKey: binding.key },
         });
-        return undefined;
-    }
-    return toCatalogEntries(catalog, locale, catalogFilter);
+        return [];
+    });
+    return entries.length > 0 ? entries : undefined;
 }
 
 /**
@@ -225,6 +226,8 @@ function TraitListBindingView({
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={traitDiceRoll}
             onMove={onMove}
+            maxValue={binding.maximum}
+            presentation={binding.presentation}
         />
     );
 }
@@ -618,6 +621,7 @@ function PrimitiveTraitBody({
                 term={termLinkOf(node)}
                 value={trait.value}
                 maxValue={descriptor.maximum}
+                presentation={descriptor.presentation}
                 minimal={descriptor.minimum > 0 ? descriptor.minimum : undefined}
                 disabled={readOnly}
                 onChange={(value, specialization, experienced, practiced) =>
@@ -664,6 +668,7 @@ function PrimitiveTraitBody({
             size="md"
             minimal={descriptor.minimum}
             maxValue={descriptor.maximum}
+            presentation={descriptor.presentation}
             showFlags={showFlags}
             specialization={trait.specialization ?? false}
             experienced={trait.experienced ?? false}
