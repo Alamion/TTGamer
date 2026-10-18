@@ -124,14 +124,14 @@ to each other.
 
 ## Finish
 
-- [ ] T029 Update `src/sheet_manager/AGENTS.md` (V5 core kinds, linked-from, tracking switch), the
+- [x] T029 Update `src/sheet_manager/AGENTS.md` (V5 core kinds, linked-from, tracking switch), the
       `sheet-templates` skill (`references/bindings.md`: list `maximum`, `catalogIds`;
       `references/node-tree.md`: incoming references; reference scope of ruleset-level pages), and
       the `mdx-documentation` skill (Storyteller pages); update the template editor guide's
       `docs/guide/template-editor/elements.mdx` "Document references" (incoming references;
       ruleset-level pages reach module kinds) and `docs/guide/sheet.mdx`, with their Russian
       mirrors; mark T-040 done in `TODO.md` and add the crowd document as a new backlog entry
-- [ ] T030 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 10 KB
+- [x] T030 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 10 KB
       gzip); walk the steps in design.md "Manual walk" (SC-001); record the results in design.md
 
 ## Coverage

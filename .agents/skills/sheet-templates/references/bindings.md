@@ -84,7 +84,12 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   `suggestions: { catalogId }` turns a bridged text field into free text with catalog suggestions
   (`useCatalogSuggestions`, localized names).
 - List bindings may set `polarity` (`positive`/`negative`) for merit/flaw lists without a catalog
-  filter, and `translation` for the title.
+  filter, and `translation` for the title. Trait lists take `maximum` (default 5) and
+  `presentation: 'number'` (a number field per entry instead of dots, e.g. NPC pools up to 15), and
+  `catalog.catalogIds` offers further catalogs with `catalogId` (Disciplines and Edges together).
+  Trait bindings take the same `presentation`; the look of a game value is the game's, so the editor
+  offers no setting for it (spec 040). Catalog entries with `nameMessage` (the V5 skills) are named
+  by that UI message, translated by the catalog registry.
 - Rows bindings render `RowsBody` (a table over a data array; `enum` columns keep unknown stored
   text visible; `hidden` columns are stored but not shown; rows reorder with labelled move buttons).
   `catalog: { catalogIds, column, fills }` turns the name column into a catalog suggestion that
@@ -160,8 +165,9 @@ item array through the same molecules (V5 `weapons`, `inventory`).
     - user setting: the ruleset's `coreDefinitions` kinds + user types owned by the setting;
     - shipped line: the module's kinds + `coreDefinitions` kinds + user types owned by the module or
       by the system without a module;
-    - system without a module: its module-less kinds + user types owned by the system without a
-      module; an unregistered system: none.
+    - system without a module: every kind of the system, its modules' too, and every user type owned
+      by the system (spec 040: a V5 group page names hunters and vampires); an unregistered system:
+      none.
 
     Equal labels gain the setting (`targetLabel`); the user's own type of the same name in the same
     setting gets "(yours)". The editor's kind picker lists these, then stored targets outside them
@@ -173,7 +179,11 @@ item array through the same molecules (V5 `weapons`, `inventory`).
     remove, and reports `reference-target-out-of-scope` once; a stale id shows the "missing
     document" placeholder and reports `reference-target-missing` once (value kept). Neither is
     reported in previews; an absent `inScope` (story/preview options) reads as in scope. Reference
-    list entries (spec 016) render the same control.
+    list entries (spec 016) render the same control. A shipped page shown for a document of a user
+    setting (a core kind without a page of its own) takes the document's setting as its scope.
+    `incoming: true` (spec 040) makes the field read-only: it lists the documents of its target
+    kinds, in the document's system and setting, whose stored values name this document
+    (`features/documents/linkedFrom.ts`; any key, at most 200, `linked-from-truncated`).
 
 ## Document source
 

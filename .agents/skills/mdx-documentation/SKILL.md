@@ -118,7 +118,9 @@ Create buttons: `<CreateCharacterButton systemId="…" definitionId="…" />` (f
 `exampleId="<id>"` makes a copy of one of the kind's shipped examples ("Copy <name>"), as on the
 "Meet" pages of the first-character guides. Both confirm with a message linking to the sheet. The
 ids must name an installed kind and one of its `examples`; `docs-create-button.test.tsx` checks
-every page.
+every page. The V5 Storyteller pages (`docs/wod-v5/storyteller/`) preview their examples with
+`v5ExampleDocument(id)`; their own terms live in `translations/glossary/v5-storyteller.yaml`, scoped
+to that folder.
 
 ## V5 page format (candidate for all systems)
 

@@ -165,3 +165,26 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
 - **D10 — docs folder**: the Storyteller pages go to `docs/wod-v5/storyteller/`, and their terms
   (the pool names, Storyteller character) to `translations/glossary/v5-storyteller.yaml` scoped to
   that folder: "Physical" and "Social" are ordinary words on the damage page.
+- **D7 — scope of a shared page**: a shipped page shown for a document of a user setting (a core
+  kind without a page of its own) takes the document's setting as its reference scope; otherwise a
+  group in a user setting could not name members of that setting.
+- **D8 — one field**: `trackResources` on vampire and hunter data (default on), one toggle per sheet
+  ("Track Hunger and Willpower", hunter: "Track Willpower").
+- **D9 — the Sheriff** is a vampire example (`modules/vampire/antagonist.ts`), a companion of the
+  Lantern Choir; a companion that is missing is reported (`create-kind-unavailable`) and skipped.
+- **Group brief**: Threat sits on its own row; five dots do not fit a third of a phone.
+- **Brief baselines**: the hunter and mortal full sheets grew by the "Member of" section; their
+  heights in `tests-e2e/smoke/brief-baseline.ts` were measured again.
+- **SC-005 bundle (T030).** Unique JS and CSS the sheet page loads while creating a vampire through
+  the dialog, built from `testing` and from this branch: 19 files, 830,435 → 836,423 bytes gzip
+  (+5,988, about 5.8 KB) against a 10 KB budget.
+- **SC-004.** 50 groups of 30 members: a member's groups are read in well under 200 ms (perf test).
+- **Checks.** `yarn verify:full` passed: 3,051 unit, 15 perf, 51 browser tests.
+- **Manual walk (2026-10-18, built site in English; scripted with Playwright).** Steps 1–6 pass:
+  Ruiz with pools 3/5/4, five boxes of Health and Willpower, Investigation 7 and Firearms 5, his
+  brief without sideways scrolling at 400 px; Firearms rolls `5d10>=6`; Difficulty 3 enables the
+  simple-foe roll; a group naming Ruiz and a vampire shows in Ruiz's "Member of"; a vampire's
+  tracking switch hides and restores Hunger, Rouse, and Willpower; the docs' Lantern Choir copy
+  arrives with its three members linked. No page errors. Step 7 (both kinds in a user setting on V5)
+  is covered by `storyteller-sheet.test.tsx` and the library tests rather than walked. SC-001 (two
+  minutes on the first try) was met by the scripted walk, not by a player.

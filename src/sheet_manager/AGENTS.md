@@ -3,9 +3,10 @@
 ## Scope
 
 The universal sheet implementation supports Star Wars WEG/WoD characters, droids, creatures,
-vehicles, and fodder groups, Hunter: the Reckoning 5e characters, engine-only WoD 2e and V5
-characters, and user-defined document types and settings (spec 012). Definitions own their schemas
-and named views; do not fold kind-specific state into the shared document envelope.
+vehicles, and fodder groups, Hunter: the Reckoning 5e and Vampire: the Masquerade 5e characters,
+engine-only WoD 2e and V5 characters, V5 Storyteller characters and groups (spec 040), and
+user-defined document types and settings (spec 012). Definitions own their schemas and named views;
+do not fold kind-specific state into the shared document envelope.
 
 ## Structure
 
@@ -143,6 +144,18 @@ appropriate for layout/manager operations that explicitly manage the collection.
   `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
+- V5 core kinds (spec 040, `systems/v5/core/`): the mortal, the **Storyteller character**
+  (`v5-storyteller`, kind `storyteller`: pools as traits shown as numbers, Health/Willpower of 4 ±
+  the track's own adjustment, exceptional pools and powers as `named-trait` lists with catalog
+  suggestions, a simple-foe Difficulty with a "Roll as a simple foe" button), and the **Group**
+  (`v5-group`: name and emblem in data, everything else page fields, members a `reference` field).
+  All three are `coreDefinitions`, so user settings on V5 offer them. Every V5 character page ends
+  with "Member of", an incoming reference field read through `features/documents/linkedFrom.ts`
+  (index entries of the target kinds in the same system and setting, loaded by id, at most 200,
+  `linked-from-truncated`). Vampire and hunter data carry `trackResources` (default on): off hides
+  Hunger, Rouse, and Willpower (hunter: Willpower) by `visibleWhen` and the Hunger line adds no
+  dice. Group examples name their member examples as `companions`; `createFromChoice` copies those
+  first and relinks the group's values.
 - Bindings say where a document keeps its data; everything a page computes, shows, or does lives in
   the template as elements an author can configure (constitution VI, spec 038). A system never adds
   a behavior only its own code can produce: `tests/sheet_manager/shipped-parity.test.tsx` fails when
