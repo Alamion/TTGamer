@@ -1,6 +1,6 @@
 import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
-import { BASELINE } from './brief-baseline';
+import { BASELINE, BRIEF_PINS } from './brief-baseline';
 
 const WIDTHS = [320, 375, 640, 1280] as const;
 
@@ -47,3 +47,19 @@ test('the Star Wars character brief is a phone screen and a quarter of a desktop
     await page.setViewportSize({ width: 640, height: 800 });
     expect((await measureView(page)).height).toBeLessThanOrEqual(400);
 });
+
+/** Briefs keep their pinned heights when they become pages of brief blocks (spec 041, SC-001). */
+for (const [definition, pins] of Object.entries(BRIEF_PINS)) {
+    test(`${definition}: the brief keeps its height`, async ({ page }) => {
+        await createDocument(page, definition);
+        await showView(page, 'brief');
+        for (const width of [375, 1280] as const) {
+            await page.setViewportSize({ width, height: 800 });
+            const { height } = await measureView(page);
+            expect(
+                Math.abs(height - pins[width]) / pins[width],
+                `${width} px: ${height}`
+            ).toBeLessThan(0.01);
+        }
+    });
+}

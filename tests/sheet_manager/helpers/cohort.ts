@@ -2,6 +2,7 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { FodderData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import type { ConditionMark } from '@site/src/sheet_manager/types/condition';
+import { isContainerNode } from '@site/src/sheet_manager/types/template';
 
 export const EMPTY: ConditionMark[] = [
     'empty',
@@ -43,7 +44,7 @@ export function trackOnly(id: string, node = 'damage-track') {
     const walk = (nodes: typeof source.children) => {
         for (const child of nodes) {
             if (child.id === node) found.push(child);
-            if (child.type === 'section' || child.type === 'group') walk(child.children);
+            if (isContainerNode(child)) walk(child.children);
         }
     };
     walk(source.children);

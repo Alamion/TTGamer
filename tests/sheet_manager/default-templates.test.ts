@@ -13,7 +13,11 @@ import {
 } from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema, DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '@site/src/sheet_manager/types/template';
+import { upgradeTemplate } from '@site/src/sheet_manager/types/templateUpgrade';
 import { describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
@@ -24,7 +28,10 @@ describe('character templates after the builder split (feature 007)', () => {
         const shipped = systemRegistry
             .getSystem('star-wars-wod')!
             .defaultTemplates!.filter((template) => template.documentKind === 'character');
-        expect(JSON.parse(JSON.stringify(shipped))).toEqual(preFeatureCharacterTemplates);
+        // Spec 041 upgraded the trees to schema 4 (page kinds, brief blocks): same content.
+        expect(JSON.parse(JSON.stringify(shipped))).toEqual(
+            preFeatureCharacterTemplates.map((template) => upgradeTemplate(template).template)
+        );
     });
 });
 
@@ -77,7 +84,7 @@ describe('explicit default templates (feature 006, R9)', () => {
         ]);
         for (const template of defaults) {
             expect(template.systemId).toBe('star-wars-wod');
-            expect(template.schemaVersion).toBe(3);
+            expect(template.schemaVersion).toBe(TEMPLATE_SCHEMA_VERSION);
         }
     });
 
@@ -163,10 +170,11 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(JSON.stringify(full)).not.toContain('"part":"max"');
     });
 
-    it('brief is groups only, in compact presentation', () => {
+    it('brief is brief blocks only, on a brief page', () => {
         const brief = defaults.find(({ id }) => id === 'brief')!;
-        expect(brief.children.every((node) => node.type === 'group')).toBe(true);
-        expect(JSON.stringify(brief)).toContain('"compact":true');
+        expect(brief.pageKind).toBe('brief');
+        expect(brief.children.every((node) => node.type === 'brief')).toBe(true);
+        expect(JSON.stringify(brief)).not.toContain('"compact"');
         expect(JSON.stringify(brief)).toContain('track:health');
         expect(JSON.stringify(brief)).toContain('resource:willpower');
         expect(JSON.stringify(brief)).toContain('equipment:weapons');

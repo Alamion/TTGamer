@@ -29,9 +29,7 @@ const NOT_SETTINGS: Readonly<Record<string, string>> = {
     termRef: 'the book term a renamed label still stands for',
     termHint: 'set together with the term reference',
     required: 'a default the field type stores',
-    compact: 'set by the brief look of the page it sits on',
     column: 'set by dragging the element into a column',
-    shortForm: 'set by the brief look of the page it sits on',
     multiline: 'shown for text fields only',
     successMessage: 'the translation of a shipped button text',
     failureMessage: 'the translation of a shipped button text',
@@ -70,7 +68,9 @@ function notApplicable(node: TemplateNode, key: string): boolean {
             );
     }
     // A hidden title has no help link to show.
-    if (node.type === 'group' && key === 'docsPath') return node.hideTitle === true;
+    if ((node.type === 'group' || node.type === 'brief') && key === 'docsPath') {
+        return node.hideTitle === true;
+    }
     // A table's columns are edited one by one.
     return node.type === 'table' && key === 'columns';
 }
@@ -100,7 +100,9 @@ function representatives(): CustomTemplate[] {
                 const signature = [node.type, binding, ...Object.keys(node).sort()].join('|');
                 if (seen.has(signature)) continue;
                 seen.add(signature);
-                const target = `${template.systemId}|${template.documentKind}`;
+                // Elements of a brief sit on a brief: their settings follow the page (spec 041).
+                const brief = template.pageKind === 'brief';
+                const target = `${template.systemId}|${template.documentKind}|${brief}`;
                 const page =
                     pages.get(target) ??
                     ({
@@ -109,9 +111,10 @@ function representatives(): CustomTemplate[] {
                         children: [
                             {
                                 id: 'parity-columns',
-                                type: 'section',
+                                type: brief ? 'brief' : 'section',
                                 title: 'Parity',
                                 columns: 2,
+                                ...(brief ? { collapsible: false } : {}),
                                 children: [],
                             },
                         ],
@@ -121,10 +124,13 @@ function representatives(): CustomTemplate[] {
                 const { column: _column, ...unpinned } = node as TemplateNode & { column?: number };
                 void _column;
                 const copy = 'children' in unpinned ? { ...unpinned, children: [] } : unpinned;
-                (page.children[0] as { children: TemplateNode[] }).children.push({
+                const placed = {
                     ...copy,
                     id: `p${seen.size}-${node.id}`.slice(0, 64),
-                } as TemplateNode);
+                } as TemplateNode;
+                // A block holds no container: blocks stand on the page itself.
+                if (placed.type === 'brief') page.children.push(placed);
+                else (page.children[0] as { children: TemplateNode[] }).children.push(placed);
             }
         }
     }
@@ -142,7 +148,8 @@ describe('shipped templates use only what the editor can set (spec 038, SC-003)'
         const missing = new Set<string>();
         for (const page of representatives()) {
             renderEditor(page);
-            for (const node of (page.children[0] as { children: TemplateNode[] }).children) {
+            const [holder, ...blocks] = page.children as Array<{ children: TemplateNode[] }>;
+            for (const node of [...holder!.children, ...(blocks as TemplateNode[])]) {
                 fireEvent.click(
                     [...outlineRow(node.id).querySelectorAll('button')].find(
                         (button) => !button.hasAttribute('data-drag-handle')

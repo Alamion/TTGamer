@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
 
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '@site/src/sheet_manager/types/template';
 import { cleanup } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -12,7 +15,6 @@ function rating(id: string, label: string, column: number) {
         type: 'rating',
         label,
         required: false,
-        compact: true,
         min: 0,
         max: 5,
         presentation: 'dots',
@@ -20,36 +22,40 @@ function rating(id: string, label: string, column: number) {
     };
 }
 
-function group(id: string, layout?: 'area') {
+function group(id: string, type: 'group' | 'brief') {
     return {
         id,
-        type: 'group',
+        type,
         title: id,
         collapsible: false,
         columns: 3,
-        ...(layout ? { layout } : {}),
         children: [rating(`${id}-a`, 'Alpha', 1), rating(`${id}-b`, 'Beta', 2)],
     };
 }
 
-const page = () =>
+/** A full page with a card and a brief with a block (spec 041): the same content. */
+const page = (brief: boolean) =>
     CustomTemplateSchema.parse({
-        id: 'area-kit',
+        id: brief ? 'area-brief' : 'area-full',
         name: 'Area kit',
         documentKind: 'character',
-        schemaVersion: 3,
-        children: [group('plain'), group('areal', 'area')],
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        ...(brief ? { pageKind: 'brief' } : {}),
+        children: [group(brief ? 'areal' : 'plain', brief ? 'brief' : 'group')],
     });
 
-describe('area layout of a group (spec 033)', () => {
+/** The column stacks of a card on a full page and of a block on a brief. */
+function stacks() {
+    const plain = mountSheet(page(false)).container.querySelector('[data-column="1"]')!;
+    const area = mountSheet(page(true)).container.querySelectorAll('[data-column="1"]');
+    return [plain, area[area.length - 1]!];
+}
+
+describe('area layout of a brief block (spec 033, 041)', () => {
     afterEach(cleanup);
 
-    it('draws an area group from the width of the sheet area and leaves window groups alone', () => {
-        const { container } = mountSheet(page());
-        const grids = [...container.querySelectorAll('[data-column="1"]')].map(
-            (stack) => stack.parentElement?.className ?? ''
-        );
-        const [plain, area] = grids;
+    it('draws a brief block from the width of the sheet area and leaves cards alone', () => {
+        const [plain, area] = stacks().map((stack) => stack.parentElement?.className ?? '');
         expect(plain).toBe('grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3');
         expect(area).toContain('grid-cols-3');
         expect(area).toContain('@max-[259px]/brief:grid-cols-1');
@@ -58,17 +64,16 @@ describe('area layout of a group (spec 033)', () => {
     });
 
     it('names the sheet root as the area every query measures', () => {
-        const { container } = mountSheet(page());
+        const { container } = mountSheet(page(true));
         const root = container.querySelector('[data-template-root]');
         expect(root?.className).toContain('@container/brief');
     });
 
-    it('flows an area group column in rows when narrow and as wrapping chips when wide', () => {
-        const { container } = mountSheet(page());
-        const stacks = [...container.querySelectorAll('[data-column="1"]')];
-        expect(stacks[0]?.className).toBe('grid grid-cols-1 content-start gap-4');
-        expect(stacks[1]?.className).toContain('gap-0.5');
-        expect(stacks[1]?.className).toContain('@md/brief:flex');
-        expect(stacks[1]?.className).toContain('@md/brief:flex-wrap');
+    it('flows a brief block column in rows when narrow and as wrapping chips when wide', () => {
+        const [plain, area] = stacks();
+        expect(plain.className).toBe('grid grid-cols-1 content-start gap-4');
+        expect(area.className).toContain('gap-0.5');
+        expect(area.className).toContain('@md/brief:flex');
+        expect(area.className).toContain('@md/brief:flex-wrap');
     });
 });

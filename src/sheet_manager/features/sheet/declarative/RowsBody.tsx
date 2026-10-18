@@ -14,6 +14,7 @@ import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/te
 import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
+import { useBriefPage } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
 import { moveItem } from './rowOrder';
@@ -125,6 +126,7 @@ function columnLabel(column: RowsColumn): string {
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
     const bound = useBoundDocument();
+    const brief = useBriefPage();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
     // Rows above their parent's rating (spec 038): the page decides, the binding names the parent.
@@ -173,7 +175,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
 
     return (
         <div className="grid gap-2 overflow-x-auto">
-            {!node.hideLabel && !node.compact && (
+            {!node.hideLabel && !brief && (
                 <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
                     {label}
                 </span>

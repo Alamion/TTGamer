@@ -1,4 +1,5 @@
 import type {
+    BriefNode,
     CatalogBinding,
     CustomTemplate,
     GroupNode,
@@ -40,28 +41,31 @@ function common(options: CommonOptions) {
     };
 }
 
+/**
+ * Authoring shorthand for brief pages (spec 041): nothing of it is stored but `shortLabel` and,
+ * for a rating or pool written `compact` without `shortForm`, `fullLabel` (it keeps its name on
+ * the brief). On a brief every field draws compact; the page decides the look.
+ */
 interface ShortFormOptions {
-    /** Brief look of a rating: a short label beside the value (spec 033). */
+    compact?: boolean;
     shortForm?: boolean;
     shortLabel?: string;
 }
 
-const shortFormOf = (options: ShortFormOptions) => ({
-    ...(options.shortForm ? { shortForm: true } : {}),
+const shortFormOf = (options: ShortFormOptions, ratingLike: boolean) => ({
+    ...(ratingLike && options.compact && !options.shortForm ? { fullLabel: true as const } : {}),
     ...(options.shortLabel ? { shortLabel: options.shortLabel } : {}),
 });
 
 interface FieldOptions extends CommonOptions, ShortFormOptions {
-    compact?: boolean;
     hideLabel?: boolean;
     description?: string;
 }
 
 function fieldCommon(options: FieldOptions) {
     return {
-        compact: options.compact ?? false,
         required: false,
-        ...shortFormOf(options),
+        ...shortFormOf(options, false),
         ...common(options),
         ...(options.hideLabel ? { hideLabel: true } : {}),
         ...(options.description ? { description: options.description } : {}),
@@ -176,7 +180,6 @@ export function primitive(
     bindingKey: string,
     options: CommonOptions &
         ShortFormOptions & {
-            compact?: boolean;
             hideLabel?: boolean;
             label?: string;
             maxFrom?: string;
@@ -197,8 +200,8 @@ export function primitive(
         id,
         type: 'primitive',
         bindingKey,
-        compact: options.compact ?? false,
-        ...shortFormOf(options),
+        // A pool drawn as a tracker shows no short label (its boxes carry the name).
+        ...shortFormOf(options, /^(trait|resource):/.test(bindingKey) && !options.poolTracker),
         ...common(options),
         ...(options.hideLabel ? { hideLabel: true } : {}),
         ...(options.label ? { label: options.label } : {}),
@@ -257,8 +260,6 @@ export interface GroupOptions extends CommonOptions {
     collapsible?: boolean;
     hideTitle?: boolean;
     docsPath?: string;
-    /** `area`: columns follow the width of the area the page is drawn in (spec 033). */
-    layout?: 'window' | 'area';
 }
 
 export function group(
@@ -278,24 +279,29 @@ export function group(
         ...(options.columnWidths ? { columnWidths: options.columnWidths } : {}),
         ...(options.hideTitle ? { hideTitle: true } : {}),
         ...(options.docsPath ? { docsPath: options.docsPath } : {}),
-        ...(options.layout === 'area' ? { layout: 'area' as const } : {}),
         ...(options.defaultCollapsed ? { collapsible: true, defaultCollapsed: true } : {}),
     };
 }
 
 /**
- * A group drawn in the brief look (spec 033): area columns, no box. `collapsed` starts a
- * collapsible group closed, so a long list (weapons) costs one heading line until opened.
+ * A group made a brief block (spec 041; the brief look of spec 033). `collapsed` starts it closed,
+ * so a long list (weapons) costs one heading line until opened. Nested groups give up their
+ * fields: a block holds no container.
  */
-export function dense(node: GroupNode, options: { collapsed?: boolean } = {}): GroupNode {
+export function dense(node: GroupNode, options: { collapsed?: boolean } = {}): BriefNode {
+    const { type: _type, children, ...shared } = node;
+    void _type;
     return {
-        ...node,
-        layout: 'area',
+        ...shared,
+        type: 'brief',
+        children: children.flatMap((child) =>
+            child.type === 'group' || child.type === 'section' ? child.children : [child]
+        ),
         ...(options.collapsed ? { collapsible: true, defaultCollapsed: true } : {}),
     };
 }
 
-/** Every group of a brief page in the brief look; `collapsed` names the ones that start closed. */
+/** Every group of a brief page made a block; `collapsed` names the ones that start closed. */
 export function denseAll(
     children: TemplateNode[],
     collapsed: readonly string[] = []
@@ -305,12 +311,12 @@ export function denseAll(
     );
 }
 
-/** A shipped brief page with every group in the brief look. */
+/** A shipped brief page: every group a brief block, the page a brief. */
 export function denseBrief(
     template: CustomTemplate,
     collapsed: readonly string[] = []
 ): CustomTemplate {
-    return { ...template, children: denseAll(template.children, collapsed) };
+    return { ...template, pageKind: 'brief', children: denseAll(template.children, collapsed) };
 }
 
 export function section(

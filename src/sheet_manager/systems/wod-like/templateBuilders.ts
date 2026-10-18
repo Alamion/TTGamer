@@ -25,10 +25,10 @@ export function dotsTrait(
         min: 0,
         max: 5,
         presentation: 'dots',
-        compact: options.compact ?? false,
         required: false,
         ...(options.labelMessage ? { labelMessage: options.labelMessage } : {}),
         ...(options.column ? { column: options.column } : {}),
-        ...(options.shortForm ? { shortForm: true } : {}),
+        // On a brief a rating shows its short label; one written compact without it keeps its name.
+        ...(options.compact && !options.shortForm ? { fullLabel: true as const } : {}),
     };
 }

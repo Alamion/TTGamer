@@ -3,11 +3,11 @@ import { z } from 'zod';
 import type { DocumentKind, SystemId } from './document';
 import { DocumentKindSchema, SystemIdSchema } from './document';
 import { TEMPLATE_LIMITS } from './templateLimits';
+import { needsUpgrade, TEMPLATE_SCHEMA_VERSION, upgradeTemplate } from './templateUpgrade';
 
 export { TEMPLATE_LIMITS };
 
-/** Template file/schema generation authored by this build (contracts/template-node-model.md). */
-export const TEMPLATE_SCHEMA_VERSION = 3;
+export { TEMPLATE_SCHEMA_VERSION };
 
 const templateIdentifierSchema = z
     .string()
@@ -31,13 +31,14 @@ export const LabelMessageSchema = z
 const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
 
 /**
- * Brief look of a rating (spec 033): `shortForm` shows a short label (three letters unless the
- * author sets `shortLabel`, up to four) beside the value; the full name stays the accessible name
- * and the hint. Absent means off, so pages saved before it parse unchanged.
+ * A rating on a brief (spec 033, 041) shows a short label (three letters unless the author sets
+ * `shortLabel`, up to four) beside the value; the full name stays the accessible name and the
+ * hint. `fullLabel` keeps the full name on a brief where letters would mislead. Full pages always
+ * show the name.
  */
 const shortLabelShape = {
-    shortForm: z.boolean().optional(),
     shortLabel: z.string().min(1).max(4).optional(),
+    fullLabel: z.literal(true).optional(),
 };
 
 /**
@@ -109,8 +110,6 @@ const fieldBaseShape = {
      * same document-scoped value.
      */
     valueKey: templateIdentifierSchema.optional(),
-    /** Brief-format rendering when the field is bridged to document data (feature 005). */
-    compact: z.boolean().default(false),
     ...shortLabelShape,
 };
 
@@ -779,15 +778,14 @@ const PrimitiveNodeSchema = z.object({
     poolTracker: PoolTrackerOverrideSchema.optional(),
     /** With `poolTracker`: the maximum's minimum (formula). */
     maxMinFrom: z.string().min(1).max(500).optional(),
-    compact: z.boolean().default(false),
     ...shortLabelShape,
     track: PrimitiveTrackOverrideSchema.optional(),
     /**
      * Track bindings: `table` (a row per level with its name and penalty) or `strip` (a line of
-     * boxes, no level names). Default: `strip` for compact nodes and unlabeled tracks.
+     * boxes, no level names). Default: a line on a brief, `strip` for unlabeled tracks.
      */
     trackLayout: z.enum(['table', 'strip']).optional(),
-    /** Track bindings (spec 018): the page's tracker settings; replaces compact/trackLayout. */
+    /** Track bindings (spec 018): the page's tracker settings; replaces trackLayout. */
     tracker: TrackerOverrideSchema.optional(),
     /** Member tracks (bindings with members): member cap; ignored by other bindings. */
     cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
@@ -875,8 +873,27 @@ export interface GroupNode {
     collapsible: boolean;
     /** Collapsible groups only: start collapsed until opened. */
     defaultCollapsed?: boolean;
-    /** `area`: columns and cell look follow the width of the area the page is drawn in (spec 033). */
-    layout?: 'window' | 'area';
+    columns?: number;
+    columnWidths?: number[];
+    children: TemplateNode[];
+}
+
+/**
+ * The only container of a brief (spec 041): a heading over a hairline, no box, its cells laid out
+ * by the width of the area the page is drawn in (the brief look of spec 033). Holds no container.
+ */
+export interface BriefNode {
+    id: string;
+    type: 'brief';
+    title: string;
+    labelMessage?: string;
+    column?: number;
+    span?: number;
+    visibleWhen?: VisibleWhen;
+    hideTitle?: boolean;
+    docsPath?: string;
+    collapsible: boolean;
+    defaultCollapsed?: boolean;
     columns?: number;
     columnWidths?: number[];
     children: TemplateNode[];
@@ -889,12 +906,20 @@ export type ButtonNode = z.infer<typeof ButtonNodeSchema>;
 
 /** Any node of the template tree — containers and leaves share one placement model (FR-1). */
 export type TemplateNode =
-    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | ButtonNode | TemplateField;
+    | SectionNode
+    | GroupNode
+    | BriefNode
+    | TableNode
+    | ListNode
+    | PrimitiveNode
+    | ButtonNode
+    | TemplateField;
 
 /** Container and leaf node types that are not fields. */
 export const TEMPLATE_STRUCTURE_TYPES = [
     'section',
     'group',
+    'brief',
     'table',
     'list',
     'primitive',
@@ -950,6 +975,17 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
             return;
         case 'section':
         case 'group':
+            if (node.children.some((child) => child.type === 'brief')) {
+                issue('A brief block stands only on a brief, never inside a section or card', [
+                    'children',
+                ]);
+            }
+            return;
+        case 'brief':
+            if (node.children.some(isContainerNode)) {
+                issue('A brief block holds no section, card, or brief block', ['children']);
+            }
+            return;
         case 'primitive':
         case 'button':
             return;
@@ -987,7 +1023,20 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 docsPath: z.string().max(500).optional(),
                 collapsible: z.boolean().default(false),
                 defaultCollapsed: z.boolean().optional(),
-                layout: z.enum(['window', 'area']).optional(),
+                columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+                ...columnWidthsShape,
+                children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
+            }),
+            z.object({
+                id: templateIdentifierSchema,
+                type: z.literal('brief'),
+                title: z.string().min(1).max(120),
+                ...labelMessageShape,
+                ...placementShape,
+                hideTitle: z.boolean().optional(),
+                docsPath: z.string().max(500).optional(),
+                collapsible: z.boolean().default(false),
+                defaultCollapsed: z.boolean().optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
@@ -1019,6 +1068,8 @@ export interface CustomTemplate {
     documentKind: DocumentKind;
     /** A page made for a user setting (spec 012): offered only to that setting's documents. */
     settingId?: string;
+    /** A brief (spec 041): built from brief blocks, fields drawn compact; absent = a full page. */
+    pageKind?: 'brief';
     schemaVersion: number;
     children: TemplateNode[];
 }
@@ -1030,8 +1081,8 @@ export interface TemplateTreeIssue {
     limit?: number;
 }
 
-export function isContainerNode(node: TemplateNode): node is SectionNode | GroupNode {
-    return node.type === 'section' || node.type === 'group';
+export function isContainerNode(node: TemplateNode): node is SectionNode | GroupNode | BriefNode {
+    return node.type === 'section' || node.type === 'group' || node.type === 'brief';
 }
 
 /** Depth-first walk; root children are depth 1 (the guardrail counts from the page root). */
@@ -1042,7 +1093,7 @@ export function walkTemplateNodes(
     const walk = (nodes: readonly TemplateNode[], depth: number): void => {
         for (const node of nodes) {
             visit(node, depth);
-            if (node.type === 'section' || node.type === 'group') walk(node.children, depth + 1);
+            if (isContainerNode(node)) walk(node.children, depth + 1);
         }
     };
     walk(children, 1);
@@ -1132,7 +1183,6 @@ export function legacyListItem(list: Pick<ListNode, 'id' | 'title'>): ListItemFi
         label: list.title ?? list.id,
         labelPosition: 'left',
         required: false,
-        compact: false,
         min: 0,
         max: 5,
         presentation: 'dots',
@@ -1211,7 +1261,7 @@ function parseFormulaSafe(source: string): string[] | undefined {
     );
 }
 
-export const CustomTemplateSchema = z
+const CurrentTemplateSchema = z
     .object({
         id: templateIdentifierSchema,
         name: z.string().min(1).max(120),
@@ -1219,9 +1269,32 @@ export const CustomTemplateSchema = z
         systemId: SystemIdSchema.optional().default(SystemIdSchema.parse('star-wars-wod')),
         documentKind: DocumentKindSchema,
         settingId: z.string().min(1).max(64).optional(),
+        pageKind: z.literal('brief').optional(),
         schemaVersion: z.number().int().positive().max(1_000_000),
         children: z.array(templateNodeSchema).min(1).max(TEMPLATE_LIMITS.nodesPerTemplate),
     })
     .refine((template) => collectTreeIssues(template as CustomTemplate).length === 0, {
         message: 'Template tree violates depth, node-count, or unique-id rules',
+    })
+    .refine((template) => pageKindIssues(template as CustomTemplate).length === 0, {
+        message: 'A brief holds brief blocks and fields only; a full page holds no brief block',
     });
+
+/** Templates saved before schema 4 are upgraded as they are read (spec 041, design D4). */
+export const CustomTemplateSchema = z.preprocess(
+    (raw) => (needsUpgrade(raw) ? upgradeTemplate(raw).template : raw),
+    CurrentTemplateSchema
+);
+
+/** Ids of the containers that do not belong on the page's kind (spec 041). */
+export function pageKindIssues(template: Pick<CustomTemplate, 'pageKind' | 'children'>): string[] {
+    const brief = template.pageKind === 'brief';
+    const wrong: string[] = [];
+    walkTemplateNodes(template.children, (node) => {
+        const misplaced = brief
+            ? node.type === 'section' || node.type === 'group'
+            : node.type === 'brief';
+        if (misplaced) wrong.push(node.id);
+    });
+    return wrong;
+}

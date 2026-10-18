@@ -261,15 +261,11 @@ describe('the shipped Star Wars sheets', () => {
         ]);
     });
 
-    it('keeps the compact numbers elsewhere', () => {
-        const others = starWarsWodDefaultTemplates
-            .filter(({ id }) => id !== 'full-sheet')
-            .flatMap(({ id }) => forceNodes(id));
+    it('keeps the numbers on the briefs', () => {
+        const briefs = starWarsWodDefaultTemplates.filter(({ pageKind }) => pageKind === 'brief');
+        const others = briefs.flatMap(({ id }) => forceNodes(id));
         expect(others.length).toBeGreaterThan(0);
-        for (const node of others) {
-            expect(node).toMatchObject({ compact: true });
-            expect(node).not.toHaveProperty('poolTracker');
-        }
+        for (const node of others) expect(node).not.toHaveProperty('poolTracker');
     });
 
     it('draws WoD 2e Willpower as one tracker on the full sheet and keeps the brief compact', () => {
@@ -290,7 +286,7 @@ describe('the shipped Star Wars sheets', () => {
                 poolTracker: { display: 'row', legend: false, total: true },
             }),
         ]);
-        expect(willpower('wod2e-brief')).toEqual([expect.objectContaining({ compact: true })]);
+        expect(willpower('wod2e-brief')).toHaveLength(1);
         expect(willpower('wod2e-brief')[0]).not.toHaveProperty('poolTracker');
     });
 });

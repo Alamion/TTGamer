@@ -2,6 +2,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { TemplateNode } from '../../../types/template';
 import { type GroupKind, type ListKind, switchGroupKind, switchListKind } from '../elements/kinds';
+import { pageKindOf, switchPageKind } from '../model/pageKind';
 import { findNode, replaceNode } from '../model/tree';
 import { droppedSettings, switchElement, type SwitchStash } from '../settings/keepSettings';
 import { settingDescription, type SettingKey } from '../settings/registry';
@@ -38,6 +39,28 @@ export function switchKind(
             ok: true,
             draft: replaceNode(draft, nodeId, next),
             ...(announce ? { announce } : {}),
+        };
+    };
+}
+
+/**
+ * Makes the page a brief or a full page (spec 041): its containers convert, fields keep their
+ * reading order, and the announcement counts what changed. `title` names the section a brief's
+ * blocks go into.
+ */
+export function switchPage(kind: 'brief' | 'full', title: string): Operation {
+    return (draft) => {
+        if (pageKindOf(draft) === kind) return { ok: true, draft };
+        const { nodes, converted } = switchPageKind(draft, title);
+        const count = converted;
+        return {
+            ok: true,
+            draft: nodes,
+            announce: {
+                message: kind === 'brief' ? editor.pageKindBrief : editor.pageKindFull,
+                count,
+                values: { count },
+            },
         };
     };
 }

@@ -97,8 +97,16 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
   covers WebKit without a text selection. Pasted text is untrusted: `parseCopied` refuses newer
   versions and nodes the schema rejects (`template-clipboard-invalid`); `pasteCopied` inserts with
   fresh ids after the last selected element, at the end of a selected group, or at the page end,
-  falling back outward at the depth limit; paste reveals the copy (`revealNode` opens folded
-  ancestors through header toggles, never `aria-haspopup` triggers).
+  falling back outward at the depth limit or a nesting refusal; paste reveals the copy (`revealNode`
+  opens folded ancestors through header toggles, never `aria-haspopup` triggers).
+- **Page kinds** (spec 041, `model/pageKind.ts`): pasted groups of the other kind convert
+  (`toBriefNodes`: card → block, section → a block per card and per run of loose fields;
+  `toFullNodes`: block → card) and the announcement says so; a block pasted inside a block gives up
+  its fields there. The page settings' **Page kind** runs `switchPage` (one undo step; a brief's
+  blocks become cards in one section named after the page); shipped pages keep their kind. `canHold`
+  (`model/tree.ts`) refuses moves that break the nesting (`nesting`). The `+` menu filters `PALETTE`
+  by `offered({ atRoot, brief })`: Group on full pages, Brief block at a brief's top level; rating
+  label settings (`fullLabel`, `shortLabel`) show only on briefs (`useDraftIsBrief`).
 - **Frame** (`components/`): three areas (`EditorPanes`: outline, page, settings; tabs below `md`;
   `PaneDivider`s resize the side areas, stored by `usePaneWidths` in localStorage
   `template-editor-panes`), `EditorToolbar` (Edit / Preview, help, shortcuts, undo / redo),

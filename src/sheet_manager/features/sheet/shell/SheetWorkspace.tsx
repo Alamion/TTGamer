@@ -122,6 +122,21 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const pluralMessage = usePluralMessage();
+    // Pages the schema 4 upgrade changed (spec 041): the author hears it once.
+    const conversions = useTemplateStore((state) => state.conversions);
+    useEffect(() => {
+        if (conversions.length === 0) return;
+        const taken = useTemplateStore.getState().takeConversions();
+        if (taken.length === 0) return;
+        const shown = taken.slice(0, 5).map(({ name }) => name);
+        const names = taken.length > 5 ? `${shown.join(', ')} …` : shown.join(', ');
+        toast(
+            pluralMessage(uiMessages.sheet.templates.page.pagesConverted, taken.length, { names }),
+            {
+                duration: 10_000,
+            }
+        );
+    }, [conversions, pluralMessage]);
     // The documents window and the library are tools of the layout (spec 036).
     useEffect(() => registerSheetTools(), []);
     useDiceTab();

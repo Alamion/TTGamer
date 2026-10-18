@@ -41,7 +41,8 @@ export interface SettingDescription {
 const field = (node: TemplateNode) => isTemplateField(node);
 /** Fields and the game's own values placed on the page share their label and brief settings. */
 const valueElement = (node: TemplateNode) => field(node) || node.type === 'primitive';
-const card = (node: TemplateNode) => node.type === 'group';
+/** Cards and brief blocks (spec 041) share their title, fold, and help settings. */
+const card = (node: TemplateNode) => node.type === 'group' || node.type === 'brief';
 const container = (node: TemplateNode) => isContainerNode(node);
 /** Ratings: the fields of the rating type and the game's own values placed on the page. */
 const rating = (node: TemplateNode) => node.type === 'rating' || node.type === 'primitive';
@@ -133,24 +134,15 @@ export const SETTINGS = {
     minFrom: { group: 'limits', label: editor.minFromShort },
     maxMinFrom: { group: 'limits', label: editor.maxAtLeast },
     // Look
-    compact: {
+    fullLabel: {
         group: 'look',
-        label: primitives.compact,
-        appliesTo: valueElement,
-        shared: { control: 'toggle' },
-        carry: true,
-        unset: false,
-    },
-    shortForm: {
-        group: 'look',
-        label: editor.shortForm,
+        label: editor.fullLabel,
         appliesTo: rating,
         shared: { control: 'toggle' },
         carry: true,
         unset: false,
     },
     shortLabel: { group: 'look', label: editor.shortLabel, appliesTo: rating, carry: true },
-    layout: { group: 'look', label: editor.areaLayout, appliesTo: card, carry: true },
     hideTitle: {
         group: 'look',
         label: editor.showTitle,

@@ -7,7 +7,7 @@ export function ok(draft: EditorDraft): DraftOpResult {
 }
 
 export function fail(
-    error: 'depth' | 'count' | 'self-move',
+    error: 'depth' | 'count' | 'self-move' | 'nesting',
     limit?: number,
     actual?: number
 ): DraftOpResult {
@@ -122,6 +122,18 @@ function insertIntoContainer(
     );
 }
 
+/**
+ * Whether the node may stand there (spec 041): a brief holds brief blocks and fields, a block no
+ * container, and a full page no block.
+ */
+export function canHold(draft: EditorDraft, parentId: string | null, node: TemplateNode): boolean {
+    if (!isContainerNode(node)) return true;
+    const parent = parentId === null ? undefined : findNode(draft, parentId);
+    if (parent?.type === 'brief') return false;
+    if (node.type === 'brief') return parentId === null && draft.pageKind === 'brief';
+    return draft.pageKind !== 'brief';
+}
+
 export function insertNode(
     draft: EditorDraft,
     parentId: string | null,
@@ -130,6 +142,7 @@ export function insertNode(
 ): DraftOpResult {
     const parentDepth = parentId === null ? 0 : locate(draft, parentId)?.depth;
     if (parentDepth === undefined) return fail('self-move');
+    if (!canHold(draft, parentId, node)) return fail('nesting');
     const height = subtreeHeight(node);
     if (parentDepth + height > TEMPLATE_LIMITS.maxDepth) {
         return fail('depth', TEMPLATE_LIMITS.maxDepth, parentDepth + height);
@@ -170,6 +183,7 @@ export function moveNode(
     const node = location.parent![location.index]!;
     const parentDepth = targetParentId === null ? 0 : locate(draft, targetParentId)?.depth;
     if (parentDepth === undefined) return fail('self-move');
+    if (!canHold(draft, targetParentId, node)) return fail('nesting');
     if (parentDepth + 1 + subtreeHeight(node) - 1 > TEMPLATE_LIMITS.maxDepth) {
         return fail('depth', TEMPLATE_LIMITS.maxDepth, parentDepth + subtreeHeight(node));
     }

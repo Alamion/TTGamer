@@ -5,6 +5,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { describeError, reportSheetIssue } from '../diagnostics';
 import type { CustomTemplate } from '../types/template';
 import { CustomTemplateSchema } from '../types/template';
+import { type UpgradeSummary, upgradeTemplate } from '../types/templateUpgrade';
 
 /**
  * Store version 3 (feature 006): templates are recursive node trees (`children`, schema v3).
@@ -13,15 +14,30 @@ import { CustomTemplateSchema } from '../types/template';
  * documents pointing at retired ids fall back to the built-in page via `resolveCustomTemplate`.
  * Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`).
  * Version 5 (spec 012, T-046): default overrides are keyed by `systemId:viewId`.
+ * Version 6 (spec 041): templates of schema 3 become schema 4 (page kinds, brief blocks); pages
+ * whose conversion changed more than a brief's cards becoming blocks are listed in `conversions`
+ * until the sheet has told the author.
  */
-const STORE_VERSION = 5;
+const STORE_VERSION = 6;
 const MAX_QUARANTINE_ENTRIES = 100;
+const MAX_CONVERSIONS = 50;
+
+/** A stored page the schema 4 upgrade changed in a way its author should hear about. */
+export interface TemplateConversion {
+    templateId: string;
+    name: string;
+    summary: UpgradeSummary;
+}
 
 export interface TemplateStoreState {
     templates: CustomTemplate[];
     quarantine: unknown[];
     /** Saved user edits of default templates, keyed by `overrideKey(systemId, viewId)`. */
     defaultOverrides: Record<string, CustomTemplate>;
+    /** Pages converted to schema 4 that the author has not been told about yet (spec 041). */
+    conversions: TemplateConversion[];
+    /** Returns the conversions to tell about and forgets them. */
+    takeConversions: () => TemplateConversion[];
     saveTemplate: (template: CustomTemplate) => void;
     /** Copies a user template, or the edited default `template` when given (its override). */
     duplicateTemplate: (
@@ -49,6 +65,7 @@ interface PersistedTemplateState {
     templates: CustomTemplate[];
     quarantine: unknown[];
     defaultOverrides: Record<string, CustomTemplate>;
+    conversions: TemplateConversion[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -73,17 +90,29 @@ function quarantineEntry(quarantine: unknown[], entry: unknown, error: unknown) 
 
 export function migrateTemplateStoreState(input: unknown, version = 0): PersistedTemplateState {
     if (!isRecord(input) || !Array.isArray(input.templates)) {
-        return { templates: [], quarantine: [], defaultOverrides: {} };
+        return { templates: [], quarantine: [], defaultOverrides: {}, conversions: [] };
     }
 
     const templates: CustomTemplate[] = [];
     const quarantine: unknown[] = Array.isArray(input.quarantine)
         ? input.quarantine.slice(0, MAX_QUARANTINE_ENTRIES)
         : [];
+    const conversions: TemplateConversion[] = Array.isArray(input.conversions)
+        ? (input.conversions as TemplateConversion[]).slice(0, MAX_CONVERSIONS)
+        : [];
+    /** Upgrades one stored page to schema 4, noting what its author should hear about. */
+    const parse = (entry: unknown): CustomTemplate => {
+        const { template, summary } = upgradeTemplate(entry);
+        const parsed = CustomTemplateSchema.parse(template);
+        if (summary.notable && conversions.length < MAX_CONVERSIONS) {
+            conversions.push({ templateId: parsed.id, name: parsed.name, summary });
+        }
+        return parsed;
+    };
 
     for (const entry of input.templates) {
         try {
-            templates.push(CustomTemplateSchema.parse(entry));
+            templates.push(parse(entry));
         } catch (error) {
             quarantineEntry(quarantine, entry, error);
         }
@@ -96,7 +125,7 @@ export function migrateTemplateStoreState(input: unknown, version = 0): Persiste
     if (isRecord(rawOverrides)) {
         for (const [key, entry] of Object.entries(rawOverrides)) {
             try {
-                const parsed = CustomTemplateSchema.parse(entry);
+                const parsed = parse(entry);
                 // v5: pre-v5 keys are bare view ids; the parsed template names its system.
                 const composite = version >= 5 ? key : overrideKey(parsed.systemId, key);
                 defaultOverrides[composite] = parsed;
@@ -106,13 +135,20 @@ export function migrateTemplateStoreState(input: unknown, version = 0): Persiste
         }
     }
 
-    return { templates, quarantine, defaultOverrides };
+    return { templates, quarantine, defaultOverrides, conversions };
 }
 
 const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
     templates: [],
     quarantine: [],
     defaultOverrides: {},
+    conversions: [],
+
+    takeConversions: () => {
+        const { conversions } = get();
+        if (conversions.length > 0) set({ conversions: [] });
+        return conversions;
+    },
 
     saveTemplate: (template) => {
         const parsed = CustomTemplateSchema.parse(template);
@@ -181,10 +217,11 @@ export const useTemplateStore = isBrowser
                       await localforage.default.removeItem(name);
                   },
               })),
-              partialize: ({ templates, quarantine, defaultOverrides }) => ({
+              partialize: ({ templates, quarantine, defaultOverrides, conversions }) => ({
                   templates,
                   quarantine,
                   defaultOverrides,
+                  conversions,
               }),
           })
       )

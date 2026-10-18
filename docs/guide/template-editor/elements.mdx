@@ -13,6 +13,15 @@ import { LiveDemo } from '@site/src/shared/components/LiveDemo';
 Groups arrange the page; fields, lists, and trackers hold values; buttons roll dice and change them. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
 :::
 
+## Full pages and briefs \{#page-kinds}
+
+Every page is a **Full page** or a **Brief**, chosen under **Page kind** next to the page's name. A full page is built from sections and cards; a brief is the short page read at the table, built from [brief blocks](#brief-blocks) and fields only. The kind decides how every field looks: on a brief fields are compact and ratings show [short labels](#rating), on a full page everything is full size.
+
+- Switching the kind converts the page: a full page's cards become brief blocks (a section with loose fields gives them a block of their own), and a brief's blocks become cards in one section named after the page. Every field keeps its place in reading order, and **Ctrl+Z** undoes the switch.
+- Pasting works the same way: a card copied from a full page arrives on a brief as a brief block, and a brief block arrives on a full page as a card. A brief block pasted into another block gives it its fields.
+- The editor offers only what the page can hold: **Group** on a full page, **Brief block** at the top of a brief.
+- Edited shipped pages keep the kind of the page they edit.
+
 ## Kinds of groups and lists \{#kinds}
 
 A **Group** holds other elements, as a **Section** or a **Card**. A **List** holds what readers add one by one, as **Entries** or a **Table**. The **Kind** at the top of **Content** switches between them; the outline and the page name both, such as "Group · Section" or "List · Table".
@@ -35,10 +44,16 @@ A section is a large block with a heading and a colored bar. Readers fold and un
 
 A card is a titled box inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
 
-**Brief look** draws the card for brief pages: no box, a small heading over a line, and columns that follow the width of the area the page is drawn in (a phone, a window beside others, a full screen) instead of the browser window. Cells placed in columns stay three across down to a narrow area, then fold into one column.
-
 <LiveDemo kind="example">
     <ElementExample story="containers" node="section-groups" />
+</LiveDemo>
+
+## Brief blocks \{#brief-blocks}
+
+A brief block is the only group of a [brief](#page-kinds): a small heading over a line, no box, and columns that follow the width of the area the page is drawn in (a phone, a window beside others, a full screen) instead of the browser window. Cells placed in columns stay three across down to a narrow area, then fold into one column. Use one block for each clearly different kind of field (attributes apart from skills), not one per field. A block can hide its title, fold, start folded, and link to documentation; make a block fold only when it grows without bound (weapons, powers) or is rarely needed in play (notes).
+
+<LiveDemo kind="example">
+    <ElementExample story="brief" node="brief-ratings" />
 </LiveDemo>
 
 ## Documentation link \{#documentation-link}
@@ -94,7 +109,7 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 - **Die symbol (roll the rating)** rolls the value the way the document's game rolls an attribute of the same value; the roll names the rating.
 - **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
 
-**Short label (brief format)** shows the rating as a few capital letters and its number instead of its full name, so many ratings fit one screen. The letters default to the first three of the label; **Short label text** sets your own (up to four). In a narrow area each rating is a row (letters, number); in a wider one it is a small chip, and chips flow inside their card. The full name stays the name for screen readers and appears as a hint on hover, focus, and tap. A short label that would repeat another one in the same card falls back to the full label. On a free rating only the number shows in this form: its dots, text, flags, and die are not part of it.
+On a [brief](#page-kinds) a rating shows a few capital letters and its number instead of its full name, so many ratings fit one screen. The letters default to the first three of the label; **Short label text** sets your own (up to four), and **Full name on the brief** keeps the name where letters would mislead. In a narrow area each rating is a row (letters, number); in a wider one it is a small chip, and chips flow inside their card. The full name stays the name for screen readers and appears as a hint on hover, focus, and tap. A short label that would repeat another one in the same block takes a fourth letter (BRA and BRAC for Brawl and Brace), or a number when the names are the same (FIE, FIE2), so every rating keeps the brief look; give the ratings their real names or your own letters. On a free rating only the number shows in this form: its dots, text, flags, and die are not part of it.
 
 **Tracker** draws the rating as a row of boxes (up to 20), like a [pool drawn as a tracker](#built-in-parts). **Marks of another value from the end** adds a second value marked from the last box backward — Humanity and its stains: name the **Value of the marks** (a number field or a game value) and the **Mark name**. A click fills or empties up to a box; the outline action (right click, **Shift+Enter**, or a long press) marks or clears from the end. A mark never lands on a filled box: the page says so instead, and raising the rating shrinks marks that no longer fit. A game's own single value, such as V5 Humanity, takes the same **Display: Tracker** and marks.
 
@@ -173,7 +188,7 @@ A tracker cannot be a table column or a list entry: its copies already repeat it
 
 A game's own track takes the same settings: the display, the names and values of its levels (a level you leave empty keeps the game's name and penalty), the names, symbols, and fills of its marks, extra columns, the total row, and the legend, which works as a brush here too. Its marks are always fills: the game keeps one mark per box. The game keeps the number and order of levels, a length computed from traits (V5 health and willpower), the number of marks, and the members of a group; lengths and "out" follow the game's rules. Columns you add keep their values with the page, next to the document's own marks.
 
-Pages saved before this setting existed keep their look: **Compact** reads as **One line**, and a stored track view keeps its display.
+Pages saved before this setting existed keep their look: a track on a brief reads as **One line**, and a stored track view keeps its display.
 
 ## Buttons \{#buttons}
 

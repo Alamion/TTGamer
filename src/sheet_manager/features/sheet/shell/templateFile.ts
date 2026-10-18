@@ -2,7 +2,13 @@ import { reportSheetIssue } from '../../../diagnostics';
 import { exportNotices, resolveSystemPolicies, systemRegistry } from '../../../systems';
 import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
+import {
+    CustomTemplateSchema,
+    isContainerNode,
+    isTemplateField,
+    walkTemplateNodes,
+} from '../../../types/template';
+import { upgradeTemplate } from '../../../types/templateUpgrade';
 import { getCatalogBinding } from '../data/catalogBindings';
 import {
     type TemplateReferenceOptions,
@@ -13,12 +19,15 @@ import {
  * Template file transfer boundary: a self-describing JSON wrapper around the declarative
  * template definition. Validation happens fully before any state change; unknown keys are
  * stripped by the schema, never trusted. Version 3 (feature 006) carries the recursive node
- * tree (`children`); v2 and older files are rejected with the version error — pre-feature
- * templates retire rather than migrate (spec FR-4/A5).
+ * tree (`children`); version 4 (spec 041) pages of a kind built from brief blocks, and a version 3
+ * file is upgraded on import. v2 and older files are rejected with the version error —
+ * pre-feature templates retire rather than migrate (spec FR-4/A5).
  */
 
 const TEMPLATE_FILE_FORMAT = 'ttgamer-template';
-export const TEMPLATE_FILE_VERSION = 3;
+export const TEMPLATE_FILE_VERSION = 4;
+/** The oldest file this build reads (schema 3 pages are upgraded, spec 041). */
+const OLDEST_TEMPLATE_FILE_VERSION = 3;
 
 export interface TemplateFilePayload {
     format: string;
@@ -27,7 +36,13 @@ export interface TemplateFilePayload {
 }
 
 export type ParsedTemplateFile =
-    | { ok: true; template: CustomTemplate; degradedCatalogFields: readonly string[] }
+    | {
+          ok: true;
+          template: CustomTemplate;
+          degradedCatalogFields: readonly string[];
+          /** The page changed more than its brief-look cards becoming blocks (spec 041). */
+          converted: boolean;
+      }
     | { ok: false; error: 'parse' | 'format' | 'version' | 'schema' | 'system' };
 
 /** Template files carry the publisher notices of their system (informational; ignored on import). */
@@ -50,7 +65,7 @@ function mapTreeFields(
     map: (field: TemplateField) => TemplateField
 ): TemplateNode[] {
     return children.map((node) => {
-        if (node.type === 'section' || node.type === 'group') {
+        if (isContainerNode(node)) {
             return { ...node, children: mapTreeFields(node.children, map) };
         }
         if (node.type === 'table') {
@@ -108,7 +123,7 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
     if (
         typeof payload.formatVersion !== 'number' ||
         !Number.isInteger(payload.formatVersion) ||
-        payload.formatVersion < TEMPLATE_FILE_VERSION
+        payload.formatVersion < OLDEST_TEMPLATE_FILE_VERSION
     ) {
         // Older files (fixed hierarchy) are not migrated — rejected with the version error.
         return { ok: false, error: 'version' };
@@ -118,9 +133,11 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
         return { ok: false, error: 'version' };
     }
 
+    const upgraded = upgradeTemplate(payload.template);
+    const converted = upgraded.summary.notable;
     let template: CustomTemplate;
     try {
-        template = CustomTemplateSchema.parse(payload.template);
+        template = CustomTemplateSchema.parse(upgraded.template);
     } catch {
         return { ok: false, error: 'schema' };
     }
@@ -129,7 +146,7 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
     }
 
     const { template: resolved, degradedFields } = resolveImportedTemplate(template);
-    return { ok: true, template: resolved, degradedCatalogFields: degradedFields };
+    return { ok: true, template: resolved, degradedCatalogFields: degradedFields, converted };
 }
 
 /**

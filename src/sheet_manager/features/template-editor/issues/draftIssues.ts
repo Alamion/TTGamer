@@ -7,6 +7,7 @@ import type { RowButton, TemplateField } from '../../../types/template';
 import {
     collectFormulaDependencies,
     collectTreeIssues,
+    isContainerNode,
     isTemplateField,
     listItemField,
     TEMPLATE_LIMITS,
@@ -308,7 +309,7 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
             const problem = formulaSyntaxProblem(source);
             if (problem) issue(inElement(name, problem), setting);
         };
-        if (node.type === 'section' || node.type === 'group') {
+        if (isContainerNode(node)) {
             if (node.title.trim().length === 0) issue(messages.emptyLabel, at('content', 'title'));
         }
         if ((node.type === 'table' || node.type === 'list') && node.title?.trim() === '') {

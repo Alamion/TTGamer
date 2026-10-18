@@ -6,7 +6,10 @@ import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/dec
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -33,13 +36,14 @@ function definition(target: Target) {
     return systemRegistry.getDocumentDefinition(target.systemId, target.definitionId)!;
 }
 
-function page(target: Target, children: unknown[], id = 'tpl-builtin') {
+function page(target: Target, children: unknown[], id = 'tpl-builtin', brief = false) {
     return CustomTemplateSchema.parse({
         id,
         name: 'Built-in trackers',
         systemId: target.systemId,
         documentKind: definition(target).kind,
-        schemaVersion: 3,
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        ...(brief ? { pageKind: 'brief' } : {}),
         children,
     });
 }
@@ -277,9 +281,9 @@ describe('the brush on built-in trackers (spec 019)', () => {
 });
 
 describe('templates saved before one display setting', () => {
-    it('draws a compact track as one small line', () => {
+    it('draws a track on a brief as one small line (spec 041)', () => {
         seed(SW_CHARACTER);
-        mount(page(SW_CHARACTER, [track('track:health', { compact: true })]));
+        mount(page(SW_CHARACTER, [track('track:health')], 'tpl-builtin', true));
         expect(screen.queryByRole('table')).toBeNull();
         expect(screen.getByRole('button', { name: 'Hurt: empty' }).className).toContain('h-5');
     });

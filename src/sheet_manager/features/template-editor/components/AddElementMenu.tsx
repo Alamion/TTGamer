@@ -5,6 +5,7 @@ import { type ReactNode, useState } from 'react';
 
 import { type TemplateNode } from '../../../types/template';
 import { PALETTE } from '../elements/registry';
+import { useDraftIsBrief } from '../session/context';
 
 function MenuItems({
     atRoot,
@@ -15,12 +16,13 @@ function MenuItems({
     disabled: boolean;
     onChoose: (node: TemplateNode) => void;
 }) {
-    return PALETTE.map((option) => (
+    const place = { atRoot, brief: useDraftIsBrief() };
+    return PALETTE.filter((option) => option.offered?.(place) ?? true).map((option) => (
         <button
             key={option.key}
             type="button"
             role="menuitem"
-            onClick={() => onChoose(option.build(atRoot))}
+            onClick={() => onChoose(option.build(place))}
             disabled={disabled}
             data-palette-option={option.key}
             className="flex items-start gap-2 rounded-sm p-2 text-left hover:bg-secondary/15 focus:bg-secondary/15 focus:outline-hidden disabled:opacity-40"

@@ -67,7 +67,7 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   primitive evaluates `from` itself (a re-skinned template cannot break it) and shows
   `from + adjustment` unlabeled boxes with a −/+ regulator (`resolveComputedTrackLength` in
   `declarative/trackLength.ts`); marks past the length are kept. Node `trackLayout` (`table` |
-  `strip`) picks the `ConditionTrack` molecule; default `strip` for compact nodes and computed
+  `strip`) picks the `ConditionTrack` molecule; default `line` on a brief and `strip` for computed
   tracks.
 - Reuse before adding: new systems extend the existing elements with optional, system-neutral
   features (layout, regulator, row options) instead of shipping new look-alike atoms.

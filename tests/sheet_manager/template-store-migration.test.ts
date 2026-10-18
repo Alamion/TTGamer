@@ -195,3 +195,63 @@ describe('template store v5: composite override keys (spec 012, T-046)', () => {
         expect(resolved?.modified).toBe(false);
     });
 });
+
+describe('template store v6: schema 4 pages (spec 041)', () => {
+    const areaCard = (id: string) => ({
+        id,
+        type: 'group',
+        title: id,
+        collapsible: false,
+        layout: 'area',
+        children: [{ id: `${id}-f`, type: 'text', label: 'F', required: false }],
+    });
+    const raw = (id: string, children: object[]) => ({
+        id,
+        name: `Page ${id}`,
+        documentKind: 'character',
+        schemaVersion: 3,
+        children,
+    });
+
+    it('upgrades every stored page and lists only the notable conversions, once', () => {
+        const state = migrateTemplateStoreState(
+            {
+                templates: [
+                    raw('tpl-brief', [areaCard('a')]),
+                    raw('tpl-mixed', [
+                        areaCard('b'),
+                        { id: 's', type: 'section', title: 'S', children: [] },
+                    ]),
+                    { id: 'broken' },
+                ],
+                defaultOverrides: {
+                    'star-wars-wod:brief': {
+                        ...raw('brief', [
+                            areaCard('c'),
+                            {
+                                id: 'boxed',
+                                type: 'group',
+                                title: 'Boxed',
+                                collapsible: false,
+                                children: [],
+                            },
+                        ]),
+                        systemId: 'star-wars-wod',
+                    },
+                },
+            },
+            5
+        );
+        expect(state.templates.map(({ id, pageKind }) => [id, pageKind])).toEqual([
+            ['tpl-brief', 'brief'],
+            ['tpl-mixed', undefined],
+        ]);
+        expect(state.defaultOverrides['star-wars-wod:brief']?.pageKind).toBe('brief');
+        expect(state.conversions.map(({ templateId }) => templateId)).toEqual([
+            'tpl-mixed',
+            'brief',
+        ]);
+        expect(state.quarantine).toHaveLength(1);
+        takeSheetIssues();
+    });
+});

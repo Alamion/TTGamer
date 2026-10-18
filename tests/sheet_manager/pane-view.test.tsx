@@ -32,16 +32,23 @@ const selectIn = (name: string) =>
     within(groupFrameOf(name)).getByRole('combobox') as HTMLSelectElement;
 
 describe('which view a pane starts in (spec 034, FR-008)', () => {
-    it.each(SHIPPED_BRIEFS)('finds the brief of %s %s by the naming rule', (system, id) => {
+    it.each(SHIPPED_BRIEFS)('finds the brief of %s %s by its page kind', (system, id) => {
         const definition = systemRegistry.getDocumentDefinition(system, id)!;
         const brief = briefViewOf(definition);
         expect(brief, `${system}/${id}`).toBeDefined();
-        expect(definition.views.map(({ id: viewId }) => viewId)).toContain(brief);
-        expect(brief === 'brief' || brief!.endsWith('-brief')).toBe(true);
+        const view = definition.views.find(({ id: viewId }) => viewId === brief)!;
+        const page = systemRegistry
+            .getSystem(system)!
+            .defaultTemplates!.find(({ id: templateId }) => templateId === view.layout.templateId);
+        expect(page?.pageKind).toBe('brief');
     });
 
-    it('finds none for a definition without a brief', () => {
-        expect(briefViewOf({ views: [{ id: 'sheet' }] } as never)).toBeUndefined();
+    it('finds none for a definition without a brief, whatever its views are called', () => {
+        expect(
+            briefViewOf({
+                views: [{ id: 'my-brief', layout: { type: 'declarative', templateId: 'nowhere' } }],
+            } as never)
+        ).toBeUndefined();
     });
 });
 

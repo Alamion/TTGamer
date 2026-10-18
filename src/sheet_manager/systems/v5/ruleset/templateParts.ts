@@ -1,6 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import {
+    dense,
     formula,
     group,
     list,
@@ -10,6 +11,7 @@ import {
     text,
 } from '../../../templates/builders';
 import type {
+    BriefNode,
     GroupNode,
     SectionNode,
     TemplateField,
@@ -94,21 +96,22 @@ export function skillsSection(options: { compact?: boolean } = {}): SectionNode 
 export function compactTraitsGroup(
     id: 'attributes' | 'skills',
     options: { collapsible?: boolean } = {}
-): GroupNode {
+): BriefNode {
     const groups = id === 'attributes' ? V5_ATTRIBUTE_GROUPS : V5_SKILL_GROUPS;
     const label = id === 'attributes' ? v5.sections.attributes : v5.sections.skills;
-    return group(
-        id,
-        label.message,
-        traitGroupNodes(groups, id, true).flatMap((column) =>
-            column.children.map((child) => ({ ...child, column: column.column }))
-        ),
-        {
-            columns: 3,
-            labelMessage: label,
-            collapsible: options.collapsible ?? false,
-            layout: 'area',
-        }
+    return dense(
+        group(
+            id,
+            label.message,
+            traitGroupNodes(groups, id, true).flatMap((column) =>
+                column.children.map((child) => ({ ...child, column: column.column }))
+            ),
+            {
+                columns: 3,
+                labelMessage: label,
+                collapsible: options.collapsible ?? false,
+            }
+        )
     );
 }
 
@@ -118,7 +121,6 @@ const PORTRAIT: TemplateField = {
     label: v5.sections.portrait.message,
     labelMessage: v5.sections.portrait.id,
     valueKey: 'portrait',
-    compact: false,
     required: false,
     hideLabel: true,
 };

@@ -23,6 +23,7 @@ export const hunterBriefTemplate: CustomTemplate = {
     name: 'Hunter: the Reckoning 5e — Brief',
     systemId: SystemIdSchema.parse('wod-v5'),
     documentKind: DocumentKindSchema.parse('character'),
+    pageKind: 'brief',
     schemaVersion: TEMPLATE_SCHEMA_VERSION,
     children: [
         dense(hunterIdentityGroup({ compact: true })),

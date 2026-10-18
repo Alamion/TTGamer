@@ -43,3 +43,22 @@ export const BASELINE: Readonly<Record<string, KindHeights>> = {
         brief: { 375: 2140, 1280: 1064 },
     },
 };
+
+/**
+ * Heights in px of every shipped brief before spec 041 made the brief block its own element
+ * (375 and 1280 px wide windows). Briefs must keep them within 1% (spec 041, SC-001).
+ */
+export const BRIEF_PINS: Readonly<Record<string, { 375: number; 1280: number }>> = {
+    'star-wars-wod/character': { 375: 623, 1280: 333 },
+    'star-wars-wod/droid': { 375: 595, 1280: 333 },
+    'star-wars-wod/creature': { 375: 375, 1280: 299 },
+    // The crew links take the compact look of a brief (spec 041): pinned anew.
+    'star-wars-wod/vehicle': { 375: 397, 1280: 362 },
+    'star-wars-wod/fodder-group': { 375: 381, 1280: 315 },
+    'wod-2e/wod2e-character': { 375: 619, 1280: 333 },
+    'wod-v5/hunter': { 375: 736, 1280: 425 },
+    'wod-v5/v5-character': { 375: 558, 1280: 328 },
+    'wod-v5/vampire': { 375: 894, 1280: 449 },
+    'wod-v5/v5-storyteller': { 375: 400, 1280: 394 },
+    'wod-v5/v5-group': { 375: 210, 1280: 194 },
+};

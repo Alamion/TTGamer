@@ -169,8 +169,7 @@ const REFERENCE_VARIANT_FIELD = {
     targetKinds: ['character'],
     multiple: true,
     required: false,
-    compact: false,
-} as TemplateField;
+} as unknown as TemplateField;
 
 /**
  * A reference's entry states (spec 017) on fixed sample documents, since the storybook pages

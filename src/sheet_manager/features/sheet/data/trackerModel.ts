@@ -584,15 +584,16 @@ const GAME_MARK_LOOK: Record<TrackMarkId, Pick<TrackerMarkKind, 'symbol' | 'fill
 };
 
 /**
- * Display of a track primitive: its own setting, else the legacy `compact` (one line) or
+ * Display of a track primitive: its own setting, else one line on a brief (spec 041) or
  * `trackLayout`, else a table for named levels and a strip for a computed length (FR-013).
  */
 export function trackerDisplayOf(
-    node: Pick<PrimitiveNode, 'tracker' | 'compact' | 'trackLayout'>,
-    computed: boolean
+    node: Pick<PrimitiveNode, 'tracker' | 'trackLayout'>,
+    computed: boolean,
+    brief: boolean
 ): TrackerDisplay {
     if (node.tracker?.display) return node.tracker.display;
-    if (node.compact) return 'line';
+    if (brief) return 'line';
     return node.trackLayout ?? (computed ? 'strip' : 'table');
 }
 

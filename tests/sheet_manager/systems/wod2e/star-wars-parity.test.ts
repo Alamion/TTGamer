@@ -1,4 +1,5 @@
 import { resolveDocumentPolicies, systemRegistry } from '@site/src/sheet_manager/systems';
+import { upgradeTemplate } from '@site/src/sheet_manager/types/templateUpgrade';
 import { readFileSync } from 'fs';
 import { describe, expect, it } from 'vitest';
 
@@ -20,8 +21,15 @@ describe('Star Wars parity across the WoD 2e ruleset split', () => {
         expect(withStableIds(current.defaults)).toEqual(withStableIds(fixture.defaults));
     });
 
-    it('ships byte-identical pages', () => {
-        expect(JSON.stringify(current.templates)).toBe(JSON.stringify(fixture.templates));
+    it('ships the same pages (in the schema 4 form, spec 041)', () => {
+        expect(current.templates).toEqual(
+            Object.fromEntries(
+                Object.entries(fixture.templates).map(([id, template]) => [
+                    id,
+                    upgradeTemplate(template).template,
+                ])
+            )
+        );
     });
 
     it('builds the same dice pools', () => {

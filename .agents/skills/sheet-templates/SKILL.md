@@ -139,10 +139,11 @@ Prefix view ids with the system (`v5-hunter-sheet`). Strings go to per-layer YAM
 (`ui/sheet/<system>.yaml`, `ui/sheet/<system><Line>.yaml`, `data/<catalogId>.yaml`); tests to
 `tests/sheet_manager/systems/<system>/`. No generic file changes are needed for data addressing.
 
-**Terminology**: _full_ and _brief_ are views (shipped templates); _compact_ is a primitive display
-mode used inside brief views (for trackers it reads as the `line` display). A brief also sets
-`layout: 'area'` on its groups (columns from the sheet area's width, no box) and `shortForm` on
-ratings (a short label; the full name stays the input's name); see `src/sheet_manager/AGENTS.md`.
+**Terminology**: _full page_ and _brief_ are page kinds (`pageKind`, spec 041); every shipped view
+is one or the other. _Compact_ is the look every field takes on a brief (for trackers the `line`
+display); it is not a field setting. A brief's only container is the brief block (`brief` node:
+columns from the sheet area's width, no box); its ratings show short labels unless `fullLabel`; see
+`src/sheet_manager/AGENTS.md` ("Brief look").
 
 **Composition of shipped pages** (the maintainer's rule for every character sheet):
 
@@ -151,13 +152,16 @@ ratings (a short label; the full name stays the input's name); see `src/sheet_ma
   sit in cards, not loose in a section. A part too small for a section joins a card of a section
   that fits it (for example "Member of" in the identity card). The shared portrait card is the one
   allowed smaller card.
-- A brief has no sections and no cards: its brief groups (`dense()`) are plain separators between
-  clearly different kinds of fields (attributes apart from skills), not a group per field.
+- A growing element (a list, a table, built-in rows, equipment, a track, a multiline text, a
+  multiple reference, a tracker) counts as a card's worth of fields on its own.
+- A brief has no sections and no cards: its only container is the brief block (`dense()`), a plain
+  separator between clearly different kinds of fields (attributes apart from skills), not a block
+  per field. The editor offers it only on briefs, and sections and cards only on full pages.
 - Collapsible (`collapsible`, on a brief `dense(..., { collapsed: true })`) only for parts that grow
   without bound (inventory, member and power lists) or that play rarely needs (biography, long
   descriptions and notes). Everything used every scene stays open.
-- Planned: the brief group becomes its own element type, offered only on brief pages (backlog
-  T-125); until then it is a group with `layout: 'area'`.
+- `tests/sheet_manager/page-composition.test.ts` checks every shipped page; sheets that broke the
+  rule when it was written are named exceptions (T-126).
 
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`); lists,

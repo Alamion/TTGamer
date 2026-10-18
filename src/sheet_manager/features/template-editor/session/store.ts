@@ -57,6 +57,7 @@ export function refusalMessage(refusal: OpRefusal): string {
     const limit = String(refusal.limit ?? 0);
     if (refusal.error === 'depth') return translate(editor.depthMessage).replace('{limit}', limit);
     if (refusal.error === 'count') return translate(editor.countMessage).replace('{limit}', limit);
+    if (refusal.error === 'nesting') return translate(editor.nestingMessage);
     return translate(editor.cannotMoveIntoItself);
 }
 

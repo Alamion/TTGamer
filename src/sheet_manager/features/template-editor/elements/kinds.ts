@@ -101,7 +101,6 @@ function entryFromColumn(column: TemplateField): ListItemField {
         type: 'text',
         label: column.label,
         required: false,
-        compact: false,
         multiline: false,
     };
 }

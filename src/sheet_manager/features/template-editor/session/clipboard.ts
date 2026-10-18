@@ -89,7 +89,9 @@ export function clipboardAction(
             ok: true,
             draft: result.draft,
             selection: { ids: result.ids, anchor: result.ids[count - 1]! },
-            announce: { message: editor.pasted, count, values: { count } },
+            announce: result.converted
+                ? { message: editor.pastedConverted, count, values: { count } }
+                : { message: editor.pasted, count, values: { count } },
         };
     });
     if (first) revealNode(session, first);

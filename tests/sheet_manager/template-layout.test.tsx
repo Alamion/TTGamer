@@ -12,6 +12,7 @@ import { resolveDocumentBinding } from '@site/src/sheet_manager/systems/template
 import {
     collectFormulaDependencies,
     CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
 } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
@@ -39,12 +40,13 @@ function seed(overrides: Partial<CharacterData> = {}) {
 
 const data = () => useDocumentStore.getState().documents[0]!.data as CharacterData;
 
-function mount(children: unknown[]) {
+function mount(children: unknown[], brief = false) {
     const template = CustomTemplateSchema.parse({
         id: 'layout-kit',
         name: 'Layout Kit',
         documentKind: 'character',
-        schemaVersion: 3,
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        ...(brief ? { pageKind: 'brief' } : {}),
         children,
     });
     return render(createElement(DeclarativeSheetView, { template }));
@@ -230,7 +232,7 @@ describe('resource minimums, proportional columns, condition tracks, droid varia
         );
     });
 
-    it('renders the full health track as a table and the compact one as a single strip', () => {
+    it('renders the health track as a table on a full page and as a single strip on a brief', () => {
         const { unmount } = mount([
             { id: 'health', type: 'primitive', bindingKey: 'track:health', hideLabel: true },
         ]);
@@ -243,7 +245,7 @@ describe('resource minimums, proportional columns, condition tracks, droid varia
         expect(data().health.levels[1]).toBe('slash');
         unmount();
 
-        mount([{ id: 'health', type: 'primitive', bindingKey: 'track:health', compact: true }]);
+        mount([{ id: 'health', type: 'primitive', bindingKey: 'track:health' }], true);
         expect(screen.queryByRole('table')).toBeNull();
         expect(
             screen.getByRole('group', { name: 'Health' }).querySelectorAll('button')

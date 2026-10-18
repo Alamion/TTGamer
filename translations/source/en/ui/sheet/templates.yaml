@@ -11,7 +11,6 @@ primitives:
     boundTo: 'Bound to: {binding}'
     labelOverride: Label override
     labelOverridePlaceholder: Same as binding label
-    compact: Compact (brief format)
     presets: Preset entries
     presetLabel: Entry label
     presetValue: Default value
@@ -165,6 +164,8 @@ editor:
     addElement: Add element
     paletteGroup: Group
     paletteGroupHint: 'A page section, or a card inside another group: it holds other elements.'
+    paletteBrief: Brief block
+    paletteBriefHint: 'A heading over a line, no box: it separates different kinds of fields on a brief.'
     paletteField: Field
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
     paletteList: List
@@ -186,10 +187,9 @@ editor:
     helpAbout: 'Help: {setting}'
     guide: Template editor guide
     groupCollapsible: Collapsible (expanded state is remembered)
-    shortForm: Short label (brief format)
+    fullLabel: Full name on the brief (no short label)
     shortLabel: Short label text
     shortLabelPlaceholder: 'Default: {derived}'
-    areaLayout: Brief look (columns follow the width of the area)
     tableTitle: Table title (optional)
     listTitle: List title (optional)
     tableValueKey: Shared value key (table rows)
@@ -262,6 +262,7 @@ editor:
     referenceTargetUnavailable: 'Reference "{field}" can point to {type}, which this setting does not have.'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
+    nestingMessage: A brief holds brief blocks and fields; a full page holds sections and cards, and a brief block holds no group.
     newSection: New section
     newGroup: New group
     newField: New field
@@ -341,6 +342,7 @@ editor:
     resizeSettings: Resize settings
     kindOf: '{element} · {kind}'
     elementGroup: Group
+    elementBrief: Brief block
     elementList: List
     kind: Kind
     kindSection: Section
@@ -385,6 +387,18 @@ editor:
     pasted:
         message: 'Pasted {count} element.|Pasted {count} elements.'
         plural: true
+    pastedConverted:
+        message: 'Pasted {count} element; its groups now fit this page.|Pasted {count} elements; their groups now fit this page.'
+        plural: true
+    pageKindBrief:
+        message: 'The page is a brief now: {count} group became a brief block.|The page is a brief now: {count} groups became brief blocks.'
+        plural: true
+    pageKindFull:
+        message: 'The page is a full page now: {count} brief block became a card in one section.|The page is a full page now: {count} brief blocks became cards in one section.'
+        plural: true
+    pageKind: Page kind
+    pageKindFullOption: Full page
+    pageKindBriefOption: Brief
     cutDone:
         message: 'Cut {count} element.|Cut {count} elements.'
         plural: true
@@ -572,6 +586,9 @@ page:
     typeLoading: Loading document types…
     requiredUnfilled:
         message: '{count} required field is still empty.|{count} required fields are still empty.'
+        plural: true
+    pagesConverted:
+        message: '{count} saved page was updated for brief blocks: {names}. Open it in the template editor to check its look.|{count} saved pages were updated for brief blocks: {names}. Open them in the template editor to check their look.'
         plural: true
     primitiveDegraded: 'Data binding "{binding}" is unavailable on this device.'
     formulaDegraded: 'Cannot compute "{field}": {reason}.'

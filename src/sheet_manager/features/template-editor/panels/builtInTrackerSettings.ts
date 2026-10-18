@@ -49,7 +49,8 @@ function legacyCount(node: PrimitiveNode, binding: TrackBinding): boolean {
 export function builtInSettings(
     node: PrimitiveNode,
     binding: TrackBinding,
-    onUseGameLevels: () => void
+    onUseGameLevels: () => void,
+    brief: boolean
 ): { value: TrackerSettingsValue; game: TrackerSettingsGame } {
     const settings = node.tracker;
     const game = gameLevels(binding);
@@ -59,7 +60,7 @@ export function builtInSettings(
         : game;
     return {
         value: {
-            display: trackerDisplayOf(node, binding.length !== undefined),
+            display: trackerDisplayOf(node, binding.length !== undefined, brief),
             marks: gameMarks(binding).map(({ id }): TrackerMarkKind => {
                 const override = settings?.marks?.[id];
                 return {
@@ -106,8 +107,7 @@ export function builtInSettingsUpdate(
     const updates: NodeUpdates = {};
     if (change.display) {
         next.display = change.display;
-        // One setting replaces the compact flag and the old view (FR-012).
-        updates.compact = false;
+        // One setting replaces the old view (FR-012).
         updates.trackLayout = undefined;
     }
     if (change.marks) {

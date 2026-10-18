@@ -5,7 +5,7 @@ import {
     shortLabelsFor,
 } from '@site/src/sheet_manager/features/sheet/declarative/shortLabels';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import type { TemplateNode } from '@site/src/sheet_manager/types/template';
+import { isContainerNode, type TemplateNode } from '@site/src/sheet_manager/types/template';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { setTestLocale } from '../stubs/testLocale';
@@ -15,17 +15,21 @@ type Rated = ShortLabelNode & { type: string };
 const briefs = systemRegistry
     .getSystems()
     .flatMap((system) => system.defaultTemplates ?? [])
-    .filter(({ id }) => id.endsWith('brief') || id === 'brief');
+    .filter(({ pageKind }) => pageKind === 'brief');
 
-/** Every container's direct ratings in short form, with the container's id. */
+/** Ratings and pools that draw a short label on a brief (spec 041). */
+const isShort = (child: TemplateNode): child is TemplateNode & Rated =>
+    (child.type === 'rating' ||
+        (child.type === 'primitive' &&
+            /^(trait|resource):/.test(child.bindingKey) &&
+            child.poolTracker === undefined)) &&
+    (child as ShortLabelNode).fullLabel !== true;
+
+/** Every block's direct ratings in short form, with the block's id. */
 function shortGroups(children: readonly TemplateNode[], found: Array<[string, Rated[]]> = []) {
     for (const node of children) {
-        if (node.type !== 'group' && node.type !== 'section') continue;
-        const ratings = node.children.filter(
-            (child): child is TemplateNode & Rated =>
-                (child.type === 'primitive' || child.type === 'rating') &&
-                (child as ShortLabelNode).shortForm === true
-        );
+        if (!isContainerNode(node)) continue;
+        const ratings = node.children.filter(isShort);
         if (ratings.length > 0) found.push([node.id, ratings]);
         shortGroups(node.children, found);
     }
@@ -70,8 +74,8 @@ describe('shipped briefs in short form (spec 033)', () => {
                         } else {
                             expect(rating.type, `${where} is a resource`).toBe('primitive');
                         }
-                        // A short label that equals the full label means a clash fell back.
-                        expect(short, where).not.toBe(rating.label);
+                        // Shipped ratings never clash: no derived fourth letter or number.
+                        expect(short, where).not.toMatch(/\d/);
                         expect(short!.length, where).toBeGreaterThanOrEqual(2);
                         expect(short!.length, where).toBeLessThanOrEqual(4);
                         expect(seen.has(short!), `${where} repeats ${short}`).toBe(false);

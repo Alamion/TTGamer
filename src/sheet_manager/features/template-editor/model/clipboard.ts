@@ -2,6 +2,7 @@ import type { TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isContainerNode, walkTemplateNodes } from '../../../types/template';
 import { insertNodesAt, type MultiOpResult } from '../operations/multi';
 import { cloneWithFreshIds } from './clone';
+import { draftIds, pageKindOf, toBriefNodes, toFullNodes } from './pageKind';
 import { normalizeSelection } from './selection';
 import { findNode, findNodePosition, type NodePlacement } from './tree';
 import { type EditorDraft } from './types';
@@ -71,12 +72,17 @@ export function parseCopied(text: string, target: EditorDraft): ParsedCopied {
         return { ok: false, stage: 'schema', error: 'formatVersion' };
     }
     if (formatVersion > COPIED_ELEMENTS_VERSION) return { ok: false, stage: 'version' };
+    // Copies keep the kind of the page they came from; pasting fits them to the target (spec 041).
+    const fromBrief =
+        Array.isArray(nodes) &&
+        nodes.some((node) => (node as { type?: unknown } | null)?.type === 'brief');
     const parsed = CustomTemplateSchema.safeParse({
         id: 'clipboard',
         name: 'Clipboard',
         systemId: target.systemId,
         documentKind: target.documentKind,
         schemaVersion: target.schemaVersion,
+        ...(fromBrief ? { pageKind: 'brief' } : {}),
         children: nodes,
     });
     if (!parsed.success) {
@@ -154,21 +160,33 @@ function pastePlacements(draft: EditorDraft, ids: readonly string[]): NodePlacem
     return candidates.filter((candidate): candidate is NodePlacement => candidate !== undefined);
 }
 
-/** Pastes copied elements with fresh identities as one change; they become the selection. */
+/**
+ * Pastes copied elements with fresh identities as one change; they become the selection. Groups
+ * of the other page kind are converted to this page's (spec 041): `converted` counts them.
+ */
 export function pasteCopied(
     draft: EditorDraft,
     copied: CopiedElements,
     ids: readonly string[]
-): MultiOpResult {
+): MultiOpResult & { converted?: number } {
     const samePage = copied.source.templateId === draft.id;
     const targetCoordinates = usedCoordinates(draft);
-    const nodes = copied.nodes.map((node) =>
+    const cloned = copied.nodes.map((node) =>
         cloneWithFreshIds(draft, node, { samePage, targetCoordinates })
     );
+    const fitted =
+        pageKindOf(draft) === 'brief' ? toBriefNodes(cloned, draftIds(draft)) : toFullNodes(cloned);
     let result: MultiOpResult = { ok: false, error: 'self-move' };
     for (const placement of pastePlacements(draft, ids)) {
+        const parent = placement.parentId ? findNode(draft, placement.parentId) : undefined;
+        // A block pasted inside a block gives up its fields there.
+        const nodes =
+            parent?.type === 'brief'
+                ? fitted.nodes.flatMap((node) => (node.type === 'brief' ? node.children : [node]))
+                : fitted.nodes;
         result = insertNodesAt(draft, placement, nodes);
-        if (result.ok || result.error !== 'depth') return result;
+        if (result.ok) return { ...result, converted: fitted.converted };
+        if (result.error !== 'depth' && result.error !== 'nesting') return result;
     }
     return result;
 }

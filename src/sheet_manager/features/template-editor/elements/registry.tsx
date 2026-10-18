@@ -35,7 +35,15 @@ export interface PaletteEntry {
     key: string;
     label: { id: string; message: string };
     hint: { id: string; message: string };
-    build(atRoot: boolean): TemplateNode;
+    /** Where it may be added; unset = anywhere. */
+    offered?(place: PalettePlace): boolean;
+    build(place: PalettePlace): TemplateNode;
+}
+
+/** An insertion point: on the page itself or inside a container, on a brief or a full page. */
+export interface PalettePlace {
+    atRoot: boolean;
+    brief: boolean;
 }
 
 /**
@@ -76,8 +84,10 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
             key: 'group',
             label: editor.paletteGroup,
             hint: editor.paletteGroupHint,
-            // A group starts as a section on the page and as a card inside another group.
-            build: (atRoot) =>
+            // A group starts as a section on the page and as a card inside another group; a brief
+            // offers its own block instead (spec 041).
+            offered: ({ brief }) => !brief,
+            build: ({ atRoot }) =>
                 atRoot
                     ? {
                           id: generateDraftId('sec'),
@@ -98,6 +108,25 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
         typeLabel: editor.elementGroup,
         name: (node) => node.title,
         settings: (node, { edits }) => groupSettings(node, edits),
+    },
+    brief: {
+        typeLabel: editor.elementBrief,
+        name: (node) => node.title,
+        settings: (node, { edits }) => groupSettings(node, edits),
+        palette: {
+            key: 'brief',
+            label: editor.paletteBrief,
+            hint: editor.paletteBriefHint,
+            // A brief's only container, on the page itself: blocks hold no container.
+            offered: ({ atRoot, brief }) => atRoot && brief,
+            build: () => ({
+                id: generateDraftId('blk'),
+                type: 'brief',
+                title: translate(editor.paletteBrief),
+                collapsible: false,
+                children: [],
+            }),
+        },
     },
     table: {
         typeLabel: editor.elementList,
@@ -180,7 +209,7 @@ export function elementEditor<N extends TemplateNode>(node: N): ElementEditor<N>
 
 /** The "+" menu in display order. */
 export const PALETTE: readonly PaletteEntry[] = (
-    ['section', 'text', 'list', 'button'] as const
+    ['section', 'brief', 'text', 'list', 'button'] as const
 ).map((type) => ELEMENT_EDITORS[type].palette!);
 
 export const KIND_NAMES = {

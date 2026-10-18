@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { GroupNode, SectionNode } from '../../../types/template';
+import type { BriefNode, GroupNode, SectionNode } from '../../../types/template';
 import type { NodeUpdates } from '../model/types';
 import { ColumnLayoutControl, ToggleRow } from '../panels/LayoutControls';
 import { type NodeEdits } from '../session/useNodeEdits';
@@ -91,15 +91,18 @@ export function sectionSettings(node: SectionNode, callbacks: NodeEdits): Groupe
     };
 }
 
-export function groupSettings(node: GroupNode, callbacks: NodeEdits): GroupedSettings {
+/** A card's settings, and a brief block's (spec 041): the same but the section/card choice. */
+export function groupSettings(node: GroupNode | BriefNode, callbacks: NodeEdits): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
         content: (
             <>
-                <KindChoice
-                    node={node}
-                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
-                />
+                {node.type === 'group' && (
+                    <KindChoice
+                        node={node}
+                        onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                    />
+                )}
                 <TitleSetting node={node} onChange={(title) => update({ title })} />
             </>
         ),
@@ -115,12 +118,6 @@ export function groupSettings(node: GroupNode, callbacks: NodeEdits): GroupedSet
                     columns={node.columns}
                     columnWidths={node.columnWidths}
                     onChange={update}
-                />
-                <ToggleRow
-                    checked={node.layout === 'area'}
-                    label={settingLabel('layout')}
-                    setting="layout"
-                    onChange={(checked) => update({ layout: checked ? 'area' : undefined })}
                 />
             </>
         ),

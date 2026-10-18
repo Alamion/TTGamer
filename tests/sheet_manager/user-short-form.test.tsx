@@ -54,21 +54,27 @@ const template = CustomTemplateSchema.parse({
     ],
 });
 
-describe('a user page with short-form ratings (spec 033, US4)', () => {
+describe('a user brief with short labels (spec 033, US4; spec 041)', () => {
     afterEach(cleanup);
 
-    it('derives the letters, honours the author’s, and falls back on a clash', () => {
-        const { container, getByRole, getByText } = mountSheet(template);
+    it('derives the letters, honours the author’s, and lengthens a clash', () => {
+        const { container, getByRole } = mountSheet(template);
         const cells = [...container.querySelectorAll('label[data-term-hint]')];
-        // The third derives the same letters as the first, so it keeps its full label.
-        expect(cells.map((cell) => cell.firstElementChild?.textContent)).toEqual(['LUC', 'GRT']);
-        expect(getByText('Lucky break')).toBeTruthy();
+        // The third derives the same letters as the first, so it takes a fourth one.
+        expect(cells.map((cell) => cell.firstElementChild?.textContent)).toEqual([
+            'LUC',
+            'GRT',
+            'LUCK',
+        ]);
+        expect(getByRole('spinbutton', { name: 'Lucky break' })).toBeTruthy();
         expect(getByRole('spinbutton', { name: 'Luck' })).toBeTruthy();
     });
 
-    it('keeps a page without the short form as it was', () => {
+    it('shows full names on a full page (spec 041)', () => {
+        const { pageKind: _pageKind, ...full } = template;
+        void _pageKind;
         const plain = CustomTemplateSchema.parse({
-            ...template,
+            ...full,
             children: [
                 {
                     id: 'luck',
@@ -77,7 +83,6 @@ describe('a user page with short-form ratings (spec 033, US4)', () => {
                     min: 0,
                     max: 5,
                     required: false,
-                    compact: true,
                 },
             ],
         });

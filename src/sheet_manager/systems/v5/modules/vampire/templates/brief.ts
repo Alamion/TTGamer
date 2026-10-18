@@ -24,6 +24,7 @@ export const vampireBriefTemplate: CustomTemplate = {
     name: 'Vampire: the Masquerade 5e — Brief',
     systemId: SystemIdSchema.parse('wod-v5'),
     documentKind: VAMPIRE_KIND,
+    pageKind: 'brief',
     schemaVersion: TEMPLATE_SCHEMA_VERSION,
     children: [
         dense(vampireIdentityGroup({ compact: true })),

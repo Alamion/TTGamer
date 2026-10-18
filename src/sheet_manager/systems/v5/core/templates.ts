@@ -42,12 +42,18 @@ const identity = (compact = false) =>
         }
     );
 
-function page(id: string, name: string, children: CustomTemplate['children']): CustomTemplate {
+function page(
+    id: string,
+    name: string,
+    children: CustomTemplate['children'],
+    brief = false
+): CustomTemplate {
     return {
         id,
         name,
         systemId: SystemIdSchema.parse('wod-v5'),
         documentKind: DocumentKindSchema.parse('mortal'),
+        ...(brief ? { pageKind: 'brief' as const } : {}),
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children,
     };
@@ -82,27 +88,32 @@ export const v5CoreSheetTemplate = page('v5-core-sheet', 'Mortal — Full sheet'
     otherSection(),
 ]);
 
-export const v5CoreBriefTemplate = page('v5-core-brief', 'Mortal — Brief', [
-    dense(identity(true)),
-    dense(
-        group(
-            'condition',
-            v5.sections.condition.message,
-            [
-                ...trackGroup('health', { compact: true }).children.map((node) => ({
-                    ...node,
-                    column: 1,
-                })),
-                ...trackGroup('willpower', { compact: true }).children.map((node) => ({
-                    ...node,
-                    column: 2,
-                })),
-            ],
-            { columns: 2, labelMessage: v5.sections.condition }
-        )
-    ),
-    compactTraitsGroup('attributes'),
-    compactTraitsGroup('skills', { collapsible: true }),
-    dense(equipmentGroup('weapons'), { collapsed: true }),
-    memberOfBriefGroup(),
-]);
+export const v5CoreBriefTemplate = page(
+    'v5-core-brief',
+    'Mortal — Brief',
+    [
+        dense(identity(true)),
+        dense(
+            group(
+                'condition',
+                v5.sections.condition.message,
+                [
+                    ...trackGroup('health', { compact: true }).children.map((node) => ({
+                        ...node,
+                        column: 1,
+                    })),
+                    ...trackGroup('willpower', { compact: true }).children.map((node) => ({
+                        ...node,
+                        column: 2,
+                    })),
+                ],
+                { columns: 2, labelMessage: v5.sections.condition }
+            )
+        ),
+        compactTraitsGroup('attributes'),
+        compactTraitsGroup('skills', { collapsible: true }),
+        dense(equipmentGroup('weapons'), { collapsed: true }),
+        memberOfBriefGroup(),
+    ],
+    true
+);

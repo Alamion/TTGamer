@@ -38,10 +38,8 @@ export type NodeUpdates = {
     formula?: string;
     maxFrom?: string;
     label?: string;
-    compact?: boolean;
-    shortForm?: boolean;
+    fullLabel?: true;
     shortLabel?: string;
-    layout?: 'window' | 'area';
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
     trackLayout?: 'table' | 'strip';
@@ -57,4 +55,9 @@ export type EditorDraft = CustomTemplate;
 
 export type DraftOpResult =
     | { ok: true; draft: EditorDraft }
-    | { ok: false; error: 'depth' | 'count' | 'self-move'; limit?: number; actual?: number };
+    | {
+          ok: false;
+          error: 'depth' | 'count' | 'self-move' | 'nesting';
+          limit?: number;
+          actual?: number;
+      };

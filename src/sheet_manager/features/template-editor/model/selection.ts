@@ -1,4 +1,5 @@
 import type { TemplateNode } from '../../../types/template';
+import { isContainerNode } from '../../../types/template';
 import type { EditorDraft } from './types';
 
 /** The editor's selected elements (spec 023, data-model "Editor selection"). */
@@ -39,11 +40,7 @@ function siblingsOf(draft: EditorDraft, nodeId: string): Siblings | undefined {
             found = { parentId, ids: children.map((child) => child.id) };
             return true;
         }
-        return children.some(
-            (child) =>
-                (child.type === 'section' || child.type === 'group') &&
-                search(child.children, child.id)
-        );
+        return children.some((child) => isContainerNode(child) && search(child.children, child.id));
     };
     search(draft.children, null);
     return found;
@@ -73,7 +70,7 @@ function pageOrder(draft: EditorDraft): Map<string, { order: number; parentId: s
     const walk = (children: readonly TemplateNode[], parentId: string | null) => {
         for (const child of children) {
             order.set(child.id, { order: order.size, parentId });
-            if (child.type === 'section' || child.type === 'group') walk(child.children, child.id);
+            if (isContainerNode(child)) walk(child.children, child.id);
         }
     };
     walk(draft.children, null);

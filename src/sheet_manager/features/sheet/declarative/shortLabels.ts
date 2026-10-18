@@ -3,11 +3,13 @@ import type { GameTermsMode } from '@site/src/shared/store/readerPrefsStore';
 import { createContext, useContext } from 'react';
 
 import { useTermHintSettings } from '../../../components/terms/TermHintContext';
+import { useBriefPage } from './areaLayout';
 
 /** What a rating needs to name its short form (a template field or a primitive node). */
 export interface ShortLabelNode {
     id: string;
-    shortForm?: boolean;
+    /** On a brief (spec 041): keep the full name instead of the short label. */
+    fullLabel?: true;
     shortLabel?: string;
     label?: string;
     labelMessage?: string;
@@ -15,13 +17,15 @@ export interface ShortLabelNode {
 }
 
 const DEFAULT_LENGTH = 3;
+/** The longest short label (the editor's limit for the author's own). */
+const MAX_LENGTH = 4;
 
-/** The first three letters of a label in capitals; a shorter label stays as it is. */
-function derive(label: string, locale: string): string {
+/** The first letters of a label in capitals; a label shorter than three stays as it is. */
+function derive(label: string, locale: string, length = DEFAULT_LENGTH): string {
     const letters = Array.from(label.replace(/[^\p{L}\p{N}]/gu, ''));
     return letters.length < DEFAULT_LENGTH
         ? label
-        : letters.slice(0, DEFAULT_LENGTH).join('').toLocaleUpperCase(locale);
+        : letters.slice(0, length).join('').toLocaleUpperCase(locale);
 }
 
 /**
@@ -46,7 +50,8 @@ export function shortLabelFor(
 
 /**
  * Short labels of one group's ratings, by node id. Two nodes never show the same letters: the
- * later one falls back to its full label, so a page always draws.
+ * later one takes a fourth derived letter (BRA, BRAC), else a number (FIE, FIE2), so a
+ * rating keeps the brief look whatever its name.
  */
 export function shortLabelsFor(
     nodes: readonly ShortLabelNode[],
@@ -56,16 +61,29 @@ export function shortLabelsFor(
 ): ReadonlyMap<string, string> {
     const labels = new Map<string, string>();
     const taken = new Set<string>();
+    const names = new Set<string>();
     for (const node of nodes) {
-        if (!node.shortForm || node.label === undefined) continue;
+        if (node.fullLabel || node.label === undefined) continue;
         const short = shortLabelFor(node, node.label, locale, mode, terms);
-        const key = short.toLocaleUpperCase(locale);
-        if (taken.has(key)) {
-            labels.set(node.id, node.label);
-        } else {
-            taken.add(key);
-            labels.set(node.id, short);
+        const free = (candidate: string) => !taken.has(candidate.toLocaleUpperCase(locale));
+        let chosen = short;
+        if (!free(chosen)) {
+            const longer = derive(node.label, locale, MAX_LENGTH);
+            // A fourth letter tells different names apart; the same name only takes a number.
+            const derived = short === derive(node.label, locale);
+            const repeated = names.has(node.label.toLocaleLowerCase(locale));
+            if (derived && !repeated && free(longer)) {
+                chosen = longer;
+            } else {
+                const stem = Array.from(short)
+                    .slice(0, MAX_LENGTH - 1)
+                    .join('');
+                for (let count = 2; !free(chosen); count++) chosen = `${stem}${count}`;
+            }
         }
+        taken.add(chosen.toLocaleUpperCase(locale));
+        names.add(node.label.toLocaleLowerCase(locale));
+        labels.set(node.id, chosen);
     }
     return labels;
 }
@@ -74,15 +92,17 @@ export function shortLabelsFor(
 export const ShortLabelContext = createContext<ReadonlyMap<string, string> | null>(null);
 
 /**
- * The short label a rating draws, or `undefined` for its regular compact form: the group's map
- * first (clashes already resolved there), else computed alone for a rating outside a group.
+ * The short label a rating draws on a brief, or `undefined` for its full name: the group's map
+ * first (clashes already resolved there), else computed alone for a rating outside a group. A
+ * full page always shows the name (spec 041).
  */
 export function useShortLabel(node: ShortLabelNode, label: string): string | undefined {
     const group = useContext(ShortLabelContext);
     const settings = useTermHintSettings();
-    if (!node.shortForm) return undefined;
-    const short =
+    const brief = useBriefPage();
+    if (!brief || node.fullLabel) return undefined;
+    return (
         group?.get(node.id) ??
-        shortLabelFor(node, label, settings?.locale ?? 'en', settings?.mode ?? 'ru');
-    return short === label ? undefined : short;
+        shortLabelFor(node, label, settings?.locale ?? 'en', settings?.mode ?? 'ru')
+    );
 }
