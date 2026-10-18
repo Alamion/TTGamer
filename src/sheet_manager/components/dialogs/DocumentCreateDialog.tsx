@@ -135,6 +135,14 @@ function CreateDialogContent({
     const listRef = useRef<HTMLDivElement>(null);
     const nameRef = useRef<HTMLInputElement>(null);
     const [name, setName] = useState('');
+    // The start belongs to the kind it was chosen for; another kind starts blank.
+    const [start, setStart] = useState<{ kind: string; exampleId: string } | undefined>();
+    const exampleId =
+        selected &&
+        start?.kind === selected.key &&
+        selected.examples.some(({ id }) => id === start.exampleId)
+            ? start.exampleId
+            : undefined;
     const folders = useDocumentStore((state) => state.folders);
     const [folderId, setFolderId] = useState<string | null>(parentId);
     // A folder deleted meanwhile reads as the top level; createDocument reports it on create.
@@ -192,7 +200,12 @@ function CreateDialogContent({
     const create = () => {
         if (!selected) return;
         const target = shownFolder ? folderId : null;
-        const created = createFromChoice(selected, { activate, parentId: folderId, name });
+        const created = createFromChoice(selected, {
+            activate,
+            parentId: folderId,
+            name,
+            ...(exampleId ? { exampleId } : {}),
+        });
         const named = name.trim() !== '';
         onCreated?.(created.id, { named, parentId: target });
         // Unnamed, the owner places the focus on the name to type; named, it returns as usual.
@@ -345,6 +358,31 @@ function CreateDialogContent({
                         </div>
                     ) : (
                         <p className="text-sm text-textSecondary">{translate(labels.chooseKind)}</p>
+                    )}
+                    {selected && selected.examples.length > 0 && (
+                        <fieldset className="m-0 grid gap-1 border-0 p-0 text-sm text-textPrimary">
+                            <legend className="mb-1 p-0">{translate(labels.start)}</legend>
+                            {[undefined, ...selected.examples].map((example) => (
+                                <label
+                                    key={example?.id ?? 'blank'}
+                                    className="flex min-h-8 cursor-pointer items-center gap-2 rounded-sm px-1 hover:bg-bgBase"
+                                >
+                                    <input
+                                        type="radio"
+                                        name={`${idBase}-start`}
+                                        checked={exampleId === example?.id}
+                                        onChange={() =>
+                                            setStart(
+                                                example
+                                                    ? { kind: selected.key, exampleId: example.id }
+                                                    : undefined
+                                            )
+                                        }
+                                    />
+                                    {example ? translate(example.label) : translate(labels.blank)}
+                                </label>
+                            ))}
+                        </fieldset>
                     )}
                     <label className="grid gap-1 text-sm text-textPrimary">
                         {translate(labels.name)}

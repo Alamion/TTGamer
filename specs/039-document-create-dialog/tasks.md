@@ -67,14 +67,14 @@ vampire kind remains, `Enter` selects it.
 **Check**: vampire → **Mirela Voss** → create; the copy has her values and portrait, and editing it
 leaves the next copy unchanged.
 
-- [ ] T014 [US3] Extend `tests/sheet_manager/create-from-choice.test.ts`: example copies get a new
+- [x] T014 [US3] Extend `tests/sheet_manager/create-from-choice.test.ts`: example copies get a new
       id, run through `migrate` and the schema, keep `templateValues` and the portrait, are named
       after the example without a typed name, and stay independent; kinds without examples start
       blank
-- [ ] T015 [US3] Implement the `exampleId` path in `createFromChoice.ts` (D8) and the start choice
+- [x] T015 [US3] Implement the `exampleId` path in `createFromChoice.ts` (D8) and the start choice
       (**Blank** + examples, only for kinds with examples) in the right pane of
       `DocumentCreateDialog.tsx`, with a dialog test case
-- [ ] T016 [US3] Run the targeted tests and commit the story
+- [x] T016 [US3] Run the targeted tests and commit the story
 
 ## User Story 4 - Keyboard and phone (P2)
 

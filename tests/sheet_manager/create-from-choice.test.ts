@@ -1,10 +1,15 @@
 // @vitest-environment happy-dom
 import { readCreatePreferences } from '@site/src/sheet_manager/features/documents/createChoices';
-import { createFromChoice } from '@site/src/sheet_manager/features/documents/createFromChoice';
+import {
+    createFromChoice,
+    CreateUnavailableError,
+} from '@site/src/sheet_manager/features/documents/createFromChoice';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
+import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { readDataPath } from '@site/src/sheet_manager/systems/templateBindings';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { MIRELA_VOSS_DATA } from '@site/src/sheet_manager/systems/v5/modules/vampire/example';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { ASHEN_ID, NOW } from './helpers/library';
@@ -116,5 +121,82 @@ describe('creating from a choice (spec 039, US2)', () => {
         useDocumentTypeStore.setState({ defaultPages: { 'wod-v5:vampire': 'v5-vampire-brief' } });
         const created = createFromChoice({ systemId: 'wod-v5', definitionId: 'vampire' });
         expect(created.metadata.preferredViewId).toBe('v5-vampire-brief');
+    });
+});
+
+describe('starting from an example (spec 039, US3)', () => {
+    const vampire = { systemId: 'wod-v5', definitionId: 'vampire' };
+    const definition = () => systemRegistry.getDocumentDefinition('wod-v5', 'vampire')!;
+    afterEach(() => vi.restoreAllMocks());
+
+    it('copies the example under a new id, named after it, with its portrait', () => {
+        const copy = createFromChoice(vampire, { exampleId: 'mirela-voss::example' });
+        expect(copy.id).not.toBe('mirela-voss::example');
+        expect(copy.metadata.title).toBe('Mirela Voss');
+        expect(copy.data).toEqual(MIRELA_VOSS_DATA);
+        expect((copy.data as { metadata: { imageUrl: string } }).metadata.imageUrl).toBe(
+            '/img/mirela_voss.webp'
+        );
+        expect(copy.metadata.preferredViewId).toBe(definition().defaultViewId);
+    });
+
+    it('keeps a typed name over the example name, in the title and the name value', () => {
+        const copy = createFromChoice(vampire, {
+            exampleId: 'mirela-voss::example',
+            name: 'Mira',
+        });
+        expect(copy.metadata.title).toBe('Mira');
+        expect((copy.data as { name: string }).name).toBe('Mira');
+        expect((copy.data as { clan: string }).clan).toBe('Toreador');
+    });
+
+    it('makes independent copies that leave the example unchanged', () => {
+        const first = createFromChoice(
+            { systemId: 'wod-v5', definitionId: 'hunter' },
+            { exampleId: 'lena-varga::example' }
+        );
+        const second = createFromChoice(
+            { systemId: 'wod-v5', definitionId: 'hunter' },
+            { exampleId: 'lena-varga::example' }
+        );
+        expect(second.id).not.toBe(first.id);
+        useDocumentStore
+            .getState()
+            .updateDocumentData(first.id, (data) => ({ ...(data as object), name: 'Changed' }));
+        const stored = (id: string) =>
+            useDocumentStore.getState().documents.find((document) => document.id === id)!;
+        expect((stored(first.id).data as { name: string }).name).toBe('Changed');
+        expect((stored(second.id).data as { name: string }).name).toBe('Lena Varga');
+        const example = systemRegistry
+            .getDocumentDefinition('wod-v5', 'hunter')!
+            .examples![0]!.create();
+        expect((example.data as { name: string }).name).toBe('Lena Varga');
+    });
+
+    it('migrates an older example and copies its template values', () => {
+        const [example] = definition().examples!;
+        const original = example!.create();
+        vi.spyOn(example!, 'create').mockReturnValue({
+            ...original,
+            schemaVersion: 0,
+            templateValues: { 'night-notes': 'kept' },
+        });
+        const migrate = vi.spyOn(definition(), 'migrate');
+        const copy = createFromChoice(vampire, { exampleId: example!.id });
+        expect(migrate).toHaveBeenCalledWith(original.data, 0);
+        expect(copy.templateValues).toEqual({ 'night-notes': 'kept' });
+        expect(copy.schemaVersion).toBe(1);
+    });
+
+    it('refuses an example the kind does not ship', () => {
+        expect(() =>
+            createFromChoice(
+                { systemId: 'star-wars-wod', definitionId: 'droid' },
+                {
+                    exampleId: 'jax-vorn::preset',
+                }
+            )
+        ).toThrow(CreateUnavailableError);
+        expect(useDocumentStore.getState().entries).toHaveLength(0);
     });
 });

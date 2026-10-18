@@ -170,3 +170,42 @@ describe('naming and placing it (spec 039, US2)', () => {
         expect(takeSheetIssues().map(({ code }) => code)).toEqual(['document-folder-missing']);
     });
 });
+
+describe('starting from an example (spec 039, US3)', () => {
+    it('offers Blank and the examples only for kinds that ship them', () => {
+        open();
+        fireEvent.click(document.querySelector('[data-kind="star-wars-wod/droid"]')!);
+        expect(screen.queryByRole('group', { name: 'Start from' })).toBeNull();
+        fireEvent.click(document.querySelector('[data-kind="star-wars-wod/vehicle"]')!);
+        const start = screen.getByRole('group', { name: 'Start from' });
+        expect(
+            within(start)
+                .getAllByRole('radio')
+                .map((radio) => radio.parentElement?.textContent)
+        ).toEqual([
+            'Blank',
+            'Red Five (example)',
+            "Luke's landspeeder (example)",
+            'Millennium Falcon (example)',
+        ]);
+        expect(within(start).getByRole('radio', { name: 'Blank' })).toHaveProperty('checked', true);
+    });
+
+    it('creates a copy of the chosen example, named after it', () => {
+        open();
+        type('vamp');
+        fireEvent.click(screen.getByRole('radio', { name: 'Mirela Voss (example)' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        const [created] = useDocumentStore.getState().documents;
+        expect(created!.metadata.title).toBe('Mirela Voss');
+        expect((created!.data as { clan: string }).clan).toBe('Toreador');
+    });
+
+    it('starts blank again when another kind is chosen', () => {
+        open();
+        type('vamp');
+        fireEvent.click(screen.getByRole('radio', { name: 'Mirela Voss (example)' }));
+        type('hunter');
+        expect(screen.getByRole('radio', { name: 'Blank' })).toHaveProperty('checked', true);
+    });
+});
