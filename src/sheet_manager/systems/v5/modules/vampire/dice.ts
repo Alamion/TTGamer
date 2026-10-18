@@ -15,8 +15,10 @@ export const hungerDiceLine: V5DiceLine = {
     definitionIds: ['vampire'],
     replaces: {
         count: (data) => {
-            const hunger = (data as { hunger?: unknown } | null)?.hunger;
-            return typeof hunger === 'number' ? hunger : 0;
+            const record = data as { hunger?: unknown; trackResources?: unknown } | null;
+            // An antagonist run without Hunger rolls plain dice (spec 040, D8).
+            if (record?.trackResources === false) return 0;
+            return typeof record?.hunger === 'number' ? record.hunger : 0;
         },
     },
     outcomes: ({ specialFaces, critical, succeeded }) => {

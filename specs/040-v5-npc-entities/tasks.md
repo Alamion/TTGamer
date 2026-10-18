@@ -93,14 +93,14 @@ member's brief lists the church; following a link opens the member.
 **Check**: vampire "The Sheriff" with Hunger 3: tracking off hides Hunger and Willpower and rolls
 have no Hunger dice; on again shows Hunger 3.
 
-- [ ] T021 [US4] Write `tests/sheet_manager/systems/v5/tracking-switch.test.tsx`: Hunger dice 0 when
+- [x] T021 [US4] Write `tests/sheet_manager/systems/v5/tracking-switch.test.tsx`: Hunger dice 0 when
       off, trackers hidden on both pages, stored values kept; hunter Willpower hidden and
       Desperation unaffected; old documents read with tracking on
-- [ ] T022 [US4] Add one `trackResources` (default true) to
+- [x] T022 [US4] Add one `trackResources` (default true) to
       `src/sheet_manager/systems/v5/modules/vampire/schema.ts` and `modules/hunter/schema.ts`, read
       it in `modules/vampire/dice.ts`, a toggle binding "Track Hunger and Willpower", and `showWhen`
       on the Hunger, Rouse, and Willpower blocks (hunter: Willpower) of the four pages (D8)
-- [ ] T023 [US4] Run `yarn verify` (schema change) and commit the story
+- [x] T023 [US4] Run `yarn verify` (schema change) and commit the story
 
 ## User Story 5 - Examples and documentation for Storytellers (P3)
 

@@ -4,7 +4,12 @@ import { dense, group, list } from '../../../../../templates/builders';
 import { SystemIdSchema } from '../../../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../../../types/template';
 import { memberOfGroup } from '../../../core/group';
-import { compactTraitsGroup, equipmentGroup, trackGroup } from '../../../ruleset/templateParts';
+import {
+    compactTraitsGroup,
+    equipmentGroup,
+    tracked,
+    trackGroup,
+} from '../../../ruleset/templateParts';
 import { VAMPIRE_KIND, vampireBloodGroup, vampireIdentityGroup } from './sheet';
 
 const v5 = uiMessages.sheet.v5;
@@ -29,7 +34,7 @@ export const vampireBriefTemplate: CustomTemplate = {
                 [
                     ...[
                         ...trackGroup('health', { compact: true }).children,
-                        ...trackGroup('willpower', { compact: true }).children,
+                        ...trackGroup('willpower', { compact: true }).children.map(tracked),
                     ].map((node) => ({ ...node, column: 1 })),
                     ...vampireBloodGroup({ compact: true }).children.map((node) => ({
                         ...node,

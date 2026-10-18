@@ -14,6 +14,7 @@ sections:
     aims: Цели
     bloodPotency: Сила крови
 fields:
+    trackResources: Вести Голод и Волю
     concept: Концепция
     chronicle: Хроника
     sire: Сир

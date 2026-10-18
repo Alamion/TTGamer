@@ -8116,6 +8116,14 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "track-resources",
+         "type": "primitive",
+         "bindingKey": "field:track-resources",
+         "label": "Track Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+         "compact": false
         }
        ]
       },
@@ -8221,6 +8229,10 @@
        "title": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "docsPath": "/docs/wod-v5/rules/damage-willpower",
        "collapsible": false,
        "children": [
@@ -9054,6 +9066,14 @@
        "compact": true,
        "type": "text",
        "multiline": false
+      },
+      {
+       "id": "track-resources",
+       "type": "primitive",
+       "bindingKey": "field:track-resources",
+       "label": "Track Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+       "compact": true
       }
      ]
     },
@@ -9082,6 +9102,10 @@
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -9669,6 +9693,14 @@
          "multiline": false
         },
         {
+         "id": "track-resources",
+         "type": "primitive",
+         "bindingKey": "field:track-resources",
+         "label": "Track Hunger and Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+         "compact": false
+        },
+        {
          "id": "sire-field",
          "label": "Sire",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.sire",
@@ -9819,6 +9851,10 @@
        "title": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "docsPath": "/docs/wod-v5/rules/damage-willpower",
        "collapsible": false,
        "children": [
@@ -9847,6 +9883,10 @@
          "bindingKey": "resource:hunger",
          "label": "Hunger",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
+         "visibleWhen": {
+          "coordinate": "track-resources",
+          "equals": true
+         },
          "compact": false
         },
         {
@@ -9896,7 +9936,11 @@
           }
          ],
          "always": [],
-         "type": "button"
+         "type": "button",
+         "visibleWhen": {
+          "coordinate": "track-resources",
+          "equals": true
+         }
         },
         {
          "id": "remorse",
@@ -10897,6 +10941,14 @@
        "compact": true,
        "type": "text",
        "multiline": false
+      },
+      {
+       "id": "track-resources",
+       "type": "primitive",
+       "bindingKey": "field:track-resources",
+       "label": "Track Hunger and Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+       "compact": true
       }
      ]
     },
@@ -10925,6 +10977,10 @@
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -10934,6 +10990,10 @@
        "label": "Hunger",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -10986,7 +11046,11 @@
        ],
        "always": [],
        "type": "button",
-       "column": 2
+       "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       }
       },
       {
        "id": "remorse",

@@ -9,7 +9,13 @@ import {
     section,
     text,
 } from '../../../templates/builders';
-import type { GroupNode, SectionNode, TemplateField } from '../../../types/template';
+import type {
+    GroupNode,
+    SectionNode,
+    TemplateField,
+    TemplateNode,
+    VisibleWhen,
+} from '../../../types/template';
 import { V5_ATTRIBUTE_GROUPS, V5_SKILL_GROUPS, type V5TraitGroup } from './profile';
 
 /**
@@ -295,4 +301,18 @@ export function otherSection(): SectionNode {
         ],
         { columns: 2, columnWidths: [1, 2], labelMessage: v5.sections.other }
     );
+}
+
+/** Shown while the document tracks Hunger and Willpower (antagonists may not, spec 040 D8). */
+const TRACKED: VisibleWhen = { coordinate: 'track-resources', equals: true };
+
+export const tracked = <T extends TemplateNode>(node: T): T => ({ ...node, visibleWhen: TRACKED });
+
+/** The switch an antagonist's sheet turns off to stop tracking Hunger and Willpower. */
+export function trackResourcesToggle(label: Message, compact = false) {
+    return primitive('track-resources', 'field:track-resources', {
+        label: label.message,
+        labelMessage: label,
+        compact,
+    });
 }

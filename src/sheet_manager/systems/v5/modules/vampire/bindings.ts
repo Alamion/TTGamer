@@ -140,6 +140,10 @@ const vampireBindings: DocumentBindingDescriptor[] = [
     }),
     field('bane', 'bane', { label: vampire.fields.bane.message }),
     field('compulsion', 'compulsion', { label: vampire.fields.compulsion.message }),
+    field('track-resources', 'trackResources', {
+        label: vampire.fields.trackResources.message,
+        valueType: 'boolean',
+    }),
     rating('hunger', 'hunger', vampire.fields.hunger.message, VAMPIRE_LIMITS.hunger.max),
     rating(
         'blood-potency',

@@ -4,7 +4,12 @@ import { dense, group } from '../../../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../../../types/template';
 import { memberOfGroup } from '../../../core/group';
-import { compactTraitsGroup, equipmentGroup, trackGroup } from '../../../ruleset/templateParts';
+import {
+    compactTraitsGroup,
+    equipmentGroup,
+    tracked,
+    trackGroup,
+} from '../../../ruleset/templateParts';
 import { hunterCellGroup, hunterEdgesGroup, hunterIdentityGroup } from './sheet';
 
 const v5 = uiMessages.sheet.v5;
@@ -28,7 +33,7 @@ export const hunterBriefTemplate: CustomTemplate = {
                 [
                     ...[
                         ...trackGroup('health', { compact: true }).children,
-                        ...trackGroup('willpower', { compact: true }).children,
+                        ...trackGroup('willpower', { compact: true }).children.map(tracked),
                     ].map((node) => ({ ...node, column: 1 })),
                     ...hunterCellGroup({ compact: true }).children.map((node) => ({
                         ...node,
