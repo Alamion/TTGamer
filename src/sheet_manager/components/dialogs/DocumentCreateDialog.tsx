@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
-import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { ChevronDown, ChevronRight, Folder, Search } from 'lucide-react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
@@ -20,7 +20,10 @@ import {
 } from '../../features/documents/createChoices';
 import { createFromChoice } from '../../features/documents/createFromChoice';
 import { useLibraryTree } from '../../features/sheet/data/useLibraryTree';
+import type { Folder as FolderRecord } from '../../store/documentIndex';
+import { useDocumentStore } from '../../store/documentStore';
 import { systemRegistry } from '../../systems';
+import { MoveToPicker } from '../documents/MoveToPicker';
 
 interface DocumentCreateDialogProps {
     open: boolean;
@@ -29,10 +32,24 @@ interface DocumentCreateDialogProps {
     activate?: boolean;
     /** The folder the new document goes into; the top level when absent. */
     parentId?: string | null;
-    onCreated?: (id: string) => void;
+    /** `named`: the player typed a name (no rename needed); `parentId`: where it went. */
+    onCreated?: (id: string, created: { named: boolean; parentId: string | null }) => void;
 }
 
 const labels = uiMessages.sheet.documents.create;
+const NO_FOLDERS_MOVING: ReadonlySet<string> = new Set();
+const FOLDER_DEPTH_LIMIT = 64;
+
+/** "Campaign / Session 3", or `undefined` when the folder is gone. */
+function folderPath(folders: readonly FolderRecord[], id: string): string | undefined {
+    const byId = new Map(folders.map((folder) => [folder.id, folder]));
+    const names: string[] = [];
+    for (let at = byId.get(id); at && names.length < FOLDER_DEPTH_LIMIT;) {
+        names.unshift(at.name);
+        at = at.parentId ? byId.get(at.parentId) : undefined;
+    }
+    return names.length > 0 ? names.join(' / ') : undefined;
+}
 
 /** One row of the list, in the order the arrows walk it. */
 interface Row {
@@ -116,7 +133,13 @@ function CreateDialogContent({
     const active = rows.find(({ id }) => id === activeId) ?? undefined;
     const matches = listChoices(shown).length;
     const listRef = useRef<HTMLDivElement>(null);
-    const createRef = useRef<HTMLButtonElement>(null);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const [name, setName] = useState('');
+    const folders = useDocumentStore((state) => state.folders);
+    const [folderId, setFolderId] = useState<string | null>(parentId);
+    // A folder deleted meanwhile reads as the top level; createDocument reports it on create.
+    const shownFolder = folderId ? folderPath(folders, folderId) : undefined;
+    const [picking, setPicking] = useState(false);
 
     useEffect(() => {
         if (!activeId) return;
@@ -134,7 +157,7 @@ function CreateDialogContent({
 
     const choose = (choice: CreateChoice, then?: 'focus-details') => {
         setSelectedKey(choice.key);
-        if (then) createRef.current?.focus();
+        if (then) nameRef.current?.focus();
     };
 
     const changeQuery = (next: string) => {
@@ -168,9 +191,12 @@ function CreateDialogContent({
 
     const create = () => {
         if (!selected) return;
-        const created = createFromChoice(selected, { activate, parentId });
-        onCreated?.(created.id);
-        onClose(true);
+        const target = shownFolder ? folderId : null;
+        const created = createFromChoice(selected, { activate, parentId: folderId, name });
+        const named = name.trim() !== '';
+        onCreated?.(created.id, { named, parentId: target });
+        // Unnamed, the owner places the focus on the name to type; named, it returns as usual.
+        onClose(!named);
     };
 
     const optionProps = (row: Row) => ({
@@ -320,6 +346,40 @@ function CreateDialogContent({
                     ) : (
                         <p className="text-sm text-textSecondary">{translate(labels.chooseKind)}</p>
                     )}
+                    <label className="grid gap-1 text-sm text-textPrimary">
+                        {translate(labels.name)}
+                        <input
+                            ref={nameRef}
+                            type="text"
+                            value={name}
+                            maxLength={200}
+                            placeholder={translate(labels.namePlaceholder)}
+                            onChange={(event) => setName(event.target.value)}
+                            onKeyDown={(event) => {
+                                if (event.key !== 'Enter') return;
+                                event.preventDefault();
+                                create();
+                            }}
+                            className="rounded-sm border border-border bg-bgBase px-2 py-2 text-sm"
+                        />
+                    </label>
+                    <div className="grid gap-1 text-sm text-textPrimary">
+                        <span id={`${idBase}-folder`}>{translate(labels.folder)}</span>
+                        <button
+                            type="button"
+                            aria-labelledby={`${idBase}-folder ${idBase}-folder-value`}
+                            onClick={() => setPicking(true)}
+                            className="flex min-h-8 items-center gap-2 rounded-sm border border-border px-2 py-1.5 text-left hover:bg-bgBase"
+                        >
+                            <Folder
+                                className="h-4 w-4 shrink-0 text-textSecondary"
+                                aria-hidden="true"
+                            />
+                            <span id={`${idBase}-folder-value`} className="min-w-0 truncate">
+                                {shownFolder ?? translate(labels.topLevel)}
+                            </span>
+                        </button>
+                    </div>
                     <div className="mt-auto flex justify-end gap-2">
                         <Dialog.Close asChild>
                             <button
@@ -330,7 +390,6 @@ function CreateDialogContent({
                             </button>
                         </Dialog.Close>
                         <button
-                            ref={createRef}
                             type="button"
                             onClick={create}
                             disabled={!selected}
@@ -341,6 +400,18 @@ function CreateDialogContent({
                     </div>
                 </section>
             </div>
+            {picking && (
+                <MoveToPicker
+                    open
+                    onOpenChange={setPicking}
+                    folders={folders}
+                    moving={NO_FOLDERS_MOVING}
+                    title={translate(labels.chooseFolder)}
+                    initialId={shownFolder ? folderId : null}
+                    confirmLabel={translate(labels.pickFolder)}
+                    onPick={setFolderId}
+                />
+            )}
         </Dialog.Content>
     );
 }

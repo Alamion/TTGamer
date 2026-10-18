@@ -734,14 +734,14 @@ export function DocumentsPanel({ onClose }: DocumentsPanelProps) {
                 onOpenChange={(next) => !next && setCreatingIn(undefined)}
                 activate={false}
                 parentId={creatingIn?.parentId ?? null}
-                onCreated={(id) => {
+                onCreated={(id, { named, parentId }) => {
                     if (narrowing) clearQuery();
-                    revealFolder(creatingIn?.parentId ?? null);
+                    revealFolder(parentId);
                     reset([documentKey(id)]);
                     setTab('tree');
-                    // A new document asks for its name at once, like a new folder.
+                    // A new document without a name asks for one at once, like a new folder.
                     // After the dialog has let go of the focus, or its trap would take it back.
-                    window.setTimeout(() => setEditing(documentKey(id)), 0);
+                    if (!named) window.setTimeout(() => setEditing(documentKey(id)), 0);
                 }}
             />
             {picking && (

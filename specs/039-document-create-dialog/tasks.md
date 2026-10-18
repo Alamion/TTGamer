@@ -47,20 +47,20 @@ vampire kind remains, `Enter` selects it.
 **Check**: **New** from a folder's menu, choose a kind, type "Night watch", change the folder,
 **Create** → the document sits in the chosen folder under that name.
 
-- [ ] T009 [US2] Write `tests/sheet_manager/create-from-choice.test.ts`: every shipped kind created
+- [x] T009 [US2] Write `tests/sheet_manager/create-from-choice.test.ts`: every shipped kind created
       with a name shows it as title and in its name value (character capability or `syncsTitle`
       bindings, D6); empty name keeps today's behavior; folder kept, deleted folder → top level;
       recent written
-- [ ] T010 [US2] Implement `src/sheet_manager/features/documents/createFromChoice.ts` (D6, D7, D5):
+- [x] T010 [US2] Implement `src/sheet_manager/features/documents/createFromChoice.ts` (D6, D7, D5):
       page via `newDocumentPage`, user-setting page, title and name value, `parentId`, `activate`,
       recent update
-- [ ] T011 [US2] Add the right pane to `DocumentCreateDialog.tsx`: kind heading, name field (`Enter`
+- [x] T011 [US2] Add the right pane to `DocumentCreateDialog.tsx`: kind heading, name field (`Enter`
       creates), folder button opening `MoveToPicker` over the dialog, **Create**; two panes from 640
       px (D4); `onCreated(id, { named })`
-- [ ] T012 [US2] In `src/sheet_manager/components/documents/DocumentsPanel.tsx` skip the inline
+- [x] T012 [US2] In `src/sheet_manager/components/documents/DocumentsPanel.tsx` skip the inline
       rename when `named` is true; extend `tests/sheet_manager/document-create-dialog.test.tsx` with
       name, folder, and the named/unnamed hand-off
-- [ ] T013 [US2] Run `yarn verify` (store change) and commit the story
+- [x] T013 [US2] Run `yarn verify` (store change) and commit the story
 
 ## User Story 3 - Start from an example (P2)
 

@@ -228,6 +228,7 @@ create:
     namePlaceholder: The name a new document gets
     folder: Folder
     chooseFolder: Choose a folder
+    pickFolder: Put it here
     topLevel: Top level
     back: Back to kinds
     details: Details

@@ -6,6 +6,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
 import { resetUserKinds, seedUserKinds } from './helpers/createDialog';
 
 const open = (props: Partial<Parameters<typeof DocumentCreateDialog>[0]> = {}) =>
@@ -104,5 +105,68 @@ describe('finding the kind (spec 039, US1)', () => {
         // The newest kind is chosen.
         expect(screen.getByRole('heading', { name: 'Vehicle' })).toBeTruthy();
         expect(useDocumentStore.getState().entries).toHaveLength(2);
+    });
+});
+
+describe('naming and placing it (spec 039, US2)', () => {
+    const folder = (id: string, name: string, parentId: string | null = null) => ({
+        id,
+        name,
+        parentId,
+        rank: 1,
+        createdAt: '2026-10-18T00:00:00.000Z',
+        changedAt: '2026-10-18T00:00:00.000Z',
+        updatedAt: 0,
+    });
+
+    beforeEach(() => {
+        useDocumentStore.setState({
+            folders: [
+                folder('f1', 'Campaign'),
+                folder('f2', 'Session 3', 'f1'),
+                folder('f3', 'Archive'),
+            ],
+        });
+    });
+
+    it('creates a named document with Enter in the name field', () => {
+        const onCreated = vi.fn();
+        open({ onCreated });
+        type('vamp');
+        fireEvent.keyDown(search(), { key: 'Enter' });
+        const name = screen.getByRole('textbox', { name: 'Name' });
+        expect(document.activeElement).toBe(name);
+        fireEvent.change(name, { target: { value: 'Night watch' } });
+        fireEvent.keyDown(name, { key: 'Enter' });
+        const [entry] = useDocumentStore.getState().entries;
+        expect(entry).toMatchObject({
+            name: 'Night watch',
+            definitionId: 'vampire',
+            parentId: null,
+        });
+        expect(onCreated).toHaveBeenCalledWith(entry!.id, { named: true, parentId: null });
+    });
+
+    it('starts in the folder it was opened from and moves the document to another one', () => {
+        const onCreated = vi.fn();
+        open({ parentId: 'f2', onCreated });
+        const place = screen.getByRole('button', { name: 'Folder Campaign / Session 3' });
+        fireEvent.click(place);
+        const picker = screen.getByRole('dialog', { name: 'Choose a folder' });
+        fireEvent.click(within(picker).getByRole('treeitem', { name: /Archive/ }));
+        fireEvent.click(within(picker).getByRole('button', { name: 'Put it here' }));
+        expect(screen.getByRole('button', { name: 'Folder Archive' })).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        const [entry] = useDocumentStore.getState().entries;
+        expect(entry!.parentId).toBe('f3');
+        expect(onCreated).toHaveBeenCalledWith(entry!.id, { named: false, parentId: 'f3' });
+    });
+
+    it('shows a deleted folder as the top level', () => {
+        open({ parentId: 'gone' });
+        expect(screen.getByRole('button', { name: 'Folder Top level' })).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        expect(useDocumentStore.getState().entries[0]!.parentId).toBeNull();
+        expect(takeSheetIssues().map(({ code }) => code)).toEqual(['document-folder-missing']);
     });
 });

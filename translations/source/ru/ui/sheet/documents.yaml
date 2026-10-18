@@ -228,6 +228,7 @@ create:
     namePlaceholder: Имя, которое получает новый документ
     folder: Папка
     chooseFolder: Выберите папку
+    pickFolder: Положить сюда
     topLevel: Верхний уровень
     back: Назад к видам
     details: Подробности

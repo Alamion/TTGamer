@@ -255,7 +255,7 @@ describe('folders in the documents window (spec 032, US2)', () => {
         openWindow();
         fireEvent.click(row('Campaign'));
         fireEvent.click(screen.getByRole('button', { name: 'Add a document' }));
-        fireEvent.click(screen.getAllByRole('button').at(-1)!);
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         expect(state().entries).toHaveLength(2);
         const created = state().entries.find((entry) => entry.id !== 'Ana')!;
         expect(created.parentId).toBe('f1');
@@ -266,6 +266,25 @@ describe('folders in the documents window (spec 032, US2)', () => {
         fireEvent.change(inline(), { target: { value: 'Fresh' } });
         fireEvent.keyDown(inline(), { key: 'Enter' });
         expect(state().entries.find((entry) => entry.id === created.id)!.name).toBe('Fresh');
+    });
+
+    it('skips the rename in place when the dialog named the document (spec 039)', async () => {
+        seedDocuments(['Ana'], { folders: [folder('f1', 'Campaign')], current: 'Ana' });
+        openWindow();
+        fireEvent.click(row('Campaign'));
+        fireEvent.click(screen.getByRole('button', { name: 'Add a document' }));
+        const dialog = within(screen.getByRole('dialog', { name: 'Create document' }));
+        fireEvent.change(dialog.getByRole('textbox', { name: 'Name' }), {
+            target: { value: 'Night watch' },
+        });
+        fireEvent.click(dialog.getByRole('button', { name: 'Create' }));
+        const created = state().entries.find((entry) => entry.id !== 'Ana')!;
+        expect(created).toMatchObject({ name: 'Night watch', parentId: 'f1' });
+        await waitFor(() => expect(row('Night watch')).toBeTruthy());
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(
+            within(screen.getByRole('tree')).queryByRole('textbox', { name: 'Name' })
+        ).toBeNull();
     });
 
     it('takes the cursor to the name field from the Rename button of the details', () => {
