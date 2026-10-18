@@ -53,9 +53,11 @@ describe('document dialogs', () => {
         });
     });
 
-    it('groups creatable documents by setting', () => {
+    it('groups creatable documents by ruleset, naming one-kind settings beside the kind', () => {
         render(createElement(DocumentCreateDialog, { open: true, onOpenChange: () => {} }));
-        const hunter = screen.getByRole('group', { name: 'Hunter: the Reckoning 5e' });
-        expect(within(hunter).getByRole('radio', { name: 'Character' })).toBeTruthy();
+        const v5 = screen.getByRole('group', { name: 'World of Darkness 5th Edition' });
+        expect(
+            within(v5).getByRole('option', { name: 'Character · Hunter: the Reckoning 5e' })
+        ).toBeTruthy();
     });
 });

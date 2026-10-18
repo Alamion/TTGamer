@@ -4,11 +4,11 @@
 
 ## Foundation
 
-- [ ] T001 Add the create-dialog and docs-create strings (design "Changed types and data") to
+- [x] T001 Add the create-dialog and docs-create strings (design "Changed types and data") to
       `translations/source/en/ui/sheet/documents.yaml` and
       `translations/source/ru/ui/sheet/documents.yaml` (`create.matches` as a plural), and run
       `yarn build:translations`
-- [ ] T002 Extend `createDocument` options with `title?: string`, `data?: unknown` (parsed by the
+- [x] T002 Extend `createDocument` options with `title?: string`, `data?: unknown` (parsed by the
       definition's schema; defaults when absent), and `templateValues?`; report the deleted-folder
       fallback through `reportSheetIssue` in `src/sheet_manager/store/documentStore.ts`, with a test
       in `tests/sheet_manager/document-store.create.test.ts`
@@ -18,29 +18,29 @@
 **Check**: with the shipped kinds and twenty user types, open **New**, type "vamp" → only the
 vampire kind remains, `Enter` selects it.
 
-- [ ] T003 [US1] Write `tests/sheet_manager/create-choices.test.ts`: grouping and order from the
+- [x] T003 [US1] Write `tests/sheet_manager/create-choices.test.ts`: grouping and order from the
       library tree, user settings under their ruleset with core kinds, unavailable kinds left out,
       collapsed one-child headings, search in en/ru by kind, setting, ruleset, English name, and
       description, recent order (≤ 5, newest first), missing recent kinds dropped and reported, bad
       stored JSON ignored and reported
-- [ ] T004 [US1] Implement `src/sheet_manager/features/documents/createChoices.ts`:
+- [x] T004 [US1] Implement `src/sheet_manager/features/documents/createChoices.ts`:
       `createChoices(tree, locale)` over `buildLibraryTree` (D1), `filterChoices(groups, query)`
       with `matchesSearch` (D2), and the `ttgamer:create-dialog:v1` reader/writer for `recent` and
       `folded` (D5)
-- [ ] T005 [US1] Write the left pane of
+- [x] T005 [US1] Write the left pane of
       `src/sheet_manager/components/dialogs/DocumentCreateDialog.tsx`: search combobox with the
       focus, **Recent** row, listbox of `role="group"` sections with folding heading buttons
       (`aria-expanded`, remembered), options with `data-kind`, empty state with **Clear search**
       (D3); remove `createGroups` and the radios; start
       `tests/sheet_manager/document-create-dialog.test.tsx` with the focus, filtering, folding, and
       empty-state cases, over the shipped kinds plus a fixture of twenty user types
-- [ ] T006 [US1] Rewrite the radio-based cases in `tests/sheet_manager/document-dialogs.test.tsx`,
+- [x] T006 [US1] Rewrite the radio-based cases in `tests/sheet_manager/document-dialogs.test.tsx`,
       `tests/sheet_manager/user-settings.test.tsx`, and
       `tests/sheet_manager/user-document-types.test.tsx` to pick options, and the helper
       `tests-e2e/brief.ts` to pick by `data-kind`
-- [ ] T007 [US1] Write `tests/sheet_manager/create-choices.perf.test.tsx`: building, rendering the
+- [x] T007 [US1] Write `tests/sheet_manager/create-choices.perf.test.tsx`: building, rendering the
       dialog, and filtering 100 kinds per keystroke within 100 ms (best of warm runs) (SC-002)
-- [ ] T008 [US1] Run `yarn verify` and commit the story
+- [x] T008 [US1] Run `yarn verify` and commit the story
 
 ## User Story 2 - Name it and choose where it goes (P1)
 

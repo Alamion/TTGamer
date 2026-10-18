@@ -46,9 +46,7 @@ import {
     typeNodeKey,
 } from '../../features/sheet/data/libraryPages';
 import {
-    buildLibraryTree,
     containerKeys,
-    countDocuments,
     filterTree,
     findNode,
     flattenVisible,
@@ -57,15 +55,13 @@ import {
     type PageNode,
     type TypeNode,
 } from '../../features/sheet/data/libraryTree';
+import { useLibraryTree } from '../../features/sheet/data/useLibraryTree';
 import { EDITOR_GUIDE } from '../../features/template-editor/components/EditorHelp';
 import { generateDraftId } from '../../features/template-editor/model/ids';
 import {
     TemplateEditorDialog,
     type TemplateEditorDialogProps,
 } from '../../features/template-editor/TemplateEditorDialog';
-import { documentRefs } from '../../store/documentIndex';
-import { useDocumentStore } from '../../store/documentStore';
-import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
 import { systemRegistry } from '../../systems';
 import type { CustomTemplate } from '../../types/template';
@@ -111,31 +107,6 @@ interface Confirmation {
     confirmLabel: string;
     danger?: boolean;
     run: () => void;
-}
-
-function useLibraryTree() {
-    const types = useDocumentTypeStore((state) => state.types);
-    const settings = useDocumentTypeStore((state) => state.settings);
-    const defaultPages = useDocumentTypeStore((state) => state.defaultPages);
-    const catalogs = useDocumentTypeStore((state) => state.catalogs);
-    const templates = useTemplateStore((state) => state.templates);
-    const defaultOverrides = useTemplateStore((state) => state.defaultOverrides);
-    const entries = useDocumentStore((state) => state.entries);
-    const counts = useMemo(() => countDocuments(documentRefs(entries)), [entries]);
-    return useMemo(
-        () =>
-            buildLibraryTree({
-                registry: systemRegistry,
-                types,
-                settings,
-                templates,
-                defaultOverrides,
-                defaultPages,
-                counts,
-                catalogs,
-            }),
-        [types, settings, templates, defaultOverrides, defaultPages, counts, catalogs]
-    );
 }
 
 const modeButton = (active: boolean) =>

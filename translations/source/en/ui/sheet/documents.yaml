@@ -210,9 +210,34 @@ examples:
     mirelaVoss: Mirela Voss (example)
 create:
     title: Create document
-    prompt: Choose the game system and document format to create.
+    prompt: Find the kind of document, name it, and choose where it goes.
     confirm: Create
     cancel: Cancel
+    search: Search kinds
+    searchPlaceholder: Search by kind, setting, or rules…
+    kinds: Document kinds
+    recent: Recent
+    noMatch: 'No kind matches "{query}".'
+    clearSearch: Clear search
+    matches:
+        message: '{count} kind|{count} kinds'
+        plural: true
+    start: Start from
+    blank: Blank
+    name: Name
+    namePlaceholder: The name a new document gets
+    folder: Folder
+    chooseFolder: Choose a folder
+    topLevel: Top level
+    back: Back to kinds
+    details: Details
+    chooseKind: Choose a kind of document first.
+docsCreate:
+    newKind: 'New: {kind}'
+    copy: 'Copy {name}'
+    created: 'Created "{name}".'
+    open: Open
+    failed: 'Could not create "{name}": this kind of document is not available.'
 systems:
     starWarsWod: Star Wars (World of Darkness 2e)
 types:

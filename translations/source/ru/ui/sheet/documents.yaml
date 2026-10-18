@@ -210,9 +210,34 @@ examples:
     mirelaVoss: Мирела Восс (пример)
 create:
     title: Создать документ
-    prompt: Выберите игровую систему и формат документа.
+    prompt: Найдите вид документа, дайте ему имя и выберите, где он будет лежать.
     confirm: Создать
     cancel: Отмена
+    search: Поиск видов
+    searchPlaceholder: Вид, сеттинг или правила…
+    kinds: Виды документов
+    recent: Недавние
+    noMatch: 'Нет видов по запросу «{query}».'
+    clearSearch: Очистить поиск
+    matches:
+        message: '{count} вид|{count} вида|{count} видов'
+        plural: true
+    start: Начать с
+    blank: Пустой
+    name: Имя
+    namePlaceholder: Имя, которое получает новый документ
+    folder: Папка
+    chooseFolder: Выберите папку
+    topLevel: Верхний уровень
+    back: Назад к видам
+    details: Подробности
+    chooseKind: Сначала выберите вид документа.
+docsCreate:
+    newKind: 'Новый: {kind}'
+    copy: 'Копия: {name}'
+    created: 'Создан документ «{name}».'
+    open: Открыть
+    failed: 'Не удалось создать «{name}»: этот вид документа недоступен.'
 systems:
     starWarsWod: Звёздные Войны (Мир Тьмы 2e)
 types:
