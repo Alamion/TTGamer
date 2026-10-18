@@ -6,7 +6,11 @@ description: Готовый пример вампира и что делать �
 ---
 
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
-import { TemplatePreview, vampireExampleDocument } from '@site/src/sheet_manager/docsEmbeds';
+import {
+    CreateCharacterButton,
+    TemplatePreview,
+    vampireExampleDocument,
+} from '@site/src/sheet_manager/docsEmbeds';
 
 # Знакомьтесь, Мирела
 
@@ -45,6 +49,18 @@ import { TemplatePreview, vampireExampleDocument } from '@site/src/sheet_manager
         document={vampireExampleDocument()}
         systemId="wod-v5"
         template="v5-vampire-sheet"
+    />
+</TWWrapper>
+
+## Своя копия
+
+Чтобы попробовать Мирелу в игре или начать с неё, а не с пустого листа, сделайте свою копию. Она откроется на листе; её изменения не затронут эту страницу.
+
+<TWWrapper>
+    <CreateCharacterButton
+        systemId="wod-v5"
+        definitionId="vampire"
+        exampleId="mirela-voss::example"
     />
 </TWWrapper>
 

@@ -6,7 +6,11 @@ description: The finished example hunter, and what to do next.
 ---
 
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
-import { hunterExampleDocument, TemplatePreview } from '@site/src/sheet_manager/docsEmbeds';
+import {
+    CreateCharacterButton,
+    hunterExampleDocument,
+    TemplatePreview,
+} from '@site/src/sheet_manager/docsEmbeds';
 
 # Meet Lena
 
@@ -42,6 +46,18 @@ This is the compact view you will use during play.
         document={hunterExampleDocument()}
         systemId="wod-v5"
         template="v5-hunter-sheet"
+    />
+</TWWrapper>
+
+## Your own copy
+
+To try Lena at the table, or to start from her instead of a blank sheet, make a copy of your own. It opens on the sheet; changing it leaves this page as it is.
+
+<TWWrapper>
+    <CreateCharacterButton
+        systemId="wod-v5"
+        definitionId="hunter"
+        exampleId="lena-varga::example"
     />
 </TWWrapper>
 

@@ -6,7 +6,11 @@ description: Готовая охотница-пример и что делать
 ---
 
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
-import { hunterExampleDocument, TemplatePreview } from '@site/src/sheet_manager/docsEmbeds';
+import {
+    CreateCharacterButton,
+    hunterExampleDocument,
+    TemplatePreview,
+} from '@site/src/sheet_manager/docsEmbeds';
 
 # Знакомьтесь: Лена
 
@@ -42,6 +46,18 @@ import { hunterExampleDocument, TemplatePreview } from '@site/src/sheet_manager/
         document={hunterExampleDocument()}
         systemId="wod-v5"
         template="v5-hunter-sheet"
+    />
+</TWWrapper>
+
+## Своя копия
+
+Чтобы попробовать Лену в игре или начать с неё, а не с пустого листа, сделайте свою копию. Она откроется на листе; её изменения не затронут эту страницу.
+
+<TWWrapper>
+    <CreateCharacterButton
+        systemId="wod-v5"
+        definitionId="hunter"
+        exampleId="lena-varga::example"
     />
 </TWWrapper>
 

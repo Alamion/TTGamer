@@ -97,18 +97,18 @@ scrolling.
 
 **Check**: on "Meet Mirela" press **Copy Mirela Voss**, follow **Open**, see the copy on the sheet.
 
-- [ ] T021 [US5] Write `tests/sheet_manager/docs-create-button.test.tsx`: label names the kind or
+- [x] T021 [US5] Write `tests/sheet_manager/docs-create-button.test.tsx`: label names the kind or
       the example, a copy is created, recent updated, toast with **Open** linking to
       `/universal_sheet`; a missing kind or example shows the error toast, reports, and creates
       nothing
-- [ ] T022 [US5] Extend `src/sheet_manager/features/sheet/shell/CreateCharacterButton.tsx` with
+- [x] T022 [US5] Extend `src/sheet_manager/features/sheet/shell/CreateCharacterButton.tsx` with
       `exampleId`, the naming label, `createFromChoice`, the toast, and the failure path (D9); keep
       the `TemplateFragment` fallback working
-- [ ] T023 [US5] Add copy buttons to the "Meet" pages:
+- [x] T023 [US5] Add copy buttons to the "Meet" pages:
       `docs/wod-v5/hunter/first-hunter/10-meet-lena.mdx`,
       `docs/wod-v5/vampire/first-vampire/11-meet-mirela.mdx`, and their Russian mirrors under
       `i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/`
-- [ ] T024 [US5] Run the targeted tests and `yarn validate:i18n`, commit the story
+- [x] T024 [US5] Run the targeted tests and `yarn validate:i18n`, commit the story
 
 ## Finish
 
