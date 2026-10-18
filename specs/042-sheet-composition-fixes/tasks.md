@@ -62,25 +62,25 @@ apart from Force, and bind every value they bound before.
 
 **Check**: the three sheets pass the composition rule and bind every value they bound before.
 
-- [ ] T010 [US2] Tests first: remove `creature-sheet`, `vehicle-sheet`, and `fodder-sheet` from
+- [x] T010 [US2] Tests first: remove `creature-sheet`, `vehicle-sheet`, and `fodder-sheet` from
       `KNOWN_EXCEPTIONS` and add them to the binding check of
       `tests/sheet_manager/shipped-sheet-layout.test.ts`
-- [ ] T011 [US2] Creature in `src/sheet_manager/systems/star-wars-wod/templates/creature.ts`:
+- [x] T011 [US2] Creature in `src/sheet_manager/systems/star-wars-wod/templates/creature.ts`:
       Identity → Condition (card `creature-resolve` "Health and Resolve": track, Willpower, both
       soaks) → Attributes → Abilities, Merits & Flaws (cards `creature-abilities`, Merits, Flaws) →
       Combat (Armor, Attacks) → Details (card `creature-details`: description, source, notes); brief
       untouched
-- [ ] T012 [US2] Vehicle in `src/sheet_manager/systems/star-wars-wod/templates/vehicle.ts`:
+- [x] T012 [US2] Vehicle in `src/sheet_manager/systems/star-wars-wod/templates/vehicle.ts`:
       Modifications & quirks card (`vehicle-modifications-group`) in Systems; Combat section
       (`combat`) with Weapons (`vehicle-weapons`) and Damage (`vehicle-damage`) cards; Details card
       (`vehicle-details`); brief untouched
-- [ ] T013 [US2] Fodder group in `src/sheet_manager/systems/star-wars-wod/templates/fodder.ts`:
+- [x] T013 [US2] Fodder group in `src/sheet_manager/systems/star-wars-wod/templates/fodder.ts`:
       Group card (concept, leader, notes) → Members card (`fodder-members`: track, Willpower, both
       quick pools) → Attributes with the Abilities card → Combat; brief untouched
-- [ ] T014 [US2] Titles for Health and Resolve, Abilities, Merits & Flaws, Combat, Details, Members,
+- [x] T014 [US2] Titles for Health and Resolve, Abilities, Merits & Flaws, Combat, Details, Members,
       Modifications & quirks (mapping + `templates.yaml` en/ru); regenerate the zod-baseline
       snapshot and check its diff touches only the three full sheets
-- [ ] T015 [US2] Run `yarn verify` and commit the story
+- [x] T015 [US2] Run `yarn verify` and commit the story
 
 ## User Story 3 - The vampire's predator text has a proper home (P3)
 

@@ -262,21 +262,83 @@ function vehicleSheet(): CustomTemplate {
                         ],
                         { column: 2, defaultCollapsed: true, labelMessage: fields.configuration }
                     ),
+                    group(
+                        'vehicle-modifications-group',
+                        'Modifications & quirks',
+                        [
+                            table(
+                                'vehicle-modifications',
+                                undefined,
+                                'vehicle-modifications',
+                                [
+                                    column(
+                                        text(
+                                            'modification-name',
+                                            'Modification',
+                                            'modification-name',
+                                            {
+                                                labelMessage: entities.modification,
+                                            }
+                                        )
+                                    ),
+                                    column(
+                                        text(
+                                            'modification-effect',
+                                            'Effect',
+                                            'modification-effect',
+                                            {
+                                                labelMessage: entities.effect,
+                                            }
+                                        )
+                                    ),
+                                    column(
+                                        toggle(
+                                            'modification-quirk',
+                                            'Quirk',
+                                            'modification-quirk',
+                                            {
+                                                labelMessage: entities.quirk,
+                                            }
+                                        )
+                                    ),
+                                ],
+                                { maxRows: 30 }
+                            ),
+                        ],
+                        {
+                            column: 1,
+                            defaultCollapsed: true,
+                            labelMessage: entities.modifications,
+                            docsPath: DOCS.modifications,
+                        }
+                    ),
                 ],
                 { columns: 2, labelMessage: fields.systems }
             ),
             section(
-                'weapons',
-                'Weapons',
+                'combat',
+                'Combat',
                 DOCS.vehicleWeapons,
                 [
-                    primitive('rows-weapons', 'rows:weapons', {
-                        hideLabel: true,
-                        label: 'Weapons',
-                        labelMessage: fields.weapons,
+                    group(
+                        'vehicle-weapons',
+                        'Weapons',
+                        [
+                            primitive('rows-weapons', 'rows:weapons', {
+                                hideLabel: true,
+                                label: 'Weapons',
+                                labelMessage: fields.weapons,
+                            }),
+                        ],
+                        { column: 1, labelMessage: fields.weapons, docsPath: DOCS.vehicleWeapons }
+                    ),
+                    group('vehicle-damage', 'Damage', [damageTrack()], {
+                        column: 2,
+                        labelMessage: fields.damage,
+                        docsPath: DOCS.vehicleDamage,
                     }),
                 ],
-                { labelMessage: fields.weapons }
+                { columns: 2, labelMessage: fields.combat }
             ),
             section(
                 'crew-stations',
@@ -291,53 +353,26 @@ function vehicleSheet(): CustomTemplate {
                 ],
                 { labelMessage: entities.crewStations }
             ),
-            section('damage', 'Damage', DOCS.vehicleDamage, [damageTrack()], {
-                labelMessage: fields.damage,
-            }),
-            section(
-                'modifications',
-                'Modifications & quirks',
-                DOCS.modifications,
-                [
-                    table(
-                        'vehicle-modifications',
-                        undefined,
-                        'vehicle-modifications',
-                        [
-                            column(
-                                text('modification-name', 'Modification', 'modification-name', {
-                                    labelMessage: entities.modification,
-                                })
-                            ),
-                            column(
-                                text('modification-effect', 'Effect', 'modification-effect', {
-                                    labelMessage: entities.effect,
-                                })
-                            ),
-                            column(
-                                toggle('modification-quirk', 'Quirk', 'modification-quirk', {
-                                    labelMessage: entities.quirk,
-                                })
-                            ),
-                        ],
-                        { maxRows: 30 }
-                    ),
-                ],
-                { defaultCollapsed: true, labelMessage: entities.modifications }
-            ),
             section(
                 'details',
                 'Details',
                 DOCS.vehicleCatalog,
                 [
-                    text('field-description', 'Description', 'description', {
-                        multiline: true,
-                        labelMessage: entities.descriptionLabel,
-                    }),
-                    text('field-notes', 'Notes', 'notes', {
-                        multiline: true,
-                        labelMessage: fields.notes,
-                    }),
+                    group(
+                        'vehicle-details',
+                        'Details',
+                        [
+                            text('field-description', 'Description', 'description', {
+                                multiline: true,
+                                labelMessage: entities.descriptionLabel,
+                            }),
+                            text('field-notes', 'Notes', 'notes', {
+                                multiline: true,
+                                labelMessage: fields.notes,
+                            }),
+                        ],
+                        { columns: 2, hideTitle: true, labelMessage: entities.details }
+                    ),
                 ],
                 { defaultCollapsed: true, labelMessage: entities.details }
             ),

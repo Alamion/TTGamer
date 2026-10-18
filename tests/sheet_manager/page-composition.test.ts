@@ -22,37 +22,6 @@ const SMALL_CARDS = new Set(['portrait', 'base-portrait']);
  * wrong, so a fix shows up as a failing exception to remove.
  */
 const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {
-    'creature-sheet': [
-        'section abilities=3',
-        'loose list list-abilities in abilities',
-        'section health=3',
-        'loose primitive damage-track in health',
-        'loose text field-description in details',
-        'loose text field-source in details',
-        'loose text field-notes in details',
-    ],
-    'vehicle-sheet': [
-        'section weapons=3',
-        'loose primitive rows-weapons in weapons',
-        'section damage=3',
-        'loose primitive damage-track in damage',
-        'section modifications=3',
-        'loose table vehicle-modifications in modifications',
-        'loose text field-description in details',
-        'loose text field-notes in details',
-    ],
-    'fodder-sheet': [
-        'section identity=2',
-        'card fodder-identity=2',
-        'section abilities=4',
-        'card fodder-willpower=1',
-        'section members=3',
-        'loose primitive damage-track in members',
-        'section quick-pools=2',
-        'card fodder-quick-pools=2',
-        'section details=3',
-        'loose text field-notes in details',
-    ],
     'v5-vampire-sheet': ['card predator=1'],
 };
 

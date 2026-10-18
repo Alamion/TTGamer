@@ -168,3 +168,9 @@ composition section drops "known exceptions"; `TODO.md` T-126 done.
   untouched briefs stay in their schema 3 form, so the test still upgrades and compares them.
 - **`default-templates.test.ts`**: the pre-007 tree comparison now covers the briefs only (the full
   sheets are pinned by the field contracts); the composition-order test lists the new order.
+- **Creature, vehicle, fodder (US2)**: the Details sections keep their default fold (the section, as
+  before); their new card hides its title under the section's. The vehicle's Modifications & quirks
+  card starts folded like the section it replaces. The fodder group's Notes field spans the Group
+  card's two columns and its Abilities card spans the Attributes row (`span`, set on the node: the
+  builders take no span option). Quick pools and notes now sit in cards that never fold, so the
+  fodder sheet starts with nothing folded (`entity-templates.test.tsx` checks folds at every level).

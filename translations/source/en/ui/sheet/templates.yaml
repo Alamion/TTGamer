@@ -569,6 +569,8 @@ defaults:
     damageAndWillpower: Damage and Willpower
     equipment: Equipment
     experienceAndNotes: Experience and Notes
+    healthAndResolve: Health and Resolve
+    abilitiesMeritsFlaws: Abilities, Merits & Flaws
     initiativeStandard: Initiative (Std)
     initiativeLightsaber: Initiative (Saber)
     maxForcePoints: Max Force Points

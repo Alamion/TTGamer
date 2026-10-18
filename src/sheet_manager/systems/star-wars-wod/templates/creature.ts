@@ -154,6 +154,31 @@ function creatureSheet(): CustomTemplate {
                 { labelMessage: fields.identity }
             ),
             section(
+                'condition',
+                'Condition',
+                DOCS.health,
+                [
+                    group(
+                        'creature-resolve',
+                        'Health and Resolve',
+                        [
+                            primitive('damage-track', 'track:members-health', {
+                                label: 'Health',
+                                labelMessage: fields.health,
+                                maxMembers: 24,
+                            }),
+                            primitive('resource-willpower', 'resource:willpower', {
+                                label: 'Willpower',
+                                labelMessage: fields.willpower,
+                            }),
+                            ...soakRows(),
+                        ],
+                        { labelMessage: defaults.healthAndResolve }
+                    ),
+                ],
+                { labelMessage: defaults.condition }
+            ),
+            section(
                 'attributes',
                 'Attributes',
                 DOCS.attributes,
@@ -174,22 +199,21 @@ function creatureSheet(): CustomTemplate {
                 { columns: 2, labelMessage: fields.attributes }
             ),
             section(
-                'abilities',
-                'Abilities',
+                'advantages',
+                'Abilities, Merits & Flaws',
                 DOCS.creatureAbilities,
                 [
-                    list('list-abilities', { bindingKey: 'list:abilities' }, 'Abilities', {
-                        columns: 2,
-                        labelMessage: fields.abilities,
-                    }),
-                ],
-                { labelMessage: fields.abilities }
-            ),
-            section(
-                'advantages',
-                'Merits & Flaws',
-                DOCS.creatureMerits,
-                [
+                    group(
+                        'creature-abilities',
+                        'Abilities',
+                        [
+                            list('list-abilities', { bindingKey: 'list:abilities' }, 'Abilities', {
+                                columns: 2,
+                                labelMessage: fields.abilities,
+                            }),
+                        ],
+                        { labelMessage: fields.abilities, docsPath: DOCS.creatureAbilities }
+                    ),
                     group(
                         'creature-merits-group',
                         'Merits',
@@ -198,7 +222,7 @@ function creatureSheet(): CustomTemplate {
                                 labelMessage: fields.merits,
                             }),
                         ],
-                        { labelMessage: fields.merits }
+                        { labelMessage: fields.merits, docsPath: DOCS.creatureMerits }
                     ),
                     group(
                         'creature-flaws-group',
@@ -211,25 +235,13 @@ function creatureSheet(): CustomTemplate {
                         { labelMessage: fields.flaws }
                     ),
                 ],
-                { columns: 2, labelMessage: fields.meritsAndFlaws }
+                { columns: 3, labelMessage: defaults.abilitiesMeritsFlaws }
             ),
             section(
                 'combat',
                 'Combat',
                 DOCS.creatureCombat,
                 [
-                    group(
-                        'creature-resolve',
-                        'Resolve',
-                        [
-                            primitive('resource-willpower', 'resource:willpower', {
-                                label: 'Willpower',
-                                labelMessage: fields.willpower,
-                            }),
-                            ...soakRows(),
-                        ],
-                        { column: 1, labelMessage: defaults.resolve }
-                    ),
                     group(
                         'creature-armor',
                         'Armor',
@@ -265,33 +277,28 @@ function creatureSheet(): CustomTemplate {
                 { columns: 2, labelMessage: fields.combat }
             ),
             section(
-                'health',
-                'Health',
-                DOCS.health,
-                [
-                    primitive('damage-track', 'track:members-health', {
-                        hideLabel: true,
-                        label: 'Health',
-                        labelMessage: fields.health,
-                        maxMembers: 24,
-                    }),
-                ],
-                { labelMessage: fields.health }
-            ),
-            section(
                 'details',
                 'Details',
                 DOCS.bestiary,
                 [
-                    text('field-description', 'Description', 'description', {
-                        multiline: true,
-                        labelMessage: entities.descriptionLabel,
-                    }),
-                    text('field-source', 'Source', 'source', { labelMessage: entities.source }),
-                    text('field-notes', 'Notes', 'notes', {
-                        multiline: true,
-                        labelMessage: fields.notes,
-                    }),
+                    group(
+                        'creature-details',
+                        'Details',
+                        [
+                            text('field-description', 'Description', 'description', {
+                                multiline: true,
+                                labelMessage: entities.descriptionLabel,
+                            }),
+                            text('field-source', 'Source', 'source', {
+                                labelMessage: entities.source,
+                            }),
+                            text('field-notes', 'Notes', 'notes', {
+                                multiline: true,
+                                labelMessage: fields.notes,
+                            }),
+                        ],
+                        { hideTitle: true, labelMessage: entities.details }
+                    ),
                 ],
                 { defaultCollapsed: true, labelMessage: entities.details }
             ),

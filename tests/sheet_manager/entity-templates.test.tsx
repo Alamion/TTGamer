@@ -16,7 +16,12 @@ import {
 } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { resolveDocumentView } from '@site/src/sheet_manager/systems/view';
 import { DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
-import type { CustomTemplate, TemplateNode } from '@site/src/sheet_manager/types/template';
+import {
+    type CustomTemplate,
+    isContainerNode,
+    type TemplateNode,
+    walkTemplateNodes,
+} from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
@@ -207,14 +212,22 @@ describe('shipped entity templates (feature 007)', () => {
         }
     });
 
-    it('collapse the secondary sections by default', () => {
-        const collapsed = (id: string) =>
-            template(id)
-                .children.filter((node) => node.type === 'section' && node.defaultCollapsed)
-                .map(({ id: nodeId }) => nodeId);
+    it('collapse the secondary parts by default', () => {
+        const collapsed = (id: string) => {
+            const found: string[] = [];
+            walkTemplateNodes(template(id).children, (node) => {
+                if (isContainerNode(node) && node.defaultCollapsed) found.push(node.id);
+            });
+            return found;
+        };
         expect(collapsed('creature-sheet')).toEqual(['details']);
-        expect(collapsed('vehicle-sheet')).toEqual(['modifications', 'details']);
-        expect(collapsed('fodder-sheet')).toEqual(['quick-pools', 'details']);
+        expect(collapsed('vehicle-sheet')).toEqual([
+            'vehicle-configuration',
+            'vehicle-modifications-group',
+            'details',
+        ]);
+        // Spec 042: quick pools and notes joined cards of play values, which never fold.
+        expect(collapsed('fodder-sheet')).toEqual([]);
     });
 
     it.each([

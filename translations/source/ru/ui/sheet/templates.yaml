@@ -569,6 +569,8 @@ defaults:
     damageAndWillpower: Повреждения и Воля
     equipment: Снаряжение
     experienceAndNotes: Опыт и заметки
+    healthAndResolve: Здоровье и стойкость
+    abilitiesMeritsFlaws: Способности, достоинства и недостатки
     initiativeStandard: Инициатива (обыч.)
     initiativeLightsaber: Инициатива (свет. меч)
     maxForcePoints: Макс. Очки Силы

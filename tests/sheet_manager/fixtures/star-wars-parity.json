@@ -5392,7 +5392,7 @@
             "name": "Creature sheet",
             "systemId": "star-wars-wod",
             "documentKind": "creature",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "identity",
@@ -5417,7 +5417,6 @@
                                             "label": "Custom"
                                         }
                                     ],
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.speciesCatalog",
                                     "binding": {
@@ -5492,7 +5491,6 @@
                                     "label": "Name",
                                     "valueKey": "name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.name"
                                 },
@@ -5502,7 +5500,6 @@
                                     "label": "Species",
                                     "valueKey": "species",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.species"
                                 },
@@ -5512,7 +5509,6 @@
                                     "label": "Type",
                                     "valueKey": "creature-type",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.type"
                                 },
@@ -5520,7 +5516,6 @@
                                     "id": "field-scale",
                                     "type": "primitive",
                                     "bindingKey": "field:scale",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.scale",
                                     "label": "Scale"
                                 },
@@ -5530,7 +5525,6 @@
                                     "label": "Size",
                                     "valueKey": "size",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.size"
                                 },
@@ -5540,7 +5534,6 @@
                                     "label": "Movement",
                                     "valueKey": "movement",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.movement"
                                 },
@@ -5562,7 +5555,6 @@
                                             "labelMessage": "ttgamer.ui.sheet.templates.entities.tierFodder"
                                         }
                                     ],
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.threatTier"
                                 },
@@ -5572,7 +5564,6 @@
                                     "label": "Owner",
                                     "valueKey": "owner",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.owner"
                                 }
@@ -5584,6 +5575,66 @@
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.identity",
                     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-1-species-type-scale-size"
+                },
+                {
+                    "id": "condition",
+                    "type": "section",
+                    "title": "Condition",
+                    "children": [
+                        {
+                            "id": "creature-resolve",
+                            "type": "group",
+                            "title": "Health and Resolve",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "damage-track",
+                                    "type": "primitive",
+                                    "bindingKey": "track:members-health",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+                                    "label": "Health",
+                                    "cohort": {
+                                        "maxMembers": 24
+                                    }
+                                },
+                                {
+                                    "id": "resource-willpower",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:willpower",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+                                    "label": "Willpower"
+                                },
+                                {
+                                    "id": "soak-all",
+                                    "type": "formula",
+                                    "label": "Soak (lethal and bashing)",
+                                    "formula": "stamina + armor-armor-rating",
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.soakAll",
+                                    "visibleWhen": {
+                                        "coordinate": "threat-tier",
+                                        "equals": "fodder",
+                                        "not": true
+                                    }
+                                },
+                                {
+                                    "id": "soak-bashing",
+                                    "type": "formula",
+                                    "label": "Soak (bashing only)",
+                                    "formula": "stamina + armor-armor-rating",
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.soakBashingOnly",
+                                    "visibleWhen": {
+                                        "coordinate": "threat-tier",
+                                        "equals": "fodder"
+                                    }
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.healthAndResolve"
+                        }
+                    ],
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
+                    "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track"
                 },
                 {
                     "id": "attributes",
@@ -5604,7 +5655,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/strength"
                                 },
@@ -5616,7 +5666,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/dexterity"
                                 },
@@ -5628,7 +5677,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/stamina"
                                 }
@@ -5649,7 +5697,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/perception"
                                 },
@@ -5661,7 +5708,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/intelligence"
                                 },
@@ -5673,7 +5719,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/wits"
                                 }
@@ -5686,27 +5731,28 @@
                     "columns": 2
                 },
                 {
-                    "id": "abilities",
-                    "type": "section",
-                    "title": "Abilities",
-                    "children": [
-                        {
-                            "id": "list-abilities",
-                            "type": "list",
-                            "bindingKey": "list:abilities",
-                            "title": "Abilities",
-                            "columns": 2,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
-                    "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-5-abilities"
-                },
-                {
                     "id": "advantages",
                     "type": "section",
-                    "title": "Merits & Flaws",
+                    "title": "Abilities, Merits & Flaws",
                     "children": [
+                        {
+                            "id": "creature-abilities",
+                            "type": "group",
+                            "title": "Abilities",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "list-abilities",
+                                    "type": "list",
+                                    "bindingKey": "list:abilities",
+                                    "title": "Abilities",
+                                    "columns": 2,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+                            "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-5-abilities"
+                        },
                         {
                             "id": "creature-merits-group",
                             "type": "group",
@@ -5722,7 +5768,8 @@
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
                                 }
                             ],
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+                            "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-7-merits--flaws"
                         },
                         {
                             "id": "creature-flaws-group",
@@ -5742,60 +5789,15 @@
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.meritsAndFlaws",
-                    "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-7-merits--flaws",
-                    "columns": 2
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.abilitiesMeritsFlaws",
+                    "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-5-abilities",
+                    "columns": 3
                 },
                 {
                     "id": "combat",
                     "type": "section",
                     "title": "Combat",
                     "children": [
-                        {
-                            "id": "creature-resolve",
-                            "type": "group",
-                            "title": "Resolve",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "resource-willpower",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:willpower",
-                                    "compact": false,
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-                                    "label": "Willpower"
-                                },
-                                {
-                                    "id": "soak-all",
-                                    "type": "formula",
-                                    "label": "Soak (lethal and bashing)",
-                                    "formula": "stamina + armor-armor-rating",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.soakAll",
-                                    "visibleWhen": {
-                                        "coordinate": "threat-tier",
-                                        "equals": "fodder",
-                                        "not": true
-                                    }
-                                },
-                                {
-                                    "id": "soak-bashing",
-                                    "type": "formula",
-                                    "label": "Soak (bashing only)",
-                                    "formula": "stamina + armor-armor-rating",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.soakBashingOnly",
-                                    "visibleWhen": {
-                                        "coordinate": "threat-tier",
-                                        "equals": "fodder"
-                                    }
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
-                            "column": 1
-                        },
                         {
                             "id": "creature-armor",
                             "type": "group",
@@ -5808,7 +5810,6 @@
                                     "label": "Armor",
                                     "valueKey": "armor-name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.armorType"
                                 },
@@ -5818,7 +5819,6 @@
                                     "label": "Armor rating",
                                     "valueKey": "armor-armor-rating",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.armorRating"
                                 },
@@ -5828,7 +5828,6 @@
                                     "label": "Dexterity modifier",
                                     "valueKey": "armor-dexterity-modifier",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.dexterityModifier"
                                 }
@@ -5847,7 +5846,6 @@
                                     "id": "rows-attacks",
                                     "type": "primitive",
                                     "bindingKey": "rows:attacks",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.attacks",
                                     "hideLabel": true,
                                     "label": "Attacks"
@@ -5863,60 +5861,46 @@
                     "columns": 2
                 },
                 {
-                    "id": "health",
-                    "type": "section",
-                    "title": "Health",
-                    "children": [
-                        {
-                            "id": "damage-track",
-                            "type": "primitive",
-                            "bindingKey": "track:members-health",
-                            "compact": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-                            "hideLabel": true,
-                            "label": "Health",
-                            "cohort": {
-                                "maxMembers": 24
-                            }
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-                    "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track"
-                },
-                {
                     "id": "details",
                     "type": "section",
                     "title": "Details",
                     "children": [
                         {
-                            "id": "field-description",
-                            "type": "text",
-                            "label": "Description",
-                            "valueKey": "description",
-                            "multiline": true,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.templates.entities.descriptionLabel"
-                        },
-                        {
-                            "id": "field-source",
-                            "type": "text",
-                            "label": "Source",
-                            "valueKey": "source",
-                            "multiline": false,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.templates.entities.source"
-                        },
-                        {
-                            "id": "field-notes",
-                            "type": "text",
-                            "label": "Notes",
-                            "valueKey": "notes",
-                            "multiline": true,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                            "id": "creature-details",
+                            "type": "group",
+                            "title": "Details",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "field-description",
+                                    "type": "text",
+                                    "label": "Description",
+                                    "valueKey": "description",
+                                    "multiline": true,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.descriptionLabel"
+                                },
+                                {
+                                    "id": "field-source",
+                                    "type": "text",
+                                    "label": "Source",
+                                    "valueKey": "source",
+                                    "multiline": false,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.source"
+                                },
+                                {
+                                    "id": "field-notes",
+                                    "type": "text",
+                                    "label": "Notes",
+                                    "valueKey": "notes",
+                                    "multiline": true,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
+                            "hideTitle": true
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
@@ -6174,7 +6158,7 @@
             "name": "Vehicle sheet",
             "systemId": "star-wars-wod",
             "documentKind": "vehicle",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "identity",
@@ -6199,7 +6183,6 @@
                                             "label": "Custom"
                                         }
                                     ],
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.modelCatalog",
                                     "binding": {
@@ -6274,7 +6257,6 @@
                                     "label": "Name",
                                     "valueKey": "name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.name"
                                 },
@@ -6284,7 +6266,6 @@
                                     "label": "Model",
                                     "valueKey": "model",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.model"
                                 },
@@ -6294,7 +6275,6 @@
                                     "label": "Category",
                                     "valueKey": "category",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.category"
                                 },
@@ -6304,7 +6284,6 @@
                                     "label": "Owner",
                                     "valueKey": "owner",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.owner"
                                 },
@@ -6312,7 +6291,6 @@
                                     "id": "field-scale",
                                     "type": "primitive",
                                     "bindingKey": "field:scale",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.scale",
                                     "label": "Scale"
                                 }
@@ -6342,7 +6320,6 @@
                                     "label": "Crew",
                                     "valueKey": "crew",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.crew"
                                 },
@@ -6352,7 +6329,6 @@
                                     "label": "Passengers",
                                     "valueKey": "passengers",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.passengers"
                                 },
@@ -6362,7 +6338,6 @@
                                     "label": "Cargo capacity",
                                     "valueKey": "cargo-capacity",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.cargoCapacity"
                                 },
@@ -6372,7 +6347,6 @@
                                     "label": "Consumables",
                                     "valueKey": "consumables",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.consumables"
                                 },
@@ -6382,7 +6356,6 @@
                                     "label": "Length",
                                     "valueKey": "length",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.length"
                                 }
@@ -6410,7 +6383,6 @@
                                     "id": "resource-maneuverability",
                                     "type": "primitive",
                                     "bindingKey": "resource:maneuverability",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.maneuverability",
                                     "label": "Maneuverability"
                                 },
@@ -6418,7 +6390,6 @@
                                     "id": "resource-durability",
                                     "type": "primitive",
                                     "bindingKey": "resource:durability",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.durability",
                                     "label": "Durability"
                                 },
@@ -6426,7 +6397,6 @@
                                     "id": "resource-communications-sensors",
                                     "type": "primitive",
                                     "bindingKey": "resource:communications-sensors",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.communicationsSensors",
                                     "label": "Communications / Sensors"
                                 },
@@ -6434,7 +6404,6 @@
                                     "id": "resource-hyperdrive",
                                     "type": "primitive",
                                     "bindingKey": "resource:hyperdrive",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.hyperdrive",
                                     "label": "Hyperdrive"
                                 },
@@ -6442,7 +6411,6 @@
                                     "id": "resource-shields",
                                     "type": "primitive",
                                     "bindingKey": "resource:shields",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.shields",
                                     "label": "Shields"
                                 },
@@ -6450,7 +6418,6 @@
                                     "id": "resource-front-shields",
                                     "type": "primitive",
                                     "bindingKey": "resource:front-shields",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.frontShields",
                                     "label": "Front shields"
                                 },
@@ -6458,7 +6425,6 @@
                                     "id": "resource-rear-shields",
                                     "type": "primitive",
                                     "bindingKey": "resource:rear-shields",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.rearShields",
                                     "label": "Rear shields"
                                 },
@@ -6467,7 +6433,6 @@
                                     "type": "toggle",
                                     "label": "Reroll 10s on Durability",
                                     "valueKey": "durability-reroll",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.durabilityReroll"
                                 }
@@ -6487,7 +6452,6 @@
                                     "label": "Speed",
                                     "valueKey": "speed",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.speed"
                                 },
@@ -6497,7 +6461,6 @@
                                     "label": "Altitude",
                                     "valueKey": "altitude",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.altitude"
                                 },
@@ -6507,7 +6470,6 @@
                                     "label": "Sensor range",
                                     "valueKey": "sensor-range",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.sensorRange"
                                 },
@@ -6517,7 +6479,6 @@
                                     "label": "Navigation computer",
                                     "valueKey": "navigation-computer",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.navigationComputer"
                                 }
@@ -6544,7 +6505,6 @@
                                             "type": "text",
                                             "label": "System",
                                             "multiline": false,
-                                            "compact": false,
                                             "required": false,
                                             "labelMessage": "ttgamer.ui.sheet.templates.entities.system"
                                         },
@@ -6552,7 +6512,6 @@
                                             "id": "slot-damaged",
                                             "type": "toggle",
                                             "label": "Damaged",
-                                            "compact": false,
                                             "required": false,
                                             "labelMessage": "ttgamer.ui.sheet.templates.entities.damaged"
                                         }
@@ -6573,7 +6532,6 @@
                                     "id": "rows-configuration",
                                     "type": "primitive",
                                     "bindingKey": "rows:configuration",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.configuration",
                                     "hideLabel": true,
                                     "label": "Configuration"
@@ -6582,6 +6540,50 @@
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.configuration",
                             "column": 2,
                             "defaultCollapsed": true
+                        },
+                        {
+                            "id": "vehicle-modifications-group",
+                            "type": "group",
+                            "title": "Modifications & quirks",
+                            "collapsible": true,
+                            "children": [
+                                {
+                                    "id": "vehicle-modifications",
+                                    "type": "table",
+                                    "valueKey": "vehicle-modifications",
+                                    "minRows": 0,
+                                    "maxRows": 30,
+                                    "columns": [
+                                        {
+                                            "id": "modification-name",
+                                            "type": "text",
+                                            "label": "Modification",
+                                            "multiline": false,
+                                            "required": false,
+                                            "labelMessage": "ttgamer.ui.sheet.templates.entities.modification"
+                                        },
+                                        {
+                                            "id": "modification-effect",
+                                            "type": "text",
+                                            "label": "Effect",
+                                            "multiline": false,
+                                            "required": false,
+                                            "labelMessage": "ttgamer.ui.sheet.templates.entities.effect"
+                                        },
+                                        {
+                                            "id": "modification-quirk",
+                                            "type": "toggle",
+                                            "label": "Quirk",
+                                            "required": false,
+                                            "labelMessage": "ttgamer.ui.sheet.templates.entities.quirk"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.templates.entities.modifications",
+                            "column": 1,
+                            "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/modifications",
+                            "defaultCollapsed": true
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.systems",
@@ -6589,22 +6591,55 @@
                     "columns": 2
                 },
                 {
-                    "id": "weapons",
+                    "id": "combat",
                     "type": "section",
-                    "title": "Weapons",
+                    "title": "Combat",
                     "children": [
                         {
-                            "id": "rows-weapons",
-                            "type": "primitive",
-                            "bindingKey": "rows:weapons",
-                            "compact": false,
+                            "id": "vehicle-weapons",
+                            "type": "group",
+                            "title": "Weapons",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "rows-weapons",
+                                    "type": "primitive",
+                                    "bindingKey": "rows:weapons",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+                                    "hideLabel": true,
+                                    "label": "Weapons"
+                                }
+                            ],
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-                            "hideLabel": true,
-                            "label": "Weapons"
+                            "column": 1,
+                            "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#weapon-systems"
+                        },
+                        {
+                            "id": "vehicle-damage",
+                            "type": "group",
+                            "title": "Damage",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "damage-track",
+                                    "type": "primitive",
+                                    "bindingKey": "track:members-damage",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
+                                    "hideLabel": true,
+                                    "label": "Damage",
+                                    "cohort": {
+                                        "maxMembers": 24
+                                    }
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
+                            "column": 2,
+                            "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair#vehicle-damage-track"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-                    "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#weapon-systems"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.combat",
+                    "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#weapon-systems",
+                    "columns": 2
                 },
                 {
                     "id": "crew-stations",
@@ -6624,7 +6659,6 @@
                                     "valueKey": "crew-pilot",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.pilot"
                                 },
@@ -6635,7 +6669,6 @@
                                     "valueKey": "crew-copilot",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.copilot"
                                 },
@@ -6646,7 +6679,6 @@
                                     "valueKey": "crew-gunners",
                                     "targetKinds": ["character"],
                                     "multiple": true,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.gunners"
                                 },
@@ -6657,7 +6689,6 @@
                                     "valueKey": "crew-engineer",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.engineer"
                                 },
@@ -6668,7 +6699,6 @@
                                     "valueKey": "crew-sensors",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.sensors"
                                 },
@@ -6679,7 +6709,6 @@
                                     "valueKey": "crew-comms",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.comms"
                                 }
@@ -6693,95 +6722,38 @@
                     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/space-combat#dice-pool-by-crew-role"
                 },
                 {
-                    "id": "damage",
-                    "type": "section",
-                    "title": "Damage",
-                    "children": [
-                        {
-                            "id": "damage-track",
-                            "type": "primitive",
-                            "bindingKey": "track:members-damage",
-                            "compact": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
-                            "hideLabel": true,
-                            "label": "Damage",
-                            "cohort": {
-                                "maxMembers": 24
-                            }
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
-                    "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair#vehicle-damage-track"
-                },
-                {
-                    "id": "modifications",
-                    "type": "section",
-                    "title": "Modifications & quirks",
-                    "children": [
-                        {
-                            "id": "vehicle-modifications",
-                            "type": "table",
-                            "valueKey": "vehicle-modifications",
-                            "minRows": 0,
-                            "maxRows": 30,
-                            "columns": [
-                                {
-                                    "id": "modification-name",
-                                    "type": "text",
-                                    "label": "Modification",
-                                    "multiline": false,
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.modification"
-                                },
-                                {
-                                    "id": "modification-effect",
-                                    "type": "text",
-                                    "label": "Effect",
-                                    "multiline": false,
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.effect"
-                                },
-                                {
-                                    "id": "modification-quirk",
-                                    "type": "toggle",
-                                    "label": "Quirk",
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.quirk"
-                                }
-                            ]
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.templates.entities.modifications",
-                    "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/modifications",
-                    "defaultCollapsed": true
-                },
-                {
                     "id": "details",
                     "type": "section",
                     "title": "Details",
                     "children": [
                         {
-                            "id": "field-description",
-                            "type": "text",
-                            "label": "Description",
-                            "valueKey": "description",
-                            "multiline": true,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.templates.entities.descriptionLabel"
-                        },
-                        {
-                            "id": "field-notes",
-                            "type": "text",
-                            "label": "Notes",
-                            "valueKey": "notes",
-                            "multiline": true,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                            "id": "vehicle-details",
+                            "type": "group",
+                            "title": "Details",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "field-description",
+                                    "type": "text",
+                                    "label": "Description",
+                                    "valueKey": "description",
+                                    "multiline": true,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.descriptionLabel"
+                                },
+                                {
+                                    "id": "field-notes",
+                                    "type": "text",
+                                    "label": "Notes",
+                                    "valueKey": "notes",
+                                    "multiline": true,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
+                            "columns": 2,
+                            "hideTitle": true
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
@@ -6977,7 +6949,7 @@
             "name": "Fodder group sheet",
             "systemId": "star-wars-wod",
             "documentKind": "group",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "identity",
@@ -6996,7 +6968,6 @@
                                     "label": "Concept",
                                     "valueKey": "concept",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.concept"
                                 },
@@ -7007,9 +6978,18 @@
                                     "valueKey": "leader",
                                     "targetKinds": ["character"],
                                     "multiple": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.leader"
+                                },
+                                {
+                                    "id": "field-notes",
+                                    "type": "text",
+                                    "label": "Notes",
+                                    "valueKey": "notes",
+                                    "multiline": true,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
+                                    "span": 2
                                 }
                             ],
                             "labelMessage": "ttgamer.ui.sheet.templates.entities.group",
@@ -7019,6 +6999,63 @@
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.group",
                     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#unnamed-npcs-fodder"
+                },
+                {
+                    "id": "members",
+                    "type": "section",
+                    "title": "Members",
+                    "children": [
+                        {
+                            "id": "fodder-members",
+                            "type": "group",
+                            "title": "Members",
+                            "collapsible": false,
+                            "children": [
+                                {
+                                    "id": "damage-track",
+                                    "type": "primitive",
+                                    "bindingKey": "track:members-health",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
+                                    "hideLabel": true,
+                                    "label": "Members",
+                                    "cohort": {
+                                        "maxMembers": 12
+                                    }
+                                },
+                                {
+                                    "id": "resource-willpower",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:willpower",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+                                    "label": "Willpower"
+                                },
+                                {
+                                    "id": "field-quick-pool-specialty",
+                                    "type": "number",
+                                    "label": "Specialty pool",
+                                    "valueKey": "quick-pool-specialty",
+                                    "min": 0,
+                                    "max": 10,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.specialtyPool"
+                                },
+                                {
+                                    "id": "field-quick-pool-secondary",
+                                    "type": "number",
+                                    "label": "Secondary pool",
+                                    "valueKey": "quick-pool-secondary",
+                                    "min": 0,
+                                    "max": 10,
+                                    "required": false,
+                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.secondaryPool"
+                                }
+                            ],
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
+                            "hideTitle": true
+                        }
+                    ],
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
+                    "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track"
                 },
                 {
                     "id": "attributes",
@@ -7039,7 +7076,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/strength"
                                 },
@@ -7051,7 +7087,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/dexterity"
                                 },
@@ -7063,13 +7098,11 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/stamina"
                                 }
                             ],
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.physical",
-                            "column": 1
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.physical"
                         },
                         {
                             "id": "attributes-social",
@@ -7085,7 +7118,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/charisma"
                                 },
@@ -7097,7 +7129,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/manipulation"
                                 },
@@ -7109,13 +7140,11 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/appearance"
                                 }
                             ],
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.social",
-                            "column": 2
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.social"
                         },
                         {
                             "id": "attributes-mental",
@@ -7131,7 +7160,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/perception"
                                 },
@@ -7143,7 +7171,6 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/intelligence"
                                 },
@@ -7155,24 +7182,12 @@
                                     "min": 0,
                                     "max": 5,
                                     "presentation": "dots",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "catalog:attributes/wits"
                                 }
                             ],
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental",
-                            "column": 3
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
-                    "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
-                    "columns": 3
-                },
-                {
-                    "id": "abilities",
-                    "type": "section",
-                    "title": "Abilities",
-                    "children": [
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental"
+                        },
                         {
                             "id": "fodder-abilities",
                             "type": "group",
@@ -7189,32 +7204,14 @@
                                 }
                             ],
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
-                            "column": 1,
-                            "hideTitle": true
-                        },
-                        {
-                            "id": "fodder-willpower",
-                            "type": "group",
-                            "title": "Willpower",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "resource-willpower",
-                                    "type": "primitive",
-                                    "bindingKey": "resource:willpower",
-                                    "compact": false,
-                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-                                    "label": "Willpower"
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
-                            "column": 2
+                            "hideTitle": true,
+                            "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
+                            "span": 3
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
-                    "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
-                    "columns": 2,
-                    "columnWidths": [3, 1]
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
+                    "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
+                    "columns": 3
                 },
                 {
                     "id": "combat",
@@ -7239,7 +7236,6 @@
                                             "label": "Custom"
                                         }
                                     ],
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.armorCatalog",
                                     "binding": {
@@ -7263,7 +7259,6 @@
                                     "label": "Armor",
                                     "valueKey": "armor-name",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.armorType"
                                 },
@@ -7273,7 +7268,6 @@
                                     "label": "Armor rating",
                                     "valueKey": "armor-armor-rating",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.armorRating"
                                 },
@@ -7283,7 +7277,6 @@
                                     "label": "Dexterity modifier",
                                     "valueKey": "armor-dexterity-modifier",
                                     "multiline": false,
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.dexterityModifier"
                                 },
@@ -7292,7 +7285,6 @@
                                     "type": "formula",
                                     "label": "Soak (bashing only)",
                                     "formula": "stamina + armor-armor-rating",
-                                    "compact": false,
                                     "required": false,
                                     "labelMessage": "ttgamer.ui.sheet.templates.entities.soakBashingOnly"
                                 }
@@ -7311,7 +7303,6 @@
                                     "id": "rows-weapons",
                                     "type": "primitive",
                                     "bindingKey": "rows:weapons",
-                                    "compact": false,
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
                                     "hideLabel": true,
                                     "label": "Weapons"
@@ -7326,90 +7317,6 @@
                     "docsPath": "/docs/star-wars-wod-2e/combat/combat-flow",
                     "columns": 2,
                     "columnWidths": [1, 2]
-                },
-                {
-                    "id": "members",
-                    "type": "section",
-                    "title": "Members",
-                    "children": [
-                        {
-                            "id": "damage-track",
-                            "type": "primitive",
-                            "bindingKey": "track:members-health",
-                            "compact": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
-                            "hideLabel": true,
-                            "label": "Members",
-                            "cohort": {
-                                "maxMembers": 12
-                            }
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
-                    "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track"
-                },
-                {
-                    "id": "quick-pools",
-                    "type": "section",
-                    "title": "Quick pools",
-                    "children": [
-                        {
-                            "id": "fodder-quick-pools",
-                            "type": "group",
-                            "title": "Quick pools",
-                            "collapsible": false,
-                            "children": [
-                                {
-                                    "id": "field-quick-pool-specialty",
-                                    "type": "number",
-                                    "label": "Specialty pool",
-                                    "valueKey": "quick-pool-specialty",
-                                    "min": 0,
-                                    "max": 10,
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.specialtyPool"
-                                },
-                                {
-                                    "id": "field-quick-pool-secondary",
-                                    "type": "number",
-                                    "label": "Secondary pool",
-                                    "valueKey": "quick-pool-secondary",
-                                    "min": 0,
-                                    "max": 10,
-                                    "compact": false,
-                                    "required": false,
-                                    "labelMessage": "ttgamer.ui.sheet.templates.entities.secondaryPool"
-                                }
-                            ],
-                            "labelMessage": "ttgamer.ui.sheet.templates.entities.quickPools",
-                            "columns": 2,
-                            "hideTitle": true
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.templates.entities.quickPools",
-                    "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#quick-npc-rolls",
-                    "defaultCollapsed": true
-                },
-                {
-                    "id": "details",
-                    "type": "section",
-                    "title": "Notes",
-                    "children": [
-                        {
-                            "id": "field-notes",
-                            "type": "text",
-                            "label": "Notes",
-                            "valueKey": "notes",
-                            "multiline": true,
-                            "compact": false,
-                            "required": false,
-                            "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
-                            "hideLabel": true
-                        }
-                    ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.notes",
-                    "defaultCollapsed": true
                 }
             ]
         },

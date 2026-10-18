@@ -139,6 +139,13 @@ function fodderSheet(): CustomTemplate {
                                 labelMessage: fields.concept,
                             }),
                             leader(),
+                            {
+                                ...text('field-notes', 'Notes', 'notes', {
+                                    multiline: true,
+                                    labelMessage: fields.notes,
+                                }),
+                                span: 2,
+                            },
                         ],
                         { columns: 2, hideTitle: true, labelMessage: entities.group }
                     ),
@@ -146,41 +153,78 @@ function fodderSheet(): CustomTemplate {
                 { labelMessage: entities.group }
             ),
             section(
+                'members',
+                'Members',
+                DOCS.health,
+                [
+                    group(
+                        'fodder-members',
+                        'Members',
+                        [
+                            membersTrack(),
+                            willpower(),
+                            number(
+                                'field-quick-pool-specialty',
+                                'Specialty pool',
+                                'quick-pool-specialty',
+                                {
+                                    max: 10,
+                                    labelMessage: entities.specialtyPool,
+                                }
+                            ),
+                            number(
+                                'field-quick-pool-secondary',
+                                'Secondary pool',
+                                'quick-pool-secondary',
+                                {
+                                    max: 10,
+                                    labelMessage: entities.secondaryPool,
+                                }
+                            ),
+                        ],
+                        { hideTitle: true, labelMessage: fields.members }
+                    ),
+                ],
+                { labelMessage: fields.members }
+            ),
+            section(
                 'attributes',
                 'Attributes',
                 DOCS.attributes,
-                ATTRIBUTE_GROUPS.map(({ id, title, message, keys }, index) =>
-                    group(
-                        id,
-                        title,
-                        keys.map((key) => trait(key)),
-                        { column: index + 1, labelMessage: message }
-                    )
-                ),
-                { columns: 3, labelMessage: fields.attributes }
-            ),
-            section(
-                'abilities',
-                'Abilities',
-                DOCS.encounterTiers,
                 [
-                    group(
-                        'fodder-abilities',
-                        'Abilities',
-                        [
-                            list('list-abilities', { bindingKey: 'list:abilities' }, 'Abilities', {
-                                columns: 2,
-                                labelMessage: fields.abilities,
-                            }),
-                        ],
-                        { column: 1, hideTitle: true, labelMessage: fields.abilities }
+                    ...ATTRIBUTE_GROUPS.map(({ id, title, message, keys }) =>
+                        group(
+                            id,
+                            title,
+                            keys.map((key) => trait(key)),
+                            { labelMessage: message }
+                        )
                     ),
-                    group('fodder-willpower', 'Willpower', [willpower()], {
-                        column: 2,
-                        labelMessage: fields.willpower,
-                    }),
+                    {
+                        ...group(
+                            'fodder-abilities',
+                            'Abilities',
+                            [
+                                list(
+                                    'list-abilities',
+                                    { bindingKey: 'list:abilities' },
+                                    'Abilities',
+                                    {
+                                        columns: 2,
+                                        labelMessage: fields.abilities,
+                                    }
+                                ),
+                            ],
+                            {
+                                hideTitle: true,
+                                labelMessage: fields.abilities,
+                                docsPath: DOCS.encounterTiers,
+                            }
+                        ),
+                        span: 3,
+                    },
                 ],
-                { columns: 2, columnWidths: [3, 1], labelMessage: fields.abilities }
+                { columns: 3, labelMessage: fields.attributes }
             ),
             section(
                 'combat',
@@ -215,55 +259,6 @@ function fodderSheet(): CustomTemplate {
                     }),
                 ],
                 { columns: 2, columnWidths: [1, 2], labelMessage: fields.combat }
-            ),
-            section('members', 'Members', DOCS.health, [membersTrack()], {
-                labelMessage: fields.members,
-            }),
-            section(
-                'quick-pools',
-                'Quick pools',
-                DOCS.quickNpcRolls,
-                [
-                    group(
-                        'fodder-quick-pools',
-                        'Quick pools',
-                        [
-                            number(
-                                'field-quick-pool-specialty',
-                                'Specialty pool',
-                                'quick-pool-specialty',
-                                {
-                                    max: 10,
-                                    labelMessage: entities.specialtyPool,
-                                }
-                            ),
-                            number(
-                                'field-quick-pool-secondary',
-                                'Secondary pool',
-                                'quick-pool-secondary',
-                                {
-                                    max: 10,
-                                    labelMessage: entities.secondaryPool,
-                                }
-                            ),
-                        ],
-                        { columns: 2, hideTitle: true, labelMessage: entities.quickPools }
-                    ),
-                ],
-                { defaultCollapsed: true, labelMessage: entities.quickPools }
-            ),
-            section(
-                'details',
-                'Notes',
-                undefined,
-                [
-                    text('field-notes', 'Notes', 'notes', {
-                        multiline: true,
-                        hideLabel: true,
-                        labelMessage: fields.notes,
-                    }),
-                ],
-                { defaultCollapsed: true, labelMessage: fields.notes }
             ),
         ],
     };
