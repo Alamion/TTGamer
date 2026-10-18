@@ -104,6 +104,7 @@ storyteller:
         physical: Физический
         social: Социальный
         mental: Ментальный
+        foePool: Пул (2 × Сложность)
     kinds:
         mortal: Смертный
         ghoul: Гуль
@@ -111,6 +112,7 @@ storyteller:
         supernatural: Сверхъестественное
         other: Другое
     sections:
+        allPools: Пулы
         pools: Стандартные пулы
         exceptional: Особые пулы
         powers: Дисциплины и силы
@@ -119,8 +121,7 @@ storyteller:
     placeholders:
         exceptional: Навык или задача
         power: Дисциплина, дар или сила
-    rollSimpleFoe: Бросок простого противника
-    rollSimpleFoeMessage: Удвоенная Сложность — так правила предлагают бросать за простого противника.
+    rollSimpleFoe: Бросить 2 × Сложность
 group:
     type: Группа
     section: Группа

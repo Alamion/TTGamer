@@ -17,6 +17,9 @@ interface DocumentSearchProps {
     /** Most matches shown at once; the full list is never rendered. */
     limit?: number;
     disabled?: boolean;
+    autoFocus?: boolean;
+    /** Called when the reader leaves the empty search (Escape or focus elsewhere). */
+    onDismiss?: () => void;
 }
 
 /**
@@ -25,10 +28,12 @@ interface DocumentSearchProps {
  */
 export function DocumentSearch({
     ariaLabel,
+    autoFocus,
     disabled,
     limit = 8,
     noMatches,
     onSelect,
+    onDismiss,
     options,
     placeholder,
 }: DocumentSearchProps) {
@@ -67,8 +72,18 @@ export function DocumentSearch({
                             event.preventDefault();
                             choose(matches[0].value);
                         }
-                        if (event.key === 'Escape') setOpen(false);
+                        if (event.key === 'Escape') {
+                            setOpen(false);
+                            if (!trimmed) onDismiss?.();
+                        }
                     }}
+                    // With nothing typed no match is open, so leaving the field ends the search.
+                    onBlur={() => {
+                        if (!trimmed) onDismiss?.();
+                    }}
+                    // The reader asked for the search by pressing Add.
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus={autoFocus}
                     disabled={disabled}
                     placeholder={placeholder}
                     aria-label={ariaLabel}

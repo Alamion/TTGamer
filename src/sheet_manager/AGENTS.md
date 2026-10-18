@@ -93,10 +93,14 @@ classes come from `features/sheet/declarative/briefRhythm.ts`; add a compact for
 private gap. A rating with `shortForm` draws a short label (the author's `shortLabel`, else the
 glossary's `abbr`/`ruAbbr`, else the first three letters; `shortLabels.ts`) while the full name
 stays the input's name and the hint of the cell; a clash inside one group falls back to the full
-label. Do not use `.term-row` for a cell that must size by its content (it is an inline-size
-container). Contrast of the brief's colours is computed from the palette in
-`tests/sheet_manager/brief-contrast.test.ts`; measured heights are pinned by
-`tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
+label. Inside a brief group (`BriefGroupContext`, `areaLayout.ts`) trait lists draw tight rows
+without order controls, one-line text and enum fields share the caption-over-underline look of
+`CompactTextField`, compact reference fields list one link per line and keep their search behind an
+Add button, and a trait shown as a number (a whole dice pool) keeps its die beside the short chip. A
+rating among flowing cells shrinks to nothing: place it in a column. Do not use `.term-row` for a
+cell that must size by its content (it is an inline-size container). Contrast of the brief's colours
+is computed from the palette in `tests/sheet_manager/brief-contrast.test.ts`; measured heights are
+pinned by `tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
 
 Prefer capability adapters for related payloads. For example, sentient and droid documents share
 character trait/equipment blocks; the droid adapter maps its mechanical `damage` track to the shared
@@ -147,15 +151,15 @@ appropriate for layout/manager operations that explicitly manage the collection.
 - V5 core kinds (spec 040, `systems/v5/core/`): the mortal, the **Storyteller character**
   (`v5-storyteller`, kind `storyteller`: pools as traits shown as numbers, Health/Willpower of 4 ±
   the track's own adjustment, exceptional pools and powers as `named-trait` lists with catalog
-  suggestions, a simple-foe Difficulty with a "Roll as a simple foe" button), and the **Group**
-  (`v5-group`: name and emblem in data, everything else page fields, members a `reference` field).
-  All three are `coreDefinitions`, so user settings on V5 offer them. Every V5 character page ends
-  with "Member of", an incoming reference field read through `features/documents/linkedFrom.ts`
-  (index entries of the target kinds in the same system and setting, loaded by id, at most 200,
-  `linked-from-truncated`). Vampire and hunter data carry `trackResources` (default on): off hides
-  Hunger, Rouse, and Willpower (hunter: Willpower) by `visibleWhen` and the Hunger line adds no
-  dice. Group examples name their member examples as `companions`; `createFromChoice` copies those
-  first and relinks the group's values.
+  suggestions, a simple-foe Difficulty with its pool of twice the Difficulty and a roll button), and
+  the **Group** (`v5-group`: name and emblem in data, everything else page fields, members a
+  `reference` field). All three are `coreDefinitions`, so user settings on V5 offer them. Every V5
+  character page ends with "Member of", an incoming reference field read through
+  `features/documents/linkedFrom.ts` (index entries of the target kinds in the same system and
+  setting, loaded by id, at most 200, `linked-from-truncated`). Vampire and hunter data carry
+  `trackResources` (default on): off hides Hunger, Rouse, and Willpower (hunter: Willpower) by
+  `visibleWhen` and the Hunger line adds no dice. Group examples name their member examples as
+  `companions`; `createFromChoice` copies those first and relinks the group's values.
 - Bindings say where a document keeps its data; everything a page computes, shows, or does lives in
   the template as elements an author can configure (constitution VI, spec 038). A system never adds
   a behavior only its own code can produce: `tests/sheet_manager/shipped-parity.test.tsx` fails when

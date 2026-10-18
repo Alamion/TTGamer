@@ -91,6 +91,7 @@ export function StatDot({
     const hasFlags = visibleFlags.length > 0;
     const flagValues = { specialization, experienced, practiced };
     const removable = Boolean(onRemove || removeSlot);
+    const number = presentation === 'number';
 
     const handleClick = useCallback(
         (index: number) => {
@@ -119,12 +120,16 @@ export function StatDot({
 
     return (
         <div
-            className="flex min-w-0 flex-col items-center gap-1"
-            role={presentation === 'number' ? 'group' : 'radiogroup'}
+            className={clsx(
+                'flex min-w-0 items-center gap-1',
+                // A number sits in one line with its die and remove control; dots get a row above.
+                number ? 'flex-row' : 'flex-col'
+            )}
+            role={number ? 'group' : 'radiogroup'}
             aria-label={translate(uiMessages.sheet.controls.statDot.group)}
         >
             {(hasFlags || removable || onDiceRoll) && (
-                <div className="flex w-full">
+                <div className={number ? 'contents' : 'flex w-full'}>
                     {onDiceRoll ? (
                         <StatDiceButton
                             onDiceRoll={onDiceRoll}
@@ -165,7 +170,9 @@ export function StatDot({
                         </div>
                     )}
                     {removeSlot ? (
-                        <div className="ml-auto flex">{removeSlot}</div>
+                        <div className={clsx('ml-auto flex', number && 'order-last')}>
+                            {removeSlot}
+                        </div>
                     ) : onRemove ? (
                         <button
                             type="button"
@@ -173,6 +180,7 @@ export function StatDot({
                             disabled={disabled}
                             className={clsx(
                                 'ml-auto rounded-sm font-bold transition-all duration-200 flex items-center justify-center',
+                                number && 'order-last',
                                 statFlagSizeClasses[size],
                                 // Destructive at rest, unmistakable under pointer or keyboard focus.
                                 'text-error opacity-50 hover:opacity-100 focus-visible:opacity-100',
@@ -189,7 +197,7 @@ export function StatDot({
                     ) : null}
                 </div>
             )}
-            {presentation === 'number' ? (
+            {number ? (
                 <NumberInput
                     value={value}
                     min={minimal ?? 0}
@@ -206,7 +214,7 @@ export function StatDot({
             {/* Each dot's button spans its half of the gaps on both sides, so the row has no
                 dead space; the negative margin keeps the old outer width. Too many dots for
                 the row narrow into pills instead of wrapping. */}
-            {presentation === 'dots' && (
+            {!number && (
                 <div className="flex max-w-full -mx-0.5">
                     {Array.from({ length: maxValue }, (_, i) => {
                         const isActive = i + 1 <= value;

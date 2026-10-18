@@ -1,5 +1,6 @@
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
+import type { ReactNode } from 'react';
 
 import { BRIEF } from '../../features/sheet/declarative/briefRhythm';
 import type { ConditionMark } from '../../types/condition';
@@ -41,6 +42,8 @@ interface CompactRatingProps extends CompactFieldProps {
     onChange: (value: number) => void;
     /** Brief look (spec 033): this short form stands for the label; the full name stays its name. */
     shortLabel?: string;
+    /** After the value (a pool's die). */
+    trailing?: ReactNode;
 }
 
 /**
@@ -100,7 +103,19 @@ function ShortRating({
     );
 }
 
-export function CompactRating(props: CompactRatingProps) {
+export function CompactRating({ trailing, ...props }: CompactRatingProps) {
+    const rating = <CompactRatingBody {...props} />;
+    return trailing ? (
+        <div className="flex min-w-0 items-center">
+            {rating}
+            {trailing}
+        </div>
+    ) : (
+        rating
+    );
+}
+
+function CompactRatingBody(props: Omit<CompactRatingProps, 'trailing'>) {
     const { disabled, label, max = 5, onChange, shortLabel, term, value } = props;
     if (shortLabel) return <ShortRating {...props} shortLabel={shortLabel} />;
     return (

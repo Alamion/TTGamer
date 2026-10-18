@@ -13,6 +13,7 @@ import {
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
+import { StatDiceButton } from '../../../components/stat-fields/StatDiceButton';
 import {
     CustomTraitList,
     TraitRow,
@@ -57,6 +58,7 @@ import {
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
+import { BriefGroupContext } from './areaLayout';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { PageScopeContext } from './PageScope';
@@ -194,8 +196,10 @@ function TraitListBindingView({
 }) {
     const traitDiceRoll = useDocumentTraitDiceRoll();
     const locale = useDocusaurusContext().i18n.currentLocale;
+    const brief = useContext(BriefGroupContext);
     return (
         <CustomTraitList
+            compact={brief}
             items={items as CustomSkill[]}
             disabled={disabled}
             columns={columns}
@@ -603,6 +607,19 @@ function PrimitiveTraitBody({
                 max={descriptor.maximum}
                 disabled={readOnly}
                 onChange={(next) => patch({ value: next })}
+                trailing={
+                    // A value shown as a number is a whole dice pool: its brief keeps the roll.
+                    descriptor.presentation === 'number' && traitDiceRoll ? (
+                        <StatDiceButton
+                            onDiceRoll={traitDiceRoll}
+                            value={trait.value}
+                            disabled={readOnly}
+                            size="sm"
+                            statLabel={label}
+                            characterName={bound.name}
+                        />
+                    ) : undefined
+                }
             />
         );
         return specialization ? (

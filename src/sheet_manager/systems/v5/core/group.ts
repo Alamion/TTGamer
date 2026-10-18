@@ -60,7 +60,7 @@ export const groupTemplateBindings: readonly DocumentBindingDescriptor[] = [
 const field = (
     id: string,
     label: { id: string; message: string },
-    options: { multiline?: boolean; compact?: boolean; column?: number } = {}
+    options: { multiline?: boolean; compact?: boolean; column?: number; hideLabel?: boolean } = {}
 ) => text(`${id}-field`, label.message, id, { labelMessage: label, ...options });
 
 const THREAT: TemplateField = {
@@ -81,19 +81,41 @@ const members = (compact = false) =>
         labelMessage: labels.fields.members,
         multiple: true,
         compact,
+        // The heading of its section or group names the list.
+        hideLabel: true,
     });
 
 const identity = (compact = false) =>
     group(
         'identity',
         v5.sections.identity.message,
-        [
-            v5Text('name', 'name', v5.fields.name, { compact }),
-            field('group-kind', labels.fields.kind, { compact }),
-            // A row of its own in the brief: five dots do not fit a third of a phone.
-            { ...THREAT, ...(compact ? { column: 1 } : {}) },
-        ],
-        { hideTitle: true, labelMessage: v5.sections.identity, columns: compact ? 2 : 1 }
+        compact
+            ? [
+                  // Placed in columns: five dots in a row of flowing cells shrink to nothing.
+                  v5Text('name', 'name', v5.fields.name, { compact, column: 1 }),
+                  field('group-kind', labels.fields.kind, { compact, column: 2 }),
+                  { ...THREAT, compact, column: 1 },
+              ]
+            : [
+                  v5Text('name', 'name', v5.fields.name),
+                  field('group-kind', labels.fields.kind),
+                  THREAT,
+              ],
+        { hideTitle: true, labelMessage: v5.sections.identity, ...(compact ? { columns: 2 } : {}) }
+    );
+
+/** A brief's folded block of one long text. */
+const foldedText = (id: string, label: { id: string; message: string }) =>
+    dense(
+        group(
+            id,
+            label.message,
+            [field(`group-${id}`, label, { multiline: true, hideLabel: true })],
+            {
+                labelMessage: label,
+            }
+        ),
+        { collapsed: true }
     );
 
 function page(id: string, name: string, children: TemplateNode[]): CustomTemplate {
@@ -153,15 +175,8 @@ export const v5GroupBriefTemplate = page('v5-group-brief', 'Group — Brief', [
             labelMessage: labels.fields.members,
         })
     ),
-    dense(
-        group(
-            'goals',
-            labels.fields.goals.message,
-            [field('group-goals', labels.fields.goals, { multiline: true })],
-            { labelMessage: labels.fields.goals }
-        ),
-        { collapsed: true }
-    ),
+    foldedText('goals', labels.fields.goals),
+    foldedText('resources', labels.fields.resources),
 ]);
 
 const views = labels.views;
@@ -202,13 +217,15 @@ export function memberOfField(compact = false): TemplateField {
     } as TemplateField;
 }
 
-/** The "Member of" block every V5 character page ends with. */
+/** The "Member of" block every V5 character page ends with; a brief folds it under a heading. */
 export function memberOfGroup(compact = false): GroupNode {
-    const block = group('member-of', labels.memberOf.message, [memberOfField(compact)], {
+    // The heading of the brief's group or of the sheet's section names the list.
+    const listField = { ...memberOfField(compact), hideLabel: true };
+    const block = group('member-of', labels.memberOf.message, [listField], {
         labelMessage: labels.memberOf,
-        hideTitle: true,
+        hideTitle: !compact,
     });
-    return compact ? dense(block) : block;
+    return compact ? dense(block, { collapsed: true }) : block;
 }
 
 /** The full sheet's "Member of" section. */

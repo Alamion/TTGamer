@@ -188,3 +188,14 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
   arrives with its three members linked. No page errors. Step 7 (both kinds in a user setting on V5)
   is covered by `storyteller-sheet.test.tsx` and the library tests rather than walked. SC-001 (two
   minutes on the first try) was met by the scripted walk, not by a player.
+- **Maintainer review (pages reworked)**: the full sheet put the standard pools in the brief look
+  without names, and the simple-foe roll of twice the Difficulty was not explained. The full sheet
+  now has one Pools section (named rows, then exceptional pools beside powers), and the simple foe
+  its own section with the pool it gives (a formula, `difficulty * 2`), the roll, and a link to the
+  docs. The briefs: name and type on one row, the concept on the next, pools as short chips with
+  their die, Health over Willpower, exceptional pools as tight rows, the Difficulty after them,
+  powers, notes, and "Member of" folded; the group brief shows members one per line with the search
+  behind Add, and goals and resources folded. Generic brief behavior came with it (module notes,
+  "Brief look"): tight list rows in brief groups, compact text and enum fields in the caption look,
+  compact reference lists, a die beside a pool's short chip, and a one-line number look of
+  `StatDot`.

@@ -8990,6 +8990,7 @@
          "id": "member-of-field",
          "label": "Member of",
          "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "hideLabel": true,
          "required": false,
          "valueKey": "member-of",
          "compact": false,
@@ -9571,14 +9572,15 @@
      "type": "group",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "hideTitle": true,
-     "collapsible": false,
+     "collapsible": true,
+     "defaultCollapsed": true,
      "layout": "area",
      "children": [
       {
        "id": "member-of-field",
        "label": "Member of",
        "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
        "required": false,
        "valueKey": "member-of",
        "compact": true,
@@ -10858,6 +10860,7 @@
          "id": "member-of-field",
          "label": "Member of",
          "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "hideLabel": true,
          "required": false,
          "valueKey": "member-of",
          "compact": false,
@@ -11504,14 +11507,15 @@
      "type": "group",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "hideTitle": true,
-     "collapsible": false,
+     "collapsible": true,
+     "defaultCollapsed": true,
      "layout": "area",
      "children": [
       {
        "id": "member-of-field",
        "label": "Member of",
        "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
        "required": false,
        "valueKey": "member-of",
        "compact": true,
@@ -12298,6 +12302,7 @@
          "id": "member-of-field",
          "label": "Member of",
          "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "hideLabel": true,
          "required": false,
          "valueKey": "member-of",
          "compact": false,
@@ -12778,14 +12783,15 @@
      "type": "group",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "hideTitle": true,
-     "collapsible": false,
+     "collapsible": true,
+     "defaultCollapsed": true,
      "layout": "area",
      "children": [
       {
        "id": "member-of-field",
        "label": "Member of",
        "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
        "required": false,
        "valueKey": "member-of",
        "compact": true,
@@ -12849,7 +12855,6 @@
        "column": 2,
        "hideTitle": true,
        "collapsible": false,
-       "columns": 1,
        "children": [
         {
          "id": "name-field",
@@ -12862,6 +12867,14 @@
          "multiline": false
         },
         {
+         "id": "storyteller-type",
+         "type": "primitive",
+         "bindingKey": "field:storyteller-type",
+         "label": "Type",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
+         "compact": false
+        },
+        {
          "id": "concept-field",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
@@ -12870,49 +12883,6 @@
          "compact": false,
          "type": "text",
          "multiline": false
-        },
-        {
-         "id": "storyteller-type",
-         "type": "primitive",
-         "bindingKey": "field:storyteller-type",
-         "label": "Type",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
-         "compact": false
-        }
-       ]
-      },
-      {
-       "id": "simple-foe",
-       "type": "group",
-       "title": "Simple foe",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
-       "column": 2,
-       "collapsible": false,
-       "columns": 2,
-       "children": [
-        {
-         "id": "difficulty",
-         "type": "primitive",
-         "bindingKey": "field:difficulty",
-         "label": "Difficulty",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
-         "compact": false
-        },
-        {
-         "id": "simple-foe-roll",
-         "label": "Roll as a simple foe",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
-         "icon": "dice",
-         "availableWhen": "difficulty > 0",
-         "roll": {
-          "notation": "{difficulty * 2}d10>=6",
-          "successAt": 1,
-          "gameDice": true
-         },
-         "onSuccess": [],
-         "onFailure": [],
-         "always": [],
-         "type": "button"
         }
        ]
       }
@@ -12921,16 +12891,17 @@
     {
      "id": "pools-section",
      "type": "section",
-     "title": "Standard dice pools",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+     "title": "Dice pools",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.allPools",
+     "columns": 2,
      "children": [
       {
        "id": "pools",
        "type": "group",
        "title": "Standard dice pools",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+       "span": 2,
        "collapsible": false,
-       "layout": "area",
        "columns": 3,
        "children": [
         {
@@ -12959,6 +12930,38 @@
          "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
          "column": 3,
          "compact": false
+        }
+       ]
+      },
+      {
+       "id": "exceptional",
+       "type": "group",
+       "title": "Exceptional dice pools",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "exceptional-list",
+         "type": "list",
+         "title": "Exceptional dice pools",
+         "bindingKey": "list:exceptional",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "powers",
+       "type": "group",
+       "title": "Disciplines and powers",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "powers-list",
+         "type": "list",
+         "title": "Disciplines and powers",
+         "bindingKey": "list:powers",
+         "columns": 1
         }
        ]
       }
@@ -13015,43 +13018,53 @@
      ]
     },
     {
-     "id": "abilities",
+     "id": "simple-foe-section",
      "type": "section",
-     "title": "Exceptional dice pools",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
-     "columns": 2,
+     "title": "Simple foe",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#simple-foes",
      "children": [
       {
-       "id": "exceptional",
+       "id": "simple-foe",
        "type": "group",
-       "title": "Exceptional dice pools",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
-       "column": 1,
+       "title": "Simple foe",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+       "hideTitle": true,
        "collapsible": false,
+       "columns": 3,
        "children": [
         {
-         "id": "exceptional-list",
-         "type": "list",
-         "title": "Exceptional dice pools",
-         "bindingKey": "list:exceptional",
-         "columns": 1
-        }
-       ]
-      },
-      {
-       "id": "powers",
-       "type": "group",
-       "title": "Disciplines and powers",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
-       "column": 2,
-       "collapsible": false,
-       "children": [
+         "id": "difficulty",
+         "type": "primitive",
+         "bindingKey": "field:difficulty",
+         "label": "Difficulty",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
+         "compact": false
+        },
         {
-         "id": "powers-list",
-         "type": "list",
-         "title": "Disciplines and powers",
-         "bindingKey": "list:powers",
-         "columns": 1
+         "id": "foe-pool",
+         "label": "Pool (2 × Difficulty)",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.foePool",
+         "required": false,
+         "compact": false,
+         "type": "formula",
+         "formula": "difficulty * 2"
+        },
+        {
+         "id": "simple-foe-roll",
+         "label": "Roll 2 × Difficulty",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
+         "icon": "dice",
+         "availableWhen": "difficulty > 0",
+         "roll": {
+          "notation": "{difficulty * 2}d10>=6",
+          "successAt": 1,
+          "gameDice": true
+         },
+         "onSuccess": [],
+         "onFailure": [],
+         "always": [],
+         "type": "button"
         }
        ]
       }
@@ -13103,6 +13116,7 @@
          "id": "member-of-field",
          "label": "Member of",
          "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "hideLabel": true,
          "required": false,
          "valueKey": "member-of",
          "compact": false,
@@ -13137,7 +13151,6 @@
      "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 3,
      "children": [
       {
        "id": "name-field",
@@ -13145,16 +13158,6 @@
        "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
        "required": false,
        "valueKey": "name",
-       "compact": true,
-       "type": "text",
-       "multiline": false
-      },
-      {
-       "id": "concept-field",
-       "label": "Concept",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
-       "required": false,
-       "valueKey": "concept",
        "compact": true,
        "type": "text",
        "multiline": false
@@ -13170,37 +13173,23 @@
      ]
     },
     {
-     "id": "simple-foe",
+     "id": "concept",
      "type": "group",
-     "title": "Simple foe",
-     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+     "title": "Concept",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+     "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 2,
      "children": [
       {
-       "id": "difficulty",
-       "type": "primitive",
-       "bindingKey": "field:difficulty",
-       "label": "Difficulty",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
-       "compact": true
-      },
-      {
-       "id": "simple-foe-roll",
-       "label": "Roll as a simple foe",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
-       "icon": "dice",
-       "availableWhen": "difficulty > 0",
-       "roll": {
-        "notation": "{difficulty * 2}d10>=6",
-        "successAt": 1,
-        "gameDice": true
-       },
-       "onSuccess": [],
-       "onFailure": [],
-       "always": [],
-       "type": "button"
+       "id": "concept-field",
+       "label": "Concept",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+       "required": false,
+       "valueKey": "concept",
+       "compact": true,
+       "type": "text",
+       "multiline": false
       }
      ]
     },
@@ -13209,6 +13198,7 @@
      "type": "group",
      "title": "Standard dice pools",
      "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+     "hideTitle": true,
      "collapsible": false,
      "layout": "area",
      "columns": 3,
@@ -13219,8 +13209,8 @@
        "bindingKey": "trait:pools:physical",
        "label": "Physical",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
-       "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "pool-social",
@@ -13228,8 +13218,8 @@
        "bindingKey": "trait:pools:social",
        "label": "Social",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
-       "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "pool-mental",
@@ -13237,8 +13227,8 @@
        "bindingKey": "trait:pools:mental",
        "label": "Mental",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
-       "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       }
      ]
     },
@@ -13247,9 +13237,9 @@
      "type": "group",
      "title": "Condition",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.condition",
+     "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 2,
      "children": [
       {
        "id": "health-track",
@@ -13257,7 +13247,6 @@
        "bindingKey": "track:health",
        "label": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
-       "column": 1,
        "compact": true
       },
       {
@@ -13266,7 +13255,6 @@
        "bindingKey": "track:willpower",
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
-       "column": 2,
        "compact": true
       }
      ]
@@ -13285,6 +13273,49 @@
        "title": "Exceptional dice pools",
        "bindingKey": "list:exceptional",
        "columns": 1
+      }
+     ]
+    },
+    {
+     "id": "simple-foe",
+     "type": "group",
+     "title": "Simple foe",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "difficulty",
+       "type": "primitive",
+       "bindingKey": "field:difficulty",
+       "label": "Difficulty",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
+       "compact": true
+      },
+      {
+       "id": "foe-pool",
+       "label": "Pool (2 × Difficulty)",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.foePool",
+       "required": false,
+       "compact": true,
+       "type": "formula",
+       "formula": "difficulty * 2"
+      },
+      {
+       "id": "simple-foe-roll",
+       "label": "Roll 2 × Difficulty",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
+       "icon": "dice",
+       "availableWhen": "difficulty > 0",
+       "roll": {
+        "notation": "{difficulty * 2}d10>=6",
+        "successAt": 1,
+        "gameDice": true
+       },
+       "onSuccess": [],
+       "onFailure": [],
+       "always": [],
+       "type": "button"
       }
      ]
     },
@@ -13333,14 +13364,15 @@
      "type": "group",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
-     "hideTitle": true,
-     "collapsible": false,
+     "collapsible": true,
+     "defaultCollapsed": true,
      "layout": "area",
      "children": [
       {
        "id": "member-of-field",
        "label": "Member of",
        "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
        "required": false,
        "valueKey": "member-of",
        "compact": true,
@@ -13404,7 +13436,6 @@
        "column": 2,
        "hideTitle": true,
        "collapsible": false,
-       "columns": 1,
        "children": [
         {
          "id": "name-field",
@@ -13459,6 +13490,7 @@
          "id": "members-field",
          "label": "Members",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+         "hideLabel": true,
          "required": false,
          "valueKey": "members",
          "compact": false,
@@ -13564,6 +13596,7 @@
        "id": "name-field",
        "label": "Name",
        "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+       "column": 1,
        "required": false,
        "valueKey": "name",
        "compact": true,
@@ -13574,6 +13607,7 @@
        "id": "group-kind-field",
        "label": "Kind of group",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
+       "column": 2,
        "required": false,
        "valueKey": "group-kind",
        "compact": true,
@@ -13587,7 +13621,7 @@
        "column": 1,
        "required": false,
        "valueKey": "threat",
-       "compact": false,
+       "compact": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -13607,6 +13641,7 @@
        "id": "members-field",
        "label": "Members",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+       "hideLabel": true,
        "required": false,
        "valueKey": "members",
        "compact": true,
@@ -13635,8 +13670,31 @@
        "id": "group-goals-field",
        "label": "Goals",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+       "hideLabel": true,
        "required": false,
        "valueKey": "group-goals",
+       "compact": false,
+       "type": "text",
+       "multiline": true
+      }
+     ]
+    },
+    {
+     "id": "resources",
+     "type": "group",
+     "title": "Resources and holdings",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "group-resources-field",
+       "label": "Resources and holdings",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "group-resources",
        "compact": false,
        "type": "text",
        "multiline": true

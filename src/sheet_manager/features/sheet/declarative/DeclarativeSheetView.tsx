@@ -46,7 +46,7 @@ import {
 } from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
-import { AreaLayoutContext, forArea } from './areaLayout';
+import { AreaLayoutContext, BriefGroupContext, forArea } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
 import { useCatalogSuggestions } from './catalogSuggestions';
@@ -162,6 +162,23 @@ function FieldCell({
 
     if (field.type === 'rating' && field.presentation === 'tracker') {
         return <RatingScoreTracker field={field} pageApi={pageApi} value={value} />;
+    }
+    // A one-line text in a brief looks like its document-bound kin (caption, underlined value).
+    if (
+        field.type === 'text' &&
+        field.compact &&
+        !field.multiline &&
+        !field.hideLabel &&
+        !field.placeholder
+    ) {
+        return (
+            <CompactTextField
+                label={field.label}
+                value={typeof value === 'string' ? value : ''}
+                disabled={pageApi.disabled}
+                onChange={(next) => pageApi.setValue(fieldValueKey(field), next)}
+            />
+        );
     }
 
     const control = templateFieldControl(field.type);
@@ -757,16 +774,18 @@ const NodeView = memo(function NodeView({
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
                 dense={node.layout === 'area'}
             >
-                <ShortLabelScope nodes={node.children}>
-                    <ChildrenGrid
-                        parentId={node.id}
-                        nodes={node.children}
-                        pageApi={pageApi}
-                        columns={node.columns}
-                        columnWidths={node.columnWidths}
-                        area={node.layout === 'area'}
-                    />
-                </ShortLabelScope>
+                <BriefGroupContext.Provider value={node.layout === 'area'}>
+                    <ShortLabelScope nodes={node.children}>
+                        <ChildrenGrid
+                            parentId={node.id}
+                            nodes={node.children}
+                            pageApi={pageApi}
+                            columns={node.columns}
+                            columnWidths={node.columnWidths}
+                            area={node.layout === 'area'}
+                        />
+                    </ShortLabelScope>
+                </BriefGroupContext.Provider>
             </SectionCard>
         );
     }

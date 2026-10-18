@@ -170,6 +170,24 @@ describe('rolling a Storyteller character (spec 040, US2)', () => {
     );
 });
 
+describe('the brief at the table', () => {
+    it(
+        'rolls the standard pools from their short chips and keeps exceptional rows tight',
+        () => {
+            seed(RUIZ, 'v5-storyteller-brief');
+            const calls = rollsOf(() => {
+                render(createElement(CharacterSheet));
+                fireEvent.contextMenu(screen.getByRole('button', { name: 'Roll Physical' }));
+                fireEvent.contextMenu(screen.getByRole('button', { name: 'Roll Firearms' }));
+            });
+            expect(calls.map(([notation]) => notation)).toEqual(['3d10>=6', '5d10>=6']);
+            expect(screen.getByText('PHY')).toBeTruthy();
+            expect(screen.queryAllByRole('button', { name: /^Move / })).toHaveLength(0);
+        },
+        RENDER_TIMEOUT
+    );
+});
+
 describe('the simple-foe roll (spec 040, US2)', () => {
     it('rolls twice the Difficulty in dice', async () => {
         const notations: string[] = [];
@@ -197,12 +215,15 @@ describe('the simple-foe roll (spec 040, US2)', () => {
             seed({ ...RUIZ, difficulty: 0 }, 'v5-storyteller-brief');
             render(createElement(CharacterSheet));
             const button = () =>
-                screen.getByRole('button', { name: 'Roll as a simple foe' }) as HTMLButtonElement;
+                screen.getByRole('button', { name: 'Roll 2 × Difficulty' }) as HTMLButtonElement;
             expect(button().disabled).toBe(true);
             cleanup();
             seed({ ...RUIZ, difficulty: 3 }, 'v5-storyteller-brief');
             render(createElement(CharacterSheet));
             expect(button().disabled).toBe(false);
+            expect(screen.getByText('Pool (2 × Difficulty)').parentElement!.textContent).toMatch(
+                /6$/
+            );
         },
         RENDER_TIMEOUT
     );

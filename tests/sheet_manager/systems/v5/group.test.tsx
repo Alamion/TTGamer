@@ -80,6 +80,35 @@ describe('a group and its members', () => {
     );
 
     it(
+        'keeps the search of its brief behind Add',
+        () => {
+            seed('church', [
+                envelope(
+                    'church',
+                    'v5-group',
+                    'Church of the Red Dawn',
+                    { members: ['ruiz'] },
+                    'v5-group-brief'
+                ),
+                ruiz(),
+                hunter(),
+            ]);
+            render(createElement(CharacterSheet));
+            const members = screen.getByRole('list', { name: 'Members' });
+            expect(within(members).getByText('Detective Ruiz')).toBeTruthy();
+            expect(screen.queryByRole('searchbox', { name: 'Members' })).toBeNull();
+            fireEvent.click(screen.getByRole('button', { name: 'Add' }));
+            const search = screen.getByRole('searchbox', { name: 'Members' });
+            expect(document.activeElement).toBe(search);
+            fireEvent.change(search, { target: { value: 'An' } });
+            fireEvent.click(screen.getByRole('option', { name: 'Ana' }));
+            const church = useDocumentStore.getState().documents.find(({ id }) => id === 'church')!;
+            expect(church.templateValues.members).toEqual(['ruiz', 'ana']);
+        },
+        RENDER_TIMEOUT
+    );
+
+    it(
         'says a deleted member is gone and lets it be removed',
         () => {
             seed('church', [CHURCH(['ruiz', 'gone']), ruiz()]);
@@ -107,6 +136,7 @@ describe('"Member of" on a character', () => {
                 ruiz(),
             ]);
             render(createElement(CharacterSheet));
+            fireEvent.click(screen.getByRole('button', { name: /Member of/ }));
             const memberOf = await screen.findByRole('list', { name: 'Member of' });
             expect(
                 within(memberOf)
@@ -119,10 +149,12 @@ describe('"Member of" on a character', () => {
     );
 
     it(
-        'shows the groups of a vampire on its brief',
+        'shows the groups of a vampire on its brief, folded until opened',
         async () => {
             seed('sheriff', [CHURCH(['sheriff']), vampire()]);
             render(createElement(CharacterSheet));
+            expect(screen.queryByRole('list', { name: 'Member of' })).toBeNull();
+            fireEvent.click(screen.getByRole('button', { name: /Member of/ }));
             expect(
                 await within(await screen.findByRole('list', { name: 'Member of' })).findByText(
                     'Church of the Red Dawn'

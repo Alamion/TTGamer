@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
-import { ExternalLink, X } from 'lucide-react';
+import { ExternalLink, Plus, X } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
@@ -649,6 +649,15 @@ export function ReferenceFieldControl(props: TemplateFieldControlProps) {
     );
 }
 
+/** Linked documents: chips on a full page, one per line in a brief. */
+const referenceListClasses = (compact: boolean) =>
+    compact ? 'grid gap-0.5' : 'flex flex-wrap gap-1';
+
+const referenceItemClasses = (compact: boolean) =>
+    compact
+        ? 'flex min-w-0 items-center gap-1 text-sm'
+        : 'flex items-center gap-1 rounded-sm border px-2 py-1 text-sm';
+
 /** A read-only list of the documents linking here (spec 040: a character's groups). */
 function IncomingReferences({
     field,
@@ -679,16 +688,22 @@ function IncomingReferences({
     }
     if (linked.documents.length === 0) {
         return (
-            <p className="text-sm text-textSecondary">{translate(referenceMessages.noneLinking)}</p>
+            <p className={clsx(field.compact ? 'text-xs' : 'text-sm', 'text-textSecondary')}>
+                {translate(referenceMessages.noneLinking)}
+            </p>
         );
     }
     return (
         <div className="grid gap-1">
-            <ul className="flex flex-wrap gap-1" aria-label={field.label}>
+            <ul className={referenceListClasses(field.compact)} aria-label={field.label}>
                 {linked.documents.map(({ id, name }) => (
                     <li
                         key={id}
-                        className="flex items-center gap-1 rounded-sm border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
+                        className={clsx(
+                            referenceItemClasses(field.compact),
+                            'text-textPrimary',
+                            !field.compact && 'border-border bg-bgBase'
+                        )}
                     >
                         <span>{name}</span>
                         {onOpenDocument && (
@@ -774,24 +789,29 @@ function OutgoingReferences({
         onChange(field.multiple ? ids : ids.length > 0 ? ids[ids.length - 1] : undefined);
     const selectable = docs.filter((doc) => !selectedIds.includes(doc.value));
     const canSearch = !disabled && (field.multiple || selectedIds.length === 0);
+    // A brief keeps the search behind an Add button.
+    const [adding, setAdding] = useState(false);
+    const compact = field.compact;
 
     return (
-        <div className="grid gap-1">
+        <div className={clsx('grid', compact ? 'gap-0.5' : 'gap-1')}>
             {selectedIds.length > 0 && (
-                <ul className="flex flex-wrap gap-1" aria-label={field.label}>
+                <ul className={referenceListClasses(compact)} aria-label={field.label}>
                     {selectedIds.map((id) => {
                         const title = options.get(id)?.label;
                         return (
                             <li
                                 key={id}
                                 className={clsx(
-                                    'flex items-center gap-1 rounded-sm border px-2 py-1 text-sm',
-                                    title
-                                        ? 'border-border bg-bgBase text-textPrimary'
-                                        : 'border-error/50 text-error'
+                                    referenceItemClasses(compact),
+                                    title ? 'text-textPrimary' : 'text-error',
+                                    !compact &&
+                                        (title ? 'border-border bg-bgBase' : 'border-error/50')
                                 )}
                             >
-                                <span>{title ?? translate(referenceMessages.missing)}</span>
+                                <span className={clsx(compact && 'min-w-0 truncate')}>
+                                    {title ?? translate(referenceMessages.missing)}
+                                </span>
                                 {outOfScope.has(id) && (
                                     <span className="text-xs text-textSecondary">
                                         {translate(referenceMessages.outOfScope)}
@@ -827,13 +847,24 @@ function OutgoingReferences({
                     })}
                 </ul>
             )}
-            {canSearch && (
+            {canSearch && compact && !adding && (
+                <button
+                    type="button"
+                    onClick={() => setAdding(true)}
+                    className="flex w-fit items-center gap-1 py-0.5 text-sm text-textPrimary hover:text-textPrimary/80"
+                >
+                    <Plus className="h-4 w-4" aria-hidden="true" />
+                    {translate(uiMessages.sheet.controls.add)}
+                </button>
+            )}
+            {canSearch && (!compact || adding) && (
                 <DocumentSearch
                     options={selectable}
                     onSelect={(id) => write([...selectedIds, id])}
                     ariaLabel={field.label}
                     placeholder={translate(referenceMessages.search)}
                     noMatches={translate(referenceMessages.noMatches)}
+                    {...(compact ? { autoFocus: true, onDismiss: () => setAdding(false) } : {})}
                 />
             )}
             {selectedIds.length === 0 && disabled && (
