@@ -85,6 +85,20 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
             return;
         }
         const preview = buildImportPreview(parsed.payload, installed(), systemRegistry);
+        // Pages saved before brief blocks fit the new kinds as they are read (spec 041).
+        if (parsed.convertedPages.length > 0) {
+            const names = parsed.convertedPages.slice(0, 5).join(', ');
+            toast(
+                plural(
+                    uiMessages.sheet.templates.page.pagesConverted,
+                    parsed.convertedPages.length,
+                    {
+                        names: parsed.convertedPages.length > 5 ? `${names} …` : names,
+                    }
+                ),
+                { duration: 10_000 }
+            );
+        }
         setError(undefined);
         setLoaded({ payload: parsed.payload, preview });
         setChoices(initialChoices(preview));

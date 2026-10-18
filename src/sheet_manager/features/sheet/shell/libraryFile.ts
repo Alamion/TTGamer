@@ -14,6 +14,7 @@ import {
     UserSettingSchema,
 } from '../../../systems/userTypes';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
+import { upgradeTemplate } from '../../../types/templateUpgrade';
 import { boundCatalogIds } from '../data/catalogEdit';
 import type { LibraryState } from '../data/libraryActions';
 import { catalogNodeKey } from '../data/libraryPages';
@@ -327,7 +328,13 @@ export function downloadTextFile(contents: string, filename: string): void {
 export type LibraryFileError = 'parse' | 'format' | 'version' | 'schema';
 
 export type ParsedLibraryFile =
-    | { ok: true; payload: LibraryPayload; degradedCatalogFields: readonly string[] }
+    | {
+          ok: true;
+          payload: LibraryPayload;
+          degradedCatalogFields: readonly string[];
+          /** Names of pages the schema 4 upgrade changed notably (spec 041). */
+          convertedPages: readonly string[];
+      }
     | { ok: false; error: LibraryFileError; entry?: string };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -439,8 +446,15 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
     };
     const settings = parseAll('settings', (entry) => UserSettingSchema.safeParse(entry));
     const types = parseAll('types', (entry) => UserDocumentTypeSchema.safeParse(entry));
-    const templates = parseAll('templates', (entry) => CustomTemplateSchema.safeParse(entry));
-    const overrides = parseAll('overrides', (entry) => CustomTemplateSchema.safeParse(entry));
+    const convertedPages: string[] = [];
+    const parsePage = (entry: unknown) => {
+        const { template, summary } = upgradeTemplate(entry);
+        const result = CustomTemplateSchema.safeParse(template);
+        if (result.success && summary.notable) convertedPages.push(result.data.name);
+        return result;
+    };
+    const templates = parseAll('templates', parsePage);
+    const overrides = parseAll('overrides', parsePage);
     const catalogs = parseAll('catalogs', (entry) => UserCatalogSchema.safeParse(entry));
     for (const result of [settings, types, templates, overrides, catalogs]) {
         if (!Array.isArray(result)) return { ok: false, error: 'schema', entry: result.entry };
@@ -474,5 +488,6 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
             addresses: parseAddresses(adapted.addresses),
         },
         degradedCatalogFields: degraded,
+        convertedPages,
     };
 }

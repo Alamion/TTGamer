@@ -5,7 +5,10 @@ import {
     serializeTemplateFile,
     TEMPLATE_FILE_VERSION,
 } from '@site/src/sheet_manager/features/sheet/shell/templateFile';
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 
 function buildTemplate(id = 'share-kit', catalogId = 'melee-weapons') {
@@ -179,5 +182,41 @@ describe('custom lists in template files (spec 016)', () => {
         const [skills, mementos] = parsed.template.children;
         expect(skills).not.toHaveProperty('item');
         expect(mementos).toMatchObject({ named: false, item: { type: 'image' } });
+    });
+});
+
+describe('template files of version 3 (spec 041)', () => {
+    it('reads a version 3 file, upgrades its page, and says when it changed', () => {
+        const old = {
+            format: 'ttgamer-template',
+            formatVersion: 3,
+            template: {
+                id: 'tpl-old',
+                name: 'Old',
+                documentKind: 'character',
+                schemaVersion: 3,
+                children: [
+                    {
+                        id: 'card',
+                        type: 'group',
+                        title: 'Card',
+                        collapsible: false,
+                        layout: 'area',
+                        children: [],
+                    },
+                    { id: 'sec', type: 'section', title: 'Sec', children: [] },
+                ],
+            },
+        };
+        const parsed = parseTemplateFile(JSON.stringify(old));
+        expect(parsed).toMatchObject({ ok: true, converted: true });
+        if (parsed.ok) expect(parsed.template.schemaVersion).toBe(TEMPLATE_SCHEMA_VERSION);
+    });
+
+    it('reads its own export back unchanged', () => {
+        const template = buildTemplate();
+        const parsed = parseTemplateFile(serializeTemplateFile(template));
+        expect(parsed).toMatchObject({ ok: true, converted: false });
+        if (parsed.ok) expect(parsed.template).toEqual(template);
     });
 });
