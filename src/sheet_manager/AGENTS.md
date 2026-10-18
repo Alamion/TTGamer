@@ -83,25 +83,35 @@ view (aliases `brief`/`npc-card` where older data may use them). Keep obsolete p
 definition-owned aliases until their data can no longer exist. View labels are definition-owned
 translation descriptors; shells must not maintain view-ID label maps.
 
-Brief look (spec 033): the sheet root is the named size container `brief` (`@container/brief`), and
-brief layout reads its width, never the window's. A group with `layout: 'area'` is drawn in the
-brief look: no box, a heading over a hairline (`SectionCard dense`), three columns (one under 260
-px), and cells that are rows in a narrow area and wrapping chips from the `md` container width;
-children without a `column` flow by natural width. Shipped briefs go through `dense()` /
-`denseBrief()` (`templates/builders.ts`); their weapons list starts collapsed. Spacing and heading
-classes come from `features/sheet/declarative/briefRhythm.ts`; add a compact form there, not a
-private gap. A rating with `shortForm` draws a short label (the author's `shortLabel`, else the
-glossary's `abbr`/`ruAbbr`, else the first three letters; `shortLabels.ts`) while the full name
-stays the input's name and the hint of the cell; a clash inside one group falls back to the full
-label. Inside a brief group (`BriefGroupContext`, `areaLayout.ts`) trait lists draw tight rows
-without order controls, one-line text and enum fields share the caption-over-underline look of
-`CompactTextField`, compact reference fields list one link per line and keep their search behind an
-Add button, and a trait shown as a number (a whole dice pool) keeps its die beside the short chip. A
-compact rating or tracker field takes at least 12rem among flowing cells (its row is an inline-size
-container with no width of its own). Do not use `.term-row` for a cell that must size by its content
-(it is an inline-size container). Contrast of the brief's colours is computed from the palette in
-`tests/sheet_manager/brief-contrast.test.ts`; measured heights are pinned by
-`tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
+Brief look (spec 033, 041): every template is a full page or a brief (`pageKind: 'brief'`). A brief
+is built from brief blocks (node type `brief`, its only container; a block holds no container, and a
+full page holds none) and fields; `DeclarativeSheetView` publishes the kind (`PageKindContext`,
+`useBriefPage()` in `areaLayout.ts`) and every field reads it: on a brief fields draw compact and
+ratings and pools show their short labels, on a full page everything draws full size (there is no
+per-field `compact` or `shortForm`). The sheet root is the named size container `brief`
+(`@container/brief`), and brief layout reads its width, never the window's. A brief block draws with
+no box, a heading over a hairline (`SectionCard dense`), three columns (one under 260 px), and cells
+that are rows in a narrow area and wrapping chips from the `md` container width; children without a
+`column` flow by natural width; its fold state is stored under the same key a card's is. Shipped
+briefs go through `dense()` / `denseBrief()` (`templates/builders.ts`, which also set `pageKind`);
+their weapons list starts collapsed. Spacing and heading classes come from
+`features/sheet/declarative/briefRhythm.ts`; add a compact form there, not a private gap. On a brief
+a rating draws a short label (the author's `shortLabel`, else the glossary's `abbr`/`ruAbbr`, else
+the first three letters; `shortLabels.ts`) unless it sets `fullLabel`; the full name stays the
+input's name and the hint of the cell; a clash inside one block falls back to the full label. A pool
+drawn as a tracker shows no short label. Templates of schema 3 are upgraded as they are parsed
+(`types/templateUpgrade.ts`, inside `CustomTemplateSchema`): an edited shipped page keeps its page's
+kind (a frozen list of the schema 3 shipped ids), a user's page is a brief only when its top-level
+containers are all brief-look groups; the template store (v6) lists notable conversions in
+`conversions` and the sheet tells the author once. Inside a brief block (`BriefGroupContext`,
+`areaLayout.ts`) trait lists draw tight rows without order controls, one-line text and enum fields
+share the caption-over-underline look of `CompactTextField`, compact reference fields list one link
+per line and keep their search behind an Add button, and a trait shown as a number (a whole dice
+pool) keeps its die beside the short chip. A compact rating or tracker field takes at least 12rem
+among flowing cells (its row is an inline-size container with no width of its own). Do not use
+`.term-row` for a cell that must size by its content (it is an inline-size container). Contrast of
+the brief's colours is computed from the palette in `tests/sheet_manager/brief-contrast.test.ts`;
+measured heights are pinned by `tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
 
 Prefer capability adapters for related payloads. For example, sentient and droid documents share
 character trait/equipment blocks; the droid adapter maps its mechanical `damage` track to the shared

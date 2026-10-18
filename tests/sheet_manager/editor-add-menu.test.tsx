@@ -1,10 +1,13 @@
 // @vitest-environment happy-dom
 
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
+import { systemRegistry } from '@site/src/sheet_manager/systems';
 import {
     CustomTemplateSchema,
     TEMPLATE_SCHEMA_VERSION,
 } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
@@ -109,6 +112,26 @@ describe('switching the page kind (spec 041, US2/US3)', () => {
     afterEach(() => {
         cleanup();
         takeSheetIssues();
+    });
+
+    it('lets a page whose place the library owns change its kind, never a shipped page', () => {
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: fullPage() },
+                onClose: () => {},
+                lockTarget: true,
+            })
+        );
+        const kind = () => screen.getByRole('combobox', { name: 'Page kind' }) as HTMLSelectElement;
+        expect(kind().disabled).toBe(false);
+        cleanup();
+        const shipped = systemRegistry
+            .getSystems()
+            .flatMap((system) => system.defaultTemplates ?? [])
+            .find((template) => template.pageKind === 'brief')!;
+        renderEditor(shipped);
+        expect(kind().disabled).toBe(true);
+        expect(kind().value).toBe('brief');
     });
 
     it('converts the containers, says so, and one undo restores the page', () => {

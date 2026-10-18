@@ -3,10 +3,15 @@
 Reference for the `sheet-templates` skill: every node type, its fields, and its limits. The
 invariants are in the skill index.
 
-## Node tree (`types/template.ts`, schema v3)
+## Node tree (`types/template.ts`, schema v4)
 
+- Page kind (spec 041): `pageKind: 'brief'` makes a brief; absent, a full page. Schema refinements
+  keep sections and cards off a brief, brief blocks off a full page, and containers out of a block.
+  Schema 3 templates are upgraded inside `CustomTemplateSchema` (`types/templateUpgrade.ts`).
 - Containers: `section` (CollapsibleBlock, no background, `docsPath`, `columns` 1–4) and `group`
-  (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
+  (SectionCard surface, opt-in `collapsible`) on a full page; `brief` (the brief block: dense
+  SectionCard, area columns, opt-in `collapsible`, `hideTitle`, `docsPath`) on a brief. Accents
+  alternate by sibling parity, never stored.
 - Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`, `rating`,
   `resource`, `reference`, `tracker` (see "Trackers" below). A `reference` with `incoming: true`
   lists the documents linking here instead of storing links (bindings reference, "Reference
@@ -82,7 +87,7 @@ invariants are in the skill index.
   `TrackerValue` under `tracker.valueKey ?? node.id` (validated at the write path; member tracks key
   repeated extra copies by member id). A level override keeps the game's other values; a legacy
   `track { levels, names }` with another count still sets the levels (editor offers "Use the game's
-  levels"). Display without `tracker.display` (`trackerDisplayOf`): `compact` → `line`, else
+  levels"). Display without `tracker.display` (`trackerDisplayOf`): on a brief `line`, else
   `trackLayout`, else `table` for named levels / `strip` for a computed length; the editor writes
   `tracker.display` and clears both. Total defaults: on for member tracks with 2+ members, off
   otherwise; the shipped Star Wars character/droid page sets it on. - Rules
@@ -172,14 +177,15 @@ invariants are in the skill index.
       `markPool`): fills = current, outlines = maximum, boxes up to the binding maximum or
       `maxFrom`; `minFrom` then bounds the current value and `maxMinFrom` the maximum (resolved into
       `formulaState.maxMinima`); locked boxes (`copy.locked`) draw in a darker mix of their mark's
-      color; `currentRaisesMax` raises the maximum from a fill. `part` and `compact` are ignored
-      with it. An own `resource` field takes the same `poolTracker` (max ≤ `trackerLevelsMax`,
-      schema refine; `fieldControls.tsx`): `min` holds both values, the page label stays outside
-      (`hideLabel`). The `row` display (label left, 16px boxes, count) exists only in pool models.
-      The editor's Display choice moves `minFrom` of a `part: 'max'` node to `maxMinFrom` and back.
-      The shipped Star Wars full sheet draws Force Points this way; edited copies of a shipped page
-      (`defaultOverrides`) keep their own nodes. Tracks render through the tracker (see "Trackers").
-      Compact pools render `current / max` boxes, compact ratings number boxes.
+      color; `currentRaisesMax` raises the maximum from a fill. `part` is ignored with it, and it
+      shows no short label on a brief. An own `resource` field takes the same `poolTracker` (max ≤
+      `trackerLevelsMax`, schema refine; `fieldControls.tsx`): `min` holds both values, the page
+      label stays outside (`hideLabel`). The `row` display (label left, 16px boxes, count) exists
+      only in pool models. The editor's Display choice moves `minFrom` of a `part: 'max'` node to
+      `maxMinFrom` and back. The shipped Star Wars full sheet draws Force Points this way; edited
+      copies of a shipped page (`defaultOverrides`) keep their own nodes. Tracks render through the
+      tracker (see "Trackers"). On a brief pools render `current / max` boxes and ratings number
+      boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);

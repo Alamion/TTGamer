@@ -135,7 +135,7 @@ page's kind converts it; each is one undo step with an announcement.
       and `references/node-tree.md`, `references/editor.md`; user guide
       `docs/guide/template-editor/*.mdx` + ru mirror (page kinds, the brief block, conversions,
       FR-010); `TODO.md` T-125 marked done
-- [ ] T027 Run `yarn verify:full`; measure the sheet page's bundle growth against the 10 KB gzip
+- [x] T027 Run `yarn verify:full`; measure the sheet page's bundle growth against the 10 KB gzip
       budget; walk the steps in design.md "Manual walk"; record results in design.md
 
 ## Coverage

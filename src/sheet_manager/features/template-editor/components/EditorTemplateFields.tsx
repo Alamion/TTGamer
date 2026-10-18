@@ -20,10 +20,13 @@ const editor = uiMessages.sheet.templates.editor;
 export function EditorTemplateFields({
     draft,
     targetFixed,
+    kindFixed,
 }: {
     draft: EditorDraft;
     /** Defaults and pages whose place the caller owns cannot move. */
     targetFixed: boolean;
+    /** A shipped page keeps the kind of its view (spec 041). */
+    kindFixed: boolean;
 }) {
     const session = useEditorSession();
     const targetGroups = listTemplateTargetGroups();
@@ -79,8 +82,7 @@ export function EditorTemplateFields({
                             )
                         )
                     }
-                    // A shipped page keeps the kind of its view (spec 041).
-                    disabled={targetFixed}
+                    disabled={kindFixed}
                     aria-label={translate(editor.pageKind)}
                     data-setting="pageKind"
                     className={`${inputClasses} max-w-full`}

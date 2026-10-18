@@ -150,3 +150,62 @@ guides and the composition test.
    as an edit of the shipped brief.
 7. New page → switch to Brief → add two blocks (Attributes, Skills) with three ratings each → done
    in under two minutes on the first try (SC-003).
+
+## Implementation notes
+
+- **T001 measurements (before any change, built site)**: brief heights at 375/1280 px — Star Wars
+  character 623/333, droid 595/333, creature 375/299, vehicle 473/376, fodder 381/315; WoD 2e
+  619/333; V5 hunter 736/425, mortal 558/328, vampire 894/449, Storyteller 400/394, group 210/194
+  (pinned as `BRIEF_PINS` in `tests-e2e/smoke/brief-baseline.ts`). Full sheets: vampire 7105/3716,
+  Storyteller 1447/966, group 1100/728 (others already pinned).
+- **Counting fields for the composition rule** (asked during T001): a growing element — a list, a
+  table, built-in rows, equipment, a track, a multiline text, a multiple reference, a tracker — is a
+  card's worth (three fields) on its own. Read literally, every list card of every shipped sheet
+  broke the rule. With this count the shipped full sheets that break it today are: `droid-sheet`
+  (Force section 4, Force resources card), `creature-sheet`, `vehicle-sheet`, and `fodder-sheet`
+  (loose fields in sections, small sections and cards), `wod2e-sheet` (resources section 4,
+  Willpower and derived-stats cards), and `v5-vampire-sheet` (the predator card). They are the named
+  exceptions of FR-013 and one backlog entry.
+- **D4 — shipped kind without the registry**: stores hydrate before the systems load, so the upgrade
+  cannot ask the registry (and `types/` must not import it). It uses a frozen list of the schema 3
+  shipped page ids instead (`SCHEMA_3_SHIPPED`/`SCHEMA_3_FULL` in `templateUpgrade.ts`); pages added
+  later are born schema 4. The `setShippedKindLookup` registration of the analyze fix was dropped.
+- **Builders keep `compact`/`shortForm` as authoring shorthands**: nothing of them is stored; a
+  rating or pool written `compact` without `shortForm` gets `fullLabel` (a pool drawn as a tracker
+  never does). This kept every system's page code unchanged; the shipped Star Wars pages equal the
+  upgraded pre-change fixtures (`star-wars-parity`, `default-templates`).
+- **Type files** upgrade their pages silently; template and library files report conversions
+  (library import: a toast with the page names).
+- **One commit for Foundation, US1, US2, and US3**: the schema change removes `compact`,
+  `shortForm`, and `layout`, so the renderer, the editor, and the paste conversion could not compile
+  apart; US4 (store v6, files, heights) is its own commit.
+- **Measured after the change**: every shipped brief within 1% of its T001 pin at 375 and 1280 px
+  except the vehicle brief (crew links in the compact look), pinned anew at 397/362.
+- **Page kind lock (found in the walk)**: the setting was disabled for every page whose place the
+  caller owns, so a page made with the library's "New page" could not become a brief. Only an edit
+  of a shipped page keeps its kind now (`kindFixed`, test in `editor-add-menu.test.tsx`).
+- **Notices follow FR rules**: the stored-page toast and the import toast name a page only when its
+  conversion changed more than brief-look cards becoming blocks; a copy of a brief exported before
+  the change imports silently, and an empty section of an edited shipped brief is dropped silently.
+- **Bundle (T027)**: unique JS and CSS the sheet page loads while creating a vampire and opening its
+  brief, built from `master` (v3.31.0) and from this branch: 19 files, 837,724 → 842,346 bytes gzip
+  (+4,622, about 4.5 KB) against the 10 KB budget.
+- **Checks**: `yarn verify:full` passed (unit, perf, 63 browser tests); browser timings over budget
+  are the panes timings with 3,000 documents, reported as before.
+- **Manual walk (2026-10-18, built site in English, scripted with Playwright)**:
+    1. Star Wars character, vampire, and Storyteller briefs at 375 px: screenshots byte-identical to
+       the `master` build.
+    2. Vampire brief in the editor: page kind Brief, locked; the page-level `+` offers brief block,
+       field, list, button.
+    3. Physical card copied from the vampire full sheet: pasted on a brief's page level it is a
+       block "Physical" (message "Pasted 1 element; its groups now fit this page."); pasted into a
+       block it flattens into STR/DEX/STA short-label ratings.
+    4. Two-block brief switched to a full page: one section of two cards with a message; the toolbar
+       Undo restores the brief (Ctrl+Z with focus in a text box undoes that box's typing).
+    5. Library file exported from the `master` build with a section added to a brief-look page: the
+       import preview's toast names the page.
+    6. Edited vampire brief with a section of one field, saved on the `master` build, opened on this
+       build (same origin): one toast names it, none after a reload; it stays the shipped brief's
+       edit and a brief.
+    7. New page → Brief → two blocks (Attributes, Skills) of three ratings each: 27 actions, all on
+       the first try (1.9 s scripted); a person's time against SC-003 is left to the maintainer.

@@ -200,6 +200,7 @@ function EditorDialog({
                             <EditorTemplateFields
                                 draft={draft}
                                 targetFixed={editingDefault || lockTarget}
+                                kindFixed={editingDefault}
                             />
                         )}
                         {mode === 'preview' ? (
