@@ -61,6 +61,9 @@ Willpower, specialty pool, secondary pool (6) → **Attributes**: Physical, Soci
 
 ## Decisions
 
+- **D0 — Brief builders stay as they are**: the existing `virtuesGroup`, `resourcesGroup`, and other
+  parts the briefs call keep their signatures; the new sections are built by new functions, so
+  FR-005 does not rest on the snapshot diff alone.
 - **D1 — Shared section builders for the three character sheets**: `conditionSection`,
   `equipmentSection`, and `experienceNotesSection` in the WoD 2e ruleset parts, with options for
   what differs by kind (track binding and title, extra resources, implants, docs paths). _Why_:
@@ -78,8 +81,9 @@ Willpower, specialty pool, secondary pool (6) → **Attributes**: Physical, Soci
   the Group card, soaks into Health and Resolve, quick pools into Members). FR-004 forbids new
   fields.
 - **D5 — Folding** (FR-006): Health and Willpower, Health and Resolve, Members, Combat cards, and
-  Details do not fold (play values or the creature's main text); equipment and biography keep
-  folding as today. The vehicle Configuration card keeps its fold.
+  Details do not fold (play values or the creature's main text; notes that share a card with play
+  values, as in the fodder Group card, do not fold either); equipment and biography keep folding as
+  today. The vehicle Configuration card keeps its fold.
 - **D6 — Parity fixtures**: `tests/sheet_manager/fixtures/star-wars-parity.json` keeps its
   documents, defaults, and dice pools unchanged (the frozen identities of spec 012); only its
   `templates` part is regenerated, since the pages change on purpose. The zod-baseline
@@ -87,8 +91,10 @@ Willpower, specialty pool, secondary pool (6) → **Attributes**: Physical, Soci
   unchanged, FR-005).
 - **D7 — Height pins**: full-sheet heights in `tests-e2e/smoke/brief-baseline.ts` keep their spec
   033 role for briefs; a new `SHEET_PINS` holds the full-sheet heights measured after this spec for
-  the changed kinds, and the "keeps its height" check uses it where present. Before the change every
-  changed sheet (and the vampire, not pinned today) is measured to check SC-003 (≤ 10% taller).
+  the seven changed kinds (the vampire included), and the "keeps its height" check runs over
+  `SHEET_PINS` and the unchanged `BASELINE` kinds, so the vampire is checked too. Before the change
+  every changed sheet (and the vampire, not pinned today) is measured to check SC-003 (≤ 10%
+  taller).
 
 ## Changed types and data
 
@@ -114,10 +120,13 @@ Willpower, specialty pool, secondary pool (6) → **Attributes**: Physical, Soci
 
 - `tests/sheet_manager/page-composition.test.ts`: every shipped full sheet passes; the exception
   list is gone.
-- `tests/sheet_manager/shared-character-layout.test.ts` (new): the Star Wars character, droid, and
-  WoD 2e full sheets list the same section titles in the same order apart from Force; every value
-  key bound on each full sheet before the change (captured from the current trees as a fixture in
-  the first task) is still bound once (SC-002).
+- `tests/sheet_manager/shipped-sheet-layout.test.ts` (new): the Star Wars character, droid, and WoD
+  2e full sheets list the same section titles in the same order apart from Force; on each of the
+  seven sheets every value key and binding bound before the change, and every formula expression
+  (`formula`, `minFrom`, `maxMinFrom`) and button roll by node id, equals the fixture captured from
+  the current trees in the first task (FR-002, FR-004, SC-002).
+- `tests/sheet_manager/shipped-sheet-overrides.test.ts` (new): an edit of `full-sheet` saved with
+  the old tree (a fixture copy) still parses and renders every value (FR-007).
 - `tests/sheet_manager/systems/wod2e/star-wars-parity.test.ts`: documents and dice unchanged;
   templates regenerated (D6).
 - `tests/sheet_manager/zod-baseline.test.ts`: snapshot regenerated; diff limited to full sheets.

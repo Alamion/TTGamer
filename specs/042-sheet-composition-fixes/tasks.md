@@ -8,28 +8,34 @@
       (Star Wars character, droid, creature, vehicle, fodder group, WoD 2e character, V5 vampire);
       record them under "Implementation notes" in `specs/042-sheet-composition-fixes/design.md` (the
       reference of SC-003)
-- [ ] T002 Capture the value keys and bindings bound on each of the seven full sheets today into
-      `tests/sheet_manager/fixtures/sheet-bindings-042.json` (one sorted list per template id),
-      generated once from the current trees; it is the SC-002 reference
+- [ ] T002 Capture, for each of the seven full sheets today, the value keys and bindings it binds
+      plus every formula expression (`formula`, `minFrom`, `maxMinFrom`) and button roll by node id
+      into `tests/sheet_manager/fixtures/sheet-bindings-042.json`, generated once from the current
+      trees; it is the FR-002/SC-002 reference. Copy today's `full-sheet` tree into
+      `tests/sheet_manager/fixtures/full-sheet-041.json` for the override test
 
 ## User Story 1 - Star Wars, droid, and WoD 2e characters share one layout (P1)
 
 **Check**: the three full sheets pass the composition rule, list the same sections in the same order
 apart from Force, and bind every value they bound before.
 
-- [ ] T003 [US1] Tests first: `tests/sheet_manager/shared-character-layout.test.ts` (new) — section
+- [ ] T003 [US1] Tests first: `tests/sheet_manager/shipped-sheet-layout.test.ts` (new) — section
       titles of `full-sheet`, `droid-sheet`, and `wod2e-sheet` equal Base, Condition, Attributes,
       Skills, (Force), Advantages, Equipment, Experience and Notes; every sheet listed in the
-      binding check binds exactly the value keys and bindings of `sheet-bindings-042.json` (the
-      check starts with the three sheets of this story; later stories add theirs); remove
-      `droid-sheet` and `wod2e-sheet` from `KNOWN_EXCEPTIONS` in
+      binding check binds exactly the value keys, bindings, formulas, and rolls of
+      `sheet-bindings-042.json` (the check starts with the three sheets of this story; later stories
+      add theirs); remove `droid-sheet` and `wod2e-sheet` from `KNOWN_EXCEPTIONS` in
       `tests/sheet_manager/page-composition.test.ts`
+- [ ] T003a [US1] Test first: `tests/sheet_manager/shipped-sheet-overrides.test.ts` (new) — the
+      saved `full-sheet-041.json` tree, stored as an edit of `full-sheet`, parses and renders every
+      value of a filled character (FR-007)
 - [ ] T004 [US1] Shared builders in `src/sheet_manager/systems/wod2e/ruleset/templateParts.ts`:
       `conditionSection` (card `condition-vitals` "Health and Willpower": health or damage track,
       Willpower, optional Initiative and extra resources; card Virtues), `equipmentSection` (id
       `body`, title Equipment, inventory title, implants optional, folding as today),
       `experienceNotesSection` (id `other`, Experience and Notes); options carry what differs by
-      kind (track binding, title, tracker total, docs paths, Willpower pool tracker)
+      kind (track binding, title, tracker total, docs paths, Willpower pool tracker); existing parts
+      the briefs call (`virtuesGroup`, `resourcesGroup`, …) keep their signatures (design D0)
 - [ ] T005 [US1] Star Wars character and droid in
       `src/sheet_manager/systems/star-wars-wod/templates/character.ts`: order Base, Condition,
       Attributes, Skills, Force (SW only: Force Skills, Force Powers, Force-derived stats
@@ -58,7 +64,7 @@ apart from Force, and bind every value they bound before.
 
 - [ ] T010 [US2] Tests first: remove `creature-sheet`, `vehicle-sheet`, and `fodder-sheet` from
       `KNOWN_EXCEPTIONS` and add them to the binding check of
-      `tests/sheet_manager/shared-character-layout.test.ts`
+      `tests/sheet_manager/shipped-sheet-layout.test.ts`
 - [ ] T011 [US2] Creature in `src/sheet_manager/systems/star-wars-wod/templates/creature.ts`:
       Identity → Condition (card `creature-resolve` "Health and Resolve": track, Willpower, both
       soaks) → Attributes → Abilities, Merits & Flaws (cards `creature-abilities`, Merits, Flaws) →
@@ -95,9 +101,10 @@ apart from Force, and bind every value they bound before.
 ## Finish
 
 - [ ] T020 Heights: measure the seven full sheets after the change; check none is more than 10%
-      taller than T001 (SC-003); add `SHEET_PINS` to `tests-e2e/smoke/brief-baseline.ts` and use it
-      in the "keeps its height" check of `tests-e2e/smoke/brief-layout.spec.ts` (FR-009);
-      `BRIEF_PINS` unchanged (SC-004)
+      taller than T001 (SC-003); add `SHEET_PINS` (all seven, the vampire included) to
+      `tests-e2e/smoke/brief-baseline.ts` and make the "keeps its height" check of
+      `tests-e2e/smoke/brief-layout.spec.ts` run over `SHEET_PINS` and the unchanged `BASELINE`
+      kinds (FR-009); `BRIEF_PINS` unchanged (SC-004)
 - [ ] T021 Docs: `docs/star-wars-wod-2e/character/reading-sheet.mdx` (layout map and section
       headings) and `docs/star-wars-wod-2e/equipment.mdx` ("Body section" → Equipment) with their ru
       mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/`; the `sheet-templates` skill's
@@ -115,7 +122,7 @@ apart from Force, and bind every value they bound before.
 | FR-004      | T002 binding check (no new value key bound) |
 | FR-005      | T008, T014, T017 (snapshot diff), T020      |
 | FR-006      | T004, T011–T013 (fold settings), T022 walk  |
-| FR-007      | T022 (manual walk step 4)                   |
+| FR-007      | T003a, T022 (manual walk step 4)            |
 | FR-008      | T019, T021                                  |
 | FR-009      | T020                                        |
 | FR-010      | T007, T014                                  |

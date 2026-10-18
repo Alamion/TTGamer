@@ -50,9 +50,9 @@ loose fields that sit outside any card, unlike every other shipped sheet.
 ### User Story 1 - Star Wars, droid, and WoD 2e characters share one layout (Priority: P1)
 
 A player opens a Star Wars character, a droid, or a WoD 2e character. All three follow one layout
-after the V5 pattern: Willpower, the virtues, and Health sit together in a Condition section,
-weapons, armor, and Initiative in Combat, and every card holds at least three fields inside sections
-of at least five.
+after the V5 pattern: Willpower, the virtues, Health, and Initiative sit together in a Condition
+section, weapons and armor stay with the rest of the gear in Equipment, and every card holds at
+least three fields inside sections of at least five.
 
 **Why this priority**: these are player sheets in daily use; the three share the engine's page
 parts, so one layout fixes the droid and WoD 2e sheet and keeps the Star Wars character alike.
@@ -139,8 +139,8 @@ it is.
 - **Remembered folds**: a card's remembered open or closed state may reset where a card is new or
   merged; values never do.
 - **Fold rule**: a card folds only when it grows without bound (equipment, lists of weapons, notes)
-  or is rarely needed in play (biography, appearance); merged cards that hold play values
-  (Willpower, pools, Damage) do not fold.
+  or is rarely needed in play (biography, appearance); a card that holds play values (Willpower,
+  pools, Damage) does not fold, even when notes or descriptions share it.
 
 ## Requirements
 
@@ -153,14 +153,14 @@ it is.
   show in a field bound to the same value after, and no value key, binding, formula, or roll MAY
   change.
 - **FR-003**: The sheets MUST be regrouped after the V5 sheets' pattern: Health, Willpower, and
-  other per-scene resources in one Condition section; weapons, attacks, armor, and damage in a
-  Combat section; notes and descriptions with the details. A field moves only into a card of the
-  same subject, and sections may change order to group fields by meaning.
+  other per-scene resources in one Condition section; on the creature, vehicle, and fodder sheets,
+  attacks, weapons, armor, and damage in a Combat section (on character sheets weapons and armor are
+  gear lists and stay in Equipment, as on the V5 sheets); notes and descriptions with the details. A
+  field moves only into a card of the same subject, and sections may change order to group fields by
+  meaning.
 - **FR-004**: No new field MAY be added to meet the rule; a small card or section MUST be merged
   into a neighbour instead.
 - **FR-005**: Brief pages MUST NOT change.
-- **FR-011**: The Star Wars character, droid, and WoD 2e full sheets MUST share one section layout;
-  only sections or cards a kind alone has (the Force, built-in equipment) differ.
 - **FR-006**: Cards MUST fold only when they grow without bound or are rarely needed in play (spec
   040 rule); a card that holds values used every scene MUST NOT fold.
 - **FR-007**: A user's edited copy of a changed shipped page MUST keep loading and showing the same
@@ -170,6 +170,8 @@ it is.
 - **FR-009**: Where a full sheet's layout changes, its pinned height used by the browser checks MUST
   be measured again and recorded.
 - **FR-010**: Titles of new or merged cards and sections MUST be translated in English and Russian.
+- **FR-011**: The Star Wars character, droid, and WoD 2e full sheets MUST share one section layout;
+  only sections or cards a kind alone has (the Force, built-in equipment) differ.
 
 ## Success Criteria
 
