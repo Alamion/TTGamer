@@ -71,8 +71,9 @@ page as a brief and see the brief add menu.
 
 1. **Given** any shipped brief (Star Wars, WoD 2e, V5), **When** it is opened in the editor,
    **Then** its settings say it is a brief.
-2. **Given** the author creates a new page, **When** they pick its kind, **Then** a brief starts
-   with one empty brief block and a full page starts as today.
+2. **Given** the author creates a new page, **When** they switch it to a brief before adding
+   anything, **Then** it holds one brief block with the starter field, and a full page starts as
+   today.
 3. **Given** a document opened beside another (spec 034), **When** its kind has a brief page,
    **Then** it starts in that page, whatever the page's id.
 4. **Given** an existing page, **When** the author switches its kind in the page's settings,
@@ -103,8 +104,9 @@ check the result's containers and that every field arrived.
 2. **Given** a section with three cards copied from a full page, **When** it is pasted on a brief,
    **Then** the result follows the same choice as a card, one brief block per card, and the
    section's own loose fields (if any) go into a block of their own.
-3. **Given** a brief block, **When** it is pasted or dragged onto a full page, **Then** it follows
-   the same choice in the other direction (a card in the place it was dropped).
+3. **Given** a brief block, **When** it is pasted on a full page, **Then** it follows the same
+   choice in the other direction (a card where it was pasted). Drags stay within one page, so they
+   only follow the nesting rule (FR-004).
 4. **Given** any of these, **When** it completes, **Then** one undo step returns the page as it was.
 
 ---
@@ -122,8 +124,9 @@ of every shape) and check the result, its look, and its measured height.
 
 **Acceptance Scenarios**:
 
-1. **Given** every shipped brief, **When** it is drawn after the change at 320, 375, 640, and 1280
-   px, **Then** its height stays within 1% of today's and nothing overflows sideways.
+1. **Given** every shipped brief, **When** it is drawn after the change, **Then** its height at 375
+   and 1280 px stays within 1% of today's (SC-001) and nothing overflows sideways at 320, 375, 640,
+   and 1280 px.
 2. **Given** an edited shipped brief stored before the change, **When** it loads, **Then** it is a
    brief whatever it holds: its brief-look and boxed cards become brief blocks with the same titles,
    columns, fold state, and fields, a section becomes one block per card plus one for its loose
@@ -132,7 +135,7 @@ of every shape) and check the result, its look, and its measured height.
 3. **Given** a user's own page that mixes brief-look cards with sections or boxed cards, **When** it
    loads, **Then** it is a brief only when every container at its top level is a brief-look card
    (those become brief blocks); otherwise it is a full page and its brief-look cards become ordinary
-   cards, and the editor tells the author, once, which page was converted and how.
+   cards, and the sheet page tells the author, once, which page was converted and how.
 4. **Given** a template file exported before the change, **When** it is imported, **Then** it is
    converted the same way as a stored template, and the import report says what was converted.
 
@@ -178,8 +181,8 @@ of every shape) and check the result, its look, and its measured height.
 - **FR-003**: The editor MUST offer the brief block only on briefs, and sections and cards only on
   full pages; the "brief look" switch on cards MUST be removed.
 - **FR-004**: A brief block MUST NOT contain sections, cards, or brief blocks.
-- **FR-005**: Pasting, dragging, or moving content between page kinds, and switching a page's kind,
-  MUST convert containers (card ↔ brief block; a section → one block per card plus one for its loose
+- **FR-005**: Pasting content from a page of the other kind, and switching a page's kind, MUST
+  convert containers (card ↔ brief block; a section → one block per card plus one for its loose
   fields), keep every field in reading order, say what was converted, and be one undo step.
 - **FR-006**: Every shipped brief MUST be a brief built from brief blocks, with its current fold
   choices (parts that grow without bound or that play rarely needs start folded, as the composition
@@ -200,8 +203,8 @@ of every shape) and check the result, its look, and its measured height.
   look and a rating shows its short label (the author's own short label kept); on a full page every
   field draws full size. The editor MUST NOT offer a per-field compact setting; a rating MAY keep a
   setting to show its full name on a brief where a short label would mislead. Stored compact flags
-  are dropped on conversion, and short-form flags of shipped briefs that are off stay off as that
-  setting.
+  are dropped on conversion, and a rating of a shipped brief that does not use its short label today
+  keeps its full name (`fullLabel`).
 - **FR-013**: A test MUST check every shipped page against the composition rule: a full page is
   sections of at least five fields holding cards of at least three, with no loose fields in a
   section; a brief holds only brief blocks and fields. Allowed exceptions (the shared portrait card)

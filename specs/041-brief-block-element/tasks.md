@@ -24,8 +24,9 @@ schema change, while paste conversions only add editor convenience.
       `fullLabel` to ratings and primitives
 - [ ] T004 `src/sheet_manager/types/templateUpgrade.ts`: `upgradeTemplate(raw, shippedKind)`
       returning `{ template, summary }` (design D4), wired as a `z.preprocess` of
-      `CustomTemplateSchema` for `schemaVersion < 4` with the registry's shipped-template lookup as
-      the default `shippedKind`; T002 passes
+      `CustomTemplateSchema` for `schemaVersion < 4`; the shipped-kind lookup is registered by
+      `src/sheet_manager/systems/index.ts` through `setShippedKindLookup` (no import from `types/`
+      to the registry), and without a registration the user-page rule applies; T002 passes
 - [ ] T005 Builders in `src/sheet_manager/templates/builders.ts`: `dense()`/`denseAll()`/
       `denseBrief()` build `brief` nodes and set `pageKind: 'brief'`; remove the `compact`/
       `shortForm` options; add `fullLabel`; update every shipped template under
@@ -47,7 +48,9 @@ schema change, while paste conversions only add editor convenience.
       (`SectionCard dense`, area `ChildrenGrid`, `BriefGroupContext`); replace every `compact` read
       in `DeclarativeSheetView.tsx`, `fieldControls.tsx`, `primitives.tsx`, `RowsBody.tsx`, and
       `features/sheet/data/trackerModel.ts` (a track's own `tracker.display` still wins), and
-      `useShortLabel` in `shortLabels.ts`/`ShortLabelScope.tsx` reads the page kind and `fullLabel`
+      `useShortLabel` in `shortLabels.ts`/`ShortLabelScope.tsx` reads the page kind and `fullLabel`;
+      a block keeps the fold-state storage key of a group (`template-<id>-<nodeId>`), so a converted
+      card's remembered state carries over (tested in T006)
 - [ ] T008 [US1] Editor element: `brief` entry in
       `src/sheet_manager/features/template-editor/elements/registry.tsx` (settings: title, title
       shown, columns, collapsible, starts folded, help link, show when) built in
@@ -55,9 +58,10 @@ schema change, while paste conversions only add editor convenience.
       `compact`/`shortForm` settings (`panels/PrimitiveConfig.tsx`, `panels/ShortFormSettings.tsx`,
       `settings/registry.ts`, `panels/builtInTrackerSettings.ts`), add `fullLabel` for ratings on
       brief pages; strings in `translations/source/{en,ru}/ui/sheet/templates.yaml`
-- [ ] T009 [US1] Nesting rule in the editor: `model/moveTargets.ts` and the paste target in
-      `model/clipboard.ts` refuse a block inside a block and a section or card inside a block;
-      `issues/draftIssues.ts` names a broken nesting
+- [ ] T009 [US1] Nesting rule in the editor: `model/moveTargets.ts` refuses dragging a block into a
+      block and a section or card into a block; a block pasted inside a block is flattened into its
+      place by `model/clipboard.ts` (its fields keep their order); `issues/draftIssues.ts` names a
+      broken nesting
 - [ ] T010 [US1] Storybook story for the brief block in `src/sheet_manager/storybook/stories.ts`;
       `tests/sheet_manager/shipped-parity.test.tsx` and `storybook.test.tsx` pass with it (FR-009)
 - [ ] T011 [US1] Run `yarn verify` (schema and renderer change) and commit the story
@@ -72,9 +76,11 @@ document opened beside another starts in the brief found by page kind.
       on a brief and the reverse on a full page (SC-004); `panes`/views test that `briefViewOf`
       picks the view whose shipped template is a brief
 - [ ] T013 [US2] Page kind setting in
-      `src/sheet_manager/features/template-editor/components/EditorTemplateFields.tsx` (read-only
-      for now; switching arrives in US3); the `+` menu's group entry builds a `brief` node on a
-      brief page and `KindChoice.tsx` offers section/card only on full pages
+      `src/sheet_manager/features/template-editor/components/EditorTemplateFields.tsx`: shown on
+      every page, switchable while the draft holds only its starter section (it becomes one block
+      with the starter field; switching a page with content arrives in US3); the `+` menu's group
+      entry builds a `brief` node on a brief page and `KindChoice.tsx` offers section/card only on
+      full pages
 - [ ] T014 [US2] `briefViewOf` in `src/sheet_manager/features/sheet/panes/views.ts` by page kind
       (design D8); a user setting's own page as today
 - [ ] T015 [US2] Run the targeted editor and pane tests and commit the story
@@ -86,7 +92,8 @@ once, and shipped briefs keep their pinned heights.
 
 - [ ] T016 [US4] Tests first: `tests/sheet_manager/template-store-migration.test.ts` (v5 → v6 with
       `conversions` recorded once, a shipped-style brief converts silently, an unreadable entry goes
-      to quarantine) and `template-file.test.ts` (version 3 accepted and reported, 2 and 5 refused)
+      to quarantine) and `template-file.test.ts` (version 3 accepted and reported, 2 and 5 refused,
+      a version 4 export imports back unchanged)
 - [ ] T017 [US4] `src/sheet_manager/store/templateStore.ts` version 6: the migration calls
       `upgradeTemplate` explicitly with the registry lookup, keeps `conversions` (≤ 50), and offers
       `takeConversions()`; the sheet page shows one toast (up to five names and the count of others)
@@ -128,8 +135,8 @@ page's kind converts it; each is one undo step with an announcement.
       and `references/node-tree.md`, `references/editor.md`; user guide
       `docs/guide/template-editor/*.mdx` + ru mirror (page kinds, the brief block, conversions,
       FR-010); `TODO.md` T-125 marked done
-- [ ] T027 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
-      design.md
+- [ ] T027 Run `yarn verify:full`; measure the sheet page's bundle growth against the 10 KB gzip
+      budget; walk the steps in design.md "Manual walk"; record results in design.md
 
 ## Coverage
 

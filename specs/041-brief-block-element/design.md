@@ -40,15 +40,17 @@ guides and the composition test.
 - **D4 — One upgrade, in the schema**: `upgradeTemplate(raw, shippedKind)` in
   `types/templateUpgrade.ts` runs as a `z.preprocess` of `CustomTemplateSchema` when
   `schemaVersion < 4`, and sets 4. Kind: an edited shipped page takes the shipped page's kind
-  (`shippedKind(systemId, id)`, injected; the schema default looks it up in the registry's shipped
-  templates by id); a user's own page is a brief only when every top-level container is an area
-  group. Then a brief's area groups and cards become `brief` nodes, a section becomes one block per
-  card plus one block (the section's title) for its loose fields, nested containers inside a block
-  are flattened into it; a full page's area groups become plain groups. Ratings on a brief without
-  `shortForm: true` get `fullLabel: true`; `compact`/`shortForm`/`layout` are dropped. It returns
-  the template and a summary (`{ kind, blocks, flattened, lookDropped }`). _Why_: one place, every
-  reader covered, testable on fixtures. _Rejected_: converting only in the template store — files,
-  the clipboard, and library imports would still meet schema-3 pages.
+  (`shippedKind(systemId, id)`, a parameter; `types/` never imports the registry, so the schema
+  preprocess reads a lookup that `systems/index.ts` registers on load with `setShippedKindLookup`,
+  and where none is registered — Node scripts — the user-page rule applies); a user's own page is a
+  brief only when every top-level container is an area group. Then a brief's area groups and cards
+  become `brief` nodes, a section becomes one block per card plus one block (the section's title)
+  for its loose fields, nested containers inside a block are flattened into it; a full page's area
+  groups become plain groups. Ratings on a brief without `shortForm: true` get `fullLabel: true`;
+  `compact`/`shortForm`/`layout` are dropped. It returns the template and a summary
+  (`{ kind, blocks, flattened, lookDropped }`). _Why_: one place, every reader covered, testable on
+  fixtures. _Rejected_: converting only in the template store — files, the clipboard, and library
+  imports would still meet schema-3 pages.
 - **D5 — Telling the author once**: template store v6 runs the upgrade explicitly in its migration
   and keeps `conversions: { templateId, name, kind, summary }[]` (persisted, at most 50); the sheet
   page shows one toast listing up to five names and the number of others, then clears the list.
@@ -60,12 +62,16 @@ guides and the composition test.
   one section named after the page, loose top-level fields join it). Switching the page kind in the
   page settings (`EditorTemplateFields`) and pasting copied elements of the other kind call them;
   each is one undo step and announces what was converted. Drags happen within one page, so they only
-  need the nesting rule: `resolveMoveTarget` and the paste target refuse a block inside a block and
-  a section or card on a brief.
+  need the nesting rule: `resolveMoveTarget` refuses a block inside a block and a section or card on
+  a brief; a pasted block landing inside a block is flattened into its place (spec edge case).
+  Copies taken before the update parse as schema 4: their `layout`/`compact` keys are stripped,
+  which is harmless because the look follows the page and the paste converts the containers.
 - **D7 — New pages and the add menu**: a new draft is a full page as today; switching it to a brief
-  turns its starter section into one block. The `+` menu's group entry builds a `brief` node on a
-  brief page (anywhere a block may stand) and a section/card on a full page; `KindChoice` offers
-  section/card only on full pages; the group look setting "brief look" is removed.
+  while it holds only the starter section turns that section into one block with the starter field
+  (US2; switching a page with content converts it through D6, US3). The `+` menu's group entry
+  builds a `brief` node on a brief page (anywhere a block may stand) and a section/card on a full
+  page; `KindChoice` offers section/card only on full pages; the group look setting "brief look" is
+  removed.
 - **D8 — Which brief opens beside another**: `briefViewOf` picks the first view whose shipped
   template has `pageKind: 'brief'`; a user setting's own page is used as today. _Rejected_: id
   suffixes.
