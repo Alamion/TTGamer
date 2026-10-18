@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.32.0
+
+### Minor feat
+
+- **Page kinds (spec 041, T-125)**: every page in the template editor is a **Full page** or a **Brief**, chosen next to its name. The kind decides how every field looks — compact with short labels on a brief, full size on a full page — so there is no "brief look" switch on cards any more. Switching the kind converts the page (cards become brief blocks and back, every field keeps its place) with a message, and **Undo** restores it; edited shipped pages keep the kind of the page they edit
+- **Brief blocks (spec 041)**: the one group of a brief — a small heading over a line, no box, columns that follow the width of the area. The **+** menu offers brief blocks on a brief and sections and cards on a full page. A card pasted on a brief arrives as a block, a block pasted on a full page as a card, and a block pasted into another block gives it its fields
+- **Your saved pages carry over (spec 041)**: pages and edits of shipped pages saved before, and template or library files exported before, are converted when they load or are imported; when more changed than brief-look cards becoming blocks, a message names the pages to look at in the editor
+- **Rating labels on briefs (spec 041)**: **Full name on the brief** keeps a rating's name where letters would mislead; **Short label text** sets your own letters
+
+### Fix
+
+- **Short labels**: two ratings in one block whose letters would match no longer turn the later one into a full-size rating; it takes a fourth letter (BRA, BRAC) or a number for the same name (FIE, FIE2)
+
 ## v3.31.0
 
 ### Minor feat
