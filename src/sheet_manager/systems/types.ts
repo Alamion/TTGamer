@@ -53,6 +53,11 @@ export interface DocumentExample {
     id: string;
     label: DocumentViewLabel;
     create: () => UnknownDocumentEnvelope;
+    /**
+     * Examples of the same system copied together with this one (a group's members, spec 040);
+     * the copy's values that name them are pointed at their copies.
+     */
+    companions?: readonly { definitionId: string; exampleId: string }[];
 }
 
 export interface DocumentDefinition<TData = unknown> {

@@ -12,6 +12,7 @@ sections:
     aims: Aims
     creedDrive: Creed and Drive
 fields:
+    trackResources: Track Willpower
     concept: Concept
     creed: Creed
     drive: Drive

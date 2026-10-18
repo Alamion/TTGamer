@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.31.0
+
+### Minor feat
+
+- **Storyteller characters for V5 (spec 040, T-040)**: a new kind on the V5 rules for the people and things the players meet — mortals, ghouls, animals, creatures. Physical, Social, and Mental pools are numbers up to 15 and roll with a click; Health and Willpower are four boxes that the track's own − and + set from one to fifteen; exceptional pools suggest the V5 skills, powers suggest the Disciplines and the hunters' Edges, and any name works. A simple foe needs only its Difficulty, and **Roll 2 × Difficulty** rolls its pool as the rules suggest. The full sheet holds the character and its pools and condition; the brief shows the pools as short chips with their dice
+- **Groups (spec 040)**: a coterie of rivals, a hunter cell, a cult, or a company with its kind, Threat, members of any V5 kind (each opens with a click), goals, and resources. Every V5 character shows the groups it belongs to under **Member of**
+- **Antagonists without bookkeeping (spec 040)**: a switch on vampire and hunter sheets stops tracking Hunger and Willpower (Willpower for a hunter); their rolls then add no Hunger dice, and the values come back when the switch is turned on again
+- **Storyteller documentation (spec 040)**: a section of the V5 rules on Storyteller characters, simple foes, and groups, with examples of our own — Ines Ruiz, Bruno Kessel, the yard dogs, the thing in the pines, and the Lantern Choir, whose copy brings its members along — in English and Russian
+- **Back and Forward between documents (T-057)**: following a link to another document leaves a browser history entry, so **Back** returns to the document you came from and **Forward** goes on again; the address names the shown document, so a reload keeps it
+
+### Fix
+
+- **Briefs**: lists have tight rows without the move handles, text and choice fields share the caption look, links to documents stand one per line with their search behind **Add**, a rating among other cells no longer narrows into unclickable pills, and "Member of" starts folded
+- **V5 full sheets**: "Member of" sits in the identity card instead of a section of its own
+
 ## v3.30.0
 
 ### Minor feat

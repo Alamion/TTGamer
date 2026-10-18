@@ -321,3 +321,7 @@
   file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/vampire/reference/glossary.mdx
   match: /.*/
   reason: 'bilingual glossary table: the English name is already in its own column'
+- rule: catalog
+  match: /v5-skills/
+  reason: the V5 skills catalog (spec 040) names each entry by the sheet's own skill label
+      (`nameMessage`), translated with the interface strings; a catalog source would duplicate them

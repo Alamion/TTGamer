@@ -43,6 +43,10 @@ function cellRating(id: 'desperation' | 'danger', label: string): ResourceBindin
 
 const hunterBindings: DocumentBindingDescriptor[] = [
     field('concept', 'concept', { label: hunter.fields.concept.message }),
+    field('track-resources', 'trackResources', {
+        label: hunter.fields.trackResources.message,
+        valueType: 'boolean',
+    }),
     field('creed', 'creed', {
         label: hunter.fields.creed.message,
         suggestions: { catalogId: 'v5-hunter-creeds' },

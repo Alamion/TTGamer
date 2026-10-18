@@ -108,6 +108,7 @@ export const SETTINGS = {
     catalog: { group: 'value', label: bindings.attach },
     targetKinds: { group: 'value' },
     multiple: { group: 'value', label: editor.multiple },
+    incoming: { group: 'value', label: editor.incoming },
     part: { group: 'value', label: editor.primitivePart },
     // Limits
     min: {

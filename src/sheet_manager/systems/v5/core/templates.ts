@@ -18,6 +18,7 @@ import {
     trackGroup,
     v5Text,
 } from '../ruleset/templateParts';
+import { memberOfBriefGroup, memberOfField } from './group';
 
 /**
  * The V5 engine character without a supernatural module (spec 012): the base a user setting on
@@ -31,7 +32,10 @@ const identity = (compact = false) =>
     group(
         'identity',
         v5.sections.identity.message,
-        [v5Text('name', 'name', v5.fields.name, { compact })],
+        [
+            v5Text('name', 'name', v5.fields.name, { compact }),
+            ...(compact ? [] : [memberOfField()]),
+        ],
         {
             hideTitle: true,
             labelMessage: v5.sections.identity,
@@ -100,4 +104,5 @@ export const v5CoreBriefTemplate = page('v5-core-brief', 'Mortal — Brief', [
     compactTraitsGroup('attributes'),
     compactTraitsGroup('skills', { collapsible: true }),
     dense(equipmentGroup('weapons'), { collapsed: true }),
+    memberOfBriefGroup(),
 ]);

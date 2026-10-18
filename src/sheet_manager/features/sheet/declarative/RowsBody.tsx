@@ -15,6 +15,7 @@ import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
+import { BRIEF } from './briefRhythm';
 import { moveItem } from './rowOrder';
 import {
     parentName,
@@ -38,12 +39,14 @@ function optionLabel(option: BindingOption): string {
 /** Closed-set select for a bound value; a stored value outside the set is shown as-is. */
 function EnumSelect({
     ariaLabel,
+    className = inputClasses,
     disabled,
     onChange,
     options,
     value,
 }: {
     ariaLabel: string;
+    className?: string;
     disabled: boolean;
     onChange: (next: string) => void;
     options: readonly BindingOption[];
@@ -56,7 +59,7 @@ function EnumSelect({
             onChange={(event) => onChange(event.target.value)}
             disabled={disabled}
             aria-label={ariaLabel}
-            className={inputClasses}
+            className={className}
         >
             {!known && <option value={value}>{value}</option>}
             {value === '' && <option value="">—</option>}
@@ -86,21 +89,30 @@ export function EnumField({
     options: readonly BindingOption[];
     value: string;
 }) {
+    // The brief look matches its text fields: a caption over an underlined value.
     return (
         <label
             className={
                 compact
-                    ? 'flex items-center justify-between gap-2 text-xs font-medium text-textSecondary'
+                    ? 'grid min-w-24 flex-1 basis-24 gap-0'
                     : 'grid gap-1 text-xs font-medium text-textSecondary'
             }
         >
-            <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
+            <span className={hideLabel ? 'sr-only' : compact ? BRIEF.caption : undefined}>
+                {label}
+            </span>
             <EnumSelect
                 ariaLabel={label}
                 disabled={disabled}
                 onChange={onChange}
                 options={options}
                 value={value}
+                {...(compact
+                    ? {
+                          className:
+                              'min-w-0 border-0 border-b border-border bg-transparent px-0 py-0 text-sm font-semibold text-textPrimary outline-hidden focus:border-primary disabled:opacity-70',
+                      }
+                    : {})}
             />
         </label>
     );

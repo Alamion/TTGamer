@@ -33,12 +33,13 @@ export const BASELINE: Readonly<Record<string, KindHeights>> = {
         sheet: { 375: 6871, 1280: 3113 },
         brief: { 375: 2553, 1280: 1274 },
     },
+    // Full sheets of the V5 characters gained "Member of" in their identity card in spec 040.
     'wod-v5/hunter': {
-        sheet: { 375: 6223, 1280: 3023 },
+        sheet: { 375: 6315, 1280: 3115 },
         brief: { 375: 2700, 1280: 1306 },
     },
     'wod-v5/v5-character': {
-        sheet: { 375: 4915, 1280: 2291 },
+        sheet: { 375: 4971, 1280: 2347 },
         brief: { 375: 2140, 1280: 1064 },
     },
 };

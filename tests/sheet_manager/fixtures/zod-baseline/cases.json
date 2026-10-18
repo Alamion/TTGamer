@@ -1002,7 +1002,8 @@
             "perks": [],
             "despair": false,
             "desperation": 0,
-            "danger": 0
+            "danger": 0,
+            "trackResources": true
         }
     },
     "catalog binding: fills default": {

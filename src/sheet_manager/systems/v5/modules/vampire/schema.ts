@@ -77,6 +77,8 @@ export const VampireModuleShape = {
     disciplines: z.array(VampireDisciplineSchema).max(VAMPIRE_LIMITS.disciplines).default([]),
     powers: z.array(VampirePowerSchema).max(VAMPIRE_LIMITS.powers).default([]),
     rituals: z.array(VampireRitualSchema).max(VAMPIRE_LIMITS.rituals).default([]),
+    /** Off for an antagonist run lightly: no Hunger dice, no Hunger or Willpower (spec 040). */
+    trackResources: z.boolean().default(true),
 };
 
 const VampireObjectSchema = z.object({ ...V5CoreShape, ...VampireModuleShape });

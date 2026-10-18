@@ -8,7 +8,9 @@ invariants are in the skill index.
 - Containers: `section` (CollapsibleBlock, no background, `docsPath`, `columns` 1–4) and `group`
   (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
 - Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`, `rating`,
-  `resource`, `reference`, `tracker` (see "Trackers" below).
+  `resource`, `reference`, `tracker` (see "Trackers" below). A `reference` with `incoming: true`
+  lists the documents linking here instead of storing links (bindings reference, "Reference
+  fields").
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones
       until the reader expands it); `rating` is a trait row (`components/stat-fields/RatingRow`, the

@@ -6,6 +6,7 @@ import {
     DocumentViewIdSchema,
 } from '../../../../types/document';
 import type { DocumentDefinition, DocumentViewLabel } from '../../../types';
+import { OTTILIE_BRANDT_DOCUMENT } from './antagonist';
 import { MIRELA_VOSS_DOCUMENT } from './example';
 import { createVampireDefault, VampireSchema } from './schema';
 
@@ -43,6 +44,11 @@ export const vampireDefinition: DocumentDefinition = {
             id: MIRELA_VOSS_DOCUMENT.id,
             label: uiMessages.sheet.documents.examples.mirelaVoss,
             create: () => MIRELA_VOSS_DOCUMENT,
+        },
+        {
+            id: OTTILIE_BRANDT_DOCUMENT.id,
+            label: uiMessages.sheet.documents.examples.ottilieBrandt,
+            create: () => OTTILIE_BRANDT_DOCUMENT,
         },
     ],
 };

@@ -3,9 +3,10 @@
 ## Scope
 
 The universal sheet implementation supports Star Wars WEG/WoD characters, droids, creatures,
-vehicles, and fodder groups, Hunter: the Reckoning 5e characters, engine-only WoD 2e and V5
-characters, and user-defined document types and settings (spec 012). Definitions own their schemas
-and named views; do not fold kind-specific state into the shared document envelope.
+vehicles, and fodder groups, Hunter: the Reckoning 5e and Vampire: the Masquerade 5e characters,
+engine-only WoD 2e and V5 characters, V5 Storyteller characters and groups (spec 040), and
+user-defined document types and settings (spec 012). Definitions own their schemas and named views;
+do not fold kind-specific state into the shared document envelope.
 
 ## Structure
 
@@ -92,8 +93,13 @@ classes come from `features/sheet/declarative/briefRhythm.ts`; add a compact for
 private gap. A rating with `shortForm` draws a short label (the author's `shortLabel`, else the
 glossary's `abbr`/`ruAbbr`, else the first three letters; `shortLabels.ts`) while the full name
 stays the input's name and the hint of the cell; a clash inside one group falls back to the full
-label. Do not use `.term-row` for a cell that must size by its content (it is an inline-size
-container). Contrast of the brief's colours is computed from the palette in
+label. Inside a brief group (`BriefGroupContext`, `areaLayout.ts`) trait lists draw tight rows
+without order controls, one-line text and enum fields share the caption-over-underline look of
+`CompactTextField`, compact reference fields list one link per line and keep their search behind an
+Add button, and a trait shown as a number (a whole dice pool) keeps its die beside the short chip. A
+compact rating or tracker field takes at least 12rem among flowing cells (its row is an inline-size
+container with no width of its own). Do not use `.term-row` for a cell that must size by its content
+(it is an inline-size container). Contrast of the brief's colours is computed from the palette in
 `tests/sheet_manager/brief-contrast.test.ts`; measured heights are pinned by
 `tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
 
@@ -143,6 +149,18 @@ appropriate for layout/manager operations that explicitly manage the collection.
   `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
+- V5 core kinds (spec 040, `systems/v5/core/`): the mortal, the **Storyteller character**
+  (`v5-storyteller`, kind `storyteller`: pools as traits shown as numbers, Health/Willpower of 4 ±
+  the track's own adjustment, exceptional pools and powers as `named-trait` lists with catalog
+  suggestions, a simple-foe Difficulty with a roll of twice it), and the **Group** (`v5-group`: name
+  and emblem in data, everything else page fields, members a `reference` field). All three are
+  `coreDefinitions`, so user settings on V5 offer them. Every V5 character page shows "Member of"
+  (in the identity card of a full sheet, a folded group at the end of a brief), an incoming
+  reference field read through `features/documents/linkedFrom.ts` (index entries of the target kinds
+  in the same system and setting, loaded by id, at most 200, `linked-from-truncated`). Vampire and
+  hunter data carry `trackResources` (default on): off hides Hunger, Rouse, and Willpower (hunter:
+  Willpower) by `visibleWhen` and the Hunger line adds no dice. Group examples name their member
+  examples as `companions`; `createFromChoice` copies those first and relinks the group's values.
 - Bindings say where a document keeps its data; everything a page computes, shows, or does lives in
   the template as elements an author can configure (constitution VI, spec 038). A system never adds
   a behavior only its own code can produce: `tests/sheet_manager/shipped-parity.test.tsx` fails when
@@ -238,6 +256,15 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   `onCreated(id, { named, parentId })` lets the documents window skip its rename in place for a
   named document. Docs buttons (`CreateCharacterButton`) use the same path and report a missing kind
   or example as `create-kind-unavailable` with an error message.
+
+Following a link (T-057): a page's `openDocument` (reference chips, "Member of") goes through
+`DocumentLinkContext` (`features/sheet/declarative/documentLinks.ts`), which `SheetWorkspace`
+provides from `useDocumentHistory()` (`features/sheet/shell/documentHistory.ts`). The link pushes a
+history entry naming the document in the address (`?doc=<id>`, a query change, so Docusaurus does
+not scroll); Back and Forward show the document their entry names once it is in the index, a
+document opened another way replaces the current entry's name, and the first document shown after
+loading never overwrites an address that names another. Without the provider a link only sets the
+current document.
 
 ### Workspace layout (spec 036)
 

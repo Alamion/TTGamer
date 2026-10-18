@@ -120,6 +120,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         v5: ['wod-v5'],
         'v5-hunter': ['wod-v5/hunter', 'wod-v5/rules'],
         'v5-vampire': ['wod-v5/vampire'],
+        'v5-storyteller': ['wod-v5/storyteller'],
     },
     pluralForms: { en: 2, ru: 3 },
     shortDescriptionCoverage: 0.9,

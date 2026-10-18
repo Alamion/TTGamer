@@ -7,6 +7,9 @@ import {
 } from '../../../types/document';
 import type { DocumentDefinition, DocumentViewLabel } from '../../types';
 import { createV5CoreDefault, V5CoreSchema } from '../ruleset/schema';
+import { STORYTELLER_EXAMPLES } from './examples';
+import { createV5StorytellerDefault, V5StorytellerSchema } from './storyteller';
+import { STORYTELLER_KIND } from './storytellerBindings';
 
 const views = uiMessages.sheet.v5.core.views;
 
@@ -33,4 +36,23 @@ export const v5CharacterDefinition: DocumentDefinition = {
     defaultViewId: DocumentViewIdSchema.parse('v5-core-sheet'),
     views: [templateView('v5-core-sheet', views.sheet), templateView('v5-core-brief', views.brief)],
     migrate: (data) => data,
+};
+
+const storytellerViews = uiMessages.sheet.v5.storyteller.views;
+
+/** A Storyteller character of any V5 line (spec 040): ruleset-level, offered beside the mortal. */
+export const v5StorytellerDefinition: DocumentDefinition = {
+    id: DocumentDefinitionIdSchema.parse('v5-storyteller'),
+    kind: DocumentKindSchema.parse(STORYTELLER_KIND),
+    label: uiMessages.sheet.v5.storyteller.type,
+    schemaVersion: 1,
+    schema: V5StorytellerSchema,
+    createDefault: createV5StorytellerDefault,
+    defaultViewId: DocumentViewIdSchema.parse('v5-storyteller-sheet'),
+    views: [
+        templateView('v5-storyteller-sheet', storytellerViews.sheet),
+        templateView('v5-storyteller-brief', storytellerViews.brief),
+    ],
+    migrate: (data) => data,
+    examples: STORYTELLER_EXAMPLES,
 };

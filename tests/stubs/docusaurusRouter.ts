@@ -1,8 +1,10 @@
 /** Minimal router hooks for components that sync state to the URL (no navigation in tests). */
+const location = { pathname: '/', search: '', hash: '', state: undefined };
+
 export function useLocation() {
-    return { pathname: '/', search: '', hash: '', state: undefined };
+    return location;
 }
 
 export function useHistory() {
-    return { replace: () => undefined, push: () => undefined };
+    return { location, replace: () => undefined, push: () => undefined };
 }

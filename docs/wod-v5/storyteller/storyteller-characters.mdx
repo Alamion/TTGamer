@@ -1,0 +1,84 @@
+---
+sidebar_position: 1
+title: Storyteller Characters
+description: A short sheet for anyone the players meet — three dice pools, Health, Willpower, and what they are good at.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import {
+    CreateCharacterButton,
+    TemplatePreview,
+    v5ExampleDocument,
+} from '@site/src/sheet_manager/docsEmbeds';
+
+# Storyteller Characters
+
+:::tip[In short]
+Most people in a story never need Attributes and Skills. A **Storyteller character** has three dice pools, Health and Willpower, a few things it does better than its pools say, and notes. Vampires and hunters who stand against the players keep their full sheets.
+:::
+
+## What the sheet holds
+
+- **Standard dice pools**: **Physical**, **Social**, and **Mental**, the dice the character rolls for anything in that area. A clerk might roll 2 Physical, 3 Social, 3 Mental; a soldier 5, 2, 3. Click a pool to roll it.
+- **Exceptional dice pools**: the few things the character does better than its pool says, such as Firearms 6 for a police marksman. The name suggests the V5 skills, but any name works ("Reading lips", "Swimming").
+- **Health and Willpower**: four boxes each to start; the track's own **−** and **+** set the number of boxes, from one to fifteen. Damage marks work as on a player's sheet.
+- **Disciplines and powers**: for ghouls, creatures, and anything with gifts. Names suggest the Disciplines and the hunters' Edges.
+- **Type**: mortal, ghoul, animal, supernatural, or other — a note for you, with no rules attached.
+
+## Simple foes
+
+The rules let a minor foe be just a number: a thug of **Difficulty** 3 is beaten by a roll of three successes, and hurts whoever falls short. Set the **Difficulty** on the sheet and you have a simple foe. When the foe itself has to act, the rules give it a pool of twice its Difficulty: the sheet shows that **Pool** next to the Difficulty, and **Roll 2 × Difficulty** rolls it. Most of the time you will not need it: the players roll against the Difficulty instead.
+
+## Examples
+
+Ines Ruiz is a homicide detective who notices too much.
+
+<TWWrapper>
+    <TemplatePreview
+        document={v5ExampleDocument('ines-ruiz::example')}
+        systemId="wod-v5"
+        template="v5-storyteller-brief"
+    />
+</TWWrapper>
+
+<br />
+<br />
+
+Bruno Kessel, a ghoul who drives for the Sheriff, has one dot of Potence; the yard dogs share one sheet; the thing in the pines heals anything but fire and silver by the next night. Copy any of them to start from it:
+
+<TWWrapper>
+    <div className="flex flex-wrap gap-2">
+        <CreateCharacterButton
+            systemId="wod-v5"
+            definitionId="v5-storyteller"
+            exampleId="ines-ruiz::example"
+        />
+        <CreateCharacterButton
+            systemId="wod-v5"
+            definitionId="v5-storyteller"
+            exampleId="bruno-kessel::example"
+        />
+        <CreateCharacterButton
+            systemId="wod-v5"
+            definitionId="v5-storyteller"
+            exampleId="yard-dogs::example"
+        />
+        <CreateCharacterButton
+            systemId="wod-v5"
+            definitionId="v5-storyteller"
+            exampleId="pine-thing::example"
+        />
+    </div>
+</TWWrapper>
+
+## Vampires and hunters as antagonists
+
+A vampire or a hunter who opposes the players needs their Attributes, Skills, and powers, so make them on the ordinary vampire or hunter sheet and keep the **Brief** view open during play. To run them lightly, switch off **Track Hunger and Willpower** (for a hunter, **Track Willpower**): those trackers disappear, a vampire's rolls lose their Hunger dice, and the stored values come back when you switch it on again. Sheriff Ottilie Brandt is such a vampire.
+
+<TWWrapper>
+    <CreateCharacterButton
+        systemId="wod-v5"
+        definitionId="vampire"
+        exampleId="ottilie-brandt::example"
+    />
+</TWWrapper>

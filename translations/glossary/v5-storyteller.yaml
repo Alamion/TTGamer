@@ -1,0 +1,41 @@
+# Storyteller characters and groups of the V5 rules (spec 040). Format: see v5.yaml. The pool
+# names are ordinary words elsewhere in the V5 docs, so this file covers only the Storyteller pages.
+- id: physical-pool
+  en: Physical
+  ru: Физический
+  abbr: PHY
+  ruAbbr: ФИЗ
+  note: a Storyteller character's standard dice pool (spec 040)
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.fields.physical
+- id: social-pool
+  en: Social
+  ru: Социальный
+  abbr: SOC
+  ruAbbr: СОЦ
+  note: a Storyteller character's standard dice pool (spec 040)
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.fields.social
+- id: mental-pool
+  en: Mental
+  ru: Ментальный
+  abbr: MEN
+  ruAbbr: МЕН
+  note: a Storyteller character's standard dice pool (spec 040)
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.fields.mental
+- id: standard-dice-pools
+  en: Standard dice pools
+  ru: Стандартные пулы
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.sections.pools
+- id: exceptional-dice-pools
+  en: Exceptional dice pools
+  ru: Особые пулы
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.sections.exceptional
+- id: storyteller-character
+  en: Storyteller character
+  ru: Персонаж рассказчика
+  refs:
+      - ttgamer.ui.sheet.v5.storyteller.type

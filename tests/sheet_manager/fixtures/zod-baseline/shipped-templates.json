@@ -8116,6 +8116,29 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "track-resources",
+         "type": "primitive",
+         "bindingKey": "field:track-resources",
+         "label": "Track Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+         "compact": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -8221,6 +8244,10 @@
        "title": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "docsPath": "/docs/wod-v5/rules/damage-willpower",
        "collapsible": false,
        "children": [
@@ -9022,6 +9049,14 @@
        "compact": true,
        "type": "text",
        "multiline": false
+      },
+      {
+       "id": "track-resources",
+       "type": "primitive",
+       "bindingKey": "field:track-resources",
+       "label": "Track Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+       "compact": true
       }
      ]
     },
@@ -9050,6 +9085,10 @@
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -9509,6 +9548,32 @@
        "compact": false
       }
      ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
     }
    ]
   }
@@ -9612,6 +9677,14 @@
          "multiline": false
         },
         {
+         "id": "track-resources",
+         "type": "primitive",
+         "bindingKey": "field:track-resources",
+         "label": "Track Hunger and Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+         "compact": false
+        },
+        {
          "id": "sire-field",
          "label": "Sire",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.sire",
@@ -9630,6 +9703,21 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -9762,6 +9850,10 @@
        "title": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "docsPath": "/docs/wod-v5/rules/damage-willpower",
        "collapsible": false,
        "children": [
@@ -9790,6 +9882,10 @@
          "bindingKey": "resource:hunger",
          "label": "Hunger",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
+         "visibleWhen": {
+          "coordinate": "track-resources",
+          "equals": true
+         },
          "compact": false
         },
         {
@@ -9839,7 +9935,11 @@
           }
          ],
          "always": [],
-         "type": "button"
+         "type": "button",
+         "visibleWhen": {
+          "coordinate": "track-resources",
+          "equals": true
+         }
         },
         {
          "id": "remorse",
@@ -10808,6 +10908,14 @@
        "compact": true,
        "type": "text",
        "multiline": false
+      },
+      {
+       "id": "track-resources",
+       "type": "primitive",
+       "bindingKey": "field:track-resources",
+       "label": "Track Hunger and Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+       "compact": true
       }
      ]
     },
@@ -10836,6 +10944,10 @@
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -10845,6 +10957,10 @@
        "label": "Hunger",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.hunger",
        "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       },
        "compact": true
       },
       {
@@ -10897,7 +11013,11 @@
        ],
        "always": [],
        "type": "button",
-       "column": 2
+       "column": 2,
+       "visibleWhen": {
+        "coordinate": "track-resources",
+        "equals": true
+       }
       },
       {
        "id": "remorse",
@@ -11345,6 +11465,32 @@
        "compact": false
       }
      ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
     }
    ]
   }
@@ -11407,6 +11553,20 @@
          "compact": false,
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
         }
        ]
       },
@@ -12560,6 +12720,806 @@
        "type": "primitive",
        "bindingKey": "equipment:weapons",
        "compact": false
+      }
+     ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-storyteller-sheet": {
+  "ok": true,
+  "data": {
+   "id": "v5-storyteller-sheet",
+   "name": "Storyteller character — Full sheet",
+   "systemId": "wod-v5",
+   "documentKind": "storyteller",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "storyteller",
+     "type": "section",
+     "title": "Storyteller character",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.section",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "portrait",
+       "type": "group",
+       "title": "Portrait",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+       "column": 1,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "portrait-image",
+         "label": "Portrait",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "portrait",
+         "compact": false,
+         "type": "image"
+        }
+       ]
+      },
+      {
+       "id": "identity",
+       "type": "group",
+       "title": "Identity",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+       "column": 2,
+       "hideTitle": true,
+       "collapsible": false,
+       "columns": 2,
+       "children": [
+        {
+         "id": "name-field",
+         "label": "Name",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+         "required": false,
+         "valueKey": "name",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "storyteller-type",
+         "type": "primitive",
+         "bindingKey": "field:storyteller-type",
+         "label": "Type",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
+         "compact": false
+        },
+        {
+         "id": "concept-field",
+         "label": "Concept",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+         "span": 2,
+         "required": false,
+         "valueKey": "concept",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "difficulty",
+         "type": "primitive",
+         "bindingKey": "field:difficulty",
+         "label": "Difficulty",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
+         "compact": false
+        },
+        {
+         "id": "simple-foe-roll",
+         "label": "Roll 2 × Difficulty",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
+         "icon": "dice",
+         "availableWhen": "difficulty > 0",
+         "roll": {
+          "notation": "{difficulty * 2}d10>=6",
+          "successAt": 1,
+          "gameDice": true
+         },
+         "onSuccess": [],
+         "onFailure": [],
+         "always": [],
+         "type": "button"
+        },
+        {
+         "id": "member-of-field",
+         "label": "Member of",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+         "span": 2,
+         "required": false,
+         "valueKey": "member-of",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "v5-group"
+         ],
+         "multiple": true,
+         "incoming": true
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "pools-section",
+     "type": "section",
+     "title": "Pools and condition",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.allPools",
+     "columns": 3,
+     "children": [
+      {
+       "id": "pools",
+       "type": "group",
+       "title": "Standard dice pools",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "collapsible": false,
+       "children": [
+        {
+         "id": "pool-physical",
+         "type": "primitive",
+         "bindingKey": "trait:pools:physical",
+         "label": "Physical",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
+         "compact": false
+        },
+        {
+         "id": "pool-social",
+         "type": "primitive",
+         "bindingKey": "trait:pools:social",
+         "label": "Social",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
+         "compact": false
+        },
+        {
+         "id": "pool-mental",
+         "type": "primitive",
+         "bindingKey": "trait:pools:mental",
+         "label": "Mental",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
+         "compact": false
+        },
+        {
+         "id": "health-track",
+         "type": "primitive",
+         "bindingKey": "track:health",
+         "label": "Health",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+         "compact": false
+        },
+        {
+         "id": "willpower-track",
+         "type": "primitive",
+         "bindingKey": "track:willpower",
+         "label": "Willpower",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+         "compact": false
+        }
+       ]
+      },
+      {
+       "id": "exceptional",
+       "type": "group",
+       "title": "Exceptional dice pools",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "exceptional-list",
+         "type": "list",
+         "title": "Exceptional dice pools",
+         "bindingKey": "list:exceptional",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "powers",
+       "type": "group",
+       "title": "Disciplines and powers",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "powers-list",
+         "type": "list",
+         "title": "Disciplines and powers",
+         "bindingKey": "list:powers",
+         "columns": 1
+        }
+       ]
+      },
+      {
+       "id": "notes",
+       "type": "group",
+       "title": "Special notes",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
+       "span": 3,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "notes-field",
+         "label": "Special notes",
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "notes",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-storyteller-brief": {
+  "ok": true,
+  "data": {
+   "id": "v5-storyteller-brief",
+   "name": "Storyteller character — Brief",
+   "systemId": "wod-v5",
+   "documentKind": "storyteller",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "identity",
+     "type": "group",
+     "title": "Identity",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "name-field",
+       "label": "Name",
+       "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+       "required": false,
+       "valueKey": "name",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "storyteller-type",
+       "type": "primitive",
+       "bindingKey": "field:storyteller-type",
+       "label": "Type",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
+       "compact": true
+      }
+     ]
+    },
+    {
+     "id": "concept",
+     "type": "group",
+     "title": "Concept",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "concept-field",
+       "label": "Concept",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+       "required": false,
+       "valueKey": "concept",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      }
+     ]
+    },
+    {
+     "id": "pools",
+     "type": "group",
+     "title": "Standard dice pools",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "pool-physical",
+       "type": "primitive",
+       "bindingKey": "trait:pools:physical",
+       "label": "Physical",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "pool-social",
+       "type": "primitive",
+       "bindingKey": "trait:pools:social",
+       "label": "Social",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
+       "compact": true,
+       "shortForm": true
+      },
+      {
+       "id": "pool-mental",
+       "type": "primitive",
+       "bindingKey": "trait:pools:mental",
+       "label": "Mental",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
+       "compact": true,
+       "shortForm": true
+      }
+     ]
+    },
+    {
+     "id": "condition",
+     "type": "group",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.condition",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "health-track",
+       "type": "primitive",
+       "bindingKey": "track:health",
+       "label": "Health",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+       "compact": true
+      },
+      {
+       "id": "willpower-track",
+       "type": "primitive",
+       "bindingKey": "track:willpower",
+       "label": "Willpower",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+       "compact": true
+      }
+     ]
+    },
+    {
+     "id": "exceptional",
+     "type": "group",
+     "title": "Exceptional dice pools",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "exceptional-list",
+       "type": "list",
+       "title": "Exceptional dice pools",
+       "bindingKey": "list:exceptional",
+       "columns": 1
+      }
+     ]
+    },
+    {
+     "id": "simple-foe",
+     "type": "group",
+     "title": "Simple foe",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "difficulty",
+       "type": "primitive",
+       "bindingKey": "field:difficulty",
+       "label": "Difficulty",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
+       "compact": true
+      },
+      {
+       "id": "simple-foe-roll",
+       "label": "Roll 2 × Difficulty",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.rollSimpleFoe",
+       "icon": "dice",
+       "availableWhen": "difficulty > 0",
+       "roll": {
+        "notation": "{difficulty * 2}d10>=6",
+        "successAt": 1,
+        "gameDice": true
+       },
+       "onSuccess": [],
+       "onFailure": [],
+       "always": [],
+       "type": "button"
+      }
+     ]
+    },
+    {
+     "id": "powers",
+     "type": "group",
+     "title": "Disciplines and powers",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "powers-list",
+       "type": "list",
+       "title": "Disciplines and powers",
+       "bindingKey": "list:powers",
+       "columns": 1
+      }
+     ]
+    },
+    {
+     "id": "notes",
+     "type": "group",
+     "title": "Special notes",
+     "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "notes-field",
+       "label": "Special notes",
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.notes",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "notes",
+       "compact": false,
+       "type": "text",
+       "multiline": true
+      }
+     ]
+    },
+    {
+     "id": "member-of",
+     "type": "group",
+     "title": "Member of",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "member-of-field",
+       "label": "Member of",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "member-of",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "v5-group"
+       ],
+       "multiple": true,
+       "incoming": true
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-group-sheet": {
+  "ok": true,
+  "data": {
+   "id": "v5-group-sheet",
+   "name": "Group — Full sheet",
+   "systemId": "wod-v5",
+   "documentKind": "v5-group",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "group",
+     "type": "section",
+     "title": "Group",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.section",
+     "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
+     "children": [
+      {
+       "id": "portrait",
+       "type": "group",
+       "title": "Portrait",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "portrait-image",
+         "label": "Portrait",
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "portrait",
+         "compact": false,
+         "type": "image"
+        }
+       ]
+      },
+      {
+       "id": "identity",
+       "type": "group",
+       "title": "Identity",
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+       "hideTitle": true,
+       "collapsible": false,
+       "children": [
+        {
+         "id": "name-field",
+         "label": "Name",
+         "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+         "required": false,
+         "valueKey": "name",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "group-kind-field",
+         "label": "Kind of group",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
+         "required": false,
+         "valueKey": "group-kind",
+         "compact": false,
+         "type": "text",
+         "multiline": false
+        },
+        {
+         "id": "threat-field",
+         "label": "Threat",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+         "required": false,
+         "valueKey": "threat",
+         "compact": false,
+         "type": "rating",
+         "min": 0,
+         "max": 5,
+         "presentation": "dots"
+        }
+       ]
+      },
+      {
+       "id": "members",
+       "type": "group",
+       "title": "Members",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+       "span": 2,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "members-field",
+         "label": "Members",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+         "hideLabel": true,
+         "required": false,
+         "valueKey": "members",
+         "compact": false,
+         "type": "reference",
+         "targetKinds": [
+          "mortal",
+          "storyteller",
+          "character",
+          "vampire",
+          "v5-group"
+         ],
+         "multiple": true
+        }
+       ]
+      },
+      {
+       "id": "about-group",
+       "type": "group",
+       "title": "Description",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
+       "span": 2,
+       "collapsible": true,
+       "columns": 2,
+       "children": [
+        {
+         "id": "group-about-field",
+         "label": "Description",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.about",
+         "required": false,
+         "valueKey": "group-about",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-goals-field",
+         "label": "Goals",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+         "required": false,
+         "valueKey": "group-goals",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-resources-field",
+         "label": "Resources and holdings",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+         "required": false,
+         "valueKey": "group-resources",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        },
+        {
+         "id": "group-notes-field",
+         "label": "Notes",
+         "labelMessage": "ttgamer.ui.sheet.v5.group.fields.notes",
+         "required": false,
+         "valueKey": "group-notes",
+         "compact": false,
+         "type": "text",
+         "multiline": true
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "wod-v5/v5-group-brief": {
+  "ok": true,
+  "data": {
+   "id": "v5-group-brief",
+   "name": "Group — Brief",
+   "systemId": "wod-v5",
+   "documentKind": "v5-group",
+   "schemaVersion": 3,
+   "children": [
+    {
+     "id": "identity",
+     "type": "group",
+     "title": "Identity",
+     "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
+     "hideTitle": true,
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "name-field",
+       "label": "Name",
+       "labelMessage": "ttgamer.ui.sheet.v5.fields.name",
+       "required": false,
+       "valueKey": "name",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "group-kind-field",
+       "label": "Kind of group",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.kind",
+       "required": false,
+       "valueKey": "group-kind",
+       "compact": true,
+       "type": "text",
+       "multiline": false
+      },
+      {
+       "id": "threat-field",
+       "label": "Threat",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+       "required": false,
+       "valueKey": "threat",
+       "compact": true,
+       "type": "rating",
+       "min": 0,
+       "max": 5,
+       "presentation": "dots"
+      }
+     ]
+    },
+    {
+     "id": "members",
+     "type": "group",
+     "title": "Members",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+     "collapsible": false,
+     "layout": "area",
+     "children": [
+      {
+       "id": "members-field",
+       "label": "Members",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "members",
+       "compact": true,
+       "type": "reference",
+       "targetKinds": [
+        "mortal",
+        "storyteller",
+        "character",
+        "vampire",
+        "v5-group"
+       ],
+       "multiple": true
+      }
+     ]
+    },
+    {
+     "id": "goals",
+     "type": "group",
+     "title": "Goals",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "group-goals-field",
+       "label": "Goals",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.goals",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "group-goals",
+       "compact": false,
+       "type": "text",
+       "multiline": true
+      }
+     ]
+    },
+    {
+     "id": "resources",
+     "type": "group",
+     "title": "Resources and holdings",
+     "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+     "collapsible": true,
+     "defaultCollapsed": true,
+     "layout": "area",
+     "children": [
+      {
+       "id": "group-resources-field",
+       "label": "Resources and holdings",
+       "labelMessage": "ttgamer.ui.sheet.v5.group.fields.resources",
+       "hideLabel": true,
+       "required": false,
+       "valueKey": "group-resources",
+       "compact": false,
+       "type": "text",
+       "multiline": true
       }
      ]
     }

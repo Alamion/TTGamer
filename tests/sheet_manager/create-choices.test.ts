@@ -50,6 +50,8 @@ describe('create choices from the library tree (spec 039, D1)', () => {
             'star-wars-wod/vehicle',
             'star-wars-wod/fodder-group',
             'wod-v5/v5-character',
+            'wod-v5/v5-storyteller',
+            'wod-v5/v5-group',
             'wod-v5/hunter',
             'wod-v5/vampire',
         ]);
@@ -57,9 +59,9 @@ describe('create choices from the library tree (spec 039, D1)', () => {
 
     it('collapses one-kind settings and names the setting beside the kind', () => {
         const v5 = choices()[1]!;
-        expect(v5.sections.map(({ name }) => name)).toEqual([undefined, undefined, undefined]);
-        const [mortal, hunter, vampire] = v5.sections.map(({ choices: [choice] }) => choice!);
-        expect(mortal.context).toBeUndefined();
+        // The rules' own kinds (mortal, Storyteller character) keep their heading.
+        expect(v5.sections.map(({ name }) => name)).toEqual(['Rules only', undefined, undefined]);
+        const [, hunter, vampire] = v5.sections.map(({ choices: [choice] }) => choice!);
         expect(hunter.name).toBe('Character');
         expect(hunter.context).toBe('Hunter: the Reckoning 5e');
         expect(vampire.context).toBe('Vampire: the Masquerade 5e');
@@ -73,6 +75,8 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         const lunar = v5.sections.find(({ name }) => name === 'Lunar Colony')!;
         expect(lunar.choices.map(({ key }) => key)).toEqual([
             `wod-v5/v5-character/${LUNAR_ID}`,
+            `wod-v5/v5-storyteller/${LUNAR_ID}`,
+            `wod-v5/v5-group/${LUNAR_ID}`,
             `wod-v5/${userKindId(1)}/${LUNAR_ID}`,
             `wod-v5/${userKindId(2)}/${LUNAR_ID}`,
         ]);
@@ -97,6 +101,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         const byKey = new Map(listChoices(choices()).map((choice) => [choice.key, choice]));
         expect(byKey.get('wod-v5/vampire')!.examples.map(({ id }) => id)).toEqual([
             'mirela-voss::example',
+            'ottilie-brandt::example',
         ]);
         expect(byKey.get('star-wars-wod/vehicle')!.examples).toHaveLength(3);
         expect(byKey.get('star-wars-wod/droid')!.examples).toEqual([]);
@@ -107,7 +112,11 @@ describe('search (D2)', () => {
     it('matches the kind, setting, and ruleset names, ignoring case and accents', () => {
         expect(keys('vamp')).toEqual(['wod-v5/vampire']);
         expect(keys('DROID')).toEqual(['star-wars-wod/droid']);
-        expect(keys('5th character')).toEqual(['wod-v5/hunter', 'wod-v5/vampire']);
+        expect(keys('5th character')).toEqual([
+            'wod-v5/v5-storyteller',
+            'wod-v5/hunter',
+            'wod-v5/vampire',
+        ]);
         expect(keys('nothing like this')).toEqual([]);
     });
 

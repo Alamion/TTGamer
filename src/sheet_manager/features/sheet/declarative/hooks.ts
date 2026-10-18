@@ -1,5 +1,5 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
@@ -41,6 +41,7 @@ import {
 } from '../data/catalogBindings';
 import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
 import { useBoundDocument } from './boundDocument';
+import { DocumentLinkContext } from './documentLinks';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import {
     evaluateFormula,
@@ -382,10 +383,18 @@ export function useTemplatePage(
     const userTypes = useDocumentTypeStore((state) => state.types);
     const userSettings = useDocumentTypeStore((state) => state.settings);
     const referenceScope = useMemo(
-        () => (template ? referenceScopeOf(systemRegistry, template) : undefined),
+        () =>
+            template
+                ? referenceScopeOf(systemRegistry, {
+                      ...template,
+                      // A shared page shown for a document of a user setting (a core kind without
+                      // a page of its own) links within that setting (spec 040).
+                      settingId: template.settingId ?? document?.metadata.settingId,
+                  })
+                : undefined,
         // userTypes, userSettings: the scope reads the registry overlay, which follows the store.
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [template, userTypes, userSettings]
+        [template, document?.metadata.settingId, userTypes, userSettings]
     );
     const documentOptions = useMemo<DocumentOption[]>(
         () =>
@@ -440,12 +449,14 @@ export function useTemplatePage(
     );
 
     const previewSource = source.preview;
+    const followLink = useContext(DocumentLinkContext);
     const openDocument = useCallback(
         (documentId: string) => {
             if (previewSource) return;
-            setCurrentDocument(documentId);
+            if (followLink) followLink(documentId);
+            else setCurrentDocument(documentId);
         },
-        [previewSource, setCurrentDocument]
+        [previewSource, setCurrentDocument, followLink]
     );
 
     // -- Formula engine (feature 006): unified coordinate space, memoized per render pass. --

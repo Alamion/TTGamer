@@ -9,6 +9,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
+import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -19,7 +20,9 @@ import {
     portraitGroup,
     skillsSection,
     touchstonesGroup,
+    tracked,
     trackGroup,
+    trackResourcesToggle,
     v5Text,
 } from '../../../ruleset/templateParts';
 import {
@@ -61,11 +64,13 @@ export function vampireIdentityGroup(options: { compact?: boolean; column?: numb
                 compact,
             }),
             v5Text('predator-type', 'predator-type', vampire.fields.predatorType, { compact }),
+            trackResourcesToggle(vampire.fields.trackResources, compact),
             ...(compact
                 ? []
                 : [
                       v5Text('sire', 'sire', vampire.fields.sire),
                       v5Text('chronicle', 'chronicle', vampire.fields.chronicle),
+                      { ...memberOfField(), span: 2 },
                   ]),
         ],
         {
@@ -103,11 +108,13 @@ export function vampireBloodGroup(options: { compact?: boolean; column?: number 
         'blood',
         vampire.sections.blood.message,
         [
-            primitive('hunger', 'resource:hunger', {
-                label: vampire.fields.hunger.message,
-                labelMessage: vampire.fields.hunger,
-                compact,
-            }),
+            tracked(
+                primitive('hunger', 'resource:hunger', {
+                    label: vampire.fields.hunger.message,
+                    labelMessage: vampire.fields.hunger,
+                    compact,
+                })
+            ),
             primitive('blood-potency', 'resource:blood-potency', {
                 label: vampire.fields.bloodPotency.message,
                 labelMessage: vampire.fields.bloodPotency,
@@ -119,7 +126,7 @@ export function vampireBloodGroup(options: { compact?: boolean; column?: number 
                 compact,
                 poolTracker: humanityTracker(compact),
             }),
-            rouseButton(),
+            tracked(rouseButton()),
             remorseButton(),
         ],
         {
@@ -153,7 +160,7 @@ function vampireConditionSection(): SectionNode {
         undefined,
         [
             trackGroup('health', { column: 1 }),
-            trackGroup('willpower', { column: 2 }),
+            tracked(trackGroup('willpower', { column: 2 })),
             vampireBloodGroup({ column: 3 }),
             bloodPotencyGroup(3),
         ],

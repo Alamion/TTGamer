@@ -136,6 +136,7 @@ editor:
     referenceKindUnavailable: '{type} (unavailable)'
     referenceKindOwn: '{type} (yours)'
     multiple: Allow multiple values
+    incoming: Show the documents that link here
     hideUnselected: Hide unselected options
     moveUp: Move up
     moveDown: Move down
@@ -643,6 +644,9 @@ reference:
     open: Open {title}
     missing: Linked document no longer exists
     outOfScope: outside this setting
+    noneLinking: No document links here yet.
+    loadingLinks: Looking for links…
+    truncated: 'Only the first {count} are listed.'
 entities:
     identification: Identification
     details: Details

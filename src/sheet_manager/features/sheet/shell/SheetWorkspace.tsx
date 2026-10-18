@@ -21,6 +21,7 @@ import {
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { DocumentLinkContext } from '../declarative/documentLinks';
 import { FloatingTabs } from '../panes/FloatingTabs';
 import { openKeys } from '../panes/layoutTree';
 import { PaneArea } from '../panes/PaneArea';
@@ -28,6 +29,7 @@ import { openTool, usePaneStore } from '../panes/paneStore';
 import { registerSheetTools } from '../panes/sheetTools';
 import { documentIdOf, tabKindOf } from '../panes/tabKeys';
 import { exportFileName, serializeDocumentExport } from './documentFile';
+import { useDocumentHistory } from './documentHistory';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
 import { type BadgePlace, PolicyBadges } from './PolicyNotice';
@@ -50,6 +52,8 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         updateDocumentMetadata,
     } = useDocumentStore();
     const { templates } = useTemplateStore();
+    // Following a link leaves a history entry: browser Back returns to the document (T-057).
+    const followLink = useDocumentHistory();
     // The registry lists installed user types; subscribing re-renders when they change.
     useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
@@ -212,7 +216,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     };
 
     return (
-        <>
+        <DocumentLinkContext.Provider value={followLink}>
             <div className="bg-bgSurface p-4">
                 <SheetToolbar
                     hasDocument={Boolean(currentDocument)}
@@ -307,6 +311,6 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                     titleOf={(key) => tabKindOf(key)?.title() ?? key}
                 />
             )}
-        </>
+        </DocumentLinkContext.Provider>
     );
 }

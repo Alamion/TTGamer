@@ -30,6 +30,32 @@ export type {
     CatalogFillKind,
 } from '../../../systems';
 
+type MessageNamed = CatalogLike & { nameMessage?: { id: string; message: string } };
+
+/**
+ * Entries named by a UI message (`nameMessage`, e.g. the V5 skills) read their name in the
+ * reader's language; other catalogs keep their generated catalog translations.
+ */
+function withMessageNames(catalog: CatalogBindingEntry): CatalogBindingEntry {
+    const named = catalog.entries as readonly MessageNamed[];
+    if (!named.some((entry) => entry.nameMessage)) return catalog;
+    const name = (entry: CatalogLike, lang: string) => {
+        const message = (entry as MessageNamed).nameMessage;
+        return message && lang !== 'en' ? translate(message) : entry.name;
+    };
+    return {
+        ...catalog,
+        entryText: (entry, key, lang) =>
+            key === 'name' ? name(entry, lang) : catalog.entryText(entry, key, lang),
+        entryLabel: name,
+        pickLabel: (entry, lang) => {
+            const localized = name(entry, lang);
+            return localized !== entry.name ? `${localized} (${entry.name})` : entry.name;
+        },
+        pickSearchText: (entry, lang) => `${name(entry, lang)} ${entry.name}`,
+    };
+}
+
 /** Every catalog declared by the given plugins; a catalog id declared twice is a build error. */
 export function collectPluginCatalogs(
     plugins: readonly Pick<SystemPlugin, 'id' | 'catalogs'>[]
@@ -45,7 +71,7 @@ export function collectPluginCatalogs(
                 );
             }
             owners.set(catalog.catalogId, plugin.id);
-            catalogs.set(catalog.catalogId, catalog);
+            catalogs.set(catalog.catalogId, withMessageNames(catalog));
         }
     }
     return catalogs;

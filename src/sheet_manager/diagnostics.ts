@@ -57,6 +57,8 @@ export type SheetIssueCode =
     | 'create-recent-missing'
     /** A documentation create button names a kind or an example that is not installed. */
     | 'create-kind-unavailable'
+    /** More documents may link to a document than one "linked from" lookup reads (spec 040). */
+    | 'linked-from-truncated'
     | 'document-boot-failed'
     /** The stored arrangement of panes is not readable; the current document shows alone (spec 034). */
     | 'pane-arrangement-invalid'

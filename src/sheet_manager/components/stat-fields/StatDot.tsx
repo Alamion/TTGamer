@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { X } from 'lucide-react';
 import { type ReactNode, useCallback } from 'react';
@@ -15,6 +16,8 @@ import {
 interface StatDotProps {
     value: number;
     maxValue?: number;
+    /** `number`: a number field in place of the dots, for values too large for a row of dots. */
+    presentation?: 'dots' | 'number';
     onChange?: (
         value: number,
         specialization: boolean | null,
@@ -78,6 +81,7 @@ export function StatDot({
     statLabel,
     characterName,
     dotLabel,
+    presentation = 'dots',
 }: StatDotProps) {
     const visibleFlags = flags
         ? RATING_FLAGS.filter((flag) => flags.includes(flag))
@@ -87,6 +91,7 @@ export function StatDot({
     const hasFlags = visibleFlags.length > 0;
     const flagValues = { specialization, experienced, practiced };
     const removable = Boolean(onRemove || removeSlot);
+    const number = presentation === 'number';
 
     const handleClick = useCallback(
         (index: number) => {
@@ -115,12 +120,16 @@ export function StatDot({
 
     return (
         <div
-            className="flex min-w-0 flex-col items-center gap-1"
-            role="radiogroup"
+            className={clsx(
+                'flex min-w-0 items-center gap-1',
+                // A number sits in one line with its die and remove control; dots get a row above.
+                number ? 'flex-row' : 'flex-col'
+            )}
+            role={number ? 'group' : 'radiogroup'}
             aria-label={translate(uiMessages.sheet.controls.statDot.group)}
         >
             {(hasFlags || removable || onDiceRoll) && (
-                <div className="flex w-full">
+                <div className={number ? 'contents' : 'flex w-full'}>
                     {onDiceRoll ? (
                         <StatDiceButton
                             onDiceRoll={onDiceRoll}
@@ -161,7 +170,9 @@ export function StatDot({
                         </div>
                     )}
                     {removeSlot ? (
-                        <div className="ml-auto flex">{removeSlot}</div>
+                        <div className={clsx('ml-auto flex', number && 'order-last')}>
+                            {removeSlot}
+                        </div>
                     ) : onRemove ? (
                         <button
                             type="button"
@@ -169,6 +180,7 @@ export function StatDot({
                             disabled={disabled}
                             className={clsx(
                                 'ml-auto rounded-sm font-bold transition-all duration-200 flex items-center justify-center',
+                                number && 'order-last',
                                 statFlagSizeClasses[size],
                                 // Destructive at rest, unmistakable under pointer or keyboard focus.
                                 'text-error opacity-50 hover:opacity-100 focus-visible:opacity-100',
@@ -185,45 +197,61 @@ export function StatDot({
                     ) : null}
                 </div>
             )}
+            {number ? (
+                <NumberInput
+                    value={value}
+                    min={minimal ?? 0}
+                    max={maxValue}
+                    step={1}
+                    label={statLabel ?? translate(uiMessages.sheet.controls.statDot.group)}
+                    disabled={disabled}
+                    onChange={(next) =>
+                        onChange?.(next ?? minimal ?? 0, specialization, experienced, practiced)
+                    }
+                    className="w-14 rounded-sm border border-border bg-bgSurface px-2 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-50"
+                />
+            ) : null}
             {/* Each dot's button spans its half of the gaps on both sides, so the row has no
                 dead space; the negative margin keeps the old outer width. Too many dots for
                 the row narrow into pills instead of wrapping. */}
-            <div className="flex max-w-full -mx-0.5">
-                {Array.from({ length: maxValue }, (_, i) => {
-                    const isActive = i + 1 <= value;
-                    const isMinimal = minimal !== undefined && i + 1 <= minimal;
-                    return (
-                        <button
-                            key={i}
-                            type="button"
-                            role="radio"
-                            aria-checked={i + 1 === value}
-                            aria-label={dotLabel?.(i + 1)}
-                            disabled={disabled}
-                            onClick={() => handleClick(i)}
-                            className={clsx(
-                                'group/dot flex min-w-0 shrink items-center px-0.5',
-                                disabled && 'cursor-not-allowed'
-                            )}
-                        >
-                            <span
+            {!number && (
+                <div className="flex max-w-full -mx-0.5">
+                    {Array.from({ length: maxValue }, (_, i) => {
+                        const isActive = i + 1 <= value;
+                        const isMinimal = minimal !== undefined && i + 1 <= minimal;
+                        return (
+                            <button
+                                key={i}
+                                type="button"
+                                role="radio"
+                                aria-checked={i + 1 === value}
+                                aria-label={dotLabel?.(i + 1)}
+                                disabled={disabled}
+                                onClick={() => handleClick(i)}
                                 className={clsx(
-                                    'block max-w-full rounded-full transition-all duration-200 border-2',
-                                    dotSizeClasses[size],
-                                    isActive
-                                        ? isMinimal
-                                            ? 'bg-primary-darker border-primary-darker'
-                                            : activeColor
-                                              ? `${activeColor.bg} ${activeColor.border}`
-                                              : 'bg-primary border-primary'
-                                        : 'bg-transparent border-border group-hover/dot:border-primary/80',
-                                    disabled && 'opacity-50'
+                                    'group/dot flex min-w-0 shrink items-center px-0.5',
+                                    disabled && 'cursor-not-allowed'
                                 )}
-                            />
-                        </button>
-                    );
-                })}
-            </div>
+                            >
+                                <span
+                                    className={clsx(
+                                        'block max-w-full rounded-full transition-all duration-200 border-2',
+                                        dotSizeClasses[size],
+                                        isActive
+                                            ? isMinimal
+                                                ? 'bg-primary-darker border-primary-darker'
+                                                : activeColor
+                                                  ? `${activeColor.bg} ${activeColor.border}`
+                                                  : 'bg-primary border-primary'
+                                            : 'bg-transparent border-border group-hover/dot:border-primary/80',
+                                        disabled && 'opacity-50'
+                                    )}
+                                />
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

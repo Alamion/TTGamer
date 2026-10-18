@@ -52,6 +52,7 @@ override) so prose and page stay in sync:
   `systems/star-wars-wod/examples.ts`, values taken from page prose: `wampa`, `stormtrooper-squad`,
   `red-five`, `lukes-landspeeder`, `millennium-falcon`), and the `JAX_VORN_PRESET` re-export,
   `hunterExampleDocument()` (Lena Varga), `vampireExampleDocument()` (Mirela Voss),
+  `v5ExampleDocument(id)` (any V5 example: the Storyteller characters and groups of spec 040),
   `PolicyStatement` (full policy statement, used only on the policy's own docs page; embeds show no
   notice), `CatalogSummaryTable` (catalog names with `summary` descriptors or a lazy `summary` text,
   optional `groupBy` and child catalog), and `CreateCharacterButton` (optional `exampleId`; the

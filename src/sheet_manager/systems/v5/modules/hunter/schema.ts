@@ -80,6 +80,8 @@ export const HunterModuleShape = {
     /** Cell values: each hunter keeps a copy until cells exist as documents. */
     desperation: cellRating,
     danger: cellRating,
+    /** Off for an antagonist the Storyteller runs lightly: Willpower is not tracked (spec 040). */
+    trackResources: z.boolean().default(true),
 };
 
 const HunterObjectSchema = z.object({ ...V5CoreShape, ...HunterModuleShape });

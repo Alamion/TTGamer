@@ -136,6 +136,7 @@ editor:
     referenceKindUnavailable: '{type} (недоступен)'
     referenceKindOwn: '{type} (ваш)'
     multiple: Несколько значений
+    incoming: Показывать документы, которые ссылаются сюда
     hideUnselected: Скрывать невыбранные варианты
     moveUp: Переместить выше
     moveDown: Переместить ниже
@@ -643,6 +644,9 @@ reference:
     open: Открыть «{title}»
     missing: Связанный документ больше не существует
     outOfScope: вне этого сеттинга
+    noneLinking: Сюда пока не ссылается ни один документ.
+    loadingLinks: Ищем ссылки…
+    truncated: 'Показаны только первые {count}.'
 entities:
     identification: Идентификация
     details: Подробности

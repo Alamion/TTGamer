@@ -7,6 +7,9 @@ import { createContext } from 'react';
  */
 export const AreaLayoutContext = createContext(false);
 
+/** Whether the node is drawn inside a group in the brief look (`layout: 'area'`, spec 033). */
+export const BriefGroupContext = createContext(false);
+
 /** The window breakpoint classes the sheet uses for columns, and their area counterparts. */
 const BY_AREA: Readonly<Record<string, string>> = {
     'md:grid-cols-2': '@3xl/brief:grid-cols-2',

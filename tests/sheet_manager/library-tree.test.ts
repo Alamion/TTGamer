@@ -63,9 +63,11 @@ describe('library tree (spec 013)', () => {
         const ashen = findNode(tree, `s:user:${ASHEN_ID}`)!.node as { types: TypeNode[] };
         expect(ashen.types.map(({ key }) => key)).toEqual([
             `t:core:${ASHEN_ID}:v5-character`,
+            `t:core:${ASHEN_ID}:v5-storyteller`,
+            `t:core:${ASHEN_ID}:v5-group`,
             `t:user:${CULT_ID}`,
         ]);
-        const [mortal, cult] = ashen.types;
+        const [mortal, , , cult] = ashen.types;
         expect(mortal).toMatchObject({ ownership: 'shipped', documentCount: 3 });
         expect(mortal!.pages.map(({ key }) => key)).toEqual([`p:user:${ASHEN_MORTAL_PAGE_ID}`]);
         expect(mortal!.pages[0]!.isDefault).toBe(true);

@@ -11,6 +11,8 @@ import { StatDot } from './StatDot.tsx';
 import { StatLabel } from './StatLabel.tsx';
 
 interface TraitRowProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     label: string;
     /** Book term of the label (spec 009). */
     term?: TermLink;
@@ -41,6 +43,7 @@ interface TraitRowProps {
 }
 
 export function TraitRow({
+    presentation,
     label,
     term,
     value,
@@ -62,6 +65,7 @@ export function TraitRow({
         <div className={clsx('term-row flex items-end justify-between gap-2 py-1', className)}>
             <StatLabel label={label} tooltip={tooltip} term={term} />
             <StatDot
+                presentation={presentation}
                 value={value}
                 maxValue={maxValue}
                 onChange={onChange}
@@ -81,6 +85,8 @@ export function TraitRow({
 }
 
 interface TraitRowWithInputProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     name: string;
     /** Book term of the label (spec 009). */
     term?: TermLink;
@@ -113,6 +119,7 @@ interface TraitRowWithInputProps {
 }
 
 export function TraitRowWithInput({
+    presentation,
     name,
     term,
     specializationText = '',
@@ -160,6 +167,7 @@ export function TraitRowWithInput({
                     )}
                 />
                 <StatDot
+                    presentation={presentation}
                     value={value}
                     maxValue={maxValue}
                     onChange={onChange}
@@ -180,6 +188,8 @@ export function TraitRowWithInput({
 }
 
 interface CustomTraitListProps {
+    /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
+    presentation?: 'dots' | 'number';
     items: Array<{
         id: string;
         label: string;
@@ -216,6 +226,8 @@ interface CustomTraitListProps {
     columns?: 1 | 2 | 3 | 4;
     /** Moves the row at `from` to `to` (spec 022); without it the rows have no order controls. */
     onMove?: (from: number, to: number) => void;
+    /** Brief look: tight rows without order controls (the full sheet keeps them). */
+    compact?: boolean;
 }
 
 const traitListColumns = {
@@ -226,6 +238,7 @@ const traitListColumns = {
 };
 
 export function CustomTraitList({
+    presentation,
     items,
     onAdd,
     onRemove,
@@ -242,8 +255,13 @@ export function CustomTraitList({
     characterName,
     columns = 1,
     onMove,
+    compact = false,
 }: CustomTraitListProps) {
-    const movable = onMove !== undefined && !disabled && items.length > 1;
+    const movable = onMove !== undefined && !compact && !disabled && items.length > 1;
+    const nameClasses = clsx(
+        'min-w-0 flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors',
+        compact ? 'py-0' : 'py-0.5'
+    );
     return (
         <div
             data-reorder-list=""
@@ -263,7 +281,10 @@ export function CustomTraitList({
                             ? rowMoveKeys(index, items.length, (to) => onMove(index, to))
                             : undefined
                     }
-                    className="flex items-end gap-2 py-1 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                    className={clsx(
+                        'flex gap-2 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]',
+                        compact ? 'items-center py-0' : 'items-end py-1'
+                    )}
                 >
                     {movable && (
                         <RowMoveControls
@@ -281,7 +302,7 @@ export function CustomTraitList({
                             onSelect={(entry) => onCatalogSelect(item.id, entry)}
                             placeholder={placeholder}
                             disabled={disabled}
-                            className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
+                            className={nameClasses}
                         />
                     ) : (
                         <input
@@ -289,16 +310,17 @@ export function CustomTraitList({
                             value={item.label}
                             onChange={(e) => onLabelChange(item.id, item.value, e.target.value)}
                             disabled={disabled}
-                            className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
+                            className={nameClasses}
                             placeholder={placeholder}
                         />
                     )}
                     <StatDot
+                        presentation={presentation}
                         value={item.value}
                         maxValue={maxValue}
                         onChange={(val, spec, exp, prc) => onChange(item.id, val, spec, exp, prc)}
                         disabled={disabled}
-                        size={size}
+                        size={compact ? 'sm' : size}
                         showFlags={showFlags}
                         specialization={item.specialization}
                         experienced={item.experienced}
@@ -318,7 +340,10 @@ export function CustomTraitList({
                 type="button"
                 onClick={onAdd}
                 disabled={disabled}
-                className="flex items-center gap-1 text-sm text-textPrimary hover:text-textPrimary/80 transition-colors py-1"
+                className={clsx(
+                    'flex items-center gap-1 text-sm text-textPrimary hover:text-textPrimary/80 transition-colors',
+                    compact ? 'py-0.5' : 'py-1'
+                )}
             >
                 <Plus className="w-4 h-4" />
                 {translate(uiMessages.sheet.controls.add)}

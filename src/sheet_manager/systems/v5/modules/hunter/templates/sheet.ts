@@ -8,6 +8,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
+import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
     attributesSection,
@@ -18,7 +19,9 @@ import {
     portraitGroup,
     skillsSection,
     touchstonesGroup,
+    tracked,
     trackGroup,
+    trackResourcesToggle,
     v5Text,
 } from '../../../ruleset/templateParts';
 
@@ -52,6 +55,8 @@ export function hunterIdentityGroup(options: { compact?: boolean; column?: numbe
             v5Text('concept', 'concept', hunter.fields.concept, { compact }),
             v5Text('creed', 'creed', hunter.fields.creed, { compact }),
             v5Text('drive', 'drive', hunter.fields.drive, { compact }),
+            trackResourcesToggle(hunter.fields.trackResources, compact),
+            ...(compact ? [] : [{ ...memberOfField(), span: 2 }]),
         ],
         {
             ...(options.column ? { column: options.column } : {}),
@@ -112,7 +117,7 @@ export function hunterConditionSection(): SectionNode {
         undefined,
         [
             trackGroup('health', { column: 1 }),
-            trackGroup('willpower', { column: 2 }),
+            tracked(trackGroup('willpower', { column: 2 })),
             hunterCellGroup({ column: 3 }),
         ],
         { columns: 3, labelMessage: v5.sections.condition }

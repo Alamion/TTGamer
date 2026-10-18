@@ -106,6 +106,12 @@ export function valueSettings({
                         }
                     />
                     <ToggleRow
+                        checked={field.incoming === true}
+                        label={settingLabel('incoming')}
+                        setting={key('incoming')}
+                        onChange={(checked) => update({ incoming: checked ? true : undefined })}
+                    />
+                    <ToggleRow
                         checked={field.multiple}
                         label={settingLabel('multiple')}
                         setting={key('multiple')}
