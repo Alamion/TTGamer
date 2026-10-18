@@ -86,12 +86,12 @@ apart from Force, and bind every value they bound before.
 
 **Check**: the vampire full sheet passes; the predator grants show under the predator type.
 
-- [ ] T016 [US3] Tests first: remove `v5-vampire-sheet` from `KNOWN_EXCEPTIONS`; add the vampire to
+- [x] T016 [US3] Tests first: remove `v5-vampire-sheet` from `KNOWN_EXCEPTIONS`; add the vampire to
       the binding check
-- [ ] T017 [US3] `src/sheet_manager/systems/v5/modules/vampire/templates/sheet.ts`: the predator
+- [x] T017 [US3] `src/sheet_manager/systems/v5/modules/vampire/templates/sheet.ts`: the predator
       grants field joins the Identity card right after the predator type field; the `predator` card
       goes; regenerate the zod-baseline snapshot (diff: `v5-vampire-sheet` only)
-- [ ] T018 [US3] Run the targeted tests (vampire, composition, zod-baseline) and commit the story
+- [x] T018 [US3] Run the targeted tests (vampire, composition, zod-baseline) and commit the story
 
 ## User Story 4 - The rule holds for every shipped full sheet (P3)
 

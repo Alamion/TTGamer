@@ -8,6 +8,7 @@ import {
     type RowButton,
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
+    type TemplateField,
 } from '../../../../../types/template';
 import { memberOfField } from '../../../core/group';
 import {
@@ -64,6 +65,8 @@ export function vampireIdentityGroup(options: { compact?: boolean; column?: numb
                 compact,
             }),
             v5Text('predator-type', 'predator-type', vampire.fields.predatorType, { compact }),
+            // What the type gives, under it, labelled (spec 042: no one-field card of its own).
+            ...(compact ? [] : [{ ...predatorGrants(), span: 2 }]),
             trackResourcesToggle(vampire.fields.trackResources, compact),
             ...(compact
                 ? []
@@ -82,21 +85,18 @@ export function vampireIdentityGroup(options: { compact?: boolean; column?: numb
     );
 }
 
+function predatorGrants(): TemplateField {
+    const { hideLabel: _hidden, ...field } = predatorGrantsField();
+    void _hidden;
+    return field;
+}
+
 function vampireSection(): SectionNode {
     return section(
         'vampire',
         vampire.sections.vampire.message,
         undefined,
-        [
-            portraitGroup(1),
-            vampireIdentityGroup({ column: 2 }),
-            group('predator', vampire.fields.predatorGrants.message, [predatorGrantsField()], {
-                column: 2,
-                collapsible: true,
-                labelMessage: vampire.fields.predatorGrants,
-            }),
-            biographyGroup(2),
-        ],
+        [portraitGroup(1), vampireIdentityGroup({ column: 2 }), biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.vampire }
     );
 }

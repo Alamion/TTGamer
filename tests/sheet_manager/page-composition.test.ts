@@ -21,9 +21,7 @@ const SMALL_CARDS = new Set(['portrait', 'base-portrait']);
  * Shipped full sheets that broke the rule when it was written down (T-126): each names what is
  * wrong, so a fix shows up as a failing exception to remove.
  */
-const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {
-    'v5-vampire-sheet': ['card predator=1'],
-};
+const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {};
 
 function growing(node: TemplateNode): boolean {
     switch (node.type) {

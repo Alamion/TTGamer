@@ -8811,6 +8811,22 @@
          "multiline": false
         },
         {
+         "id": "predator-grants-field",
+         "label": "What the predator type gives",
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorGrants",
+         "span": 2,
+         "required": false,
+         "valueKey": "predator-grants",
+         "type": "text",
+         "fromCatalog": {
+          "catalogId": "v5-vampire-predator-types",
+          "entryFrom": "predator-type",
+          "text": "grants",
+          "mode": "show"
+         },
+         "multiline": false
+        },
+        {
          "id": "track-resources",
          "type": "primitive",
          "bindingKey": "field:track-resources",
@@ -8848,32 +8864,6 @@
          ],
          "multiple": true,
          "incoming": true
-        }
-       ]
-      },
-      {
-       "id": "predator",
-       "type": "group",
-       "title": "What the predator type gives",
-       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorGrants",
-       "column": 2,
-       "collapsible": true,
-       "children": [
-        {
-         "id": "predator-grants-field",
-         "label": "What the predator type gives",
-         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorGrants",
-         "hideLabel": true,
-         "required": false,
-         "valueKey": "predator-grants",
-         "type": "text",
-         "fromCatalog": {
-          "catalogId": "v5-vampire-predator-types",
-          "entryFrom": "predator-type",
-          "text": "grants",
-          "mode": "show"
-         },
-         "multiline": false
         }
        ]
       },
