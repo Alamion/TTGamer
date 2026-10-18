@@ -145,9 +145,9 @@ then by touch, without horizontal scrolling.
 
 ### User Story 5 - Create buttons in the documentation (Priority: P3)
 
-A create button in the documentation names what it makes ("New vampire", "Copy Mirela Voss") and,
-after creating, says that the document was created with a link that opens it on the sheet. A button
-for an example creates a copy as in story 3.
+A create button in the documentation names what it makes ("New: Vampire character", "Copy Mirela
+Voss") and, after creating, says that the document was created with a link that opens it on the
+sheet. A button for an example creates a copy as in story 3.
 
 **Why this priority**: docs buttons are the entry point for newcomers, but they work today.
 
@@ -156,14 +156,18 @@ see Mirela's copy on the sheet.
 
 **Acceptance Scenarios**:
 
-1. **Given** the Vampire landing page, **When** the player presses **New vampire**, **Then** a blank
-   vampire is created on the kind's default page and a message with **Open** appears.
+1. **Given** the Vampire landing page, **When** the player presses **New: Vampire character**,
+   **Then** a blank vampire is created on the kind's default page and a message with **Open**
+   appears.
 2. **Given** a docs button for an example, **When** pressed, **Then** an independent copy is created
    and the kind counts as recent in the dialog.
 
 ### Edge Cases
 
-- A recent kind whose user type or setting was deleted is dropped from **Recent** without a message.
+- A recent kind whose user type or setting was deleted is dropped from **Recent** without a message
+  to the player (developers still see it in the diagnostics).
+- A documentation button whose kind or example is not installed says so in a message instead of
+  failing silently.
 - A user type deleted while the dialog is open disappears from the list; if it was chosen, the
   choice clears and **Create** is disabled until another kind is chosen.
 - The folder chosen in the dialog is deleted before **Create**: the document goes to the top level.
@@ -195,13 +199,13 @@ see Mirela's copy on the sheet.
 - **FR-012**: On screens narrower than 640 px the dialog MUST fill the screen and show two steps
   (kind, then details) with a way back; the search stays visible in the first step and **Create** in
   the second.
-- **FR-016**: On wider screens the dialog MUST show two panes at once: the kinds on one side and the
-  chosen kind's start, name, folder, and **Create** on the other.
 - **FR-013**: Documentation create buttons MUST name what they create, MUST support creating from an
   example, and MUST confirm the creation with a way to open the document.
 - **FR-014**: All new strings MUST exist in English and Russian.
 - **FR-015**: The new document MUST open on the same page and view as a document created today (the
   library's default page, a user setting's own page).
+- **FR-016**: On wider screens the dialog MUST show two panes at once: the kinds on one side and the
+  chosen kind's start, name, folder, and **Create** on the other.
 
 ### Key Entities
 
@@ -212,8 +216,8 @@ see Mirela's copy on the sheet.
 
 ## Success Criteria
 
-- **SC-001**: With 50 kinds installed, a player creates a document of a named kind in at most 5
-  keystrokes after opening the dialog (search, `Enter`, `Enter`).
+- **SC-001**: With 50 kinds installed, a player creates a document of a kind with a unique
+  three-letter prefix in 5 keystrokes after opening the dialog (three letters, `Enter`, `Enter`).
 - **SC-002**: With 100 kinds installed, the dialog appears and the list reacts to each keystroke
   within 100 ms on the reference laptop.
 - **SC-003**: In a walk of five tasks (find a user type, create a named Hunter in a folder, copy an

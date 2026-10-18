@@ -8,9 +8,10 @@
       `translations/source/en/ui/sheet/documents.yaml` and
       `translations/source/ru/ui/sheet/documents.yaml` (`create.matches` as a plural), and run
       `yarn build:translations`
-- [ ] T002 Extend `createDocument` options with `title?: string` and `data?: unknown` (parsed by the
-      definition's schema; defaults when absent) in `src/sheet_manager/store/documentStore.ts`, with
-      a test in `tests/sheet_manager/document-store.create.test.ts`
+- [ ] T002 Extend `createDocument` options with `title?: string`, `data?: unknown` (parsed by the
+      definition's schema; defaults when absent), and `templateValues?`; report the deleted-folder
+      fallback through `reportSheetIssue` in `src/sheet_manager/store/documentStore.ts`, with a test
+      in `tests/sheet_manager/document-store.create.test.ts`
 
 ## User Story 1 - Find the kind quickly (P1)
 
@@ -20,10 +21,10 @@ vampire kind remains, `Enter` selects it.
 - [ ] T003 [US1] Write `tests/sheet_manager/create-choices.test.ts`: grouping and order from the
       library tree, user settings under their ruleset with core kinds, unavailable kinds left out,
       collapsed one-child headings, search in en/ru by kind, setting, ruleset, English name, and
-      description, recent order (≤ 5, newest first), missing recent kinds dropped, bad stored JSON
-      ignored
+      description, recent order (≤ 5, newest first), missing recent kinds dropped and reported, bad
+      stored JSON ignored and reported
 - [ ] T004 [US1] Implement `src/sheet_manager/features/documents/createChoices.ts`:
-      `createChoices(tree,     locale)` over `buildLibraryTree` (D1), `filterChoices(groups, query)`
+      `createChoices(tree, locale)` over `buildLibraryTree` (D1), `filterChoices(groups, query)`
       with `matchesSearch` (D2), and the `ttgamer:create-dialog:v1` reader/writer for `recent` and
       `folded` (D5)
 - [ ] T005 [US1] Write the left pane of
@@ -32,13 +33,13 @@ vampire kind remains, `Enter` selects it.
       (`aria-expanded`, remembered), options with `data-kind`, empty state with **Clear search**
       (D3); remove `createGroups` and the radios; start
       `tests/sheet_manager/document-create-dialog.test.tsx` with the focus, filtering, folding, and
-      empty-state cases
+      empty-state cases, over the shipped kinds plus a fixture of twenty user types
 - [ ] T006 [US1] Rewrite the radio-based cases in `tests/sheet_manager/document-dialogs.test.tsx`,
       `tests/sheet_manager/user-settings.test.tsx`, and
       `tests/sheet_manager/user-document-types.test.tsx` to pick options, and the helper
       `tests-e2e/brief.ts` to pick by `data-kind`
-- [ ] T007 [US1] Write `tests/sheet_manager/create-choices.perf.test.ts`: building and filtering 100
-      kinds within 100 ms (best of warm runs) (SC-002)
+- [ ] T007 [US1] Write `tests/sheet_manager/create-choices.perf.test.tsx`: building, rendering the
+      dialog, and filtering 100 kinds per keystroke within 100 ms (best of warm runs) (SC-002)
 - [ ] T008 [US1] Run `yarn verify` and commit the story
 
 ## User Story 2 - Name it and choose where it goes (P1)
@@ -82,12 +83,14 @@ scrolling.
 
 - [ ] T017 [US4] Extend `tests/sheet_manager/document-create-dialog.test.tsx`: arrows move the
       active option, `Enter` → name → create, `Escape` clears then closes, a single match is chosen,
-      the live count, and the two steps with **Back** below 640 px
-- [ ] T018 [US4] Implement keyboard flow, the polite live region, the single-match choice, and the
-      phone steps (full screen, sticky search and **Create**, 32 px touch rows) in
-      `DocumentCreateDialog.tsx` (D3, D4)
+      the live count, the two steps with **Back** below 640 px, a chosen user type deleted while
+      open (choice cleared, **Create** disabled), and five keystrokes at 50 kinds (SC-001)
+- [ ] T018 [US4] Implement keyboard flow, the polite live region, the single-match choice, clearing
+      a deleted choice, and the phone steps (full screen, sticky search and **Create**, 32 px touch
+      rows) in `DocumentCreateDialog.tsx` (D3, D4)
 - [ ] T019 [US4] Add a smoke test `tests-e2e/smoke/create-dialog.spec.ts`: at 360 px create a named
-      vampire from Mirela by keyboard; no element wider than the window (SC-004)
+      vampire from Mirela by keyboard; no element wider than the window, kind rows at least 32 px
+      tall (SC-004)
 - [ ] T020 [US4] Run `yarn verify` and the smoke test, commit the story
 
 ## User Story 5 - Create buttons in the documentation (P3)
@@ -96,10 +99,11 @@ scrolling.
 
 - [ ] T021 [US5] Write `tests/sheet_manager/docs-create-button.test.tsx`: label names the kind or
       the example, a copy is created, recent updated, toast with **Open** linking to
-      `/universal_sheet`
+      `/universal_sheet`; a missing kind or example shows the error toast, reports, and creates
+      nothing
 - [ ] T022 [US5] Extend `src/sheet_manager/features/sheet/shell/CreateCharacterButton.tsx` with
-      `exampleId`, the naming label, `createFromChoice`, and the toast (D9); keep the
-      `TemplateFragment` fallback working
+      `exampleId`, the naming label, `createFromChoice`, the toast, and the failure path (D9); keep
+      the `TemplateFragment` fallback working
 - [ ] T023 [US5] Add copy buttons to the "Meet" pages:
       `docs/wod-v5/hunter/first-hunter/10-meet-lena.mdx`,
       `docs/wod-v5/vampire/first-vampire/11-meet-mirela.mdx`, and their Russian mirrors under
@@ -110,8 +114,9 @@ scrolling.
 
 - [ ] T025 Update `src/sheet_manager/AGENTS.md` (create path: `createChoices`, `createFromChoice`,
       device keys) and the `mdx-documentation` skill (docs create buttons with `exampleId`); update
-      `docs/guide/sheet.mdx` and its Russian mirror ("New": search, recent, name, folder, examples,
-      phone steps); mark T-120 done in `TODO.md`
+      `docs/guide/sheet.mdx` ("New": search, recent, name, folder, examples, phone steps) and
+      `docs/guide/documents/index.mdx` ("Add a document" asks for the name in the dialog), with
+      their Russian mirrors; mark T-120 done in `TODO.md`
 - [ ] T026 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 5 KB
       gzip); walk the steps in design.md "Manual walk" (SC-001, SC-003); record results in design.md
 

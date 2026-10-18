@@ -16,7 +16,7 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
 
 ## Decisions
 
-- **D1 — Choices from the library tree**: `createChoices(tree)` walks
+- **D1 — Choices from the library tree**: `createChoices(tree, locale)` walks
   `RulesetNode → SettingNode → TypeNode` and keeps type nodes that are available; a choice is
   `{ key, systemId, definitionId, settingId?, name, description?, path: [ruleset, setting], bookNames, examples }`.
   A ruleset with a single setting of the same name, or a setting with one kind, collapses its
@@ -33,9 +33,10 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   `data-kind="system/definition[/setting]"`. Arrows move `aria-activedescendant`, `Enter` selects
   and moves the focus to the name, `Escape` clears a non-empty search, then closes. A polite live
   region says "N kinds" after filtering. _Why_: one focus stop for type-and-pick, the pattern the
-  APG gives for a filterable list; constitution VI. _Rejected_: radio buttons (one tab stop per
-  group, no active-descendant filtering); the shared `TreeView` (built for files, no combobox, and
-  folding only two levels would cost more than it saves).
+  APG gives for a filterable list; constitution VI. Radix has no combobox primitive, so the list is
+  ours, inside the existing `Modal`. _Rejected_: radio buttons (one tab stop per group, no
+  active-descendant filtering); the shared `TreeView` (built for files, no combobox, and folding
+  only two levels would cost more than it saves).
 - **D4 — Layout**: two panes from 640 px (the kinds left, `minmax(16rem, 1fr)`; the details right,
   20 rem), the dialog `min(52rem, 100% - 2rem)` wide and `min(36rem, 100dvh - 2rem)` tall with only
   the list scrolling. Below 640 px the dialog fills the screen and shows the kinds, then the details
@@ -44,9 +45,11 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   one column with an expanding block.
 - **D5 — Recent and folds on the device**: `localStorage` key `ttgamer:create-dialog:v1` =
   `{ recent: string[] (≤ 5 choice keys, newest first), folded: string[] (group keys) }`, read with a
-  guard (bad JSON or a missing kind is ignored). `createFromChoice` writes `recent`, so docs buttons
-  count too. _Why_: a per-device preference, like the panes layout; never synced or exported.
-  _Rejected_: the documents store (it is document data, exported and synced later).
+  guard: bad JSON or a recent kind no longer installed is dropped and reported through
+  `reportSheetIssue` (constitution III), never shown to the player. `createFromChoice` writes
+  `recent`, so docs buttons count too. _Why_: a per-device preference, like the panes layout; never
+  synced or exported. _Rejected_: the documents store (it is document data, exported and synced
+  later).
 - **D6 — Name**: `createFromChoice` writes the name to `metadata.title` and to the kind's own name
   value: the definition's character capability (`applyUpdates` of `metadata.name`, Star Wars
   characters) when it has one, else every field binding of the system for that kind with
@@ -56,21 +59,25 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   title — the sheet would show an empty Name field next to a named tab.
 - **D7 — Folder**: the right pane shows the folder as a button ("Top level" or the path) that opens
   the existing `MoveToPicker` over the dialog. The start is the dialog's `parentId`. A folder
-  deleted meanwhile falls back to the top level, as `createDocument` already does. `DocumentsPanel`
-  skips its inline rename when the document was created with a name (`onCreated(id, { named })`).
-  _Why_: reuse the picker and its tests. _Rejected_: a flat `<select>` of folders — unusable with
-  deep trees.
+  deleted meanwhile falls back to the top level, as `createDocument` already does; that fallback now
+  reports through `reportSheetIssue`. `DocumentsPanel` skips its inline rename when the document was
+  created with a name (`onCreated(id, { named })`). _Why_: reuse the picker and its tests.
+  _Rejected_: a flat `<select>` of folders — unusable with deep trees.
 - **D8 — Examples**: the start choice (**Blank** + each `definition.examples` entry) shows only for
   kinds with examples. A copy takes the example's `data` through `definition.migrate` and
-  `schema.parse`, its `templateValues`, and its portrait (`imageUrl` inside the data); never its id,
-  folder, or preset status. With no name typed the copy is named after the example's label. _Why_:
-  FR-008; the examples exist (Jax Vorn, wampa, three vehicles, stormtrooper squad, Lena, Mirela).
-  _Rejected_: opening the preset read-only — the player wants a document of their own.
+  `schema.parse`, its `templateValues` (a new `createDocument` option), and its portrait (`imageUrl`
+  inside the data); never its id, folder, or preset status. With no name typed the copy is named
+  after the example's label. _Why_: FR-008; the examples exist (Jax Vorn, wampa, three vehicles,
+  stormtrooper squad, Lena, Mirela). _Rejected_: opening the preset read-only — the player wants a
+  document of their own.
 - **D9 — Documentation buttons**: `CreateCharacterButton` keeps its name and props (MDX in en + ru
   uses it) and gains `exampleId`; its label says what it makes ("New: Vampire character", "Copy
   Mirela Voss"), it calls `createFromChoice`, and a toast says "Created" with **Open**, a link to
-  `/universal_sheet` where the new document is current. _Why_: clarification; one create path.
-  _Rejected_: opening the dialog from the docs.
+  `/universal_sheet` where the new document is current. The interaction connects the docs (MDX
+  embeds) and `sheet_manager` through `createFromChoice` and the system registry (constitution III).
+  On failure — the kind or the example is not installed, or creating throws — the button shows an
+  error toast ("Could not create …") and reports through `reportSheetIssue`; nothing is created.
+  _Why_: clarification; one create path. _Rejected_: opening the dialog from the docs.
 - **D10 — No lazy loading**: the library tree and the store are already on the sheet page; the
   dialog adds markup and two small modules. Measured against SC-005 (5 KB). _Rejected_: a lazy chunk
   for the dialog — a delay on every **New** for a few KB.
@@ -78,13 +85,14 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
 ## Changed types and data
 
 - `documentStore.createDocument` options: `title?: string`, `data?: unknown` (parsed by the
-  definition's schema, defaults otherwise). No persisted shape changes; no migration.
+  definition's schema, defaults otherwise), `templateValues?` (validated by the envelope schema). No
+  persisted shape changes; no migration.
 - `CreateCharacterButton`: optional `exampleId`.
 - `DocumentCreateDialog` `onCreated(id, { named: boolean })`.
 - Translations (`documents.yaml`, en + ru): `create.search`, `create.recent`, `create.noMatch`,
   `create.clearSearch`, `create.matches` (plural), `create.start`, `create.blank`, `create.name`,
   `create.folder`, `create.topLevel`, `create.back`, `create.details`; `docsCreate.newKind`,
-  `docsCreate.copy`, `docsCreate.created`, `docsCreate.open`.
+  `docsCreate.copy`, `docsCreate.created`, `docsCreate.open`, `docsCreate.failed`.
 - Removed: `createGroups` and the radio markup.
 
 ## Principles at risk
@@ -107,13 +115,14 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   as title and in its name value (capability or `syncsTitle` binding); empty name keeps today's
   behavior; example copies are independent, migrated, keep the portrait; folder and fallback; recent
   written.
-- `tests/sheet_manager/document-create-dialog.test.tsx` (replaces the radio cases in
-  `document-dialogs`, `user-settings`, `user-document-types`): focus on search, filtering and the
-  live count, `Enter`/`Escape` flow, fold state remembered, folder picker, start choice, two steps
-  below 640 px.
-- `tests/sheet_manager/docs-create-button.test.tsx`: labels, example copy, toast with **Open**.
-- `tests/sheet_manager/create-choices.perf.test.ts`: building and filtering 100 kinds stays within
-  budget (best of warm runs).
+- `tests/sheet_manager/document-create-dialog.test.tsx` (the radio cases in `document-dialogs`,
+  `user-settings`, `user-document-types` are rewritten in place to pick options): focus on search,
+  filtering and the live count, `Enter`/`Escape` flow, fold state remembered, folder picker, start
+  choice, two steps below 640 px.
+- `tests/sheet_manager/docs-create-button.test.tsx`: labels, example copy, toast with **Open**, the
+  error toast and report for a missing kind or example.
+- `tests/sheet_manager/create-choices.perf.test.tsx`: building, rendering, and filtering 100 kinds
+  stays within budget (best of warm runs).
 - `tests-e2e/brief.ts` helper: picks a kind by `data-kind`; a smoke test creates a named vampire
   from Mirela at 360 px without sideways scrolling.
 
