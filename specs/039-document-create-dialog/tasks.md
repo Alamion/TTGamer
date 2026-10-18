@@ -112,12 +112,12 @@ scrolling.
 
 ## Finish
 
-- [ ] T025 Update `src/sheet_manager/AGENTS.md` (create path: `createChoices`, `createFromChoice`,
+- [x] T025 Update `src/sheet_manager/AGENTS.md` (create path: `createChoices`, `createFromChoice`,
       device keys) and the `mdx-documentation` skill (docs create buttons with `exampleId`); update
       `docs/guide/sheet.mdx` ("New": search, recent, name, folder, examples, phone steps) and
       `docs/guide/documents/index.mdx` ("Add a document" asks for the name in the dialog), with
       their Russian mirrors; mark T-120 done in `TODO.md`
-- [ ] T026 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 5 KB
+- [x] T026 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 5 KB
       gzip); walk the steps in design.md "Manual walk" (SC-001, SC-003); record results in design.md
 
 ## Coverage

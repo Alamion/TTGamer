@@ -34,9 +34,9 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
   and moves the focus to the name, `Escape` clears a non-empty search, then closes. A polite live
   region says "N kinds" after filtering. _Why_: one focus stop for type-and-pick, the pattern the
   APG gives for a filterable list; constitution VI. Radix has no combobox primitive, so the list is
-  ours, inside the existing `Modal`. _Rejected_: radio buttons (one tab stop per group, no
-  active-descendant filtering); the shared `TreeView` (built for files, no combobox, and folding
-  only two levels would cost more than it saves).
+  ours, inside the Radix Dialog the old dialog used. _Rejected_: radio buttons (one tab stop per
+  group, no active-descendant filtering); the shared `TreeView` (built for files, no combobox, and
+  folding only two levels would cost more than it saves).
 - **D4 — Layout**: two panes from 640 px (the kinds left, `minmax(16rem, 1fr)`; the details right,
   20 rem), the dialog `min(52rem, 100% - 2rem)` wide and `min(36rem, 100dvh - 2rem)` tall with only
   the list scrolling. Below 640 px the dialog fills the screen and shows the kinds, then the details
@@ -139,3 +139,31 @@ changes shape. Order: US1 (model, search, recent, left pane) → US2 (name, fold
    scrolls sideways.
 6. Docs, "Meet Mirela": **Copy Mirela Voss** → toast with **Open** → the copy on the sheet.
 7. With a user setting on V5 and two same-named types → both listed under V5 with descriptions.
+
+## Implementation notes
+
+- **Order.** `createFromChoice` and the keyboard flow landed with US1: recording recent kinds needs
+  the create path, and a combobox without arrows and `Enter` is not usable. US2–US4 added the name
+  and folder, examples, and the phone steps on top.
+- **Signature.** `createChoices(tree, registry)`: the tree is already translated, and English names
+  come from the label descriptors, so no locale is passed.
+- **Search languages.** As FR-003 says, the interface language plus English: in the English
+  interface Russian names do not match (walk step 1 used `vamp`).
+- **Docs labels.** "New: Character (Vampire: the Masquerade 5e)" instead of "New: Vampire
+  character": kind labels are setting-neutral, so the setting goes in parentheses.
+- **Phone.** **Create** sits in the second step, so a phone must choose a kind first; the documents
+  smoke test now does.
+- **MoveToPicker** gained `initialId` and `confirmLabel` ("Put it here") for the folder choice.
+- **SC-005 bundle (T026).** Unique JS and CSS the sheet page loads while creating a vampire through
+  the dialog, built from `testing` and from this branch: 19 files, 825,813 → 830,099 bytes gzip
+  (+4,286, about 4.2 KB) against a 5 KB budget.
+- **SC-002.** At 100 kinds in happy-dom (best of warm runs): opening 38 ms, a keystroke 8 ms.
+- **Checks.** `yarn verify:full` passed: 3,013 unit, 14 perf, 49 browser tests.
+- **Manual walk (2026-10-18, built site in English; scripted with Playwright).** Steps 1–6 pass:
+  `vamp` → one kind → name → the vampire opens named in the tab and Name field; the documents window
+  preselects the folder, the picker moves the document, no rename in place starts; two copies of
+  Lena with her portrait; Recent shows Hunter, then Vampire, and a folded group stays folded; at 360
+  px kinds then details with **Back**, nothing sideways; "Meet Mirela" → **Copy Mirela Voss** →
+  **Open** → her copy on the sheet. No page errors. Step 7 (two same-named types in a V5 user
+  setting) is covered by `create-choices.test.ts` and `document-create-dialog.test.tsx` rather than
+  walked. The dev server was running in Russian, so the walk used a build.

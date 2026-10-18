@@ -54,9 +54,9 @@ override) so prose and page stay in sync:
   `hunterExampleDocument()` (Lena Varga), `vampireExampleDocument()` (Mirela Voss),
   `PolicyStatement` (full policy statement, used only on the policy's own docs page; embeds show no
   notice), `CatalogSummaryTable` (catalog names with `summary` descriptors or a lazy `summary` text,
-  optional `groupBy` and child catalog), and `CreateCharacterButton`. With no compatible document,
-  `TemplateFragment` offers to create one of the template's document type. MDX imports sheet content
-  only from `docsEmbeds.tsx`.
+  optional `groupBy` and child catalog), and `CreateCharacterButton` (optional `exampleId`; the
+  `mdx-documentation` skill). With no compatible document, `TemplateFragment` offers to create one
+  of the template's document type. MDX imports sheet content only from `docsEmbeds.tsx`.
 - Embeds use `DeclarativeSheetView embedded` (no page chrome, no preset seeding — a partial render
   must not mark the template as seeded).
 - `tests/sheet_manager/docs-embeds.test.tsx` scans en + ru MDX and fails on any embed whose

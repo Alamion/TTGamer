@@ -113,6 +113,13 @@ nothing saves, such as `ViewsPreview` (a document in each of its views, from `do
 `RollExample` (every die and its marks) and `NotationSandbox` (the panel's own check); neither
 reaches the history. Never fork a component for a page: add an option to the real one.
 
+Create buttons: `<CreateCharacterButton systemId="…" definitionId="…" />` (from `docsEmbeds`, in
+`TWWrapper`) makes a blank document of that kind and labels itself "New: <kind> (<setting>)";
+`exampleId="<id>"` makes a copy of one of the kind's shipped examples ("Copy <name>"), as on the
+"Meet" pages of the first-character guides. Both confirm with a message linking to the sheet. The
+ids must name an installed kind and one of its `examples`; `docs-create-button.test.tsx` checks
+every page.
+
 ## V5 page format (candidate for all systems)
 
 Pages under `docs/wod-v5/` follow `specs/008-hunter-v5-character/contracts/docs-structure.md`,
