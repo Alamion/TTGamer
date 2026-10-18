@@ -46,6 +46,8 @@ vi.mock('@site/src/sheet_manager/store/documentStore', async (importOriginal) =>
 beforeEach(() => {
     content?.configureRecordStorage(content.createMemoryRecordStorage());
     content?.purgedIds.clear();
+    // The create dialog's recent kinds (spec 039) must not leak from one test into the next.
+    if (typeof window !== 'undefined') window.localStorage?.removeItem('ttgamer:create-dialog:v1');
 });
 
 afterEach(async () => {

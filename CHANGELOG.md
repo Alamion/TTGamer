@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.30.0
+
+### Minor feat
+
+- **A create dialog for many kinds of documents (spec 039, T-120)**: **New** lists the kinds the way the library groups them, by rules and then by setting, with your own settings and types under the rules they are built on. The rules start open and the settings inside them folded; what you open or fold is remembered on this device. The cursor starts in a search field that finds kinds by the name of the kind, setting, or rules, in the interface language and in English, and a single match is chosen at once. The last five kinds you created come first under **Recent**
+- **Name, folder, and a start in the same dialog (spec 039)**: type the name before creating (it shows on the tab and in the sheet's Name field), choose the folder (it starts at the folder you added the document from), and for kinds with an example (Jax Vorn, Lena Varga, Mirela Voss, the wampa, the stormtrooper squad, the vehicles) start from **Blank** or from your own copy of the example, portrait included
+- **Keyboard and phones (spec 039)**: arrows move through the kinds, `Enter` goes on to the name and `Enter` there creates, `Escape` clears the search and then closes; screen readers hear how many kinds match. On a phone the dialog fills the screen in two steps, the kind and then its details, with **Back to kinds**
+- **Create buttons in the documentation (spec 039)**: they say what they make ("New: Character (Vampire: the Masquerade 5e)"), confirm with a message that links to the sheet, and the "Meet Lena" and "Meet Mirela" pages offer a copy of the example
+
+### Fix
+
+- **Portraits on the Russian site**: the shipped portraits of the examples load on the Russian pages and on a copy of an example; site-relative image addresses now follow the site's base address
+
 ## v3.29.0
 
 ### Minor feat

@@ -116,10 +116,8 @@ describe('user settings (spec 012, US6)', () => {
             },
         });
         render(createElement(DocumentCreateDialog, { open: true, onOpenChange: () => {} }));
-        const group = screen.getByRole('group', { name: 'Ashen Realms' });
-        fireEvent.click(within(group).getByRole('radio', { name: /Mortal/ }));
-        // The confirm button is the dialog's last action.
-        fireEvent.click(screen.getAllByRole('button').at(-1)!);
+        fireEvent.click(screen.getByRole('option', { name: 'Mortal · Ashen Realms' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         cleanup();
 
         const [created] = useDocumentStore.getState().documents;
@@ -148,10 +146,8 @@ describe('user settings (spec 012, US6)', () => {
             },
         });
         render(createElement(DocumentCreateDialog, { open: true, onOpenChange: () => {} }));
-        const group = screen.getByRole('group', { name: 'Grim City' });
-        fireEvent.click(within(group).getByRole('radio', { name: /Character/ }));
-        // The confirm button is the dialog's last action.
-        fireEvent.click(screen.getAllByRole('button').at(-1)!);
+        fireEvent.click(screen.getByRole('option', { name: 'Character · Grim City' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         cleanup();
         const [created] = useDocumentStore.getState().documents;
         expect(created!.metadata.settingId).toBe('user-setting-ash00002');

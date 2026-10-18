@@ -24,10 +24,10 @@ for (const { name, viewport } of sizes) {
         }) => {
             await page.goto('/universal_sheet');
             await page.getByRole('button', { name: 'New', exact: true }).click();
-            await page
-                .getByRole('dialog', { name: 'Create document' })
-                .getByRole('button', { name: 'Create', exact: true })
-                .click();
+            const create = page.getByRole('dialog', { name: 'Create document' });
+            // On a phone the details (and Create) follow the choice of a kind.
+            await create.getByRole('option').first().click();
+            await create.getByRole('button', { name: 'Create', exact: true }).click();
             await expect(page.getByRole('textbox', { name: 'Name', exact: true })).toBeVisible();
 
             let window = await openWindow(page);

@@ -149,7 +149,9 @@ describe('hunter documentation embeds', () => {
                     node: 'identity',
                 })
             );
-            fireEvent.click(screen.getByTitle('Create a new document'));
+            fireEvent.click(
+                screen.getByRole('button', { name: 'New: Character (Hunter: the Reckoning 5e)' })
+            );
             const created = useDocumentStore.getState().documents.at(-1)!;
             expect([created.systemId, created.definitionId]).toEqual(['wod-v5', 'hunter']);
         },

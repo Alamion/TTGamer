@@ -25,7 +25,7 @@ import { isUserKind } from '../systems/userTypes';
 import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';
 import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
-import type { TemplatePageValues } from '../types/templateValues';
+import { type TemplatePageValues, TemplatePageValuesSchema } from '../types/templateValues';
 import { bootDocuments } from './documentBoot';
 import {
     deviceImageIdsOf,
@@ -142,6 +142,10 @@ export interface DocumentStoreState {
             activate?: boolean;
             /** The folder it goes into (last there); the top level when absent. */
             parentId?: string | null;
+            title?: string;
+            /** Starting data (an example's copy), parsed by the definition's schema. */
+            data?: unknown;
+            templateValues?: TemplatePageValues;
         }
     ) => UnknownDocumentEnvelope;
     updateDocumentData: (id: string, updater: (data: unknown) => unknown) => void;
@@ -517,28 +521,37 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             definitionId: definition.id,
             schemaVersion: definition.schemaVersion,
             metadata: {
-                title: '',
+                title: options.title ?? '',
                 tags: [],
                 preferredViewId: options.preferredViewId ?? definition.defaultViewId,
                 ...(options.settingId ? { settingId: options.settingId } : {}),
                 ...(options.templateId ? { templateId: options.templateId } : {}),
             },
-            templateValues: {},
-            data: definition.schema.parse(definition.createDefault()),
+            templateValues: TemplatePageValuesSchema.parse(options.templateValues ?? {}),
+            data: definition.schema.parse(
+                options.data === undefined ? definition.createDefault() : options.data
+            ),
         };
+        const folderGone =
+            !!options.parentId && !get().folders.some(({ id }) => id === options.parentId);
+        if (folderGone) {
+            reportSheetIssue({
+                code: 'document-folder-missing',
+                message:
+                    'The folder a new document was meant for is gone; it went to the top level',
+                details: { documentId: document.id, parentId: options.parentId },
+            });
+        }
         const now = Date.now();
         const stamp = new Date(now).toISOString();
         lastTouch.set(document.id, now);
-        set(({ documents, entries, folders, currentDocumentId }) => ({
+        set(({ documents, entries, currentDocumentId }) => ({
             documents: [...documents, document],
             entries: [
                 ...entries,
                 {
                     ...entryOf(document, undefined, { createdAt: stamp, changedAt: stamp }, now),
-                    parentId:
-                        options.parentId && folders.some(({ id }) => id === options.parentId)
-                            ? options.parentId
-                            : null,
+                    parentId: options.parentId && !folderGone ? options.parentId : null,
                     rank: nextRank(entries),
                 },
             ],

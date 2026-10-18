@@ -212,11 +212,32 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
 - **The documents window** (`components/documents/DocumentsPanel.tsx`) is a tool of the workspace
   layout (below) over the shared `TreeView`; its list and details become tabs by the width of its
   container (`@container/documents`), not of the screen. Phone: full screen, drag replaced by "Move
-  to…". Names are typed in place (`InlineName`), never in a dialog. A click only selects a row and
-  shows its details (T-116); a document opens by double click, `Enter`, or the Open actions
-  (**Open**, **Open in new tab**, **Open beside**). On a phone a tap selects and switches to the
-  details tab. A single dragged document row also carries `application/x-ttg-document`, so the
-  layout takes it like a tab.
+  to…". Names are typed in place (`InlineName`); the create dialog is the one place that takes a
+  name before the document exists. A click only selects a row and shows its details (T-116); a
+  document opens by double click, `Enter`, or the Open actions (**Open**, **Open in new tab**,
+  **Open beside**). On a phone a tap selects and switches to the details tab. A single dragged
+  document row also carries `application/x-ttg-document`, so the layout takes it like a tab.
+
+- **Creating documents (spec 039).** Every create path calls `createFromChoice`
+  (`features/documents/createFromChoice.ts`): the page the library chose (`newDocumentPage`, a user
+  setting's own page), the typed name written to the title and to where the kind keeps its name (the
+  character capability's `metadata.name`, else its `syncsTitle` field bindings), an example's copy
+  (`definition.examples`: migrated, parsed, its template values and portrait, a new id), the folder,
+  and the kind recorded as recent. `createDocument` takes `title`, `data`, and `templateValues`; a
+  folder deleted meanwhile sends the document to the top level and reports
+  `document-folder-missing`. The **New** dialog (`components/dialogs/DocumentCreateDialog.tsx`)
+  lists `createChoices(tree, registry)` (`features/documents/createChoices.ts`) over the library
+  tree: rulesets, then settings with more than one kind (a one-kind setting shows its kind with the
+  setting's name beside it), searched with `matchesSearch` over both languages' names and user type
+  descriptions. The search is a combobox over one listbox (`data-kind="system/definition[/setting]"`
+  on options); from 640 px the details pane (start, name, folder through `MoveToPicker`, **Create**)
+  sits beside the list, below it the two are steps with **Back**. Device key
+  `ttgamer:create-dialog:v1` holds `{ recent (≤ 5), toggled }`: headings turned from their default
+  (rulesets open, the settings inside them folded); unreadable values and recent kinds that are gone
+  are dropped and reported (`create-preferences-invalid`, `create-recent-missing`).
+  `onCreated(id, { named, parentId })` lets the documents window skip its rename in place for a
+  named document. Docs buttons (`CreateCharacterButton`) use the same path and report a missing kind
+  or example as `create-kind-unavailable` with an error message.
 
 ### Workspace layout (spec 036)
 

@@ -49,6 +49,14 @@ export type SheetIssueCode =
     /** A deleted document's record could not be removed yet. */
     | 'document-purge-failed'
     | 'document-folders-repaired'
+    /** A new document's folder was deleted before it was created; it went to the top level. */
+    | 'document-folder-missing'
+    /** The create dialog's stored recent kinds and folds are unreadable; they start over (spec 039). */
+    | 'create-preferences-invalid'
+    /** Recent kinds that are no longer installed were dropped from the create dialog. */
+    | 'create-recent-missing'
+    /** A documentation create button names a kind or an example that is not installed. */
+    | 'create-kind-unavailable'
     | 'document-boot-failed'
     /** The stored arrangement of panes is not readable; the current document shows alone (spec 034). */
     | 'pane-arrangement-invalid'

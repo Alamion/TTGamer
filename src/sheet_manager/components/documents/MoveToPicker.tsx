@@ -5,7 +5,7 @@ import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/Tre
 import { Folder as FolderIcon, FolderOpen, Home } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 
-import { buildFolderRows, ROOT_KEY } from '../../features/documents/rows';
+import { buildFolderRows, folderKey, ROOT_KEY } from '../../features/documents/rows';
 import type { Folder } from '../../store/documentIndex';
 
 const labels = uiMessages.sheet.documents.manager.move;
@@ -19,6 +19,10 @@ export interface MoveToPickerProps {
     title: string;
     /** `null` is the top level. */
     onPick: (parentId: string | null) => void;
+    /** The folder selected first (the top level when absent). */
+    initialId?: string | null;
+    /** The confirm button (default: "Move here"). */
+    confirmLabel?: string;
 }
 
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
@@ -31,6 +35,8 @@ export function MoveToPicker({
     moving,
     title,
     onPick,
+    initialId,
+    confirmLabel,
 }: MoveToPickerProps) {
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
@@ -46,6 +52,8 @@ export function MoveToPicker({
                         folders={folders}
                         moving={moving}
                         title={title}
+                        initialId={initialId}
+                        confirmLabel={confirmLabel}
                         onPick={(parentId) => {
                             onPick(parentId);
                             onOpenChange(false);
@@ -62,8 +70,15 @@ function Picker({
     moving,
     title,
     onPick,
-}: Pick<MoveToPickerProps, 'folders' | 'moving' | 'title' | 'onPick'>) {
-    const [selected, setSelected] = useState<string>(ROOT_KEY);
+    initialId,
+    confirmLabel,
+}: Pick<
+    MoveToPickerProps,
+    'folders' | 'moving' | 'title' | 'onPick' | 'initialId' | 'confirmLabel'
+>) {
+    const [selected, setSelected] = useState<string>(() =>
+        initialId && folders.some(({ id }) => id === initialId) ? folderKey(initialId) : ROOT_KEY
+    );
     const scrollRef = useRef<HTMLDivElement>(null);
     const rows = useMemo(
         () => buildFolderRows(folders, translate(labels.top), moving),
@@ -117,7 +132,7 @@ function Picker({
                     onClick={() => confirm(chosen)}
                     className="rounded-lg bg-primary-muted px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary"
                 >
-                    {translate(labels.confirm)}
+                    {confirmLabel ?? translate(labels.confirm)}
                 </button>
             </div>
         </>

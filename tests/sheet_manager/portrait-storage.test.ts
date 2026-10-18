@@ -1,4 +1,7 @@
-import { getSafePortraitUrl } from '@site/src/sheet_manager/persistence/portraitStorage';
+import {
+    getSafePortraitUrl,
+    sitePortraitUrl,
+} from '@site/src/sheet_manager/persistence/portraitStorage';
 import { describe, expect, it } from 'vitest';
 
 describe('portrait URL policy', () => {
@@ -17,5 +20,19 @@ describe('portrait URL policy', () => {
         '//evil.example/image.png',
     ])('rejects unsafe or ambiguous URL %s', (url) => {
         expect(getSafePortraitUrl(url)).toBeUndefined();
+    });
+});
+
+describe('site paths under the base URL', () => {
+    it('puts a site path under a locale or sub-path base, once', () => {
+        expect(sitePortraitUrl('/img/mirela_voss.webp', '/')).toBe('/img/mirela_voss.webp');
+        expect(sitePortraitUrl('/img/mirela_voss.webp', '/ru/')).toBe('/ru/img/mirela_voss.webp');
+        expect(sitePortraitUrl('/ru/img/mirela_voss.webp', '/ru/')).toBe(
+            '/ru/img/mirela_voss.webp'
+        );
+        expect(sitePortraitUrl('/img/a.webp', '/ttgamer/')).toBe('/ttgamer/img/a.webp');
+        expect(sitePortraitUrl('https://example.com/a.webp', '/ru/')).toBe(
+            'https://example.com/a.webp'
+        );
     });
 });
