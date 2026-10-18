@@ -74,8 +74,8 @@ describe('shipped briefs in short form (spec 033)', () => {
                         } else {
                             expect(rating.type, `${where} is a resource`).toBe('primitive');
                         }
-                        // A short label that equals the full label means a clash fell back.
-                        expect(short, where).not.toBe(rating.label);
+                        // Shipped ratings never clash: no derived fourth letter or number.
+                        expect(short, where).not.toMatch(/\d/);
                         expect(short!.length, where).toBeGreaterThanOrEqual(2);
                         expect(short!.length, where).toBeLessThanOrEqual(4);
                         expect(seen.has(short!), `${where} repeats ${short}`).toBe(false);

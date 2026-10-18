@@ -73,10 +73,27 @@ describe('shortLabelsFor', () => {
         ]);
     });
 
-    it('gives the later of two clashing labels its full label', () => {
+    it('gives the later of two clashing labels a fourth letter', () => {
         const map = shortLabelsFor([node('a', 'Brawl'), node('b', 'Brace')], 'en', 'ru', terms);
         expect(map.get('a')).toBe('BRA');
-        expect(map.get('b')).toBe('Brace');
+        expect(map.get('b')).toBe('BRAC');
+    });
+
+    it('numbers ratings whose letters still clash, the author’s included', () => {
+        const fields = shortLabelsFor(
+            [node('a', 'Field'), node('b', 'Field'), node('c', 'Field')],
+            'en',
+            'ru',
+            terms
+        );
+        expect([...fields.values()]).toEqual(['FIE', 'FIE2', 'FIE3']);
+        const own = shortLabelsFor(
+            [node('a', 'Grit', { shortLabel: 'GRIT' }), node('b', 'Guts', { shortLabel: 'GRIT' })],
+            'en',
+            'ru',
+            terms
+        );
+        expect([...own.values()]).toEqual(['GRIT', 'GRI2']);
     });
 
     it('skips ratings that keep their full name', () => {
