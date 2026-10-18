@@ -256,6 +256,15 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   named document. Docs buttons (`CreateCharacterButton`) use the same path and report a missing kind
   or example as `create-kind-unavailable` with an error message.
 
+Following a link (T-057): a page's `openDocument` (reference chips, "Member of") goes through
+`DocumentLinkContext` (`features/sheet/declarative/documentLinks.ts`), which `SheetWorkspace`
+provides from `useDocumentHistory()` (`features/sheet/shell/documentHistory.ts`). The link pushes a
+history entry naming the document in the address (`?doc=<id>`, a query change, so Docusaurus does
+not scroll); Back and Forward show the document their entry names once it is in the index, a
+document opened another way replaces the current entry's name, and the first document shown after
+loading never overwrites an address that names another. Without the provider a link only sets the
+current document.
+
 ### Workspace layout (spec 036)
 
 - **Tree** (`features/sheet/panes/layoutTree.ts`, pure): groups (`GroupNode`: tabs, the shown one,

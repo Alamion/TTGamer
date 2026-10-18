@@ -1,5 +1,5 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
@@ -41,6 +41,7 @@ import {
 } from '../data/catalogBindings';
 import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
 import { useBoundDocument } from './boundDocument';
+import { DocumentLinkContext } from './documentLinks';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import {
     evaluateFormula,
@@ -448,12 +449,14 @@ export function useTemplatePage(
     );
 
     const previewSource = source.preview;
+    const followLink = useContext(DocumentLinkContext);
     const openDocument = useCallback(
         (documentId: string) => {
             if (previewSource) return;
-            setCurrentDocument(documentId);
+            if (followLink) followLink(documentId);
+            else setCurrentDocument(documentId);
         },
-        [previewSource, setCurrentDocument]
+        [previewSource, setCurrentDocument, followLink]
     );
 
     // -- Formula engine (feature 006): unified coordinate space, memoized per render pass. --
