@@ -249,6 +249,22 @@ export function vampireExampleDocument(): UnknownDocumentEnvelope {
     return MIRELA_VOSS_DOCUMENT;
 }
 
+/** A V5 example by id (the Storyteller examples of spec 040), for documentation previews. */
+export function v5ExampleDocument(exampleId: string): UnknownDocumentEnvelope | undefined {
+    const example = systemRegistry
+        .getSystem('wod-v5')
+        ?.documents.flatMap(({ examples }) => examples ?? [])
+        .find(({ id }) => id === exampleId);
+    if (!example) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Documentation embed references an example document that does not exist',
+            details: { exampleId },
+        });
+    }
+    return example?.create();
+}
+
 /** A fixed example document for documentation previews (e.g. `wampa::preset`). */
 export function exampleDocument(id: string): UnknownDocumentEnvelope | undefined {
     const document = starWarsExampleDocument(id);

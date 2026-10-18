@@ -7,6 +7,7 @@ import {
 } from '../../../types/document';
 import type { DocumentDefinition, DocumentViewLabel } from '../../types';
 import { createV5CoreDefault, V5CoreSchema } from '../ruleset/schema';
+import { STORYTELLER_EXAMPLES } from './examples';
 import { createV5StorytellerDefault, V5StorytellerSchema } from './storyteller';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
@@ -53,4 +54,5 @@ export const v5StorytellerDefinition: DocumentDefinition = {
         templateView('v5-storyteller-brief', storytellerViews.brief),
     ],
     migrate: (data) => data,
+    examples: STORYTELLER_EXAMPLES,
 };

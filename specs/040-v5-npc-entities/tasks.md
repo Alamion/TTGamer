@@ -107,19 +107,19 @@ have no Hunger dice; on again shows Hunger 3.
 **Check**: on the Storyteller page copy the example cult; the cult and its members appear and link
 to each other.
 
-- [ ] T024 [US5] Extend `tests/sheet_manager/create-from-choice.test.ts`: a group example copies its
+- [x] T024 [US5] Extend `tests/sheet_manager/create-from-choice.test.ts`: a group example copies its
       member examples and points the copy's `members` at the new ids; the copies export and import
       back without errors (FR-010); extend the docs create-button guard
-- [ ] T025 [US5] Add `DocumentExample.companions?` in `src/sheet_manager/systems/types.ts` and the
+- [x] T025 [US5] Add `DocumentExample.companions?` in `src/sheet_manager/systems/types.ts` and the
       companion copy in `src/sheet_manager/features/documents/createFromChoice.ts` (D9)
-- [ ] T026 [US5] Write the own-words examples (detective, ghoul retainer, guard dogs, wolf-thing,
+- [x] T026 [US5] Write the own-words examples (detective, ghoul retainer, guard dogs, wolf-thing,
       Sheriff vampire, cult) in `src/sheet_manager/systems/v5/core/examples.ts` and attach them to
       the definitions; examples parse in `storyteller.test.ts`
-- [ ] T027 [US5] Write `docs/wod-v5/rules/storyteller-characters.mdx` and
+- [x] T027 [US5] Write `docs/wod-v5/rules/storyteller-characters.mdx` and
       `docs/wod-v5/rules/groups.mdx` with embeds and copy buttons, link them from the Hunter and
       Vampire indexes, mirror them under `i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/`,
       and add the glossary terms to `translations/glossary/v5.yaml` (D10)
-- [ ] T028 [US5] Run the targeted tests, `yarn validate:i18n`, and `yarn verify:full` (new docs
+- [x] T028 [US5] Run the targeted tests, `yarn validate:i18n`, and `yarn verify:full` (new docs
       paths), and commit the story
 
 ## Finish

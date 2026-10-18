@@ -33,12 +33,13 @@ export const BASELINE: Readonly<Record<string, KindHeights>> = {
         sheet: { 375: 6871, 1280: 3113 },
         brief: { 375: 2553, 1280: 1274 },
     },
+    // Full sheets of the V5 characters gained the "Member of" section in spec 040.
     'wod-v5/hunter': {
-        sheet: { 375: 6223, 1280: 3023 },
+        sheet: { 375: 6393, 1280: 3193 },
         brief: { 375: 2700, 1280: 1306 },
     },
     'wod-v5/v5-character': {
-        sheet: { 375: 4915, 1280: 2291 },
+        sheet: { 375: 5049, 1280: 2425 },
         brief: { 375: 2140, 1280: 1064 },
     },
 };

@@ -21,6 +21,7 @@ import type { DocumentBindingDescriptor, FieldBinding } from '../../templateBind
 import type { DocumentDefinition } from '../../types';
 import { V5_LIMITS, V5MetadataSchema } from '../ruleset/schema';
 import { portraitGroup, v5Text } from '../ruleset/templateParts';
+import { GROUP_EXAMPLES } from './examples';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
 /**
@@ -89,9 +90,10 @@ const identity = (compact = false) =>
         [
             v5Text('name', 'name', v5.fields.name, { compact }),
             field('group-kind', labels.fields.kind, { compact }),
-            { ...THREAT, compact },
+            // A row of its own in the brief: five dots do not fit a third of a phone.
+            { ...THREAT, ...(compact ? { column: 1 } : {}) },
         ],
-        { hideTitle: true, labelMessage: v5.sections.identity, columns: compact ? 3 : 1 }
+        { hideTitle: true, labelMessage: v5.sections.identity, columns: compact ? 2 : 1 }
     );
 
 function page(id: string, name: string, children: TemplateNode[]): CustomTemplate {
@@ -185,6 +187,7 @@ export const v5GroupDefinition: DocumentDefinition = {
         },
     ],
     migrate: (data) => data,
+    examples: GROUP_EXAMPLES,
 };
 
 /** The "Member of" list of a V5 character: the groups whose members name it. */

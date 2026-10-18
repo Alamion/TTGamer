@@ -208,6 +208,12 @@ examples:
     falcon: Millennium Falcon (example)
     lenaVarga: Lena Varga (example)
     mirelaVoss: Mirela Voss (example)
+    inesRuiz: Ines Ruiz (example)
+    brunoKessel: Bruno Kessel (example)
+    yardDogs: The yard dogs (example)
+    pineThing: The thing in the pines (example)
+    ottilieBrandt: Sheriff Ottilie Brandt (example)
+    lanternChoir: The Lantern Choir (example)
 create:
     title: Create document
     prompt: Find the kind of document, name it, and choose where it goes.

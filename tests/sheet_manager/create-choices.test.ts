@@ -101,6 +101,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         const byKey = new Map(listChoices(choices()).map((choice) => [choice.key, choice]));
         expect(byKey.get('wod-v5/vampire')!.examples.map(({ id }) => id)).toEqual([
             'mirela-voss::example',
+            'ottilie-brandt::example',
         ]);
         expect(byKey.get('star-wars-wod/vehicle')!.examples).toHaveLength(3);
         expect(byKey.get('star-wars-wod/droid')!.examples).toEqual([]);

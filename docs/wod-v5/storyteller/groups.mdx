@@ -1,0 +1,49 @@
+---
+sidebar_position: 2
+title: Groups
+description: Cults, cells, coteries, and companies — what they want, what they have, and who belongs to them.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import {
+    CreateCharacterButton,
+    TemplatePreview,
+    v5ExampleDocument,
+} from '@site/src/sheet_manager/docsEmbeds';
+
+# Groups
+
+:::tip[In short]
+A **Group** is a document for an organization: what kind it is, what it wants, what it owns, how dangerous it is, and its members. Every member's sheet shows the groups it belongs to, so you can walk from a face to its friends.
+:::
+
+## What the sheet holds
+
+- **Kind of group**, **Threat** (zero to five dots, for your eyes only), **Description**, **Goals**, **Resources and holdings**, and **Notes**.
+- **Members**: any V5 documents — mortals, Storyteller characters, hunters, vampires, even other groups. Type a name to add one; a member you deleted shows as gone and can be removed.
+- **Member of**: every V5 character sheet ends with the groups that list it. It is read from the groups, so you only ever add members on the group.
+
+Groups have no dice of their own: when a group acts, roll for the members who act for it.
+
+## Example
+
+The Lantern Choir sings in a flooded chapel and feeds the thing in the pines. Copying it also copies its three members and links them to the copy, so the shipped examples stay untouched.
+
+<TWWrapper>
+    <TemplatePreview
+        document={v5ExampleDocument('lantern-choir::example')}
+        systemId="wod-v5"
+        template="v5-group-brief"
+    />
+</TWWrapper>
+
+<br />
+<br />
+
+<TWWrapper>
+    <CreateCharacterButton
+        systemId="wod-v5"
+        definitionId="v5-group"
+        exampleId="lantern-choir::example"
+    />
+</TWWrapper>

@@ -5,6 +5,7 @@ import {
     CreateUnavailableError,
 } from '@site/src/sheet_manager/features/documents/createFromChoice';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
+import { serializeDocumentExport } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
@@ -220,5 +221,48 @@ describe('the copied portrait on the sheet', () => {
         render(createElement(CharacterSheet));
         const portrait = document.querySelector('[data-template-root] img');
         expect(portrait?.getAttribute('src')).toBe('/ru/img/mirela_voss.webp');
+    });
+});
+
+describe('copying a group example with its members (spec 040, US5)', () => {
+    it('copies the members first and links the group copy to the member copies', () => {
+        const group = createFromChoice(
+            { systemId: 'wod-v5', definitionId: 'v5-group' },
+            { exampleId: 'lantern-choir::example' }
+        );
+        const { documents } = useDocumentStore.getState();
+        const members = group.templateValues.members as string[];
+        expect(members).toHaveLength(3);
+        expect(members.some((id) => id.endsWith('::example'))).toBe(false);
+        expect(
+            members.map((id) => documents.find((document) => document.id === id)?.metadata.title)
+        ).toEqual(['The thing in the pines', 'Bruno Kessel', 'Sheriff Ottilie Brandt']);
+        // The group opens; its members are only added.
+        expect(useDocumentStore.getState().currentDocumentId).toBe(group.id);
+        expect(readCreatePreferences().recent).toEqual(['wod-v5/v5-group']);
+    });
+
+    it('makes copies that export and import back without errors (FR-010)', () => {
+        createFromChoice(
+            { systemId: 'wod-v5', definitionId: 'v5-group' },
+            { exampleId: 'lantern-choir::example' }
+        );
+        for (const document of useDocumentStore.getState().documents) {
+            const exported = JSON.parse(serializeDocumentExport(document));
+            expect(() => systemRegistry.parseDocument(exported)).not.toThrow();
+        }
+    });
+
+    it('ships Storyteller examples that parse', () => {
+        const definition = systemRegistry.getDocumentDefinition('wod-v5', 'v5-storyteller')!;
+        expect(definition.examples!.map(({ id }) => id)).toEqual([
+            'ines-ruiz::example',
+            'bruno-kessel::example',
+            'yard-dogs::example',
+            'pine-thing::example',
+        ]);
+        for (const example of definition.examples!) {
+            expect(() => definition.schema.parse(example.create().data)).not.toThrow();
+        }
     });
 });

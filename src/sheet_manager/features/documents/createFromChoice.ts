@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 
+import { reportSheetIssue } from '../../diagnostics';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
@@ -72,6 +73,17 @@ function exampleStart(definition: DocumentDefinition, example: UnknownDocumentEn
     };
 }
 
+/** Values naming one of the example ids now name its copy (`string` or `string[]` values). */
+function relink(values: Record<string, unknown>, copies: ReadonlyMap<string, string>) {
+    const swap = (value: unknown): unknown =>
+        typeof value === 'string'
+            ? (copies.get(value) ?? value)
+            : Array.isArray(value)
+              ? value.map(swap)
+              : value;
+    return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, swap(value)]));
+}
+
 /**
  * The one create path of the dialog and the documentation buttons: the page the library chose,
  * the name, an example's copy, the folder, and the kind recorded as recent.
@@ -80,6 +92,12 @@ export function createFromChoice(
     target: CreateTarget,
     options: CreateOptions = {}
 ): UnknownDocumentEnvelope {
+    const created = createCopy(target, options);
+    rememberRecent(choiceKey(target.systemId, target.definitionId, target.settingId));
+    return created;
+}
+
+function createCopy(target: CreateTarget, options: CreateOptions): UnknownDocumentEnvelope {
     const { systemId, definitionId, settingId } = target;
     const definition = systemRegistry.getDocumentDefinition(systemId, definitionId);
     const example = options.exampleId
@@ -100,6 +118,37 @@ export function createFromChoice(
         defaultPages: useDocumentTypeStore.getState().defaultPages,
     });
     const start = example ? exampleStart(definition, example.create()) : undefined;
+    // Companions first (a group's members), so the copy can name their copies.
+    if (start && example?.companions?.length) {
+        const copies = new Map<string, string>();
+        for (const companion of example.companions) {
+            const source = systemRegistry
+                .getDocumentDefinition(systemId, companion.definitionId)
+                ?.examples?.find(({ id }) => id === companion.exampleId);
+            if (!source) {
+                reportSheetIssue({
+                    code: 'create-kind-unavailable',
+                    message: 'An example names a companion example that is not installed',
+                    details: { exampleId: options.exampleId, companion: companion.exampleId },
+                });
+                continue;
+            }
+            const copy = createCopy(
+                {
+                    systemId,
+                    definitionId: companion.definitionId,
+                    ...(settingId ? { settingId } : {}),
+                },
+                {
+                    exampleId: companion.exampleId,
+                    activate: false,
+                    parentId: options.parentId ?? null,
+                }
+            );
+            copies.set(source.create().id, copy.id);
+        }
+        start.templateValues = relink(start.templateValues, copies) as typeof start.templateValues;
+    }
     const typed = options.name?.trim() ?? '';
     const title = typed || start?.title || (example ? translate(example.label) : '');
     const data = typed
@@ -120,6 +169,5 @@ export function createFromChoice(
         ...(data === undefined ? {} : { data }),
         ...(start ? { templateValues: start.templateValues } : {}),
     });
-    rememberRecent(choiceKey(systemId, definitionId, settingId));
     return created;
 }

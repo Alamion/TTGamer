@@ -13558,7 +13558,7 @@
      "hideTitle": true,
      "collapsible": false,
      "layout": "area",
-     "columns": 3,
+     "columns": 2,
      "children": [
       {
        "id": "name-field",
@@ -13584,9 +13584,10 @@
        "id": "threat-field",
        "label": "Threat",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+       "column": 1,
        "required": false,
        "valueKey": "threat",
-       "compact": true,
+       "compact": false,
        "type": "rating",
        "min": 0,
        "max": 5,
