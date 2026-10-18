@@ -79,7 +79,7 @@ function buildField(node: FieldLike, source: ValueSourceBinding | undefined): Te
             : translate(uiMessages.sheet.templates.editor.newField));
     if (!source) {
         return node.type === 'primitive'
-            ? { ...base, type: 'number', label, required: false, compact: false }
+            ? { ...base, type: 'number', label, required: false }
             : {
                   ...node,
                   ...base,
@@ -96,7 +96,6 @@ function buildField(node: FieldLike, source: ValueSourceBinding | undefined): Te
                 type: 'rating',
                 label,
                 required: false,
-                compact: false,
                 min: 0,
                 max: source.maximum,
                 presentation: 'dots',
@@ -108,7 +107,6 @@ function buildField(node: FieldLike, source: ValueSourceBinding | undefined): Te
                 type: 'primitive',
                 bindingKey: source.key,
                 label,
-                compact: false,
                 // A resource drawn as a tracker keeps its look on the game's pool (spec 020).
                 ...(node.type === 'resource' && node.poolTracker
                     ? { poolTracker: node.poolTracker }
@@ -119,7 +117,6 @@ function buildField(node: FieldLike, source: ValueSourceBinding | undefined): Te
                 ...base,
                 label,
                 required: false,
-                compact: false,
                 valueKey: source.coordinate,
             };
             if (source.valueType === 'number') return { ...shared, type: 'number', min: 0 };
@@ -139,12 +136,7 @@ export function listFromSource(
     node: ListLike,
     source: ListSourceBinding | undefined
 ): TemplateNode {
-    // Equipment sections decide their own look.
-    return keepSettings(
-        node,
-        buildList(node, source),
-        source?.kind === 'equipment' ? ['compact'] : []
-    );
+    return keepSettings(node, buildList(node, source));
 }
 
 function buildList(node: ListLike, source: ListSourceBinding | undefined): TemplateNode {
@@ -156,7 +148,6 @@ function buildList(node: ListLike, source: ListSourceBinding | undefined): Templ
             type: 'primitive',
             bindingKey: source.key,
             label: source.label,
-            compact: false,
         };
     }
     const shared: ListNode = {
@@ -196,8 +187,7 @@ export function trackerFromSource(
     node: TrackerLike,
     source: TrackBinding | undefined
 ): TemplateNode {
-    // A tracker's look is its display setting; `compact` stays off.
-    return keepSettings(node, buildTracker(node, source), ['compact']);
+    return keepSettings(node, buildTracker(node, source));
 }
 
 function buildTracker(node: TrackerLike, source: TrackBinding | undefined): TemplateNode {
@@ -213,7 +203,6 @@ function buildTracker(node: TrackerLike, source: TrackBinding | undefined): Temp
             type: 'primitive',
             bindingKey: source.key,
             label: node.label ?? source.label,
-            compact: false,
             tracker: {
                 display: own?.display ?? kept?.display ?? 'table',
                 ...(own
@@ -234,7 +223,6 @@ function buildTracker(node: TrackerLike, source: TrackBinding | undefined): Temp
         type: 'tracker',
         label: node.label ?? translate(uiMessages.sheet.templates.tracker.defaultLabel),
         required: false,
-        compact: false,
         ...defaults,
         ...(settings?.display ? { display: settings.display } : {}),
         ...(settings?.valueColumn ? { valueColumn: settings.valueColumn } : {}),

@@ -54,7 +54,7 @@ const template = CustomTemplateSchema.parse({
     ],
 });
 
-describe('a user page with short-form ratings (spec 033, US4)', () => {
+describe('a user brief with short labels (spec 033, US4; spec 041)', () => {
     afterEach(cleanup);
 
     it('derives the letters, honours the author’s, and falls back on a clash', () => {
@@ -66,9 +66,11 @@ describe('a user page with short-form ratings (spec 033, US4)', () => {
         expect(getByRole('spinbutton', { name: 'Luck' })).toBeTruthy();
     });
 
-    it('keeps a page without the short form as it was', () => {
+    it('shows full names on a full page (spec 041)', () => {
+        const { pageKind: _pageKind, ...full } = template;
+        void _pageKind;
         const plain = CustomTemplateSchema.parse({
-            ...template,
+            ...full,
             children: [
                 {
                     id: 'luck',
@@ -77,7 +79,6 @@ describe('a user page with short-form ratings (spec 033, US4)', () => {
                     min: 0,
                     max: 5,
                     required: false,
-                    compact: true,
                 },
             ],
         });

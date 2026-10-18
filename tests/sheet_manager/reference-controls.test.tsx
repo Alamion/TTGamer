@@ -16,8 +16,7 @@ function referenceField(multiple = false) {
         targetKinds: ['character'],
         multiple,
         required: false,
-        compact: false,
-    } as TemplateField;
+    } as unknown as TemplateField;
 }
 
 /** A campaign-sized roster: 100 characters plus a creature that must never be offered. */

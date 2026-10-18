@@ -4,6 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { localizeCatalogEntry } from '../../../../data/localizeCatalogEntry';
 import type { CustomTemplate, TemplateNode } from '../../../types/template';
+import { isContainerNode } from '../../../types/template';
 
 const CATALOG_PREFIX = 'catalog:';
 
@@ -95,7 +96,7 @@ function localizeUncached(node: TemplateNode, locale: string): TemplateNode {
             ),
         };
     }
-    if (next.type === 'section' || next.type === 'group') {
+    if (isContainerNode(next)) {
         const children = next.children.map((child) => localizeNode(child, locale));
         const unchanged = children.every((child, index) => child === next.children[index]);
         return unchanged && next === node ? node : { ...next, children };

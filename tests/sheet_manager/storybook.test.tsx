@@ -43,13 +43,13 @@ function variantsOf(node: TemplateNode): string[] {
     flag('span');
     switch (node.type) {
         case 'section':
-        case 'group': {
+        case 'group':
+        case 'brief': {
             flag('defaultCollapsed');
             flag('columnWidths');
-            if (node.type === 'group') {
+            if (node.type !== 'section') {
                 flag('hideTitle');
                 flag('collapsible');
-                flag('layout');
             }
             if (node.docsPath) {
                 tags.push(
@@ -86,7 +86,7 @@ function variantsOf(node: TemplateNode): string[] {
             flag('hideLabel');
             flag('textInput');
             flag('showNumbers');
-            flag('shortForm');
+            flag('fullLabel');
             flag('shortLabel');
             flag('dice');
             if (node.dice && node.presentation === 'number') tags.push('rating:dice-number');
@@ -148,7 +148,7 @@ function variantsOf(node: TemplateNode): string[] {
             }
             break;
         case 'primitive':
-            flag('compact');
+            flag('fullLabel');
             flag('part');
             if (node.tracker?.display) tags.push(`primitive:tracker:${node.tracker.display}`);
             if (node.tracker?.columns?.length) tags.push('primitive:tracker:columns');
@@ -184,8 +184,13 @@ const REQUIRED_VARIANTS = [
     'text:span',
     'group:hideTitle',
     'group:collapsible',
-    'group:layout',
-    'rating:shortForm',
+    'brief',
+    'brief:hideTitle',
+    'brief:collapsible',
+    'brief:defaultCollapsed',
+    'brief:docs:site',
+    'brief:columns:3',
+    'rating:fullLabel',
     'rating:shortLabel',
     'group:defaultCollapsed',
     'group:visibleWhen',
@@ -254,7 +259,7 @@ const REQUIRED_VARIANTS = [
     'tracker:count',
     'tracker:hideLabel',
     'tracker:value-hidden',
-    'primitive:compact',
+    'primitive:fullLabel',
     'primitive:part',
     'primitive:tracker:table',
     'primitive:tracker:strip',
@@ -314,6 +319,7 @@ describe('element storybook (constitution VI, T-069)', () => {
         expect(issues).toEqual(['fields: unknown-coordinate missing-value']);
         expect(HANDWRITTEN_STORIES.map(({ id }) => id)).toEqual([
             'containers',
+            'brief',
             'fields',
             'catalog-fields',
             'user-catalog',

@@ -109,7 +109,6 @@ export const PORTRAIT: TemplateField = {
     type: 'image',
     label: 'Portrait',
     valueKey: 'portrait',
-    compact: false,
     required: false,
 };
 

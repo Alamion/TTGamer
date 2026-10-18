@@ -36,7 +36,12 @@ import {
 } from '../../../systems/templateBindings';
 import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
+import {
+    fieldValueKey,
+    isContainerNode,
+    isTemplateField,
+    tableValueKey,
+} from '../../../types/template';
 import {
     coerceStoredValue,
     pickLabelKey,
@@ -46,7 +51,13 @@ import {
 } from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
-import { AreaLayoutContext, BriefGroupContext, forArea } from './areaLayout';
+import {
+    AreaLayoutContext,
+    BriefGroupContext,
+    forArea,
+    PageKindContext,
+    useBriefPage,
+} from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
 import { useCatalogSuggestions } from './catalogSuggestions';
@@ -117,6 +128,7 @@ function FieldCell({
     value: unknown;
 }) {
     const template = pageApi.template!;
+    const brief = useBriefPage();
     const catalogText = useFromCatalogText(placed, pageApi);
     // A From catalog text stands in, muted, while the field is empty (spec 038 D9).
     const field: TemplateField =
@@ -146,8 +158,7 @@ function FieldCell({
                         ...(field.labelMessage ? { labelMessage: field.labelMessage } : {}),
                         ...(field.termRef ? { termRef: field.termRef } : {}),
                         ...(field.termHint === false ? { termHint: false } : {}),
-                        compact: field.compact,
-                        ...(field.shortForm ? { shortForm: true } : {}),
+                        ...(field.fullLabel ? { fullLabel: true } : {}),
                         ...(field.shortLabel ? { shortLabel: field.shortLabel } : {}),
                     }}
                     systemId={template.systemId}
@@ -166,7 +177,7 @@ function FieldCell({
     // A one-line text in a brief looks like its document-bound kin (caption, underlined value).
     if (
         field.type === 'text' &&
-        field.compact &&
+        brief &&
         !field.multiline &&
         !field.hideLabel &&
         !field.placeholder
@@ -272,12 +283,7 @@ function FieldCell({
         return (
             // A rating row is an inline-size container with no width of its own: among a brief's
             // flowing cells it gets one, or its dots narrow into pills.
-            <div
-                className={clsx(
-                    'grid grid-cols-1 gap-1',
-                    field.compact && 'min-w-48 flex-1 basis-48'
-                )}
-            >
+            <div className={clsx('grid grid-cols-1 gap-1', brief && 'min-w-48 flex-1 basis-48')}>
                 {controlElement}
                 {field.description && (
                     <span className="text-xs text-textSecondary">{field.description}</span>
@@ -339,7 +345,7 @@ function RatingScoreTracker({
 
 /** A From catalog text shown, never stored (spec 038 D9, mode `show`). */
 function CatalogTextOutput({ field, text }: { field: TemplateField; text: string | undefined }) {
-    return field.compact ? (
+    return useBriefPage() ? (
         <div className="grid min-w-24 flex-1 basis-24 gap-0">
             <span className={BRIEF.caption}>{field.label}</span>
             <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
@@ -364,6 +370,7 @@ function BoundFieldCell({
     catalogText?: string;
 }) {
     const bound = useBoundDocument();
+    const brief = useBriefPage();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
     const fallback = catalogText;
     const stored = bound
@@ -402,7 +409,7 @@ function BoundFieldCell({
         bound.update(fieldBindingUpdate(binding, bound.data, typed));
         if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
-    if (field.compact && field.type === 'text' && !binding.suggestions) {
+    if (brief && field.type === 'text' && !binding.suggestions) {
         return (
             <CompactTextField
                 label={field.label}
@@ -412,7 +419,7 @@ function BoundFieldCell({
             />
         );
     }
-    if (field.compact && field.type === 'text' && binding.suggestions) {
+    if (brief && field.type === 'text' && binding.suggestions) {
         return (
             <label className="grid min-w-24 flex-1 basis-24 gap-0">
                 <span className={BRIEF.caption}>{field.label}</span>
@@ -732,7 +739,7 @@ const NodeView = memo(function NodeView({
     showHidden?: boolean;
 }) {
     const template = pageApi.template!;
-    const docsPath = node.type === 'section' || node.type === 'group' ? node.docsPath : undefined;
+    const docsPath = isContainerNode(node) ? node.docsPath : undefined;
     useEffect(() => {
         // The editor lists a broken link among the draft's issues instead.
         if (showHidden || !docsPath || parseDocsLink(docsPath)) return;
@@ -770,18 +777,21 @@ const NodeView = memo(function NodeView({
         );
     }
 
-    if (node.type === 'group') {
-        // Presentation (US3): a group is a titled surface card; collapsibility is opt-in and
-        // remembered per node (storageKey `template-<templateId>-<nodeId>`).
+    if (node.type === 'group' || node.type === 'brief') {
+        // Presentation (US3): a group is a titled surface card; a brief block (spec 041) the same
+        // without its box, its cells laid out by the area's width. Collapsibility is opt-in and
+        // remembered per node (storageKey `template-<templateId>-<nodeId>`), so a card made a
+        // block keeps its state.
+        const block = node.type === 'brief';
         return (
             <SectionCard
                 title={node.hideTitle ? undefined : node.title}
                 docsPath={node.hideTitle ? undefined : node.docsPath}
                 storageKey={node.collapsible && !node.hideTitle ? collapseKey : undefined}
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
-                dense={node.layout === 'area'}
+                dense={block}
             >
-                <BriefGroupContext.Provider value={node.layout === 'area'}>
+                <BriefGroupContext.Provider value={block}>
                     <ShortLabelScope nodes={node.children}>
                         <ChildrenGrid
                             parentId={node.id}
@@ -789,7 +799,7 @@ const NodeView = memo(function NodeView({
                             pageApi={pageApi}
                             columns={node.columns}
                             columnWidths={node.columnWidths}
-                            area={node.layout === 'area'}
+                            area={block}
                         />
                     </ShortLabelScope>
                 </BriefGroupContext.Provider>
@@ -993,7 +1003,7 @@ function ChildrenGrid({
             </div>
         );
     }
-    const denseList = nodes.some((node) => node.type === 'group' && node.layout === 'area');
+    const denseList = nodes.some((node) => node.type === 'brief');
     return (
         <div className={clsx('grid grid-cols-1', denseList ? BRIEF.groupGap : 'gap-4')}>
             {children}
@@ -1010,7 +1020,7 @@ export function countUnfilledRequired(
     walkChildren(template.children);
     function walkChildren(children: readonly TemplateNode[]): void {
         for (const node of children) {
-            if (node.type === 'section' || node.type === 'group') {
+            if (isContainerNode(node)) {
                 walkChildren(node.children);
                 continue;
             }
@@ -1075,7 +1085,9 @@ export function DeclarativeSheetView({
             <TermHintProvider>
                 <OverlayVersionContext.Provider value={version}>
                     <PageScopeContext.Provider value={pageScope}>
-                        <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                        <PageKindContext.Provider value={template.pageKind ?? 'full'}>
+                            <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                        </PageKindContext.Provider>
                     </PageScopeContext.Provider>
                 </OverlayVersionContext.Provider>
             </TermHintProvider>

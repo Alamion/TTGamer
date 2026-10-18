@@ -238,13 +238,12 @@
             "name": "Page",
             "systemId": "star-wars-wod",
             "documentKind": "character",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "name",
                     "label": "Name",
                     "required": false,
-                    "compact": false,
                     "type": "text",
                     "multiline": false
                 }
@@ -258,13 +257,12 @@
             "name": "Page",
             "systemId": "wod-v5",
             "documentKind": "character",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "name",
                     "label": "Name",
                     "required": false,
-                    "compact": false,
                     "type": "text",
                     "multiline": false
                 }
@@ -305,13 +303,12 @@
             "name": "Page",
             "systemId": "star-wars-wod",
             "documentKind": "character",
-            "schemaVersion": 3,
+            "schemaVersion": 4,
             "children": [
                 {
                     "id": "name",
                     "label": "Name",
                     "required": false,
-                    "compact": false,
                     "type": "text",
                     "multiline": false
                 }

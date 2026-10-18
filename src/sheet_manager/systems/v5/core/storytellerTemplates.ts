@@ -164,12 +164,13 @@ const standardCard = () =>
         { labelMessage: storyteller.sections.pools, docsPath: V5_DOCS.damage }
     );
 
-function page(id: string, name: string, children: TemplateNode[]): CustomTemplate {
+function page(id: string, name: string, children: TemplateNode[], brief = false): CustomTemplate {
     return {
         id,
         name,
         systemId: SystemIdSchema.parse('wod-v5'),
         documentKind: DocumentKindSchema.parse(STORYTELLER_KIND),
+        ...(brief ? { pageKind: 'brief' as const } : {}),
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children,
     };
@@ -223,5 +224,6 @@ export const v5StorytellerBriefTemplate = page(
         dense(traitList('powers'), { collapsed: true }),
         dense(notes(), { collapsed: true }),
         memberOfBriefGroup(),
-    ]
+    ],
+    true
 );

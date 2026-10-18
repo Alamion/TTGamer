@@ -54,7 +54,6 @@ describe('shortLabelsFor', () => {
     const node = (id: string, label: string, extra: object = {}) => ({
         id,
         label,
-        shortForm: true,
         ...extra,
     });
 
@@ -80,8 +79,8 @@ describe('shortLabelsFor', () => {
         expect(map.get('b')).toBe('Brace');
     });
 
-    it('skips nodes that are not in short form', () => {
-        const map = shortLabelsFor([node('a', 'Brawl', { shortForm: false })], 'en', 'ru', terms);
+    it('skips ratings that keep their full name', () => {
+        const map = shortLabelsFor([node('a', 'Brawl', { fullLabel: true })], 'en', 'ru', terms);
         expect(map.size).toBe(0);
     });
 });

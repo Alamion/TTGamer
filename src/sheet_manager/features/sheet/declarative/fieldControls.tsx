@@ -24,6 +24,7 @@ import type { TemplateField } from '../../../types/template';
 import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
 import { LINKED_FROM_LIMIT, useLinkedFrom } from '../../documents/linkedFrom';
+import { useBriefPage } from './areaLayout';
 import { useDocumentTraitDiceRoll } from './boundDocument';
 import { PoolTracker } from './PoolTracker';
 import { useShortLabel } from './shortLabels';
@@ -679,6 +680,7 @@ function IncomingReferences({
         [document, field.targetKinds]
     );
     const linked = useLinkedFrom(document?.id, scope);
+    const compact = useBriefPage();
     if (!linked) {
         return (
             <p className="text-sm text-textSecondary" aria-busy="true">
@@ -688,21 +690,21 @@ function IncomingReferences({
     }
     if (linked.documents.length === 0) {
         return (
-            <p className={clsx(field.compact ? 'text-xs' : 'text-sm', 'text-textSecondary')}>
+            <p className={clsx(compact ? 'text-xs' : 'text-sm', 'text-textSecondary')}>
                 {translate(referenceMessages.noneLinking)}
             </p>
         );
     }
     return (
         <div className="grid gap-1">
-            <ul className={referenceListClasses(field.compact)} aria-label={field.label}>
+            <ul className={referenceListClasses(compact)} aria-label={field.label}>
                 {linked.documents.map(({ id, name }) => (
                     <li
                         key={id}
                         className={clsx(
-                            referenceItemClasses(field.compact),
+                            referenceItemClasses(compact),
                             'text-textPrimary',
-                            !field.compact && 'border-border bg-bgBase'
+                            !compact && 'border-border bg-bgBase'
                         )}
                     >
                         <span>{name}</span>
@@ -791,7 +793,7 @@ function OutgoingReferences({
     const canSearch = !disabled && (field.multiple || selectedIds.length === 0);
     // A brief keeps the search behind an Add button.
     const [adding, setAdding] = useState(false);
-    const compact = field.compact;
+    const compact = useBriefPage();
 
     return (
         <div className={clsx('grid', compact ? 'gap-0.5' : 'gap-1')}>
@@ -1016,15 +1018,16 @@ function FormulaFieldControlRender({
     // Read-only computed value (FR-13): never stored, always recomputed by the hook layer;
     // failures surface as explicit labeled error states, never a silently wrong number.
     const top = fieldLabelPosition(field) === 'top';
+    const compact = useBriefPage();
     return (
         <div
             className={clsx(
                 top
                     ? 'grid gap-1'
-                    : field.compact
+                    : compact
                       ? 'flex items-baseline gap-1.5'
                       : 'flex items-baseline justify-between gap-3',
-                field.compact ? 'text-xs' : 'text-sm'
+                compact ? 'text-xs' : 'text-sm'
             )}
         >
             <span

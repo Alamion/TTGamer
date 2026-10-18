@@ -16,6 +16,7 @@ function idPrefixFor(node: TemplateNode): DraftIdPrefix {
         case 'group':
             return 'grp';
         case 'table':
+        case 'brief':
             return 'blk';
         case 'list':
             return 'lst';

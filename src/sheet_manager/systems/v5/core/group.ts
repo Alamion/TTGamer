@@ -9,6 +9,7 @@ import {
     SystemIdSchema,
 } from '../../../types/document';
 import {
+    type BriefNode,
     type CustomTemplate,
     type GroupNode,
     TEMPLATE_SCHEMA_VERSION,
@@ -71,7 +72,6 @@ const THREAT: TemplateField = {
     min: 0,
     max: 5,
     presentation: 'dots',
-    compact: false,
     required: false,
 } as TemplateField;
 
@@ -91,7 +91,8 @@ const identity = (compact = false) =>
         [
             v5Text('name', 'name', v5.fields.name, { compact }),
             field('group-kind', labels.fields.kind, { compact }),
-            { ...THREAT, compact },
+            // Five dots read better under their name than under three letters.
+            compact ? { ...THREAT, fullLabel: true as const } : THREAT,
         ],
         { hideTitle: true, labelMessage: v5.sections.identity }
     );
@@ -117,12 +118,13 @@ const foldedText = (id: string, label: { id: string; message: string }) =>
         { collapsed: true }
     );
 
-function page(id: string, name: string, children: TemplateNode[]): CustomTemplate {
+function page(id: string, name: string, children: TemplateNode[], brief = false): CustomTemplate {
     return {
         id,
         name,
         systemId: SystemIdSchema.parse('wod-v5'),
         documentKind: DocumentKindSchema.parse(GROUP_KIND),
+        ...(brief ? { pageKind: 'brief' as const } : {}),
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children,
     };
@@ -166,16 +168,21 @@ export const v5GroupSheetTemplate = page('v5-group-sheet', 'Group — Full sheet
     ),
 ]);
 
-export const v5GroupBriefTemplate = page('v5-group-brief', 'Group — Brief', [
-    dense(identity(true)),
-    dense(
-        group('members', labels.fields.members.message, [members(true)], {
-            labelMessage: labels.fields.members,
-        })
-    ),
-    foldedText('goals', labels.fields.goals),
-    foldedText('resources', labels.fields.resources),
-]);
+export const v5GroupBriefTemplate = page(
+    'v5-group-brief',
+    'Group — Brief',
+    [
+        dense(identity(true)),
+        dense(
+            group('members', labels.fields.members.message, [members(true)], {
+                labelMessage: labels.fields.members,
+            })
+        ),
+        foldedText('goals', labels.fields.goals),
+        foldedText('resources', labels.fields.resources),
+    ],
+    true
+);
 
 const views = labels.views;
 
@@ -216,7 +223,7 @@ export function memberOfField(compact = false): TemplateField {
 }
 
 /** A V5 character brief's "Member of", folded under its heading (the heading names the list). */
-export function memberOfBriefGroup(): GroupNode {
+export function memberOfBriefGroup(): BriefNode {
     return dense(
         group('member-of', labels.memberOf.message, [{ ...memberOfField(true), hideLabel: true }], {
             labelMessage: labels.memberOf,

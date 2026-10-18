@@ -3,11 +3,13 @@ import type { GameTermsMode } from '@site/src/shared/store/readerPrefsStore';
 import { createContext, useContext } from 'react';
 
 import { useTermHintSettings } from '../../../components/terms/TermHintContext';
+import { useBriefPage } from './areaLayout';
 
 /** What a rating needs to name its short form (a template field or a primitive node). */
 export interface ShortLabelNode {
     id: string;
-    shortForm?: boolean;
+    /** On a brief (spec 041): keep the full name instead of the short label. */
+    fullLabel?: true;
     shortLabel?: string;
     label?: string;
     labelMessage?: string;
@@ -57,7 +59,7 @@ export function shortLabelsFor(
     const labels = new Map<string, string>();
     const taken = new Set<string>();
     for (const node of nodes) {
-        if (!node.shortForm || node.label === undefined) continue;
+        if (node.fullLabel || node.label === undefined) continue;
         const short = shortLabelFor(node, node.label, locale, mode, terms);
         const key = short.toLocaleUpperCase(locale);
         if (taken.has(key)) {
@@ -74,13 +76,15 @@ export function shortLabelsFor(
 export const ShortLabelContext = createContext<ReadonlyMap<string, string> | null>(null);
 
 /**
- * The short label a rating draws, or `undefined` for its regular compact form: the group's map
- * first (clashes already resolved there), else computed alone for a rating outside a group.
+ * The short label a rating draws on a brief, or `undefined` for its full name: the group's map
+ * first (clashes already resolved there), else computed alone for a rating outside a group. A
+ * full page always shows the name (spec 041).
  */
 export function useShortLabel(node: ShortLabelNode, label: string): string | undefined {
     const group = useContext(ShortLabelContext);
     const settings = useTermHintSettings();
-    if (!node.shortForm) return undefined;
+    const brief = useBriefPage();
+    if (!brief || node.fullLabel) return undefined;
     const short =
         group?.get(node.id) ??
         shortLabelFor(node, label, settings?.locale ?? 'en', settings?.mode ?? 'ru');

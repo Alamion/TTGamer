@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useSyncExternalStore } from 'react';
 import { useStore } from 'zustand';
 
 import type { TemplateNode } from '../../../types/template';
@@ -17,6 +17,20 @@ export function useEditorSession(): EditorSession {
 /** A slice of the session state; the caller re-renders only when the slice changes. */
 export function useEditorState<T>(selector: (state: EditorSessionState) => T): T {
     return useStore(useEditorSession().store, selector);
+}
+
+const noSubscription = () => () => undefined;
+
+/**
+ * Whether the page being edited is a brief (spec 041); false outside an editing session (a
+ * settings panel rendered on its own).
+ */
+export function useDraftIsBrief(): boolean {
+    const session = useContext(EditorSessionContext);
+    return useSyncExternalStore(
+        session ? session.store.subscribe : noSubscription,
+        () => session?.store.getState().history.present.draft.pageKind === 'brief'
+    );
 }
 
 /** Nodes with at least one draft issue (marked in the outline and on the page). */

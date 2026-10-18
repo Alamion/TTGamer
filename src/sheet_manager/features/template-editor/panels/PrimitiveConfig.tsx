@@ -2,9 +2,10 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 
-import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
+import type { DocumentBindingDescriptor, TrackBinding } from '../../../systems/templateBindings';
 import type { PrimitiveNode, TemplateNode } from '../../../types/template';
 import type { NodeUpdates } from '../model/types';
+import { useDraftIsBrief } from '../session/context';
 import { FormulaField } from '../settings/FormulaField';
 import type { GroupedSettings } from '../settings/groupedSettings';
 import { inputClasses } from '../settings/inputClasses';
@@ -30,6 +31,25 @@ const t = (descriptor: { message: string }, values?: Record<string, string | num
  * The settings of a document-bound primitive per group (spec 022): its label (Content), the
  * binding and the edited part (Value), formula-bound limits (FR-12), the look, and the term hint.
  */
+/** A built-in track's settings; its default display follows the page kind (spec 041). */
+function BuiltInTrackerSettings({
+    node,
+    binding,
+    update,
+}: {
+    node: PrimitiveNode;
+    binding: TrackBinding;
+    update: (updates: NodeUpdates) => void;
+}) {
+    const brief = useDraftIsBrief();
+    return (
+        <TrackerSettings
+            {...builtInSettings(node, binding, () => update({ track: undefined }), brief)}
+            onChange={(change) => update(builtInSettingsUpdate(node, binding, change))}
+        />
+    );
+}
+
 export function primitiveSettings({
     bindings,
     node,
@@ -221,15 +241,7 @@ export function primitiveSettings({
                     ))}
                 </div>
             )}
-            {descriptor?.kind !== 'track' && !asTracker && (
-                <ToggleRow
-                    checked={node.compact}
-                    label={settingLabel('compact')}
-                    setting="compact"
-                    onChange={(compact) => update({ compact })}
-                />
-            )}
-            {descriptor?.kind !== 'track' && !asTracker && node.compact && (
+            {(descriptor?.kind === 'trait' || descriptor?.kind === 'resource') && !asTracker && (
                 <ShortFormSettings
                     node={node}
                     label={node.label ?? descriptor?.label ?? ''}
@@ -273,12 +285,7 @@ export function primitiveSettings({
             )}
             {descriptor?.kind === 'track' && (
                 <div data-setting-list="" data-setting="tracker" tabIndex={-1}>
-                    <TrackerSettings
-                        {...builtInSettings(node, descriptor, () => update({ track: undefined }))}
-                        onChange={(change) =>
-                            update(builtInSettingsUpdate(node, descriptor, change))
-                        }
-                    />
+                    <BuiltInTrackerSettings node={node} binding={descriptor} update={update} />
                 </div>
             )}
         </>

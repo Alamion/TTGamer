@@ -1,10 +1,11 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { formula, group, number, primitive } from '../../../templates/builders';
+import { denseBrief, formula, group, number, primitive } from '../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type CustomTemplate,
     type GroupNode,
+    isContainerNode,
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
     type TemplateNode,
@@ -285,7 +286,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                     IDENTITY_FIELDS.filter(([key]) => ['name', 'concept', 'species'].includes(key)),
                     true
                 ),
-                { columns: 3, hideTitle: true, layout: 'area' }
+                { columns: 3, hideTitle: true }
             ),
             group(
                 'brief-attributes',
@@ -293,7 +294,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3, layout: 'area' }
+                { columns: 3 }
             ),
             group(
                 'brief-abilities',
@@ -301,48 +302,43 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ABILITY_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3, collapsible: true, layout: 'area' }
+                { columns: 3, collapsible: true }
             ),
-            group(
-                'brief-resolve',
-                'Resolve',
-                [
-                    ...compactTraits(VIRTUE_KEYS),
-                    resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                        compact: true,
-                    }),
-                    ...(isDroid
-                        ? []
-                        : [
-                              resource(
-                                  'resource-force-points',
-                                  'resource:force-points',
-                                  'Force Points',
-                                  { compact: true }
-                              ),
-                              resource(
-                                  'resource-dark-side',
-                                  'resource:dark-side-resistance',
-                                  'Dark Side Resistance',
-                                  { compact: true, shortForm: true }
-                              ),
-                          ]),
-                    formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
-                        compact: true,
-                    }),
-                    ...(isDroid
-                        ? []
-                        : [
-                              formula(
-                                  'derived-initiative-saber',
-                                  'Initiative (Saber)',
-                                  DERIVED.initiativeSaber,
-                                  { compact: true }
-                              ),
-                          ]),
-                ],
-                { layout: 'area' }
-            ),
+            group('brief-resolve', 'Resolve', [
+                ...compactTraits(VIRTUE_KEYS),
+                resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                    compact: true,
+                }),
+                ...(isDroid
+                    ? []
+                    : [
+                          resource(
+                              'resource-force-points',
+                              'resource:force-points',
+                              'Force Points',
+                              { compact: true }
+                          ),
+                          resource(
+                              'resource-dark-side',
+                              'resource:dark-side-resistance',
+                              'Dark Side Resistance',
+                              { compact: true, shortForm: true }
+                          ),
+                      ]),
+                formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
+                    compact: true,
+                }),
+                ...(isDroid
+                    ? []
+                    : [
+                          formula(
+                              'derived-initiative-saber',
+                              'Initiative (Saber)',
+                              DERIVED.initiativeSaber,
+                              { compact: true }
+                          ),
+                      ]),
+            ]),
             group(
                 'brief-health',
                 isDroid ? 'Damage' : 'Health',
@@ -352,13 +348,13 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                         label: isDroid ? 'Damage' : 'Health',
                     }),
                 ],
-                { hideTitle: true, layout: 'area' }
+                { hideTitle: true }
             ),
             group(
                 'brief-weapons',
                 'Weapons',
                 [primitive('equipment-weapons', 'equipment:weapons')],
-                { collapsible: true, defaultCollapsed: true, layout: 'area' }
+                { collapsible: true, defaultCollapsed: true }
             ),
         ],
     };
@@ -468,7 +464,7 @@ function withLabelMessages(node: TemplateNode): TemplateNode {
     if (next.type === 'text' && next.placeholder === 'Character biography...') {
         next = { ...next, placeholderMessage: sheetMessages.base.biographyPlaceholder.id };
     }
-    return next.type === 'section' || next.type === 'group'
+    return isContainerNode(next)
         ? { ...next, children: next.children.map(withLabelMessages) }
         : next;
 }
@@ -481,6 +477,6 @@ function translatable(template: CustomTemplate): CustomTemplate {
 export const starWarsCharacterTemplates: readonly CustomTemplate[] = [
     translatable(fullSheet('full-sheet', 'Full sheet', 'character')),
     translatable(fullSheet('droid-sheet', 'Droid sheet', 'droid')),
-    translatable(briefSheet('brief', 'Brief', 'character')),
-    translatable(briefSheet('droid-brief', 'Droid brief', 'droid')),
+    denseBrief(translatable(briefSheet('brief', 'Brief', 'character'))),
+    denseBrief(translatable(briefSheet('droid-brief', 'Droid brief', 'droid'))),
 ];

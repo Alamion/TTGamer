@@ -300,7 +300,7 @@ function fodderBrief(): CustomTemplate {
                     { ...willpower(true), column: 1 },
                     { ...soak(true), column: 2 },
                 ] as TemplateNode[],
-                { columns: 3, labelMessage: entities.pools, layout: 'area' }
+                { columns: 3, labelMessage: entities.pools }
             ),
             group(
                 'brief-abilities',

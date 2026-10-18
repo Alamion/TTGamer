@@ -58,7 +58,7 @@ import {
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
-import { BriefGroupContext } from './areaLayout';
+import { BriefGroupContext, useBriefPage } from './areaLayout';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { PageScopeContext } from './PageScope';
@@ -574,6 +574,7 @@ function PrimitiveTraitBody({
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'trait' }>;
 }) {
     const bound = useBoundDocument();
+    const brief = useBriefPage();
     const traitDiceRoll = useDocumentTraitDiceRoll();
     const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
@@ -593,7 +594,7 @@ function PrimitiveTraitBody({
                 [descriptor.traitKey]: { ...trait, ...updates },
             },
         });
-    const rowKind = traitRowKind(node.compact, descriptor);
+    const rowKind = traitRowKind(brief, descriptor);
     const showSpecialization = descriptor.row?.specialization ?? true;
     const showFlags = descriptor.row?.flags ?? true;
     if (rowKind === 'compact') {
@@ -711,6 +712,7 @@ function PrimitiveResourceBody({
     maxState?: PrimitiveMaxState;
 }) {
     const bound = useBoundDocument();
+    const brief = useBriefPage();
     const scope = useContext(PageScopeContext);
     const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
@@ -804,7 +806,7 @@ function PrimitiveResourceBody({
             </div>
         );
     }
-    if (node.compact) {
+    if (brief) {
         const asPool = descriptor.mode === 'pool' && !node.part;
         // A rating's term row is a size container (zero intrinsic width): where a brief column
         // wraps its cells as chips, it takes a width or the next cell covers it.
@@ -858,7 +860,7 @@ function PrimitiveResourceBody({
                 minimal={minimum > 0 ? minimum : undefined}
                 disabled={readOnly}
                 onChange={writeValue}
-                size={node.compact ? 'sm' : 'md'}
+                size={brief ? 'sm' : 'md'}
             />
             {maxState?.degraded && (
                 <p role="alert" className="text-xs text-error">
@@ -912,6 +914,7 @@ function PrimitiveFieldBody({
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'field' }>;
 }) {
     const bound = useBoundDocument();
+    const brief = useBriefPage();
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
@@ -951,7 +954,7 @@ function PrimitiveFieldBody({
             <EnumField
                 label={label}
                 hideLabel={node.hideLabel}
-                compact={node.compact}
+                compact={brief}
                 value={value}
                 options={descriptor.options}
                 disabled={readOnly}
@@ -959,7 +962,7 @@ function PrimitiveFieldBody({
             />
         );
     }
-    return node.compact ? (
+    return brief ? (
         <CompactTextField label={label} value={value} disabled={readOnly} onChange={write} />
     ) : (
         <IdentityField

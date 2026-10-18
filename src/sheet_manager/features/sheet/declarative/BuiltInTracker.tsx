@@ -30,6 +30,7 @@ import {
     type TrackerClick,
     trackerDisplayOf,
 } from '../data/trackerModel';
+import { useBriefPage } from './areaLayout';
 import type { BoundDocument } from './boundDocument';
 import {
     nextMemberLabel,
@@ -77,6 +78,7 @@ export function BuiltInTracker({
     documentKind: string;
     page?: TrackerPageAccess;
 }) {
+    const brief = useBriefPage();
     const label = node.label ?? descriptor.label;
     const readOnly = bound.readOnly;
     const settings = node.tracker;
@@ -211,7 +213,7 @@ export function BuiltInTracker({
     const model = builtInTrackerModel({
         label,
         hideLabel: node.hideLabel ?? false,
-        display: trackerDisplayOf(node, computed !== undefined),
+        display: trackerDisplayOf(node, computed !== undefined, brief),
         levels,
         marks,
         valueColumn: {

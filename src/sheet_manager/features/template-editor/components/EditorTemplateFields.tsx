@@ -7,7 +7,9 @@ import {
     templateTargetValue,
 } from '../../sheet/data/documentLabels';
 import { describeDraft, setDraftTarget } from '../model/page';
+import { pageKindOf } from '../model/pageKind';
 import { type EditorDraft } from '../model/types';
+import { switchPage } from '../operations/switches';
 import { useEditorSession } from '../session/context';
 import { inputClasses } from '../settings/inputClasses';
 import { EditorHelp } from './EditorHelp';
@@ -67,6 +69,25 @@ export function EditorTemplateFields({
                     ))}
                 </select>
                 <EditorHelp topic="movingPage" about={translate(editor.target)} />
+                <select
+                    value={pageKindOf(draft)}
+                    onChange={(event) =>
+                        session.run(
+                            switchPage(
+                                event.target.value === 'brief' ? 'brief' : 'full',
+                                draft.name.trim() || translate(editor.newSection)
+                            )
+                        )
+                    }
+                    // A shipped page keeps the kind of its view (spec 041).
+                    disabled={targetFixed}
+                    aria-label={translate(editor.pageKind)}
+                    data-setting="pageKind"
+                    className={`${inputClasses} max-w-full`}
+                >
+                    <option value="full">{translate(editor.pageKindFullOption)}</option>
+                    <option value="brief">{translate(editor.pageKindBriefOption)}</option>
+                </select>
             </div>
             <input
                 value={draft.description ?? ''}

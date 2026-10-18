@@ -21,7 +21,6 @@ function textField(id: string, label = id, valueKey?: string) {
         type: 'text' as const,
         label,
         required: false,
-        compact: false,
         multiline: false,
         ...(valueKey ? { valueKey } : {}),
     };
@@ -202,7 +201,6 @@ describe('recursive template schema v3 (T006)', () => {
                               type: 'image',
                               label: 'Portrait',
                               required: false,
-                              compact: false,
                           }
                         : textField('portrait'),
                 ],
@@ -222,7 +220,6 @@ describe('recursive template schema v3 (T006)', () => {
                         label: 'D',
                         formula: 'a + b',
                         required: false,
-                        compact: false,
                     },
                 ],
             }).success
@@ -260,7 +257,6 @@ describe('value shapes: lists and images (T003/T006)', () => {
             type: 'image' as const,
             label: 'Portrait',
             required: false,
-            compact: false,
         };
         expect(
             coerceStoredValue(imageField, { source: 'url', url: 'https://x.test/a.png' })

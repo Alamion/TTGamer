@@ -66,7 +66,6 @@ const freeField = () =>
         description: 'Steel',
         labelPosition: 'left',
         hideLabel: true,
-        compact: true,
         column: 2,
         span: 2,
         visibleWhen: condition,
@@ -233,14 +232,13 @@ describe('setting registry (spec 025, US1)', () => {
 });
 
 describe('settings across a source or kind switch (spec 025, FR-001, FR-002)', () => {
-    it('keeps span, display condition, compact, hidden label, and help when bound to a trait', () => {
+    it('keeps span, display condition, hidden label, and help when bound to a trait', () => {
         const bound = fieldFromSource(freeField() as never, trait);
         expect(bound).toMatchObject({
             type: 'rating',
             column: 2,
             span: 2,
             visibleWhen: condition,
-            compact: true,
             hideLabel: true,
             description: 'Steel',
             labelPosition: 'left',
@@ -275,7 +273,6 @@ describe('settings across a source or kind switch (spec 025, FR-001, FR-002)', (
             for (const [key] of carried) {
                 const value = (from as unknown as Record<string, unknown>)[key];
                 if (value === undefined || !settingApplies(key, next as never)) continue;
-                if (name === 'track' && key === 'compact') continue; // trackers draw their own look
                 expect(next[key], `${name}: ${key}`).toEqual(value);
             }
         }

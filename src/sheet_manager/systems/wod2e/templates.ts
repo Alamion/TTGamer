@@ -4,6 +4,7 @@ import { denseBrief, formula, group, primitive } from '../../templates/builders'
 import { DocumentKindSchema, SystemIdSchema } from '../../types/document';
 import {
     type CustomTemplate,
+    isContainerNode,
     TEMPLATE_SCHEMA_VERSION,
     type TemplateNode,
 } from '../../types/template';
@@ -136,7 +137,7 @@ function briefChildren(): TemplateNode[] {
             ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3, layout: 'area' }
+            { columns: 3 }
         ),
         group(
             'brief-abilities',
@@ -144,7 +145,7 @@ function briefChildren(): TemplateNode[] {
             ABILITY_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3, collapsible: true, layout: 'area' }
+            { columns: 3, collapsible: true }
         ),
         group(
             'brief-resolve',
@@ -252,7 +253,7 @@ function withLabelMessages(node: TemplateNode): TemplateNode {
     if (next.type === 'text' && next.placeholder === 'Character biography...') {
         next = { ...next, placeholderMessage: sheet.base.biographyPlaceholder.id };
     }
-    return next.type === 'section' || next.type === 'group'
+    return isContainerNode(next)
         ? { ...next, children: next.children.map(withLabelMessages) }
         : next;
 }

@@ -8,7 +8,12 @@ import {
     trackVariantLengths,
 } from '../systems/templateBindings';
 import { type UserCatalog, UserCatalogSchema } from '../systems/userCatalogs';
-import { type CustomTemplate, CustomTemplateSchema, type TemplateNode } from '../types/template';
+import {
+    type CustomTemplate,
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+    type TemplateNode,
+} from '../types/template';
 import type { TemplatePageValues } from '../types/templateValues';
 
 /**
@@ -36,7 +41,8 @@ function story(
     note: string,
     target: { systemId: string; documentKind: string },
     children: NodeInput[],
-    values?: TemplatePageValues
+    values?: TemplatePageValues,
+    brief = false
 ): ElementStory {
     return {
         id,
@@ -46,7 +52,8 @@ function story(
         template: CustomTemplateSchema.parse({
             id: `storybook-${id}`,
             name: `Storybook: ${title}`,
-            schemaVersion: 3,
+            schemaVersion: TEMPLATE_SCHEMA_VERSION,
+            ...(brief ? { pageKind: 'brief' } : {}),
             ...target,
             children,
         }),
@@ -69,6 +76,11 @@ const group = (id: string, title: string, children: NodeInput[], extra: NodeInpu
     collapsible: false,
     children,
     ...extra,
+});
+
+const block = (id: string, title: string, children: NodeInput[], extra: NodeInput = {}) => ({
+    ...group(id, title, children, extra),
+    type: 'brief',
 });
 
 const options = (count: number) =>
@@ -131,31 +143,6 @@ const containers = story(
                 text('unpinned-a', 'Unpinned → column 1'),
                 text('unpinned-b', 'Unpinned → column 1'),
                 text('pinned', 'Pinned to column 3', { column: 3 }),
-            ],
-        },
-        {
-            id: 'section-brief-look',
-            type: 'section',
-            title: 'Brief look: columns follow the width of the area',
-            children: [
-                group(
-                    'group-area',
-                    'Short labels in area columns',
-                    [
-                        ...['Strength', 'Dexterity', 'Stamina'].map((label, index) => ({
-                            id: `area-${label.toLowerCase()}`,
-                            type: 'rating' as const,
-                            label,
-                            max: 5,
-                            required: false,
-                            compact: true,
-                            shortForm: true,
-                            column: index + 1,
-                        })),
-                        { ...text('area-name', 'Name'), compact: true },
-                    ],
-                    { columns: 3, layout: 'area' }
-                ),
             ],
         },
         {
@@ -341,23 +328,6 @@ const fields = story(
                     label: 'Rating, maximum from "Number"',
                     max: 10,
                     maxFrom: 'number-plain',
-                },
-                {
-                    id: 'rating-short',
-                    type: 'rating',
-                    label: 'Rating: short label',
-                    max: 5,
-                    compact: true,
-                    shortForm: true,
-                },
-                {
-                    id: 'rating-short-own',
-                    type: 'rating',
-                    label: 'Rating: own short label',
-                    max: 5,
-                    compact: true,
-                    shortForm: true,
-                    shortLabel: 'OWN',
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
                 {
@@ -896,7 +866,6 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                 ? [
                       primitive('current'),
                       primitive('max', { part: 'max' }),
-                      primitive('compact', { compact: true }),
                       // Spec 020: the pool as one tracker, next to the dot rows above.
                       primitive('tracker', { poolTracker: { display: 'row' } }),
                       primitive('tracker-locked', {
@@ -906,7 +875,7 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                       }),
                       primitive('tracker-line', { poolTracker: { display: 'line' } }),
                   ]
-                : [primitive('full'), primitive('compact', { compact: true })];
+                : [primitive('full')];
         case 'track':
             return [
                 primitive('table', { tracker: { display: 'table' } }),
@@ -928,7 +897,28 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
         case 'rows':
             return [primitive('full')];
         default:
-            return [primitive('full'), primitive('compact', { compact: true })];
+            return [primitive('full')];
+    }
+}
+
+/** The same binding on a brief (spec 041): its compact look, and a rating that keeps its name. */
+function briefBoundNodes(binding: DocumentBindingDescriptor, index: number): NodeInput[] {
+    const id = `brief-bound-${index}`;
+    const primitive = (suffix: string, extra: NodeInput = {}): NodeInput => ({
+        id: `${id}-${suffix}`,
+        type: 'primitive',
+        bindingKey: binding.key,
+        ...extra,
+    });
+    switch (binding.kind) {
+        case 'trait':
+        case 'resource':
+            return [primitive('short'), primitive('full-label', { fullLabel: true })];
+        case 'field':
+        case 'track':
+            return [primitive('brief')];
+        default:
+            return [];
     }
 }
 
@@ -960,11 +950,33 @@ export function boundPartStories(): ElementStory[] {
                 story(
                     `bound-${system.id}-${kind}`,
                     `Built-in parts: ${system.id} / ${kind}`,
-                    'Each binding shape of this system once: full, compact, and part or layout variants.',
+                    'Each binding shape of this system once: full, part, and layout variants.',
                     { systemId: system.id, documentKind: kind },
                     children as unknown as NodeInput[]
                 )
             );
+            const briefBlocks = picked
+                .map((binding, index) => ({
+                    id: `brief-part-${index}`,
+                    type: 'brief',
+                    title: `${bindingSignature(binding)} — ${binding.label}`,
+                    collapsible: false,
+                    children: briefBoundNodes(binding, index),
+                }))
+                .filter(({ children: nodes }) => nodes.length > 0);
+            if (briefBlocks.length > 0) {
+                stories.push(
+                    story(
+                        `bound-brief-${system.id}-${kind}`,
+                        `Built-in parts on a brief: ${system.id} / ${kind}`,
+                        'The same bindings on a brief: compact, with short labels unless a rating keeps its name.',
+                        { systemId: system.id, documentKind: kind },
+                        briefBlocks,
+                        undefined,
+                        true
+                    )
+                );
+            }
         }
     }
     return stories;
@@ -1192,8 +1204,64 @@ const buttons = story(
     }
 );
 
+/** A brief (spec 041): brief blocks only, every field compact, ratings with short labels. */
+const brief = story(
+    'brief',
+    'Brief page',
+    'A brief is built from brief blocks: a heading over a hairline, cells laid out by the width of the area. Its fields draw compact and its ratings show short labels, unless a rating keeps its full name.',
+    ENGINE,
+    [
+        text('brief-loose', 'A field outside any block'),
+        block(
+            'brief-ratings',
+            'Ratings',
+            [
+                ...['Strength', 'Dexterity', 'Stamina'].map((label, index) => ({
+                    id: `brief-${label.toLowerCase()}`,
+                    type: 'rating',
+                    label,
+                    max: 5,
+                    column: index + 1,
+                })),
+                {
+                    id: 'brief-own-short',
+                    type: 'rating',
+                    label: 'Own short label',
+                    max: 5,
+                    shortLabel: 'OWN',
+                    column: 1,
+                },
+                {
+                    id: 'brief-full-name',
+                    type: 'rating',
+                    label: 'Full name kept',
+                    max: 5,
+                    fullLabel: true,
+                    column: 2,
+                },
+            ],
+            { columns: 3, docsPath: '/docs/guide/template-editor/elements#brief-blocks' }
+        ),
+        block('brief-untitled', 'Hidden title', [text('brief-name', 'Name')], {
+            hideTitle: true,
+        }),
+        block(
+            'brief-folded',
+            'Starts folded',
+            [text('brief-notes', 'Notes', { multiline: true })],
+            {
+                collapsible: true,
+                defaultCollapsed: true,
+            }
+        ),
+    ],
+    undefined,
+    true
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
+    brief,
     fields,
     catalogFields,
     userCatalogFields,
@@ -1245,7 +1313,7 @@ export function fodderParityTemplate(): CustomTemplate | undefined {
     return CustomTemplateSchema.parse({
         id: 'storybook-tracker-parity',
         name: 'Storybook: fodder-group parity',
-        schemaVersion: 3,
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
         ...PARITY_TARGET,
         children: [
             {

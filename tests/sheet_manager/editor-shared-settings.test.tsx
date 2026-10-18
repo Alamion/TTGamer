@@ -138,7 +138,6 @@ describe('the settings area with several elements (spec 023, US3)', () => {
         }).children[0]!;
         expect(sharedSettingsFor([f1!, primitive]).map(({ key }) => key)).toEqual([
             'hideLabel',
-            'compact',
             'span',
             'visibleWhen',
         ]);

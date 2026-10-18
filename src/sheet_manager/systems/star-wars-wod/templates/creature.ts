@@ -343,7 +343,7 @@ function creatureBrief(): CustomTemplate {
                     }),
                     ...soakRows(true).map((row) => ({ ...row, column: 3 })),
                 ],
-                { columns: 3, labelMessage: entities.pools, layout: 'area' }
+                { columns: 3, labelMessage: entities.pools }
             ),
             group(
                 'brief-attacks',

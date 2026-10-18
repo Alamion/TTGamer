@@ -11,6 +11,7 @@ import {
 import type { CustomTemplate, RowButton } from '../../../types/template';
 import {
     fieldValueKey,
+    isContainerNode,
     isFormulaCondition,
     isTemplateField,
     listIsNamed,
@@ -287,11 +288,7 @@ export function validateTemplateReferences(
                 }
             }
         }
-        if (
-            (node.type === 'section' || node.type === 'group') &&
-            node.docsPath &&
-            !parseDocsLink(node.docsPath)
-        ) {
+        if (isContainerNode(node) && node.docsPath && !parseDocsLink(node.docsPath)) {
             issues.push({ code: 'invalid-docs-link', nodeId: node.id, key: node.docsPath });
         }
         if (node.visibleWhen && isFormulaCondition(node.visibleWhen)) {

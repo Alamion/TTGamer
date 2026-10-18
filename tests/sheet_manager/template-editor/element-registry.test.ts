@@ -41,10 +41,11 @@ describe('element registry (spec 025, US3)', () => {
 
     it('names each type as the outline and header did', () => {
         const nodes = nodeOfEachType();
-        expect(nodes.size).toBe(Object.keys(ELEMENT_EDITORS).length);
+        expect([...nodes.keys()].sort()).toEqual(Object.keys(ELEMENT_EDITORS).sort());
         const kinds: Record<string, string> = {
             section: `${translate(editor.elementGroup)} · ${translate(editor.kindSection)}`,
             group: `${translate(editor.elementGroup)} · ${translate(editor.kindCard)}`,
+            brief: translate(editor.elementBrief),
             list: `${translate(editor.elementList)} · ${translate(editor.kindEntries)}`,
             table: `${translate(editor.elementList)} · ${translate(editor.kindTable)}`,
             primitive: translate(fieldTypes.builtIn),
@@ -59,19 +60,41 @@ describe('element registry (spec 025, US3)', () => {
     });
 
     it('falls back to the binding or value key for unnamed elements', () => {
-        expect(
-            elementName({ id: 'p', type: 'primitive', bindingKey: 'trait:x', compact: false })
-        ).toBe('trait:x');
+        expect(elementName({ id: 'p', type: 'primitive', bindingKey: 'trait:x' })).toBe('trait:x');
         expect(
             elementName({ id: 'l', type: 'list', valueKey: 'notes', columns: 1 } as TemplateNode)
         ).toBe('notes');
     });
 
     it('offers group, field, list, and button in the "+" menu (a tracker is a field type)', () => {
-        expect(PALETTE.map(({ key }) => key)).toEqual(['group', 'field', 'list', 'button']);
-        expect(PALETTE[3]!.build(false).type).toBe('button');
-        expect(PALETTE[0]!.build(true).type).toBe('section');
-        expect(PALETTE[0]!.build(false).type).toBe('group');
+        const offered = (place: { atRoot: boolean; brief: boolean }) =>
+            PALETTE.filter((entry) => entry.offered?.(place) ?? true).map(({ key }) => key);
+        expect(offered({ atRoot: true, brief: false })).toEqual([
+            'group',
+            'field',
+            'list',
+            'button',
+        ]);
+        expect(offered({ atRoot: false, brief: false })).toEqual([
+            'group',
+            'field',
+            'list',
+            'button',
+        ]);
+        // A brief offers its own block, on the page itself only (spec 041).
+        expect(offered({ atRoot: true, brief: true })).toEqual([
+            'brief',
+            'field',
+            'list',
+            'button',
+        ]);
+        expect(offered({ atRoot: false, brief: true })).toEqual(['field', 'list', 'button']);
+        const build = (key: string, atRoot: boolean, brief = false) =>
+            PALETTE.find((entry) => entry.key === key)!.build({ atRoot, brief }).type;
+        expect(build('button', false)).toBe('button');
+        expect(build('group', true)).toBe('section');
+        expect(build('group', false)).toBe('group');
+        expect(build('brief', true, true)).toBe('brief');
     });
 
     it('fails the type check when a type has no entry', () => {

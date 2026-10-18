@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { shortLabelFor } from '../../sheet/declarative/shortLabels';
+import { useDraftIsBrief } from '../session/context';
 import { inputClasses } from '../settings/inputClasses';
 import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
@@ -9,35 +10,40 @@ import { ToggleRow } from './LayoutControls';
 
 const editor = uiMessages.sheet.templates.editor;
 
-/** A rating's brief look: the short label switch and the author's own letters (spec 033). */
+/**
+ * A rating's label on a brief (spec 033, 041): short letters by default, the author's own, or the
+ * full name. A full page always shows the name, so nothing is offered there.
+ */
 export function ShortFormSettings({
     node,
     label,
     prefix = '',
     onChange,
 }: {
-    node: { shortForm?: boolean; shortLabel?: string; labelMessage?: string; termRef?: string };
+    node: { fullLabel?: true; shortLabel?: string; labelMessage?: string; termRef?: string };
     /** The label the rating shows, for the letters it would take by default. */
     label: string;
     prefix?: string;
-    onChange: (updates: { shortForm?: boolean; shortLabel?: string }) => void;
+    onChange: (updates: { fullLabel?: true; shortLabel?: string }) => void;
 }) {
+    const brief = useDraftIsBrief();
+    if (!brief) return null;
     const derived = shortLabelFor(node, label, 'en', 'ru');
     return (
         <>
             <ToggleRow
-                checked={node.shortForm === true}
-                label={settingLabel('shortForm')}
-                setting={`${prefix}shortForm`}
+                checked={node.fullLabel === true}
+                label={settingLabel('fullLabel')}
+                setting={`${prefix}fullLabel`}
                 onChange={(checked) =>
                     onChange(
                         checked
-                            ? { shortForm: true }
-                            : { shortForm: undefined, shortLabel: undefined }
+                            ? { fullLabel: true, shortLabel: undefined }
+                            : { fullLabel: undefined }
                     )
                 }
             />
-            {node.shortForm === true && (
+            {node.fullLabel !== true && (
                 <SettingField label={settingLabel('shortLabel')} setting={`${prefix}shortLabel`}>
                     {(control) => (
                         <input

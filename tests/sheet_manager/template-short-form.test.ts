@@ -1,4 +1,7 @@
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 
 const template = (children: unknown[]) => ({
@@ -37,7 +40,7 @@ const group = (extra: Record<string, unknown> = {}) => ({
     ...extra,
 });
 
-describe('short form and area layout (spec 033)', () => {
+describe('short labels on a brief (spec 033, 041)', () => {
     it('leaves a page saved before the change exactly as it was', () => {
         const saved = template([group()]);
         const parsed = CustomTemplateSchema.parse(saved);
@@ -49,30 +52,32 @@ describe('short form and area layout (spec 033)', () => {
         expect(child).not.toHaveProperty('shortLabel');
     });
 
-    it('keeps the short form and its label on a primitive and on a rating field', () => {
-        const parsed = CustomTemplateSchema.parse(
-            template([
-                group({
-                    layout: 'area',
-                    children: [rating({ shortForm: true, shortLabel: 'STR' })],
-                }),
-                ratingField({ shortForm: true, shortLabel: 'LCK' }),
-            ])
-        );
-        const [first, second] = parsed.children as unknown as Array<Record<string, unknown>>;
-        expect(first).toMatchObject({ layout: 'area' });
-        expect((first?.children as unknown[])[0]).toMatchObject({
-            shortForm: true,
-            shortLabel: 'STR',
+    it('keeps the short label and the full name setting on a brief (spec 041)', () => {
+        const parsed = CustomTemplateSchema.parse({
+            ...template([
+                {
+                    ...group({ children: [rating({ shortLabel: 'STR' })] }),
+                    type: 'brief',
+                },
+                ratingField({ fullLabel: true }),
+            ]),
+            schemaVersion: TEMPLATE_SCHEMA_VERSION,
+            pageKind: 'brief',
         });
-        expect(second).toMatchObject({ shortForm: true, shortLabel: 'LCK' });
+        const [first, second] = parsed.children as unknown as Array<Record<string, unknown>>;
+        expect(first).toMatchObject({ type: 'brief' });
+        expect((first?.children as unknown[])[0]).toMatchObject({ shortLabel: 'STR' });
+        expect(second).toMatchObject({ fullLabel: true });
     });
 
-    it('refuses a short label of over four characters, an empty one, and an unknown layout', () => {
+    it('refuses a short label of over four characters, an empty one, and a false full name', () => {
         for (const bad of [
             template([group({ children: [rating({ shortLabel: 'TOOLONG' })] })]),
             template([group({ children: [rating({ shortLabel: '' })] })]),
-            template([group({ layout: 'cards' })]),
+            {
+                ...template([group({ children: [rating({ fullLabel: false })] })]),
+                schemaVersion: TEMPLATE_SCHEMA_VERSION,
+            },
         ]) {
             expect(CustomTemplateSchema.safeParse(bad).success).toBe(false);
         }
