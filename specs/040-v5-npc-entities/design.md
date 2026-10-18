@@ -1,0 +1,138 @@
+# Design: V5 Storyteller Characters and Groups
+
+**Spec**: [spec.md](spec.md) | **Date**: 2026-10-18
+
+## Approach
+
+Two new definitions on the V5 ruleset, beside the mortal (`systems/v5/core/`): the **Storyteller
+character** (kind `storyteller`, id `v5-storyteller`) and the **Group** (kind and id `v5-group`),
+both module-less and listed in `coreDefinitions`, so the library tree, the create dialog (spec 039),
+and user settings on V5 pick them up with no generic change. Each ships a full page and a brief as
+declarative templates built from `ruleset/templateParts.ts`, the parts the mortal, hunter, and
+vampire pages use. Data the system must validate, roll, or name (identity, pools, tracks, lists)
+lives in a small Zod schema with bindings; free description fields of the group and its members live
+in the template (value bag), as the Star Wars entities do. The tracking switch (US4) is one boolean
+on the vampire and hunter schemas read by the pages and the Hunger dice line. Order: US1 (schema,
+bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (tracking switch) → US5
+(examples, docs) → finish.
+
+## Decisions
+
+- **D1 — Two ruleset kinds, not per line**: `v5-storyteller` and `v5-group` in `systems/v5/core/`
+  with `module` unset and both ids in `coreDefinitions`. The group's kind is `v5-group`, not
+  `group`, so it never meets the Star Wars fodder group's kind in labels or filters. _Why_:
+  clarification 2026-10-18 (once, under the V5 rules); user settings reuse core kinds already.
+  _Rejected_: copies in Hunter and Vampire — duplicate kinds and pages.
+- **D2 — Standard pools are traits**: `pools.{physical,social,mental}` as `TraitBinding`s (map
+  `pools`, 0–15, no specialty or flags) so the trait row's die rolls through `traitPool` and names
+  the document like every sheet roll (US2). The page shows them as number ratings (template `rating`
+  with `presentation: 'number'` over the bridged coordinates `physical`, `social`, `mental`); if the
+  bridged trait primitive ignores the presentation, the primitive gains that option (extend, not
+  fork). _Rejected_: three number fields with a button each — three buttons that duplicate what
+  trait rows do.
+- **D3 — Exceptional pools and powers are system lists**: `exceptional` (`named-trait`, value 0–15)
+  and `powers` (`named-trait`, dots 0–5). `ListBinding` gains `maximum?` (default 5) and
+  `ListCatalogSupport` gains `catalogIds?` (several catalogs offered together). Pools suggest a new
+  shipped catalog `v5-skills` built from `V5_SKILL_GROUPS` labels (translated, no new text); powers
+  suggest `v5-vampire-disciplines` and `v5-hunter-edges`; free names stay as typed (clarification).
+  _Rejected_: template custom lists — no catalog suggestions over shipped catalogs, and rolls would
+  not name the kind's data.
+- **D4 — Health and Willpower with a set length**: `TrackBinding`s like the core ones, but the
+  length comes from number fields `health-max` / `willpower-max` (1–15) instead of attributes.
+  _Why_: the rules give Storyteller characters fixed Health and Willpower. No impairment penalty:
+  player sheets apply none either; the spec was corrected during planning (FR-004, US1, US2).
+- **D5 — Simple-foe difficulty**: field `difficulty` (0–5, 0 = none). The brief shows it as
+  "Difficulty N" and a spec 038 button "Roll 2×N" whose notation is built from the difficulty,
+  available only when it is above 0. _Why_: the rules' optional roll for simple foes; buttons
+  already roll from formulas. _Rejected_: a new element for simple foes.
+- **D6 — Members are a reference field of the group page**: a `reference` field (`multiple`,
+  coordinate `members`, target kinds: every V5 kind) on the shipped group pages; descriptive fields
+  (kind of group, description, goals, resources, threat 1–5, notes) are page fields too. _Why_:
+  references, their picker, missing-target display (`reference-target-missing`), and removal exist
+  (spec 017). Reference scope today offers only module-less kinds to a ruleset-level template:
+  `referenceScope.scopedKinds` changes so a **ruleset-level** page (no module, no user setting)
+  offers every kind of the ruleset, modules included. Line pages keep their scope. _Rejected_:
+  members in system data — a second reference mechanism.
+- **D7 — Back-links ("member of")**: `features/documents/memberOf.ts` finds the groups naming a
+  document: index entries with `definitionId === 'v5-group'` and the same system and setting, loaded
+  by id (`loadDocuments`, never a scan of the loaded cache), their `members` read from
+  `templateValues`. Bounded to 200 groups per scope (beyond: the first 200 by name and a
+  `group-backlinks-truncated` report); cached per entries list. A shipped `memberOf` element shows
+  the links on the Storyteller, mortal, hunter, and vampire briefs and full pages. _Why_: members
+  stay stored once (spec assumption); the index already carries the definition id. _Rejected_:
+  storing groups on members — two sources of truth.
+- **D8 — Tracking switch**: `trackHunger: boolean` (vampire, default true) and
+  `trackWillpower: boolean` (vampire and hunter, default true) in the schemas, a toggle in each
+  page's identity block, and `showWhen` on the Hunger, Rouse, and Willpower blocks. The Hunger dice
+  line returns 0 when `trackHunger` is false. Stored Hunger and Willpower are untouched. _Rejected_:
+  a page variant per state — doubles the shipped pages.
+- **D9 — Examples**: own-words examples in `systems/v5/core/examples.ts`: a mortal (police
+  detective), a ghoul retainer, an animal (guard dogs), a supernatural creature (a wolf-thing of the
+  woods), an antagonist vampire (a Sheriff, vampire kind), and a group (a cult) whose members are
+  three of them. Copying the group example (spec 039 `createFromChoice`) copies its member examples
+  first and points the copy's references at the new ids (`DocumentExample.companions`). _Rejected_:
+  group example with empty members — the docs could not show the link both ways.
+- **D10 — Docs**: `docs/wod-v5/rules/storyteller-characters.mdx` and `groups.mdx` (en + ru) with
+  embeds of the examples and their copy buttons; the Hunter and Vampire indexes link there. Glossary
+  terms (Storyteller character, exceptional dice pools, standard dice pools) join
+  `translations/glossary/v5.yaml`.
+
+## Changed types and data
+
+- New: `V5StorytellerSchema` (`name`, `concept`, `type` enum mortal|ghoul|animal|supernatural|
+  other, `difficulty`, `pools`, `healthMax`, `health`, `willpowerMax`, `willpower`, `exceptional`,
+  `powers`, `notes`, `metadata.imageUrl/portraitId`) and `V5GroupSchema` (`name`, `metadata`;
+  everything else in template values). Schema version 1, `migrate` identity.
+- Vampire and hunter schemas: optional `trackHunger` / `trackWillpower`, default `true`; existing
+  documents read unchanged, no migration.
+- `ListBinding.maximum?`, `ListCatalogSupport.catalogIds?`; `DocumentExample.companions?` (example
+  ids created with it, with the reference keys to rewrite).
+- `referenceScope.scopedKinds`: ruleset-level pages see module kinds too (D6).
+- Catalog `v5-skills` (from the profile labels). Translations: `ui/sheet/v5.yaml` gains
+  `storyteller.*` and `group.*` (fields, types, sections, views); examples in `documents.examples`;
+  glossary terms.
+- Diagnostics: `group-backlinks-truncated`.
+
+## Principles at risk
+
+- **I/II (boundaries)**: new kinds live in `systems/v5/`; generic code changes are options on
+  existing bindings, the reference scope rule, and the back-link reader over the index.
+- **VI (consistency)**: pages built from the shared template parts; the new list maximum and catalog
+  sets are binding options, shown in the storybook's bound-list story.
+- **VII (scale)**: back-links load at most 200 group documents by id; SC-004 measured with 30
+  members and 50 groups in a perf test.
+- **VIII (third-party)**: examples and docs in our own words; the Dark Pack badge comes from the V5
+  plugin's policy as for the other V5 kinds; no published stat block copied.
+
+## Tests
+
+- `tests/sheet_manager/systems/v5/storyteller.test.ts`: schema defaults and limits (clamped pools,
+  track lengths), bindings resolve, `v5-skills` catalog in both languages, examples parse.
+- `tests/sheet_manager/systems/v5/storyteller-sheet.test.tsx`: pages render; pool, exceptional, and
+  difficulty rolls name the document and add no Hunger or Desperation dice.
+- `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds (hunter, vampire,
+  storyteller), a deleted member shows as gone and is removable, member-of links on a brief.
+- `tests/sheet_manager/member-of.test.ts` and `member-of.perf.test.ts`: lookup through the index,
+  setting scope, bound and report, 30 members / 50 groups under 200 ms.
+- `tests/sheet_manager/reference-scope.test.ts` (extend): ruleset-level pages offer module kinds;
+  line pages and user settings unchanged.
+- `tests/sheet_manager/systems/v5/tracking-switch.test.tsx`: Hunger dice 0 when off, trackers
+  hidden, values kept and back when on; hunter Willpower hidden, Desperation unaffected.
+- `tests/sheet_manager/create-from-choice.test.ts` (extend): group example copies its members and
+  links the copies.
+- Existing guards: shipped-template editor parity (spec 038), docs embeds, `validate:data`,
+  `validate:i18n`, the brief layout smoke test gains the two briefs at 400 px and 360 px.
+
+## Manual walk
+
+1. **New** → search «рассказчик» → Storyteller character "Detective Ruiz", pools 3/5/4, Health 5,
+   Willpower 5, Investigation 7, Firearms 5 → the brief beside a vampire at 400 px, no sideways
+   scroll.
+2. Click Firearms 5 → five dice, the result names Detective Ruiz, no Hunger dice.
+3. Set Difficulty 3 → "Roll 6" button rolls six dice.
+4. New Group "Church of the Red Dawn" → add Ruiz, a hunter, and a vampire → each one's brief lists
+   the church; delete the hunter → its row says gone and can be removed.
+5. A vampire with Hunger 3 → switch tracking off → Hunger and Willpower blocks hide, rolls have no
+   Hunger dice; switch on → Hunger 3 again.
+6. Docs → Storyteller characters → copy the cult → the cult and three members appear, linked.
+7. A user setting on V5 → both kinds listed under it in the create dialog.
