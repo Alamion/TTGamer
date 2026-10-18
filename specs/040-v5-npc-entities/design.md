@@ -53,19 +53,24 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
   `referenceScope.scopedKinds` changes so a **ruleset-level** page (no module, no user setting)
   offers every kind of the ruleset, modules included. Line pages keep their scope. _Rejected_:
   members in system data — a second reference mechanism.
-- **D7 — Back-links ("member of")**: `features/documents/memberOf.ts` finds the groups naming a
-  document: index entries with `definitionId === 'v5-group'` and the same system and setting, loaded
-  by id (`loadDocuments`, never a scan of the loaded cache), their `members` read from
-  `templateValues`. Bounded to 200 groups per scope (beyond: the first 200 by name and a
-  `group-backlinks-truncated` report); cached per entries list. A shipped `memberOf` element shows
-  the links on the Storyteller, mortal, hunter, and vampire briefs and full pages. _Why_: members
-  stay stored once (spec assumption); the index already carries the definition id. _Rejected_:
-  storing groups on members — two sources of truth.
-- **D8 — Tracking switch**: `trackHunger: boolean` (vampire, default true) and
-  `trackWillpower: boolean` (vampire and hunter, default true) in the schemas, a toggle in each
-  page's identity block, and `showWhen` on the Hunger, Rouse, and Willpower blocks. The Hunger dice
-  line returns 0 when `trackHunger` is false. Stored Hunger and Willpower are untouched. _Rejected_:
-  a page variant per state — doubles the shipped pages.
+- **D7 — Back-links ("member of") as a reference-field option**: the existing `reference` field
+  gains `incoming: true`: read-only, it lists the documents of its `targetKinds` (in the same system
+  and setting) whose stored template values name this document — any value equal to its id or
+  containing it, so renaming a field's key never breaks the link. The reader,
+  `features/documents/linkedFrom.ts`, takes candidates from index entries by kind and loads them by
+  id (`loadDocuments`, never a scan of the loaded cache); at most 200 per scope (beyond: the first
+  200 by name and a `linked-from-truncated` report); cached per entries list. The template editor
+  offers the option on reference fields (constitution VI parity, spec 038 parity test), and the
+  storybook shows it. The Storyteller, mortal, hunter, and vampire pages carry such a field ("Member
+  of", target kind `v5-group`). _Why_: members stay stored once; one element, configurable by
+  authors for any "linked from" need. _Rejected_: a shipped-only element — breaks editor parity;
+  storing groups on members — two sources of truth; reading a fixed `members` key — breaks when an
+  author renames it.
+- **D8 — Tracking switch**: one `trackResources: boolean` (default true) on the vampire and hunter
+  schemas, one toggle ("Track Hunger and Willpower") in each page's identity block, and `showWhen`
+  on the Hunger, Rouse, and Willpower blocks (hunter: Willpower only). The Hunger dice line returns
+  0 when it is false. Stored Hunger and Willpower are untouched. _Rejected_: two switches — the spec
+  asks for one; a page variant per state — doubles the shipped pages.
 - **D9 — Examples**: own-words examples in `systems/v5/core/examples.ts`: a mortal (police
   detective), a ghoul retainer, an animal (guard dogs), a supernatural creature (a wolf-thing of the
   woods), an antagonist vampire (a Sheriff, vampire kind), and a group (a cult) whose members are
@@ -83,24 +88,28 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
   other, `difficulty`, `pools`, `healthMax`, `health`, `willpowerMax`, `willpower`, `exceptional`,
   `powers`, `notes`, `metadata.imageUrl/portraitId`) and `V5GroupSchema` (`name`, `metadata`;
   everything else in template values). Schema version 1, `migrate` identity.
-- Vampire and hunter schemas: optional `trackHunger` / `trackWillpower`, default `true`; existing
-  documents read unchanged, no migration.
+- Vampire and hunter schemas: optional `trackResources`, default `true`; existing documents read
+  unchanged, no migration.
+- Reference field: optional `incoming: boolean` (default false) in `ReferenceFieldSchema`; template
+  schema version unchanged (an optional field), editor setting and storybook variant added.
 - `ListBinding.maximum?`, `ListCatalogSupport.catalogIds?`; `DocumentExample.companions?` (example
   ids created with it, with the reference keys to rewrite).
 - `referenceScope.scopedKinds`: ruleset-level pages see module kinds too (D6).
 - Catalog `v5-skills` (from the profile labels). Translations: `ui/sheet/v5.yaml` gains
   `storyteller.*` and `group.*` (fields, types, sections, views); examples in `documents.examples`;
   glossary terms.
-- Diagnostics: `group-backlinks-truncated`.
+- Diagnostics: `linked-from-truncated`.
 
 ## Principles at risk
 
 - **I/II (boundaries)**: new kinds live in `systems/v5/`; generic code changes are options on
   existing bindings, the reference scope rule, and the back-link reader over the index.
 - **VI (consistency)**: pages built from the shared template parts; the new list maximum and catalog
-  sets are binding options, shown in the storybook's bound-list story.
-- **VII (scale)**: back-links load at most 200 group documents by id; SC-004 measured with 30
-  members and 50 groups in a perf test.
+  sets are binding options, shown in the storybook's bound-list story; incoming references and a
+  number-shown trait (if D2 needs it) are options of existing elements, set in the editor and shown
+  in the storybook.
+- **VII (scale)**: back-links load at most 200 linking documents by id (scale note in the spec);
+  SC-004 measured with 30 members and 50 groups in a perf test.
 - **VIII (third-party)**: examples and docs in our own words; the Dark Pack badge comes from the V5
   plugin's policy as for the other V5 kinds; no published stat block copied.
 
@@ -111,9 +120,11 @@ bindings, pages) → US2 (rolls) → US3 (group, members, back-links) → US4 (t
 - `tests/sheet_manager/systems/v5/storyteller-sheet.test.tsx`: pages render; pool, exceptional, and
   difficulty rolls name the document and add no Hunger or Desperation dice.
 - `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds (hunter, vampire,
-  storyteller), a deleted member shows as gone and is removable, member-of links on a brief.
-- `tests/sheet_manager/member-of.test.ts` and `member-of.perf.test.ts`: lookup through the index,
-  setting scope, bound and report, 30 members / 50 groups under 200 ms.
+  storyteller), the group not offered as its own member, a deleted member shows as gone and is
+  removable, member-of links on a brief; an incoming reference field built in the editor works.
+- `tests/sheet_manager/linked-from.test.ts` and `linked-from.perf.test.ts`: lookup through the
+  index, setting scope, a renamed key still found, bound and report, 30 members / 50 groups under
+  200 ms.
 - `tests/sheet_manager/reference-scope.test.ts` (extend): ruleset-level pages offer module kinds;
   line pages and user settings unchanged.
 - `tests/sheet_manager/systems/v5/tracking-switch.test.tsx`: Hunger dice 0 when off, trackers

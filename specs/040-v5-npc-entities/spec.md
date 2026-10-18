@@ -56,7 +56,8 @@ brief beside a vampire sheet at 400 px; everything is readable without sideways 
 **Acceptance Scenarios**:
 
 1. **Given** the create dialog, **When** the Storyteller searches "storyteller" or «рассказчик»,
-   **Then** the Storyteller character of the V5 rules is offered, together with the group kind.
+   **Then** the Storyteller character of the V5 rules is offered; «группа» or "group" offers the
+   group kind.
 2. **Given** a new Storyteller character, **When** it opens, **Then** it shows a name, a concept, a
    type (mortal, ghoul, animal, supernatural, other), the three standard pools, Health and Willpower
    trackers, an empty list of exceptional pools, Disciplines or powers, and notes.
@@ -71,8 +72,7 @@ brief beside a vampire sheet at 400 px; everything is readable without sideways 
 ### User Story 2 - Roll an NPC's pools from its sheet (Priority: P1)
 
 The Storyteller clicks a standard or exceptional pool and the dice panel rolls it with V5 dice,
-naming the character; a modifier can be added before the roll. Willpower rerolls work as on player
-sheets.
+naming the character, exactly as a roll from a player's sheet reaches the panel.
 
 **Why this priority**: rolling by hand is what the Storyteller wants to stop doing; without rolls
 the sheet is only a note.
@@ -119,7 +119,7 @@ from the group opens the member.
 
 Antagonist vampires and hunters use the existing vampire and hunter kinds, because the rules give
 them full Attributes, Skills, and powers; their existing brief is the Storyteller's compact view and
-rolls with Hunger or Desperation as it does today. A per-document switch lets the Storyteller stop
+rolls with Hunger or Desperation as it does today. One per-document switch lets the Storyteller stop
 tracking Hunger and Willpower on an antagonist, as the rules allow for less bookkeeping, and the
 docs show an example antagonist vampire.
 
@@ -144,9 +144,9 @@ tracking off; the trackers disappear from both pages and its pools roll without 
 
 The V5 documentation gets a Storyteller section in English and Russian: how to build a Storyteller
 character and a group, when to use a simple difficulty instead of a sheet, and examples written in
-the project's own words — a mortal, a ghoul retainer, an animal, a supernatural creature, and a
-group with members — each shown on the page and creatable from it (the copy buttons of spec 039).
-The same examples are offered by the create dialog.
+the project's own words — a mortal, a ghoul retainer, an animal, a supernatural creature, an
+antagonist vampire, and a group with members — each shown on the page and creatable from it (the
+copy buttons of spec 039). The same examples are offered by the create dialog.
 
 **Why this priority**: examples teach the format, but the kinds work without them.
 
@@ -165,8 +165,8 @@ examples are created and linked to each other.
 - A pool above the allowed maximum (by default 15 dice) or below zero is clamped on entry, as player
   sheet values are.
 - A simple foe can still have exceptional pools; its difficulty and its pools are separate values.
-- A group that names itself or a group as a member is allowed (a sect containing a coterie), but a
-  group never lists itself twice.
+- A group may have other groups as members (a sect containing a coterie), but never itself: it is
+  not offered among its own members, and a document is listed at most once.
 - A user setting on the V5 rules gets both new kinds, as it gets the mortal today.
 
 ## Requirements
@@ -216,7 +216,8 @@ examples are created and linked to each other.
   Willpower, exceptional pools, powers, notes, optional simple-foe difficulty.
 - **Group**: a V5 document for an organization: description fields and member links.
 - **Member link**: a reference from a group to another V5 document; read back on the member's sheet.
-- **Tracking switch**: a per-document setting on vampire and hunter documents; on by default.
+- **Tracking switch**: one per-document setting on vampire and hunter documents ("track Hunger and
+  Willpower"); on by default.
 
 ## Success Criteria
 
@@ -244,6 +245,8 @@ examples are created and linked to each other.
   1–5 rating for the Storyteller's reference, not rolled.
 - **Member direction**: members are stored on the group; the member's sheet only reads them back, so
   a character never stores its groups.
+- **Scale**: groups are expected in the tens to low hundreds per setting; a document's "member of"
+  list reads at most 200 groups of its setting and reports when there are more.
 - **Hidden information**: Storyteller documents live on the Storyteller's device like any document;
   hiding them from players needs the multiplayer work of T-044 and is out of scope.
 - **Source material**: the VtM 5e core rulebook (Storyteller characters and simple antagonists) and

@@ -33,7 +33,8 @@ open its brief beside a vampire at 400 px with no sideways scrolling.
       the name, portrait, notes
 - [ ] T006 [US1] Write the full page and brief in `src/sheet_manager/systems/v5/core/templates.ts`
       from `ruleset/templateParts.ts`; pools as number ratings over the bridged coordinates (extend
-      the trait primitive with `presentation` if it ignores it, D2)
+      the trait primitive with `presentation` if it ignores it, D2, then also offer it in the
+      template editor and add a storybook variant in `docs/dev/storybook/template-elements.mdx`)
 - [ ] T007 [US1] Register `v5StorytellerDefinition` (kind `storyteller`, no module, in
       `coreDefinitions`) in `src/sheet_manager/systems/v5/core/definition.ts` and
       `src/sheet_manager/systems/v5/index.ts` (D1)
@@ -65,21 +66,26 @@ member's brief lists the church; following a link opens the member.
       settings keep today's targets
 - [ ] T014 [US3] Change `scopedKinds` in `src/sheet_manager/features/sheet/data/referenceScope.ts`
       so a ruleset-level page (no module, no user setting) offers every kind of the ruleset (D6)
-- [ ] T015 [US3] Write `tests/sheet_manager/member-of.test.ts`: groups found through index entries
-      and loaded by id, same system and setting only, bound of 200 with `group-backlinks-truncated`;
-      and `tests/sheet_manager/member-of.perf.test.ts`: 50 groups, 30 members, under 200 ms (SC-004)
-- [ ] T016 [US3] Implement `src/sheet_manager/features/documents/memberOf.ts` and the report code in
-      `src/sheet_manager/diagnostics.ts` (D7)
+- [ ] T015 [US3] Write `tests/sheet_manager/linked-from.test.ts`: documents of the given kinds found
+      through index entries and loaded by id, same system and setting only, a link under a renamed
+      key still found, bound of 200 with `linked-from-truncated`; and
+      `tests/sheet_manager/linked-from.perf.test.ts`: 50 groups, 30 members, under 200 ms (SC-004)
+- [ ] T016 [US3] Implement `src/sheet_manager/features/documents/linkedFrom.ts` and the report code
+      in `src/sheet_manager/diagnostics.ts` (D7)
 - [ ] T017 [US3] Add `V5GroupSchema`, `v5GroupDefinition` (kind and id `v5-group`, in
       `coreDefinitions`), and its full page and brief (kind of group, description, goals, resources,
-      threat 1–5, notes, `members` reference field over every V5 kind) in
-      `src/sheet_manager/systems/v5/core/group.ts` and `core/templates.ts` (D1, D6)
-- [ ] T018 [US3] Add the shipped "member of" element to the Storyteller, mortal, hunter, and vampire
-      briefs and full pages (template parts in `ruleset/templateParts.ts`, a storybook entry in
-      `docs/dev/storybook/built-in-parts.mdx`)
-- [ ] T019 [US3] Write `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds, a
-      deleted member shows as gone and is removable, two groups listed on one member, a group inside
-      a group, the group brief at 400 px in the brief smoke test
+      threat 1–5, notes, `members` reference field over every V5 kind, the group itself left out of
+      its choices) in `src/sheet_manager/systems/v5/core/group.ts` and `core/templates.ts` (D1, D6)
+- [ ] T018 [US3] Add `incoming` to `ReferenceFieldSchema` in `src/sheet_manager/types/template.ts`,
+      render it read-only through `linkedFrom` in
+      `src/sheet_manager/features/sheet/declarative/fieldControls.tsx`, offer it in the reference
+      field's editor settings, add a storybook variant in
+      `docs/dev/storybook/template-elements.mdx`, and place a "Member of" incoming field (target
+      `v5-group`) on the Storyteller, mortal, hunter, and vampire briefs and full pages (D7)
+- [ ] T019 [US3] Write `tests/sheet_manager/systems/v5/group.test.tsx`: members across kinds, the
+      group not offered as its own member, a deleted member shows as gone and is removable, two
+      groups listed on one member, a group inside a group, an incoming reference field built in the
+      template editor works; add the group brief at 400 px to the brief smoke test
 - [ ] T020 [US3] Run `yarn verify` and commit the story
 
 ## User Story 4 - Vampires and hunters met as antagonists (P2)
@@ -90,10 +96,10 @@ have no Hunger dice; on again shows Hunger 3.
 - [ ] T021 [US4] Write `tests/sheet_manager/systems/v5/tracking-switch.test.tsx`: Hunger dice 0 when
       off, trackers hidden on both pages, stored values kept; hunter Willpower hidden and
       Desperation unaffected; old documents read with tracking on
-- [ ] T022 [US4] Add `trackHunger` / `trackWillpower` (default true) to
+- [ ] T022 [US4] Add one `trackResources` (default true) to
       `src/sheet_manager/systems/v5/modules/vampire/schema.ts` and `modules/hunter/schema.ts`, read
-      `trackHunger` in `modules/vampire/dice.ts`, bindings for the toggles, and `showWhen` on the
-      Hunger, Rouse, and Willpower blocks of the four pages (D8)
+      it in `modules/vampire/dice.ts`, a toggle binding "Track Hunger and Willpower", and `showWhen`
+      on the Hunger, Rouse, and Willpower blocks (hunter: Willpower) of the four pages (D8)
 - [ ] T023 [US4] Run `yarn verify` (schema change) and commit the story
 
 ## User Story 5 - Examples and documentation for Storytellers (P3)
@@ -102,8 +108,8 @@ have no Hunger dice; on again shows Hunger 3.
 to each other.
 
 - [ ] T024 [US5] Extend `tests/sheet_manager/create-from-choice.test.ts`: a group example copies its
-      member examples and points the copy's `members` at the new ids; extend the docs create-button
-      guard
+      member examples and points the copy's `members` at the new ids; the copies export and import
+      back without errors (FR-010); extend the docs create-button guard
 - [ ] T025 [US5] Add `DocumentExample.companions?` in `src/sheet_manager/systems/types.ts` and the
       companion copy in `src/sheet_manager/features/documents/createFromChoice.ts` (D9)
 - [ ] T026 [US5] Write the own-words examples (detective, ghoul retainer, guard dogs, wolf-thing,
@@ -118,11 +124,13 @@ to each other.
 
 ## Finish
 
-- [ ] T029 Update `src/sheet_manager/AGENTS.md` (V5 core kinds, member-of, tracking switch), the
-      `sheet-templates` skill (`references/bindings.md`: list `maximum`, `catalogIds`; reference
-      scope of ruleset-level pages), and the `mdx-documentation` skill (Storyteller pages); update
-      `docs/guide/sheet.mdx` and its Russian mirror if the create dialog text names the kinds; mark
-      T-040 done in `TODO.md` and add the crowd document as a new backlog entry
+- [ ] T029 Update `src/sheet_manager/AGENTS.md` (V5 core kinds, linked-from, tracking switch), the
+      `sheet-templates` skill (`references/bindings.md`: list `maximum`, `catalogIds`;
+      `references/node-tree.md`: incoming references; reference scope of ruleset-level pages), and
+      the `mdx-documentation` skill (Storyteller pages); update the template editor guide's
+      `docs/guide/template-editor/elements.mdx` "Document references" (incoming references;
+      ruleset-level pages reach module kinds) and `docs/guide/sheet.mdx`, with their Russian
+      mirrors; mark T-040 done in `TODO.md` and add the crowd document as a new backlog entry
 - [ ] T030 Run `yarn verify:full`; measure the sheet page bundle against `testing` (SC-005, ≤ 10 KB
       gzip); walk the steps in design.md "Manual walk" (SC-001); record the results in design.md
 
@@ -135,11 +143,11 @@ to each other.
 | FR-003 full page and brief   | T006, T017             |
 | FR-004 rolls, difficulty     | T010, T011             |
 | FR-005 no Hunger/Desperation | T010                   |
-| FR-006 member-of, gone rows  | T015, T016, T018, T019 |
+| FR-006 member-of, gone rows  | T015–T019              |
 | FR-007 tracking switch       | T021, T022             |
 | FR-008 create dialog, search | T007, T008, T017       |
 | FR-009 examples, companions  | T024–T026              |
-| FR-010 validation, clamping  | T003, T004, T022       |
+| FR-010 validation, clamping  | T003, T004, T022, T024 |
 | FR-011 en + ru               | T001, T027, T028       |
 | FR-012 own words             | T026, T027             |
 | FR-013 Dark Pack badge       | T008                   |
