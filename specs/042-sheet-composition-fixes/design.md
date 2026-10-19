@@ -181,3 +181,6 @@ composition section drops "known exceptions"; `TODO.md` T-126 done.
   Members card now puts the track on its own row and Willpower and both pools on the next.
 - **Docs beyond the plan**: the Star Wars quick start lists the sheet's parts too; it follows the
   new order (en + ru).
+- **Docs embed (found by `verify:full`)**: the V5 "Predator type" page embedded the removed
+  `predator` card; it now embeds the `predator-grants-field` itself (en + ru). US3 ran targeted
+  tests only, which missed `docs-embeds.test.tsx`.
