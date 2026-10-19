@@ -17,12 +17,6 @@ import { describe, expect, it } from 'vitest';
 /** The shared portrait card is one picture by design. */
 const SMALL_CARDS = new Set(['portrait', 'base-portrait']);
 
-/**
- * Shipped full sheets that broke the rule when it was written down (T-126): each names what is
- * wrong, so a fix shows up as a failing exception to remove.
- */
-const KNOWN_EXCEPTIONS: Readonly<Record<string, readonly string[]>> = {};
-
 function growing(node: TemplateNode): boolean {
     switch (node.type) {
         case 'list':
@@ -77,9 +71,7 @@ describe('shipped pages follow the composition rule', () => {
                 expect(containers).toEqual([]);
                 return;
             }
-            expect(fullPageProblems(template.children)).toEqual(
-                KNOWN_EXCEPTIONS[template.id] ?? []
-            );
+            expect(fullPageProblems(template.children)).toEqual([]);
         });
     }
 });

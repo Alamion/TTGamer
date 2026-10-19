@@ -160,8 +160,13 @@ columns from the sheet area's width, no box); its ratings show short labels unle
 - Collapsible (`collapsible`, on a brief `dense(..., { collapsed: true })`) only for parts that grow
   without bound (inventory, member and power lists) or that play rarely needs (biography, long
   descriptions and notes). Everything used every scene stays open.
-- `tests/sheet_manager/page-composition.test.ts` checks every shipped page; sheets that broke the
-  rule when it was written are named exceptions (T-126).
+- `tests/sheet_manager/page-composition.test.ts` checks every shipped page, with no exceptions.
+- The order of a character's full sheet follows the V5 sheets: identity, **Condition** (health,
+  Willpower, and what a scene spends), attributes, skills, the line's powers, advantages, equipment,
+  experience and notes. The WoD 2e engine character, the Star Wars character, and the droid build
+  theirs from the shared sections in `systems/wod2e/ruleset/templateParts.ts` (`conditionSection`,
+  `equipmentSection`, `experienceNotesSection`); fodder, creature, and vehicle sheets keep weapons
+  and damage in a Combat section.
 
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`); lists,

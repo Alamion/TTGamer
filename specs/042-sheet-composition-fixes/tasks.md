@@ -95,17 +95,17 @@ apart from Force, and bind every value they bound before.
 
 ## User Story 4 - The rule holds for every shipped full sheet (P3)
 
-- [ ] T019 [US4] `tests/sheet_manager/page-composition.test.ts`: delete `KNOWN_EXCEPTIONS` (now
+- [x] T019 [US4] `tests/sheet_manager/page-composition.test.ts`: delete `KNOWN_EXCEPTIONS` (now
       empty) so every shipped full sheet must pass outright (FR-008, SC-001)
 
 ## Finish
 
-- [ ] T020 Heights: measure the seven full sheets after the change; check none is more than 10%
+- [x] T020 Heights: measure the seven full sheets after the change; check none is more than 10%
       taller than T001 (SC-003); add `SHEET_PINS` (all seven, the vampire included) to
       `tests-e2e/smoke/brief-baseline.ts` and make the "keeps its height" check of
       `tests-e2e/smoke/brief-layout.spec.ts` run over `SHEET_PINS` and the unchanged `BASELINE`
       kinds (FR-009); `BRIEF_PINS` unchanged (SC-004)
-- [ ] T021 Docs: `docs/star-wars-wod-2e/character/reading-sheet.mdx` (layout map and section
+- [x] T021 Docs: `docs/star-wars-wod-2e/character/reading-sheet.mdx` (layout map and section
       headings) and `docs/star-wars-wod-2e/equipment.mdx` ("Body section" → Equipment) with their ru
       mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/`; the `sheet-templates` skill's
       composition section drops the known exceptions; `TODO.md` T-126 marked done

@@ -11,15 +11,18 @@ Every character is stored in your browser and displayed on the [Universal Sheet]
 
 ## Sheet Layout Map
 
-| #   | Section        | Key Content                                                                                |
-| --- | -------------- | ------------------------------------------------------------------------------------------ |
-| 1   | **Base**       | Name, species, concept, nature, demeanor, portrait, appearance, biography                  |
-| 2   | **Attributes** | Physical (3), Social (3), Mental (3) — rated 1–5                                           |
-| 3   | **Skills**     | Talents (10), Skills (10), Knowledges (10) + custom per column — rated 0–3                 |
-| 4   | **Advantages** | Backgrounds (dot-rated), Merits (point-rated), Flaws (point-rated)                         |
-| 5   | **Force**      | Force Skills (5), Virtues (3), Willpower, Force Points, Dark Side Resistance, Force Powers |
-| 6   | **Body**       | Inventory, Armor, Weapons, Implants & Cyberware, Health (7-level track)                    |
-| 7   | **Other**      | Derived Stats (read-only), Experience (total/spent/available), Notes                       |
+| #   | Section                  | Key Content                                                                                    |
+| --- | ------------------------ | ---------------------------------------------------------------------------------------------- |
+| 1   | **Base**                 | Name, species, concept, nature, demeanor, portrait, appearance, biography                      |
+| 2   | **Condition**            | Health (7-level track), Initiative, Willpower, Force Points, Dark Side Resistance, Virtues (3) |
+| 3   | **Attributes**           | Physical (3), Social (3), Mental (3) — rated 1–5                                               |
+| 4   | **Skills**               | Talents (10), Skills (10), Knowledges (10) + custom per column — rated 0–3                     |
+| 5   | **Force**                | Force Skills (5), Force Powers, Force-derived stats (read-only)                                |
+| 6   | **Advantages**           | Backgrounds (dot-rated), Merits (point-rated), Flaws (point-rated)                             |
+| 7   | **Equipment**            | Inventory, Weapons, Armor, Implants & Cyberware                                                |
+| 8   | **Experience and Notes** | Experience (total/spent/available), Notes                                                      |
+
+Droid sheets and characters on the plain World of Darkness 2nd Edition rules follow the same order without the Force section.
 
 The character sheet header also contains global controls: **Export**, **Import**, **Manage Characters**, **Reset**, and **New Character**.
 
@@ -52,6 +55,47 @@ Optional: height, build, hair, eyes, gender, and distinguishing features.
 ### Biography
 
 A free-text area for backstory, personality notes, and anything else that doesn't fit elsewhere.
+
+---
+
+## Condition Block
+
+What you check and spend during a scene sits together near the top of the sheet: the **Health and Willpower** card on the left, the **Virtues** on the right.
+
+### Health and Willpower
+
+A 7-level damage track. Each level is a clickable button that cycles through three states:
+
+| State      | Meaning                 |
+| ---------- | ----------------------- |
+| Empty (⬜) | No damage at this level |
+| Slash (/)  | Bashing/Stun damage     |
+| Cross (✕)  | Lethal damage           |
+
+| Level             | Penalty        |
+| ----------------- | -------------- |
+| **Bruised**       | 0              |
+| **Hurt**          | −1             |
+| **Injured**       | −2             |
+| **Wounded**       | −3             |
+| **Mauled**        | −4             |
+| **Crippled**      | −5             |
+| **Incapacitated** | — (cannot act) |
+
+The penalty from the first marked level applies to all dice pools. See [Health, Damage & Healing](../combat/health-damage-heal.mdx).
+
+**Initiative** (Wits + Alertness) is computed and read-only. A droid's card tracks damage instead of health and has no Force resources.
+
+### Virtues and Pools
+
+**Virtues** (rated 1–5): Conscience, Passion, Self-Control. See [Virtues & Willpower](./virtues-willpower.mdx).
+
+**Pool Trackers:**
+
+- **Willpower** (max = Passion + Self-Control) — static defense against mental intrusion and Force powers.
+- **Max Force Points** (min = Self-Control) — your maximum pool.
+- **Force Points** (current) — spend to gain automatic successes or bonus dice. Regained through roleplaying your Nature.
+- **Dark Side Resistance** (max = 5 + Conscience – Passion) — resistance to falling to the dark side. Color-coded: blue (strong), grey (moderate), red (weak).
 
 ---
 
@@ -101,6 +145,32 @@ For full ability descriptions, see [Attributes & Abilities](../core-rules/attrib
 
 ---
 
+## Force Block
+
+The Force block is split into three columns.
+
+### Left Column — Force Skills
+
+Five Force skills rated **0–5**: Control, Dynamism, Rapport, Sense, Telekinesis. These work like regular abilities but are only available to Force-sensitive characters.
+
+### Center Column — Force Powers
+
+A scrollable checklist of known Force powers. Check a power to mark it as learned. Filter by skill or Force Point cost using the controls at the top.
+
+See [Force](./force.mdx) for full power descriptions, activation rules, and Force-related merits & flaws.
+
+### Right Column — Force-derived Stats
+
+These depend on your Force skills and are computed automatically (read-only):
+
+| Stat                   | Formula                     |
+| ---------------------- | --------------------------- |
+| **Initiative (Saber)** | Wits + Alertness + Control  |
+| **Jumping Distance**   | × min(Control, Telekinesis) |
+| **Running Speed**      | × min(Control, Telekinesis) |
+
+---
+
 ## Advantages Block
 
 Three columns for long-term character resources.
@@ -115,34 +185,9 @@ Click **Add** in any column to create a new entry. Merits increase your availabl
 
 ---
 
-## Force Block
+## Equipment Block
 
-The Force block is split into three columns.
-
-### Left Column — Force Skills
-
-Five Force skills rated **0–5**: Control, Dynamism, Rapport, Sense, Telekinesis. These work like regular abilities but are only available to Force-sensitive characters.
-
-### Center Column — Virtues & Pools
-
-**Virtues** (rated 1–5): Conscience, Passion, Self-Control. See [Virtues & Willpower](./virtues-willpower.mdx).
-
-**Pool Trackers:**
-
-- **Willpower** (max = Passion + Self-Control) — static defense against mental intrusion and Force powers.
-- **Max Force Points** (min = Self-Control) — your maximum pool.
-- **Force Points** (current) — spend to gain automatic successes or bonus dice. Regained through roleplaying your Nature.
-- **Dark Side Resistance** (max = 5 + Conscience – Passion) — resistance to falling to the dark side. Color-coded: blue (strong), grey (moderate), red (weak).
-
-### Right Column — Force Powers
-
-A scrollable checklist of known Force powers. Check a power to mark it as learned. Filter by skill or Force Point cost using the controls at the top.
-
-See [Force](./force.mdx) for full power descriptions, activation rules, and Force-related merits & flaws.
-
----
-
-## Body Block
+Each list folds: click its header to open or close it.
 
 ### Inventory
 
@@ -170,44 +215,9 @@ Click **Add Implant** to add a row. Use this section to track prosthetics, neura
 
 See [Droids & Cyborgs](./droids-cyborgs.mdx) for cybernetic enhancement rules and droid built-in equipment rules.
 
-### Health
-
-A 7-level damage track. Each level is a clickable button that cycles through three states:
-
-| State      | Meaning                 |
-| ---------- | ----------------------- |
-| Empty (⬜) | No damage at this level |
-| Slash (/)  | Bashing/Stun damage     |
-| Cross (✕)  | Lethal damage           |
-
-| Level             | Penalty        |
-| ----------------- | -------------- |
-| **Bruised**       | 0              |
-| **Hurt**          | −1             |
-| **Injured**       | −2             |
-| **Wounded**       | −3             |
-| **Mauled**        | −4             |
-| **Crippled**      | −5             |
-| **Incapacitated** | — (cannot act) |
-
-The penalty from the first marked level applies to all dice pools. See [Health, Damage & Healing](../combat/health-damage-heal.mdx).
-
 ---
 
-## Other Block
-
-### Derived Stats
-
-These are computed automatically and are read-only:
-
-| Stat                     | Formula                     |
-| ------------------------ | --------------------------- |
-| **Willpower** (max)      | Passion + Self-Control      |
-| **Dark Side Resistance** | 5 + Conscience – Passion    |
-| **Initiative**           | Wits + Alertness            |
-| **Initiative (Saber)**   | Wits + Alertness + Control  |
-| **Jumping Distance**     | × min(Control, Telekinesis) |
-| **Running Speed**        | × min(Control, Telekinesis) |
+## Experience and Notes Block
 
 ### Experience
 

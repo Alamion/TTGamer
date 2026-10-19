@@ -174,3 +174,10 @@ composition section drops "known exceptions"; `TODO.md` T-126 done.
   card's two columns and its Abilities card spans the Attributes row (`span`, set on the node: the
   builders take no span option). Quick pools and notes now sit in cards that never fold, so the
   fodder sheet starts with nothing folded (`entity-templates.test.tsx` checks folds at every level).
+- **Heights after the change (T020)**, 375/1280 px against T001: Star Wars character 7932/3749
+  (+0.1%/+7.9%), droid 7284/3272, creature 2742/1569, vehicle 3265/1769 (+3.4%/−1.4%), fodder group
+  2779/1725 (+5.0%/+7.5%), WoD 2e 6771/3201 (+2.8% wide), vampire 7079/3794 — all within SC-003. The
+  first fodder layout was 13% taller wide (quick pools and notes no longer start folded): the
+  Members card now puts the track on its own row and Willpower and both pools on the next.
+- **Docs beyond the plan**: the Star Wars quick start lists the sheet's parts too; it follows the
+  new order (en + ru).

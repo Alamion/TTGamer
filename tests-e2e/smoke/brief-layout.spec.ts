@@ -1,22 +1,29 @@
 import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
-import { BASELINE, BRIEF_PINS } from './brief-baseline';
+import { BASELINE, BRIEF_PINS, SHEET_PINS } from './brief-baseline';
 
 const WIDTHS = [320, 375, 640, 1280] as const;
 
-for (const [definition, baseline] of Object.entries(BASELINE)) {
+/** Full-sheet heights: the spec 042 pins, else the spec 033 baseline. */
+const SHEETS: Readonly<Record<string, { 375: number; 1280: number }>> = {
+    ...Object.fromEntries(Object.entries(BASELINE).map(([kind, { sheet }]) => [kind, sheet])),
+    ...SHEET_PINS,
+};
+
+for (const [definition, sheet] of Object.entries(SHEETS)) {
     test(`${definition}: the full sheet keeps its height`, async ({ page }) => {
         await createDocument(page, definition);
         for (const width of [375, 1280] as const) {
             await page.setViewportSize({ width, height: 800 });
             const { height } = await measureView(page);
-            expect(
-                Math.abs(height - baseline.sheet[width]) / baseline.sheet[width],
-                `${width} px`
-            ).toBeLessThan(0.01);
+            expect(Math.abs(height - sheet[width]) / sheet[width], `${width} px`).toBeLessThan(
+                0.01
+            );
         }
     });
+}
 
+for (const [definition, baseline] of Object.entries(BASELINE)) {
     test(`${definition}: the brief fits every area width`, async ({ page }) => {
         await createDocument(page, definition);
         await showView(page, 'brief');

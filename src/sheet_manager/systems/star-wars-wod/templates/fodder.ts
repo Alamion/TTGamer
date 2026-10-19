@@ -161,7 +161,7 @@ function fodderSheet(): CustomTemplate {
                         'fodder-members',
                         'Members',
                         [
-                            membersTrack(),
+                            { ...membersTrack(), span: 3 },
                             willpower(),
                             number(
                                 'field-quick-pool-specialty',
@@ -182,7 +182,8 @@ function fodderSheet(): CustomTemplate {
                                 }
                             ),
                         ],
-                        { hideTitle: true, labelMessage: fields.members }
+                        // The track takes the row; Willpower and the pools share the next one.
+                        { columns: 3, hideTitle: true, labelMessage: fields.members }
                     ),
                 ],
                 { labelMessage: fields.members }
@@ -216,7 +217,6 @@ function fodderSheet(): CustomTemplate {
                                 ),
                             ],
                             {
-                                hideTitle: true,
                                 labelMessage: fields.abilities,
                                 docsPath: DOCS.encounterTiers,
                             }

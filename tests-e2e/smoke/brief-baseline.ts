@@ -62,3 +62,18 @@ export const BRIEF_PINS: Readonly<Record<string, { 375: number; 1280: number }>>
     'wod-v5/v5-storyteller': { 375: 400, 1280: 394 },
     'wod-v5/v5-group': { 375: 210, 1280: 194 },
 };
+
+/**
+ * Heights in px of the full sheets spec 042 laid out anew (375 and 1280 px wide windows), measured
+ * after the change; they replace `BASELINE.sheet` for these kinds, which stays the spec 033
+ * reference of the briefs. Each is at most 10% taller than before (spec 042, SC-003).
+ */
+export const SHEET_PINS: Readonly<Record<string, { 375: number; 1280: number }>> = {
+    'star-wars-wod/character': { 375: 7932, 1280: 3749 },
+    'star-wars-wod/droid': { 375: 7284, 1280: 3272 },
+    'star-wars-wod/creature': { 375: 2742, 1280: 1569 },
+    'star-wars-wod/vehicle': { 375: 3265, 1280: 1769 },
+    'star-wars-wod/fodder-group': { 375: 2779, 1280: 1725 },
+    'wod-2e/wod2e-character': { 375: 6771, 1280: 3201 },
+    'wod-v5/vampire': { 375: 7079, 1280: 3794 },
+};

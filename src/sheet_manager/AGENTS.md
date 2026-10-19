@@ -405,9 +405,9 @@ duplicate template facts here. Invariants that must never be broken:
 - `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
   level.
 - Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance
-  (`max(0, min(5 + conscience - passion, 10))`); the default template shows these minimums as
-  read-only Derived Stats, while the editable resources live in the Force section's Resources group.
-  Merits/flaws may raise the stored values.
+  (`max(0, min(5 + conscience - passion, 10))`) as the lower bounds (`minFrom`) of the editable
+  resources, which sit with Health and Initiative in the Condition section's Health and Willpower
+  card (spec 042). Merits/flaws may raise the stored values.
 - Current Force Points may legitimately be zero.
 - Detailed formulas are in `.agents/skills/sheet-manager/SKILL.md`.
 

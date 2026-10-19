@@ -7020,7 +7020,8 @@
                                     "label": "Members",
                                     "cohort": {
                                         "maxMembers": 12
-                                    }
+                                    },
+                                    "span": 3
                                 },
                                 {
                                     "id": "resource-willpower",
@@ -7051,6 +7052,7 @@
                                 }
                             ],
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
+                            "columns": 3,
                             "hideTitle": true
                         }
                     ],
@@ -7204,7 +7206,6 @@
                                 }
                             ],
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
-                            "hideTitle": true,
                             "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
                             "span": 3
                         }

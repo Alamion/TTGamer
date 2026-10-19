@@ -5157,6 +5157,7 @@
        "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
        "hideTitle": true,
        "collapsible": false,
+       "columns": 3,
        "children": [
         {
          "id": "damage-track",
@@ -5164,6 +5165,7 @@
          "bindingKey": "track:members-health",
          "label": "Members",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
+         "span": 3,
          "hideLabel": true,
          "cohort": {
           "maxMembers": 12
@@ -5340,7 +5342,6 @@
        "title": "Abilities",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
        "span": 3,
-       "hideTitle": true,
        "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
        "collapsible": false,
        "children": [
