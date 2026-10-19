@@ -184,3 +184,18 @@ composition section drops "known exceptions"; `TODO.md` T-126 done.
 - **Docs embed (found by `verify:full`)**: the V5 "Predator type" page embedded the removed
   `predator` card; it now embeds the `predator-grants-field` itself (en + ru). US3 ran targeted
   tests only, which missed `docs-embeds.test.tsx`.
+- **Second height pin**: `tests-e2e/smoke/panes-baseline.ts` pinned the Star Wars character's full
+  sheet too (spec 034); it now reads the spec 042 pin from `SHEET_PINS`.
+- **Checks**: `yarn verify:full` — 3,114 unit and 15 perf tests passed; the browser run then failed
+  only on that second pin; after the fix `yarn ci:e2e` passed (64 tests).
+- **Manual walk (2026-10-19, built site, scripted with Playwright)**:
+    1. Star Wars character, droid, WoD 2e character: sections Base | Condition | Attributes | Skills
+       | (Force) | Advantages | Equipment | Experience and Notes; in Russian Основа | Состояние |
+       Атрибуты | Навыки | Сила | Преимущества | Снаряжение | Опыт и заметки.
+    2. Creature and vehicle screenshots: no loose element; fodder group: marking Hurt on the
+       members' track shows Bashing and survives a reload.
+    3. Vampire: Alleycat chosen, its grants show under Predator type in Identity.
+    4. An edit of the full sheet saved with the old tree: covered by
+       `shipped-sheet-overrides.test.tsx` (resolves as the edit, shows its values), not walked by
+       hand.
+    5. Briefs: every `BRIEF_PINS` height check passed in the browser run.

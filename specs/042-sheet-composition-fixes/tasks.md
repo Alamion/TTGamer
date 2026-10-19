@@ -109,7 +109,7 @@ apart from Force, and bind every value they bound before.
       headings) and `docs/star-wars-wod-2e/equipment.mdx` ("Body section" → Equipment) with their ru
       mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/`; the `sheet-templates` skill's
       composition section drops the known exceptions; `TODO.md` T-126 marked done
-- [ ] T022 Commit T019–T021 with the design notes, run `yarn verify:full`, walk the steps in
+- [x] T022 Commit T019–T021 with the design notes, run `yarn verify:full`, walk the steps in
       design.md "Manual walk" (FR-007 by step 4), record the results in design.md, and commit
 
 ## Coverage
