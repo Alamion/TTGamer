@@ -97,6 +97,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - A bounded set of MDX embeds reuses existing sheet elements inside the text.
     - Security: embeddable components are an explicit allowlist registered in one place; everything else is sanitized, never evaluated. The allowlist is the contract this element declares (Principle II).
     - Narrow screens collapse the preview to a toggle instead of a second column.
+    - 2026-10-25: specified in spec 043 (branch `043-markdown-notes`) with a shipped Note document type built from the element. Decisions by the maintainer: the Note is a type on this element (canvas later the same way); the syntax is the SillyTavern WorldInfo Workspace preview (every line its own paragraph, GFM, callouts, highlights) and raw HTML is escaped, never rendered, which replaces the inline HTML and MDX embeds above; foldable callouts serve as spoilers; links between documents (T-051) are the next slice; secrets wait for T-044.
 - [ ] ⬜ **T-049 — Canvas / map document element** (T-048) — GMs build a spatial canvas inside a document: pasted images, freehand drawing, links to other entities, and embedded elements from other documents. (task for roadmap path `map-notes`)
     - Reference behavior: the Excalidraw canvas in Obsidian.
     - Staged: images and links first; selection, moving, scaling, and rotation after.
