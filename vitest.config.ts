@@ -19,6 +19,19 @@ export default defineConfig({
             reporter: ['text', 'html'],
         },
         setupFiles: ['tests/setup/sheetIssues.ts', 'tests/setup/documentStore.ts'],
+        // A clicked link never loads a page: happy-dom would fetch it from localhost:3000, where
+        // the dev server may be running.
+        environmentOptions: {
+            happyDOM: {
+                settings: {
+                    navigation: {
+                        disableMainFrameNavigation: true,
+                        disableChildFrameNavigation: true,
+                        disableChildPageNavigation: true,
+                    },
+                },
+            },
+        },
         // Worker threads start faster than forked processes: about 15% off the default run.
         pool: 'threads',
         // Timing tests run alone, one file at a time; the default run has no wall-clock budgets
