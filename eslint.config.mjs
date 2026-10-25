@@ -11,7 +11,7 @@ export default defineConfig([
     globalIgnores([
         'dist',
         'build',
-        '.docusaurus',
+        '.docusaurus*',
         'coverage',
         'tmp',
         'context',
