@@ -67,6 +67,9 @@ export interface ImageLimits {
 
 const PORTRAIT_LIMITS: ImageLimits = { maxEdge: MAX_EDGE, maxBytes: MAX_PORTRAIT_BYTES };
 
+/** Pictures in a markdown text (spec 043, D5): larger than a portrait, for maps. */
+export const MARKDOWN_IMAGE_LIMITS: ImageLimits = { maxEdge: 2048, maxBytes: 1536 * 1024 };
+
 async function compressPortrait(file: File, limits: ImageLimits): Promise<Blob> {
     if (!file.type.startsWith('image/')) throw new Error('Select an image file.');
     if (file.size > MAX_SOURCE_BYTES) throw new Error('Portrait source must be 10 MB or smaller.');

@@ -8,6 +8,8 @@ interface SheetToolbarProps {
     onCreate: () => void;
     onExport: () => void;
     onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    /** File types the import offers: JSON and the kinds' own formats (spec 043). */
+    importAccept?: string;
     onManage: () => void;
     onReset: () => void;
     onManageTemplates: () => void;
@@ -27,6 +29,7 @@ export function SheetToolbar({
     onCreate,
     onExport,
     onImport,
+    importAccept = '.json,application/json',
     onManage,
     onReset,
     onManageTemplates,
@@ -104,7 +107,7 @@ export function SheetToolbar({
             <input
                 ref={fileInputRef}
                 type="file"
-                accept=".json,application/json"
+                accept={importAccept}
                 onChange={onImport}
                 className="hidden"
                 aria-label={translate(uiMessages.sheet.documents.toolbar.importLabel)}

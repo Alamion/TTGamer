@@ -219,3 +219,14 @@ guidance.
   quota. Unused pictures are freed on blur, when editing ends with Done or Esc (the text field goes
   away without a blur event), and on unmount. A picture that is not HTTPS shows as a link after a
   short reason.
+- **Markdown files (US6)**: the format belongs to the General system
+  (`systems/general/noteFiles.ts`) as `DocumentDefinition.files`, an optional file format of a
+  kind's own; the toolbar reads it through the registry (`features/sheet/shell/kindFiles.ts`), since
+  generic code may not import a system folder (the design placed it in `features/documents`). A file
+  of such a format becomes a JSON envelope before the import batch, so it is checked, kept, and
+  reported like any other; one that cannot be read joins the rejected files with its reason
+  (`ImportFile.rejected`). A one-line `title:` is cut out of the front matter as text, so the other
+  keys keep their bytes; a web picture leaves as an ordinary `![name](url)`.
+- **Bundle after US6 (T035)**: `yaml` (96.9 KB) and `fflate` (31.8 KB) are chunks of their own,
+  loaded on export or import only; main chunk 279.9 KB gzip (+0.2 since US1, strings), `common`
+  353.4 KB gzip (+3.9, the file format and the toolbar wiring).

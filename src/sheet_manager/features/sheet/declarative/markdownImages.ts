@@ -6,9 +6,6 @@ import {
     type TemplateMarkdownValue,
 } from '../../../types/templateValues';
 
-/** Pictures stored with a markdown text (spec 043, D5): larger than a portrait, for maps. */
-export const MARKDOWN_IMAGE_LIMITS = { maxEdge: 2048, maxBytes: 1536 * 1024 } as const;
-
 /**
  * A name for a new picture that `![[name]]` can carry: no brackets, pipes, or line breaks, unique
  * among the text's pictures (`map.png`, `map-2.png`).

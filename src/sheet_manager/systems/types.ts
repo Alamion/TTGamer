@@ -80,6 +80,19 @@ export interface DocumentDefinition<TData = unknown> {
     module?: DocumentModule;
     /** Sample documents of this definition, offered as template editor preview data. */
     examples?: readonly DocumentExample[];
+    /** A file format of the kind's own, used instead of the JSON export (spec 043: markdown). */
+    files?: DocumentFileFormat;
+}
+
+/** How a kind's documents leave and arrive as files of their own format (spec 043, D9). */
+export interface DocumentFileFormat {
+    /** Lowercase file name endings the import accepts (`.md`), and their media types. */
+    extensions: readonly string[];
+    mediaTypes: readonly string[];
+    /** The file for a document; images stored on the device go with it. */
+    write(document: UnknownDocumentEnvelope): Promise<{ name: string; blob: Blob }>;
+    /** A new document from a file; throws an `Error` whose message says why it cannot be read. */
+    read(file: { name: string; bytes: Uint8Array }): Promise<UnknownDocumentEnvelope>;
 }
 
 export interface SystemPlugin {

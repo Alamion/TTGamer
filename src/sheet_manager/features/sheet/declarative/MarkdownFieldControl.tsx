@@ -34,7 +34,12 @@ import { Splitter } from '../../../../shared/components/Splitter';
 import { randomToken } from '../../../../shared/utils/random';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
-import { deletePortrait, loadPortrait, savePortrait } from '../../../persistence/portraitStorage';
+import {
+    deletePortrait,
+    loadPortrait,
+    MARKDOWN_IMAGE_LIMITS,
+    savePortrait,
+} from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
@@ -48,7 +53,7 @@ import {
     toggleChecklist,
     wrapSelection,
 } from './markdownEdits';
-import { MARKDOWN_IMAGE_LIMITS, withImage, withoutUnusedImages } from './markdownImages';
+import { withImage, withoutUnusedImages } from './markdownImages';
 
 const messages = uiMessages.shared.markdown.editor;
 type MarkdownField = Extract<TemplateField, { type: 'markdown' }>;

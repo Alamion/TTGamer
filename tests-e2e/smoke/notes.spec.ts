@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import type { Page } from '@playwright/test';
 
 import { expect, test } from '../fixtures';
@@ -60,4 +62,31 @@ test('writes a note, reads it, and finds it again after a reload', async ({ page
     await page.keyboard.press('Enter');
     await expect(twist).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByText('The guard is the thief')).toBeVisible();
+});
+
+test('exports a note as markdown and imports it back as a new note', async ({ page }) => {
+    await page.goto('/universal_sheet');
+    await page.getByRole('button', { name: 'New', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Create document' });
+    await page.keyboard.type('note');
+    await page.keyboard.press('Enter');
+    await dialog.getByRole('textbox', { name: 'Name' }).fill('Docks plan');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('# Docks\n- [ ] bribe the guard');
+    await page.keyboard.press('Escape');
+    await expect.poll(() => stored(page, 'bribe the guard')).toBe(true);
+
+    const downloading = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export' }).click();
+    const download = await downloading;
+    expect(download.suggestedFilename()).toBe('Docks plan.md');
+    const markdown = readFileSync(await download.path(), 'utf8');
+    expect(markdown).toBe('---\ntitle: Docks plan\n---\n# Docks\n- [ ] bribe the guard');
+
+    await page.getByLabel('Import document file').setInputFiles({
+        name: 'Docks copy.md',
+        mimeType: 'text/markdown',
+        buffer: Buffer.from(markdown),
+    });
+    await expect(page.getByText('Imported "Docks plan"')).toBeVisible();
 });

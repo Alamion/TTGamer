@@ -143,19 +143,19 @@ when the field is left, and undo before that keeps it.
 
 **Check**: export → import gives the same title and body byte for byte, foreign front matter kept.
 
-- [ ] T033 [US6] Write `tests/sheet_manager/note-files.test.ts` first: `.md` export (front matter
+- [x] T033 [US6] Write `tests/sheet_manager/note-files.test.ts` first: `.md` export (front matter
       `title` + verbatim body), `.zip` export with `note.md` and `images/`, import of both into a
       new Note with images restored, unknown front matter keys and comments kept byte-exact, title
       from the file name when front matter has none, every syntax example of the guide page
       round-trips (SC-003), non-text, broken zip, and oversize files rejected with a reason
-- [ ] T034 [US6] `src/sheet_manager/features/documents/noteFiles.ts` (lazy `import('yaml')` and
+- [x] T034 [US6] `src/sheet_manager/features/documents/noteFiles.ts` (lazy `import('yaml')` and
       `import('fflate')`); Export of a document of the Note kind (`general/note`, by definition) in
       `SheetWorkspace.tsx` writing `.md`/`.zip`; Import accepting `.md` and `.zip` in
       `SheetToolbar.tsx` and joining the batch summary and `RejectedFiles`; `package.json`: add
       `fflate`, move `yaml` to dependencies; T033 passes
-- [ ] T035 [US6] Bundle check: `yaml` and `fflate` load in chunks of their own, not in the sheet or
+- [x] T035 [US6] Bundle check: `yaml` and `fflate` load in chunks of their own, not in the sheet or
       main chunk; record it in design.md
-- [ ] T036 [US6] Run `yarn verify:full` (dependency change) and commit the story
+- [x] T036 [US6] Run `yarn verify:full` (dependency change) and commit the story
 
 ## Finish
 
