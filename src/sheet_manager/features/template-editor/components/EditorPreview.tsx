@@ -57,7 +57,7 @@ export function EditorPreview({ draft }: { draft: EditorDraft }) {
             list.push({
                 key: `example:${example.id}`,
                 label: translate(example.label),
-                create: example.create,
+                create: () => example.create(translate),
             });
         }
         list.push({

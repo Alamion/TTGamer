@@ -1,0 +1,2 @@
+roll: Roll {notation}
+invalid: 'Not a roll: {reason}'

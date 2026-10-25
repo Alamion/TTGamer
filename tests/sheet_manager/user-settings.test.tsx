@@ -56,7 +56,7 @@ describe('user settings (spec 012, US6)', () => {
             [...document.querySelectorAll('[data-tree-row^="r:"]')].map((row) =>
                 row.getAttribute('data-tree-row')
             )
-        ).toEqual(['r:wod-2e', 'r:wod-v5']);
+        ).toEqual(['r:wod-2e', 'r:wod-v5', 'r:general']);
         clickRow('r:wod-v5');
         clickAction('newSetting');
         fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ashen Realms' } });

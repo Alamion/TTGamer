@@ -262,7 +262,7 @@ export function v5ExampleDocument(exampleId: string): UnknownDocumentEnvelope | 
             details: { exampleId },
         });
     }
-    return example?.create();
+    return example?.create(translate);
 }
 
 /** A fixed example document for documentation previews (e.g. `wampa::preset`). */

@@ -13,6 +13,7 @@ import {
     TextFieldControl,
     ToggleFieldControl,
 } from '../declarative/fieldControls';
+import { MarkdownFieldControl } from '../declarative/MarkdownFieldControl';
 import { TrackerFieldControl } from '../declarative/TrackerFieldControl';
 
 type FieldControl = ComponentType<TemplateFieldControlProps>;
@@ -30,6 +31,7 @@ const registry: { [K in TemplateField['type']]: FieldControl } = {
     resource: ResourceFieldControl,
     reference: ReferenceFieldControl,
     image: ImageFieldControl,
+    markdown: MarkdownFieldControl,
     formula: FormulaFieldControl,
     tracker: TrackerFieldControl,
 };

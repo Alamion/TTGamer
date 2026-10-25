@@ -145,13 +145,13 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the four element kinds with descriptions', () => {
+    it('offers exactly the five element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['group', 'field', 'list', 'button']);
+        expect(options).toEqual(['group', 'field', 'markdown', 'list', 'button']);
         const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });
@@ -169,6 +169,14 @@ describe('add-element menu and element sources', () => {
         ).toEqual(['group']);
         expect(addFromRootMenu('field').getAttribute('data-node-type')).toBe('text');
         expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
+        // Markdown text (spec 043) with its starting height under the look settings.
+        const markdown = addFromRootMenu('markdown');
+        expect(markdown.getAttribute('data-node-type')).toBe('markdown');
+        expect(
+            within(settings(markdown.getAttribute('data-outline-row')!)).getByLabelText(
+                'Starting height (lines)'
+            )
+        ).toHaveProperty('value', '12');
         // A tracker is a field of the Tracker type (not in the menu); its Source can switch it
         // to a built-in track.
         const added = addFromRootMenu('field');

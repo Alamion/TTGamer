@@ -1,9 +1,10 @@
 // @vitest-environment happy-dom
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
 import { CREATE_DIALOG_STORAGE_KEY } from '@site/src/sheet_manager/features/documents/createChoices';
+import { claimNewDocumentFocus } from '@site/src/sheet_manager/features/documents/newDocumentFocus';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { createElement } from 'react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { createElement, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
@@ -46,9 +47,9 @@ describe('finding the kind (spec 039, US1)', () => {
         expect(expanded('World of Darkness 5th Edition')).toBe('true');
         expect(expanded('Star Wars (World of Darkness 2e)')).toBe('false');
         expect(expanded('Lunar Colony')).toBe('false');
-        expect(kinds()).toEqual(['wod-v5/hunter', 'wod-v5/vampire']);
+        expect(kinds()).toEqual(['wod-v5/hunter', 'wod-v5/vampire', 'general/note']);
         openAll();
-        expect(kinds()).toHaveLength(11 + 20 + 3);
+        expect(kinds()).toHaveLength(12 + 20 + 3);
         const v5 = screen.getByRole('group', { name: 'World of Darkness 5th Edition' });
         expect(within(v5).getByRole('group', { name: 'Lunar Colony' })).toBeTruthy();
         expect(within(v5).getAllByRole('option', { name: /^Habitat/ })).toHaveLength(2);
@@ -254,7 +255,7 @@ describe('keyboard and phone (spec 039, US4)', () => {
         // Up from the first row wraps to the last.
         expect(
             document.getElementById(search().getAttribute('aria-activedescendant')!)?.textContent
-        ).toMatch(/^Habitat|^Ledger/);
+        ).toMatch(/^Note/);
         fireEvent.keyDown(search(), { key: 'ArrowDown' });
         fireEvent.keyDown(search(), { key: 'Enter' });
         expect(document.activeElement).toBe(screen.getByRole('textbox', { name: 'Name' }));
@@ -285,7 +286,7 @@ describe('keyboard and phone (spec 039, US4)', () => {
 
     it('creates a kind with a unique three-letter prefix in five keystrokes at 50 kinds (SC-001)', () => {
         resetUserKinds();
-        seedUserKinds(36);
+        seedUserKinds(35);
         open();
         openAll();
         expect(kinds()).toHaveLength(50);
@@ -320,5 +321,28 @@ describe('keyboard and phone (spec 039, US4)', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Back to kinds' }));
         expect(kindsStep().className).toMatch(/(^| )flex( |$)/);
         expect(document.activeElement).toBe(search());
+    });
+});
+
+describe('the focus after creating (spec 043, T015)', () => {
+    it("goes to what the new document claimed, such as a note's empty text", async () => {
+        const focus = vi.fn();
+        const unsubscribe = useDocumentStore.subscribe(({ currentDocumentId }) => {
+            if (currentDocumentId) claimNewDocumentFocus(currentDocumentId, focus);
+        });
+        function Host() {
+            const [isOpen, setOpen] = useState(true);
+            return createElement(DocumentCreateDialog, { open: isOpen, onOpenChange: setOpen });
+        }
+        render(createElement(Host));
+        type('note');
+        fireEvent.keyDown(search(), { key: 'Enter' });
+        fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), {
+            target: { value: 'Session 12' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await waitFor(() => expect(focus).toHaveBeenCalledTimes(1));
+        unsubscribe();
+        expect(useDocumentStore.getState().entries[0]!.definitionId).toBe('note');
     });
 });

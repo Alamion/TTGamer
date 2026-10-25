@@ -397,7 +397,7 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
         const plain = ruleset.documents.filter(({ module }) => !module);
         const rulesOnly = settingNode(
             { kind: 'rules', systemId: ruleset.id },
-            translate(labels.rulesOnly),
+            translate(ruleset.library?.ownTypes ?? labels.rulesOnly),
             ruleset.id,
             [
                 ...shippedTypes(ruleset, plain),

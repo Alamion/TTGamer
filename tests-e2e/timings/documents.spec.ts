@@ -6,7 +6,10 @@ import { best, recordTiming, RUNS } from './record';
 const DOCUMENTS = 3000;
 const PER_LEAF = 20;
 
-/** The slim stored state of 3,000 documents in nested folders (spec 032, D2): no records. */
+/**
+ * The slim stored state of 3,000 documents in nested folders (spec 032, D2): no records. Every
+ * other document is a note (spec 043, SC-004), so the window is measured with both kinds.
+ */
 function slimState() {
     const stamp = '2026-10-01T10:00:00.000Z';
     const folders: unknown[] = [];
@@ -35,9 +38,9 @@ function slimState() {
     const entries = Array.from({ length: DOCUMENTS }, (_, index) => ({
         id: `d${index}`,
         name: `Doc ${String(index).padStart(4, '0')}`,
-        kind: 'character',
-        systemId: 'wod-v5',
-        definitionId: 'hunter',
+        ...(index % 2 === 0
+            ? { kind: 'character', systemId: 'wod-v5', definitionId: 'hunter' }
+            : { kind: 'note', systemId: 'general', definitionId: 'note' }),
         parentId: leaves[index % leaves.length],
         rank: Math.floor(index / leaves.length),
         createdAt: stamp,

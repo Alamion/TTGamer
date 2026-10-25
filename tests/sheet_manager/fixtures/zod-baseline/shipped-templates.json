@@ -12398,5 +12398,36 @@
     }
    ]
   }
+ },
+ "general/general-note": {
+  "ok": true,
+  "data": {
+   "id": "general-note",
+   "name": "Note",
+   "systemId": "general",
+   "documentKind": "note",
+   "schemaVersion": 4,
+   "children": [
+    {
+     "id": "note-name",
+     "label": "Name",
+     "labelMessage": "ttgamer.ui.sheet.general.note.name",
+     "required": false,
+     "valueKey": "name",
+     "type": "text",
+     "multiline": false
+    },
+    {
+     "id": "note-body",
+     "label": "Text",
+     "labelMessage": "ttgamer.ui.sheet.general.note.body",
+     "hideLabel": true,
+     "required": false,
+     "valueKey": "body",
+     "type": "markdown",
+     "rows": 20
+    }
+   ]
+  }
  }
 }

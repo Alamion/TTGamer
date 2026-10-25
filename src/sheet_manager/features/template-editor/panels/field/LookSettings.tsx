@@ -74,6 +74,26 @@ export function lookSettings({ field, prefix, several, key, isTraitSource, updat
                     onChange={(checked) => update({ multiline: checked })}
                 />
             )}
+            {field.type === 'markdown' && (
+                <SettingField label={settingLabel('rows')} setting={key('rows')}>
+                    {(control) => (
+                        <input
+                            {...control}
+                            type="number"
+                            min={4}
+                            max={40}
+                            value={field.rows}
+                            onChange={(event) => {
+                                const rows = Number(event.target.value);
+                                if (Number.isInteger(rows) && rows >= 4 && rows <= 40) {
+                                    update({ rows });
+                                }
+                            }}
+                            className={`${inputClasses} w-24`}
+                        />
+                    )}
+                </SettingField>
+            )}
             {field.type === 'select' && field.multiple && (
                 <ToggleRow
                     checked={field.hideUnselected === true}

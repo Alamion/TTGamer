@@ -120,6 +120,7 @@ editor:
     numberMax: Максимум
     numberStep: Шаг
     multiline: Многострочное
+    markdownRows: Начальная высота (строк)
     presentation: Отображение
     accentColor: Цвет акцента
     accentPrimary: Основной акцент
@@ -168,6 +169,8 @@ editor:
     paletteBriefHint: 'Заголовок над чертой, без рамки: отделяет разные виды полей на кратком листе.'
     paletteField: Поле
     paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
+    paletteMarkdown: Текст markdown
+    paletteMarkdownHint: 'Длинный текст с заголовками, списками, таблицами и сворачиваемыми выносками'
     paletteList: Список
     paletteListHint: 'Записи по одной или строки таблицы: свои, навыки, достоинства, снаряжение…'
     valueSource: Где хранится значение
@@ -539,6 +542,7 @@ fieldTypes:
     resource: Ресурс
     reference: Ссылка на документ
     image: Изображение
+    markdown: Текст markdown
     formula: Вычисляемое значение (только чтение)
     table: Таблица
     fields: Группа полей

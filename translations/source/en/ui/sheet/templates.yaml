@@ -120,6 +120,7 @@ editor:
     numberMax: Max
     numberStep: Step
     multiline: Multiline
+    markdownRows: Starting height (lines)
     presentation: Presentation
     accentColor: Accent color
     accentPrimary: Primary accent
@@ -168,6 +169,8 @@ editor:
     paletteBriefHint: 'A heading over a line, no box: it separates different kinds of fields on a brief.'
     paletteField: Field
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
+    paletteMarkdown: Markdown text
+    paletteMarkdownHint: 'A long text with headings, lists, tables, and folding callouts'
     paletteList: List
     paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
     valueSource: Stores value in
@@ -539,6 +542,7 @@ fieldTypes:
     resource: Resource
     reference: Document reference
     image: Image
+    markdown: Markdown text
     formula: Derived value (read-only)
     table: Table
     fields: Field group

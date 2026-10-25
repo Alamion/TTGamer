@@ -31,6 +31,8 @@ export interface ImportHost {
 export interface ImportFile {
     name: string;
     text: string;
+    /** Why a file of a kind's own format could not become a document (spec 043). */
+    rejected?: string;
 }
 
 export type RejectionCode = 'not-json' | 'unknown-shape' | 'legacy-ended' | 'invalid';
@@ -205,7 +207,18 @@ export async function runImportBatch(
         }
     };
 
-    for (const { name, text } of files) {
+    for (const { name, text, rejected } of files) {
+        if (rejected !== undefined) {
+            const kept = text ? host.retain(text, rejected) : false;
+            outcomes.push({
+                file: name,
+                status: 'rejected',
+                repairs: [],
+                reason: { code: 'invalid', detail: rejected },
+                kept,
+            });
+            continue;
+        }
         let records: ReturnType<typeof readRecoveryFile>;
         try {
             records = readRecoveryFile(parseOrUndefined(text));

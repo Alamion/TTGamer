@@ -183,6 +183,13 @@ const ImageFieldSchema = z.object({
     type: z.literal('image'),
 });
 
+/** Markdown text with its own editor and rendering (spec 043); `rows` is the starting height. */
+const MarkdownFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('markdown'),
+    rows: z.number().int().min(4).max(40).default(12),
+});
+
 /**
  * Read-only computed field (spec FR-13): displays the formula result; never stores it (A4).
  */
@@ -475,6 +482,7 @@ const fieldObjectSchemas = [
     NumberFieldSchema,
     ToggleFieldSchema,
     ImageFieldSchema,
+    MarkdownFieldSchema,
     FormulaFieldSchema,
     SelectFieldSchema,
     RatingFieldSchema,
@@ -523,6 +531,7 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
         case 'text':
         case 'toggle':
         case 'image':
+        case 'markdown':
         case 'formula':
             return;
     }
@@ -568,13 +577,13 @@ export const ListItemFieldSchema = z
     ])
     .superRefine(refineField);
 
-export type ListItemField = Exclude<TemplateField, { type: 'formula' | 'tracker' }>;
+export type ListItemField = Exclude<TemplateField, { type: 'formula' | 'tracker' | 'markdown' }>;
 
 export type FieldLabelPosition = 'top' | 'left';
 
 /** Whether the editor offers "label beside the value" for this field type (not for images). */
 export function hasLabelPositionChoice(type: TemplateField['type']): boolean {
-    return type !== 'image' && type !== 'tracker';
+    return type !== 'image' && type !== 'tracker' && type !== 'markdown';
 }
 
 /** Ratings and derived values read as rows (label beside the value); other fields stack. */
@@ -599,6 +608,7 @@ export const TEMPLATE_FIELD_TYPES = [
     'resource',
     'reference',
     'image',
+    'markdown',
     'formula',
     'tracker',
 ] as const satisfies readonly TemplateField['type'][];
@@ -961,6 +971,9 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
             if (node.columns.some(({ type }) => type === 'tracker')) {
                 issue('A tracker cannot be a table column', ['columns']);
             }
+            if (node.columns.some(({ type }) => type === 'markdown')) {
+                issue('A markdown field cannot be a table column', ['columns']);
+            }
             return;
         case 'list':
             if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
@@ -1049,6 +1062,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
             NumberFieldSchema,
             ToggleFieldSchema,
             ImageFieldSchema,
+            MarkdownFieldSchema,
             FormulaFieldSchema,
             SelectFieldSchema,
             RatingFieldSchema,
@@ -1165,11 +1179,12 @@ export function collectTemplateFields(template: CustomTemplate): Map<string, Tem
 }
 
 /**
- * Entry types a custom list offers: every field type except a formula and a tracker (a tracker
- * repeats itself through copies, spec 018).
+ * Entry types a custom list offers: every field type except a formula, a tracker (a tracker
+ * repeats itself through copies, spec 018), and markdown (a whole note per entry, spec 043).
  */
 export const LIST_ITEM_TYPES = TEMPLATE_FIELD_TYPES.filter(
-    (type): type is ListItemField['type'] => type !== 'formula' && type !== 'tracker'
+    (type): type is ListItemField['type'] =>
+        type !== 'formula' && type !== 'tracker' && type !== 'markdown'
 );
 
 /**

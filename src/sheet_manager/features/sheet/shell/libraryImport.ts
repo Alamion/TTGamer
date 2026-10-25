@@ -139,7 +139,10 @@ export function buildImportPreview(
             rulesetEntry(systemId),
             `s:rules:${systemId}`,
             'setting',
-            translate(uiMessages.sheet.library.rulesOnly)
+            translate(
+                registry.getSystem(systemId)?.library?.ownTypes ??
+                    uiMessages.sheet.library.rulesOnly
+            )
         );
     };
 

@@ -32,6 +32,7 @@ import { exportFileName, serializeDocumentExport } from './documentFile';
 import { useDocumentHistory } from './documentHistory';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
+import { documentFileFormat, importAccept, readImportFiles } from './kindFiles';
 import { type BadgePlace, PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
@@ -146,14 +147,23 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     const [importSummary, setImportSummary] = useState<BatchSummary | null>(null);
     const conflictResolverRef = useRef<((answer: ConflictAnswer) => void) | null>(null);
 
-    const handleExport = () => {
+    const handleExport = async () => {
         if (!currentDocument) return;
-        // Device-backed images are stripped and publisher notices added (documentFile.ts).
-        const data = serializeDocumentExport(currentDocument);
-        const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+        // A kind with a format of its own (a note's markdown) leaves in it, its pictures included;
+        // otherwise device-backed images are stripped and publisher notices added (documentFile.ts).
+        const format = documentFileFormat(currentDocument);
+        const file = format
+            ? await format.write(currentDocument)
+            : {
+                  name: exportFileName(currentDocument),
+                  blob: new Blob([serializeDocumentExport(currentDocument)], {
+                      type: 'application/json',
+                  }),
+              };
+        const url = URL.createObjectURL(file.blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = exportFileName(currentDocument);
+        link.download = file.name;
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -199,9 +209,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         event.target.value = '';
 
         setOfferApplyToRest(selected.length > 1);
-        const files = await Promise.all(
-            selected.map(async (file) => ({ name: file.name, text: await file.text() }))
-        );
+        const files = await readImportFiles(selected);
         const summary = await runImportBatch(files, {
             hasDocument: (id) =>
                 useDocumentStore.getState().entries.some((entry) => entry.id === id),
@@ -236,7 +244,8 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                 <SheetToolbar
                     hasDocument={Boolean(currentDocument)}
                     onCreate={() => setCreateDialogOpen(true)}
-                    onExport={handleExport}
+                    onExport={() => void handleExport()}
+                    importAccept={importAccept()}
                     onImport={handleImport}
                     onManage={() => openTool('documents')}
                     onReset={() => setResetDialogOpen(true)}

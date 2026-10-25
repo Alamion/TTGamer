@@ -60,7 +60,8 @@ describe('library dialog — browse (spec 013, US1)', () => {
         press('ArrowLeft');
         expect(mustRow('s:rules:wod-2e').getAttribute('aria-expanded')).toBe('false');
         press('End');
-        expect(document.activeElement).toBe(mustRow(`s:user:${ASHEN_ID}`));
+        // Documents for any game (spec 043) are the last ruleset.
+        expect(document.activeElement).toBe(mustRow('s:rules:general'));
         press('Home');
         expect(document.activeElement).toBe(mustRow('r:wod-2e'));
         press('h');

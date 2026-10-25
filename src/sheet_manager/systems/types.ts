@@ -52,7 +52,11 @@ export interface DocumentModule {
 export interface DocumentExample {
     id: string;
     label: DocumentViewLabel;
-    create: () => UnknownDocumentEnvelope;
+    /**
+     * A fresh copy of the example. Text it writes in the interface language goes through
+     * `localize` (the UI passes `translate`; system code cannot import it, spec 043).
+     */
+    create: (localize?: (message: DocumentViewLabel) => string) => UnknownDocumentEnvelope;
     /**
      * Examples of the same system copied together with this one (a group's members, spec 040);
      * the copy's values that name them are pointed at their copies.
@@ -76,6 +80,19 @@ export interface DocumentDefinition<TData = unknown> {
     module?: DocumentModule;
     /** Sample documents of this definition, offered as template editor preview data. */
     examples?: readonly DocumentExample[];
+    /** A file format of the kind's own, used instead of the JSON export (spec 043: markdown). */
+    files?: DocumentFileFormat;
+}
+
+/** How a kind's documents leave and arrive as files of their own format (spec 043, D9). */
+export interface DocumentFileFormat {
+    /** Lowercase file name endings the import accepts (`.md`), and their media types. */
+    extensions: readonly string[];
+    mediaTypes: readonly string[];
+    /** The file for a document; images stored on the device go with it. */
+    write(document: UnknownDocumentEnvelope): Promise<{ name: string; blob: Blob }>;
+    /** A new document from a file; throws an `Error` whose message says why it cannot be read. */
+    read(file: { name: string; bytes: Uint8Array }): Promise<UnknownDocumentEnvelope>;
 }
 
 export interface SystemPlugin {
@@ -106,6 +123,18 @@ export interface SystemPlugin {
      * ruleset. Absent on rulesets themselves.
      */
     ruleset?: SystemId;
+    /**
+     * Library wording for a ruleset whose own types are not characters (spec 043): its intro, the
+     * name and note of its own types without a setting ("Rules only" otherwise), and what its core
+     * types are called (`{names}`) and say inside a user setting.
+     */
+    library?: {
+        intro: DocumentViewLabel;
+        ownTypes: DocumentViewLabel;
+        ownTypesNote: DocumentViewLabel;
+        coreTypes: DocumentViewLabel;
+        coreTypeNote: DocumentViewLabel;
+    };
 }
 
 export interface TraitPoolFlags {

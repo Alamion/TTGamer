@@ -43,7 +43,7 @@ describe('library tree (spec 013)', () => {
 
     it('groups rulesets, then settings in their fixed order', () => {
         const tree = buildLibraryTree(input());
-        expect(tree.map(({ key }) => key)).toEqual(['r:wod-2e', 'r:wod-v5']);
+        expect(tree.map(({ key }) => key)).toEqual(['r:wod-2e', 'r:wod-v5', 'r:general']);
         const [wod2e, v5] = tree;
         expect(wod2e!.settings.map(({ key }) => key)).toEqual([
             's:rules:wod-2e',
@@ -166,6 +166,7 @@ describe('library tree (spec 013)', () => {
             's:module:wod-v5:hunter',
             's:module:wod-v5:vampire',
             `s:user:${ASHEN_ID}`,
+            'r:general',
         ]);
         expect(keys[2]).toBe(`c:user:${FIREARMS_ID}`);
         expect(keys.indexOf('s:rules:wod-v5')).toBeGreaterThan(

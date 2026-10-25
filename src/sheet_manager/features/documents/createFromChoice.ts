@@ -117,7 +117,7 @@ function createCopy(target: CreateTarget, options: CreateOptions): UnknownDocume
         templates: useTemplateStore.getState().templates,
         defaultPages: useDocumentTypeStore.getState().defaultPages,
     });
-    const start = example ? exampleStart(definition, example.create()) : undefined;
+    const start = example ? exampleStart(definition, example.create(translate)) : undefined;
     // Companions first (a group's members), so the copy can name their copies.
     if (start && example?.companions?.length) {
         const copies = new Map<string, string>();
@@ -145,7 +145,7 @@ function createCopy(target: CreateTarget, options: CreateOptions): UnknownDocume
                     parentId: options.parentId ?? null,
                 }
             );
-            copies.set(source.create().id, copy.id);
+            copies.set(source.create(translate).id, copy.id);
         }
         start.templateValues = relink(start.templateValues, copies) as typeof start.templateValues;
     }

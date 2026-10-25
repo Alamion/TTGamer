@@ -71,7 +71,8 @@ template up by id — `getTemplate(id)` only sees user templates.
 - Images: `{source:'device', blobId}` (IndexedDB via `persistence/portraitStorage.ts`) or
   `{source:'url', url}` (HTTPS only). Device values are stripped from JSON exports. A blob lives
   while its document names it (`deviceImageIdsOf`: the portrait and every page value, list entries
-  included): a write or reset that drops it deletes it, and the purge deletes the rest.
+  and a markdown value's `images` included): a write or reset that drops it deletes it, and the
+  purge deletes the rest.
 
 ## Diagnostics (debug here first)
 
@@ -153,7 +154,9 @@ columns from the sheet area's width, no box); its ratings show short labels unle
   that fits it (for example "Member of" in the identity card). The shared portrait card is the one
   allowed smaller card.
 - A growing element (a list, a table, built-in rows, equipment, a track, a multiline text, a
-  multiple reference, a tracker) counts as a card's worth of fields on its own.
+  markdown text, a multiple reference, a tracker) counts as a card's worth of fields on its own.
+- A document page is not a sheet: a full page whose only growing element is one markdown field, with
+  at most a one-line name field beside it (the Note), is exempt by that shape (spec 043).
 - A brief has no sections and no cards: its only container is the brief block (`dense()`), a plain
   separator between clearly different kinds of fields (attributes apart from skills), not a block
   per field. The editor offers it only on briefs, and sections and cards only on full pages.

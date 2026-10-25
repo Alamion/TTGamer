@@ -88,7 +88,7 @@ describe('library moves (spec 013)', () => {
         expect(canMove(`t:user:${CULT_ID}`, `t:user:${CULT_ID}`, current)).toBe(false);
         expect(canMove(`s:user:${ASHEN_ID}`, 'r:wod-v5', current)).toBe(false);
         const settingTargets = moveTargets(`s:user:${ASHEN_ID}`, current);
-        expect(settingTargets.map(({ node }) => node.key)).toEqual(['r:wod-2e']);
+        expect(settingTargets.map(({ node }) => node.key)).toEqual(['r:wod-2e', 'r:general']);
         expect(settingTargets[0]!.crossesSystem).toBe(true);
     });
 

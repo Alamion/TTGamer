@@ -63,7 +63,13 @@ export type SheetIssueCode =
     /** The stored arrangement of panes is not readable; the current document shows alone (spec 034). */
     | 'pane-arrangement-invalid'
     /** The dice panel could not be drawn as a tab; it slides in as on other pages (spec 036). */
-    | 'dice-tab-unavailable';
+    | 'dice-tab-unavailable'
+    /** Markdown shown in a fallback look: an unknown callout type, a non-HTTPS image (spec 043). */
+    | 'markdown-render-issue'
+    /** A `dice:` code in a markdown text is not valid notation; it shows as code (spec 043). */
+    | 'markdown-roll-invalid'
+    /** A picture could not be stored with a markdown text (not an image, too large, quota). */
+    | 'markdown-image-rejected';
 
 export interface SheetIssue {
     code: SheetIssueCode;

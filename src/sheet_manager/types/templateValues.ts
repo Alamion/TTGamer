@@ -13,6 +13,10 @@ export const TEMPLATE_VALUES_LIMITS = {
     entriesPerTemplate: 2_000,
     stringMaxLength: 10_000,
     listEntriesMax: 1_000,
+    /** Spec 043 D6: about 45,000 words; a record is written whole on every change. */
+    markdownMaxLength: 300_000,
+    markdownImagesMax: 100,
+    markdownImageNameMax: 120,
 } as const;
 
 const boundedString = z.string().max(TEMPLATE_VALUES_LIMITS.stringMaxLength);
@@ -46,6 +50,28 @@ export const TemplateImageValueSchema = z.union([
 ]);
 
 export type TemplateImageValue = z.infer<typeof TemplateImageValueSchema>;
+
+/**
+ * A markdown field's value (spec 043 D5): the text and the images it embeds as `![[name]]`, kept
+ * with the text so a copy or a type change never separates a name from its picture.
+ */
+export const TemplateMarkdownValueSchema = z
+    .object({
+        text: z.string().max(TEMPLATE_VALUES_LIMITS.markdownMaxLength),
+        images: z
+            .record(
+                z.string().min(1).max(TEMPLATE_VALUES_LIMITS.markdownImageNameMax),
+                TemplateImageValueSchema
+            )
+            .refine(
+                (images) => Object.keys(images).length <= TEMPLATE_VALUES_LIMITS.markdownImagesMax,
+                { message: `At most ${TEMPLATE_VALUES_LIMITS.markdownImagesMax} images` }
+            )
+            .optional(),
+    })
+    .strict();
+
+export type TemplateMarkdownValue = z.infer<typeof TemplateMarkdownValueSchema>;
 
 /** One table cell: a primitive or a resource value. */
 export const TemplateTableCellSchema = z.union([PrimitiveValueSchema, TemplateResourceValueSchema]);
@@ -213,6 +239,8 @@ export const TemplatePageValuesSchema = z
             TemplateResourceValueSchema,
             TrackerValueSchema,
             TemplateTableRowsSchema,
+            // Before the rating detail, whose optional `text` would also take a short note.
+            TemplateMarkdownValueSchema,
             RatingDetailSchema,
             TemplateListValueSchema,
             TemplateImageValueSchema,
@@ -233,6 +261,7 @@ export type TemplateFieldValue =
     | TemplateTableRows
     | TemplateListValue
     | TemplateImageValue
+    | TemplateMarkdownValue
     | TrackerValue;
 
 export type ValidateValueResult =
@@ -354,6 +383,19 @@ export function validateImageValue(value: unknown): ValidateValueResult {
     return result.success ? { ok: true, value: result.data } : { ok: false, reason: 'type' };
 }
 
+/** Strict write-path validation for a stored markdown value (spec 043). */
+export function validateMarkdownValue(value: unknown): ValidateValueResult {
+    const result = TemplateMarkdownValueSchema.safeParse(value);
+    if (result.success) return { ok: true, value: result.data };
+    const tooLong =
+        typeof value === 'object' &&
+        value !== null &&
+        'text' in value &&
+        typeof value.text === 'string' &&
+        value.text.length > TEMPLATE_VALUES_LIMITS.markdownMaxLength;
+    return { ok: false, reason: tooLong ? 'bounds' : 'type' };
+}
+
 /** Strict write-path validation for one stored value against its template field definition. */
 export function validateTemplateValue(field: TemplateField, value: unknown): ValidateValueResult {
     switch (field.type) {
@@ -373,6 +415,8 @@ export function validateTemplateValue(field: TemplateField, value: unknown): Val
             return validateReference(field, value);
         case 'image':
             return validateImageValue(value);
+        case 'markdown':
+            return validateMarkdownValue(value);
         case 'formula':
             // Formula results are computed, never stored (spec A4).
             return { ok: false, reason: 'type' };
@@ -400,6 +444,19 @@ export function coerceStoredValue(
             }
             if (isResourceCandidate(value)) {
                 return `${value.current}/${value.max}`;
+            }
+            // A field turned from markdown back to text shows what fits a text value.
+            if (TemplateMarkdownValueSchema.safeParse(value).success) {
+                return (value as TemplateMarkdownValue).text.slice(
+                    0,
+                    TEMPLATE_VALUES_LIMITS.stringMaxLength
+                );
+            }
+            return undefined;
+        case 'markdown':
+            if (typeof value === 'string') return { text: value };
+            if (typeof value === 'number' || typeof value === 'boolean') {
+                return { text: String(value) };
             }
             return undefined;
         case 'number': {

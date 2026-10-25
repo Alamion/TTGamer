@@ -75,7 +75,7 @@ details:
     coreTypeNote: The rules character inside your setting. Give it pages of its own here; it cannot be moved or deleted.
     shippedPageNote: A shipped page. Edit it in the editor; reset it to bring the original back.
     storedValuesNote: No pages yet — its documents show their stored values until you add one.
-    rulesOnlyFallback: No page of its own yet — its documents open on the "Rules only" page.
+    rulesOnlyFallback: No page of its own yet — its documents open on the "{name}" page.
     defaultPage: 'Default page: {name}'
     defaultChangesExisting: Choosing another default page also changes existing documents that have no page of their own.
     defaultNewOnly: Choosing another default page applies to new documents; existing documents keep their page.

@@ -1,0 +1,27 @@
+view:
+    insecureImage: 'Only HTTPS images load here:'
+    unresolvedEmbed: Not linked yet
+    unfold: Show {title}
+    fold: Hide {title}
+editor:
+    edit: Edit
+    done: Done
+    editTitle: Edit the text (Ctrl+E)
+    doneTitle: Back to reading (Ctrl+E or Esc)
+    toolbar: Formatting
+    bold: Bold (Ctrl+B)
+    italic: Italic (Ctrl+I)
+    link: Link (Ctrl+K)
+    checklist: Checklist item (Ctrl+L)
+    image: Image
+    imageFailed: This image could not be added.
+    imagesFull: 'A text holds at most {max} images.'
+    callout: Callout
+    foldedCallout: Folded callout
+    calloutTitle: Title
+    linkText: text
+    source: Source
+    preview: Result
+    split: Width of the source
+    full: The text is full ({max} characters); shorten it to write more.
+    empty: Nothing written yet.

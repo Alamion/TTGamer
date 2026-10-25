@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
  * skill, "Composition of shipped pages"): a full page is sections of at least five fields made of
  * cards of at least three, with no loose field in a section; a brief holds only brief blocks and
  * fields. A growing element (a list, a table, built-in rows, equipment, a track, a multiline
- * text, a multiple reference, a tracker) counts as a card's worth on its own.
+ * text, a markdown text, a multiple reference, a tracker) counts as a card's worth on its own.
  */
 
 /** The shared portrait card is one picture by design. */
@@ -22,6 +22,7 @@ function growing(node: TemplateNode): boolean {
         case 'list':
         case 'table':
         case 'tracker':
+        case 'markdown':
             return true;
         case 'text':
             return node.multiline;
@@ -39,7 +40,22 @@ function weight(node: TemplateNode): number {
     return growing(node) ? 3 : 1;
 }
 
+/**
+ * A document page, not a sheet (spec 043): one markdown text with at most a one-line name field
+ * beside it. The rule groups a sheet's fields; such a page has none to group.
+ */
+function isDocumentPage(children: readonly TemplateNode[]): boolean {
+    const markdown = children.filter((node) => node.type === 'markdown');
+    const rest = children.filter((node) => node.type !== 'markdown');
+    return (
+        markdown.length === 1 &&
+        rest.length <= 1 &&
+        rest.every((node) => node.type === 'text' && !node.multiline)
+    );
+}
+
 function fullPageProblems(children: readonly TemplateNode[]): string[] {
+    if (isDocumentPage(children)) return [];
     const problems: string[] = [];
     for (const section of children) {
         if (section.type !== 'section') {

@@ -198,6 +198,15 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
     resource: field('resource'),
     reference: field('reference'),
     image: field('image'),
+    markdown: {
+        ...field('markdown'),
+        palette: {
+            key: 'markdown',
+            label: editor.paletteMarkdown,
+            hint: editor.paletteMarkdownHint,
+            build: () => newField('markdown', translate(editor.paletteMarkdown)),
+        },
+    },
     formula: field('formula'),
     // Not in the "+" menu: a field becomes a tracker through its Type setting.
     tracker: field('tracker'),
@@ -209,7 +218,7 @@ export function elementEditor<N extends TemplateNode>(node: N): ElementEditor<N>
 
 /** The "+" menu in display order. */
 export const PALETTE: readonly PaletteEntry[] = (
-    ['section', 'brief', 'text', 'list', 'button'] as const
+    ['section', 'brief', 'text', 'markdown', 'list', 'button'] as const
 ).map((type) => ELEMENT_EDITORS[type].palette!);
 
 export const KIND_NAMES = {
