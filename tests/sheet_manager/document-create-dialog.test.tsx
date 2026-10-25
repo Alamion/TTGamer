@@ -123,6 +123,19 @@ describe('finding the kind (spec 039, US1)', () => {
         expect(screen.getByRole('heading', { name: 'Vehicle' })).toBeTruthy();
         expect(useDocumentStore.getState().entries).toHaveLength(2);
     });
+
+    it('names the ruleset and setting beside a recent kind', () => {
+        window.localStorage.setItem(
+            CREATE_DIALOG_STORAGE_KEY,
+            JSON.stringify({ recent: ['wod-v5/hunter', 'wod-v5/vampire'], toggled: [] })
+        );
+        open();
+        const recent = within(screen.getByRole('group', { name: 'Recent' })).getAllByRole('option');
+        expect(recent.map((option) => option.textContent)).toEqual([
+            'Character · World of Darkness 5th Edition / Hunter: the Reckoning 5e',
+            'Character · World of Darkness 5th Edition / Vampire: the Masquerade 5e',
+        ]);
+    });
 });
 
 describe('naming and placing it (spec 039, US2)', () => {
