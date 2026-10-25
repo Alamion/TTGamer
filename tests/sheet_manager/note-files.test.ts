@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { runImportBatch } from '@site/src/sheet_manager/features/sheet/shell/importBatch';
 import {
     documentFileFormat,
@@ -189,4 +191,27 @@ describe('note files in the toolbar import and export', () => {
             kept: false,
         });
     });
+});
+
+describe('syntax examples of the guide (spec 043, SC-003)', () => {
+    const examples = [
+        'docs/guide/notes.mdx',
+        'i18n/ru/docusaurus-plugin-content-docs/current/guide/notes.mdx',
+    ].flatMap((path) =>
+        [...readFileSync(path, 'utf8').matchAll(/```markdown\n([\s\S]*?)```/g)].map(
+            ([, body]) => [path, body!] as const
+        )
+    );
+
+    it('finds the examples', () => {
+        expect(examples.length).toBeGreaterThanOrEqual(14);
+    });
+
+    it.each(examples)(
+        'round-trips an example of %s with its text unchanged',
+        async (_path, body) => {
+            const { back } = await roundTrip(noteEnvelope('n', 'Example', body));
+            expect(bodyOf(back).text).toBe(body);
+        }
+    );
 });

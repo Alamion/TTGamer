@@ -112,31 +112,42 @@ const modeButton =
 /** Object URLs of a text's stored pictures by name; addresses of web pictures as they are. */
 function useImageUrls(images: TemplateMarkdownValue['images']): Readonly<Record<string, string>> {
     const [urls, setUrls] = useState<Readonly<Record<string, string>>>({});
+    // The URLs on screen: freed only once the next ones are shown, so no picture points at a
+    // freed address while the next set loads.
+    const shown = useRef<string[]>([]);
     useEffect(() => {
         let cancelled = false;
-        const created: string[] = [];
         void (async () => {
             const next: Record<string, string> = {};
+            const created: string[] = [];
             for (const [name, image] of Object.entries(images ?? {})) {
                 if (image.source === 'url') {
                     next[name] = image.url;
                     continue;
                 }
                 const blob = await loadPortrait(image.blobId);
-                if (cancelled) return;
                 if (!blob) continue;
                 const url = URL.createObjectURL(blob);
                 created.push(url);
                 next[name] = url;
             }
-            if (!cancelled) setUrls(next);
+            if (cancelled) {
+                created.forEach((url) => URL.revokeObjectURL(url));
+                return;
+            }
+            const previous = shown.current;
+            shown.current = created;
+            setUrls(next);
+            requestAnimationFrame(() => previous.forEach((url) => URL.revokeObjectURL(url)));
         })();
         return () => {
             cancelled = true;
-            // The next set replaces these; revoking after a frame keeps the pictures from blinking.
-            requestAnimationFrame(() => created.forEach((url) => URL.revokeObjectURL(url)));
         };
     }, [images]);
+    useEffect(() => {
+        const owned = shown;
+        return () => owned.current.forEach((url) => URL.revokeObjectURL(url));
+    }, []);
     return urls;
 }
 

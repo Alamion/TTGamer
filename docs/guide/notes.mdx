@@ -1,0 +1,136 @@
+---
+sidebar_position: 2.5
+title: Notes
+sidebar_label: Notes
+description: How to keep notes for any game — creating a note, reading and editing it, the markdown it understands, folding callouts, rolls, pictures, and markdown files for Obsidian.
+---
+
+import { MarkdownView } from '@site/src/shared/components/markdown/MarkdownView';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
+# Notes \{#notes}
+
+:::tip[In short]
+**New** → **Note** (under **General**) makes a note for any game. Write in markdown: every line is its own paragraph, and the result shows beside the text. **Done** or `Esc` turns it into a page to read; **Edit** or `Ctrl+E` brings the text back. Callouts that start folded keep a long note tidy, and `` `dice: 2d10` `` becomes a roll.
+:::
+
+## Creating a note \{#creating}
+
+Press **New** on the [character sheet](/universal_sheet), type `note`, and press `Enter` twice (or give it a name first). A note belongs to no game, so it is under **General** whatever rules you have, and it lives in the [documents window](./documents/) like any other document: in folders, in tabs, beside a character sheet.
+
+A new note opens ready to write, with the cursor in its text. **How notes work** in the same dialog is an example note that shows everything below.
+
+## Reading and editing \{#editing}
+
+A note opens as a page to read. **Edit** shows its text; **Done** goes back. On a wide pane the text and the result stand side by side, and the divider between them moves; on a narrow one **Source** and **Result** switch between them.
+
+| Keys                        | What they do                                           |
+| --------------------------- | ------------------------------------------------------ |
+| `Ctrl+E` (`Cmd+E` on a Mac) | Switch between reading and editing                     |
+| `Esc`                       | Stop editing                                           |
+| `Ctrl+B`, `Ctrl+I`          | Bold, italic around the selection                      |
+| `Ctrl+K`                    | A link around the selection, with the address selected |
+| `Ctrl+L`                    | Turn the selected lines into checklist items, or back  |
+
+The toolbar has the same commands, plus **Callout**, **Folded callout**, and **Image**. Everything is saved as you type, and the browser's undo (`Ctrl+Z`) works in the text. A note holds up to 300,000 characters (about 45,000 words).
+
+## What a note understands \{#syntax}
+
+Notes read the markdown Obsidian writes, so text moves between them without changes. One difference from strict markdown: **every line is its own paragraph**, so you never need a blank line to start a new one.
+
+```markdown
+# Scene one
+
+## The docks
+
+Rain at night; Ines waits by the crates.
+**Bold**, _italic_, ~~struck out~~, ==highlighted==, `code`, and [a link](https://example.org).
+```
+
+```markdown
+- [ ] Prepare the map
+- [x] Motives of the gang
+    - Bruno owes money
+
+1. Numbered lists work too
+```
+
+```markdown
+| NPC          | Wants            |
+| :----------- | :--------------- |
+| Ines Ruiz    | money            |
+| Bruno Kessel | to be left alone |
+```
+
+```markdown
+> "Come alone." — the letter
+```
+
+Checklist items tick right on the page you read. HTML written in a note is shown as text and never runs; links work only for web, mail, and in-page addresses.
+
+<LiveDemo>
+    <MarkdownView
+        source={
+            '# Scene one\nRain at night; Ines waits by the crates.\n**Bold**, *italic*, ~~struck out~~, ==highlighted==, `code`.\n- [x] Motives of the gang\n| NPC | Wants |\n|:---|:---|\n| Ines Ruiz | money |'
+        }
+    />
+</LiveDemo>
+
+## Callouts and folding \{#callouts}
+
+A callout is a quote with a type and a title. A `-` after the type makes it start folded, a `+` starts it open but foldable; without either it cannot fold. Use folded callouts for history, twists, and anything you open only when the players get there.
+
+```markdown
+> [!info]- History of the docks
+> Built by the guild a century ago.
+
+> [!spoiler]- What is really going on
+> The guard is the thief.
+
+> [!warning]+ What the players see
+> Two guards, one asleep.
+```
+
+Folding is only how you read the note: it is never written into the text. Types with a color of their own are `note`, `info`, `tip`, `success`, `warning`, `spoiler`, `danger`, `bug`, and their Obsidian names; any other word shows as a plain callout.
+
+<LiveDemo>
+    <MarkdownView
+        source={
+            '> [!spoiler]- What is really going on\n> The guard is the thief.\n\n> [!warning]+ What the players see\n> Two guards, one asleep.'
+        }
+    />
+</LiveDemo>
+
+## Rolls \{#rolls}
+
+Code that starts with `dice:` is a roll, written as in the Obsidian Dice Roller plugin. Press it and the [dice roller](./dice-roller) rolls exactly that notation: it lands in the history, is named after the note, and is shared to Discord or Matrix if you [share rolls](./roll-sharing/).
+
+```markdown
+Ambush: `dice: 6d10>=6`
+```
+
+Notation the dice roller cannot read stays as code with a wavy underline; point at it to see why.
+
+## Pictures \{#pictures}
+
+Paste a screenshot into the text, or press **Image** and pick files: the picture is stored on this device with the note, up to 2,048 pixels on its long side, and its name goes where the cursor was as `![[name]]`. A picture from the web works by its HTTPS address: `![Map](https://…)`.
+
+```markdown
+The docks: ![[docks map.png]]
+```
+
+Delete the line and leave the text, and the stored picture is freed; undo before that brings it back. A note holds up to 100 pictures.
+
+## Links between documents \{#links}
+
+`[[Ines Ruiz]]` is kept as written and looks like a link, but it does not open anything yet: links between documents, with previews, are the next step for notes. Text written with them now will work then without changes.
+
+## Markdown files \{#files}
+
+**Export** on a note saves a markdown file: its name in the front matter, the text as you wrote it. A note with stored pictures saves a zip of the file and an `images` folder. Unpack it into an Obsidian vault and the note opens there with its pictures.
+
+**Import** takes `.md` and `.zip` files (and the usual `.json` exports): each becomes a new note, named by the `title` in its front matter or else by the file. Other front matter keys (tags, aliases, dates) are kept and written back on the next export. A file that cannot be read joins the rejected files of the [documents window](./documents/#rejected-files) with the reason.
+
+## Markdown in your own pages \{#own-pages}
+
+Notes are made of one **Markdown text** element, and you can put it on your own pages too: a "Location" type with a name, a region, and a markdown description. See [elements](./template-editor/elements#markdown) in the template editor guide.

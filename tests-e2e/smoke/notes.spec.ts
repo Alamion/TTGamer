@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import type { Page } from '@playwright/test';
+import { unzipSync } from 'fflate';
 
 import { expect, test } from '../fixtures';
 
@@ -89,4 +90,32 @@ test('exports a note as markdown and imports it back as a new note', async ({ pa
         buffer: Buffer.from(markdown),
     });
     await expect(page.getByText('Imported "Docks plan"')).toBeVisible();
+});
+
+test('adds two pictures without a broken one and exports them in a zip', async ({ page }) => {
+    await page.goto('/universal_sheet');
+    await page.getByRole('button', { name: 'New', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Create document' });
+    await page.keyboard.type('note');
+    await page.keyboard.press('Enter');
+    await dialog.getByRole('textbox', { name: 'Name' }).fill('Faces');
+    await page.keyboard.press('Enter');
+    const picker = page.locator('input[type="file"][aria-label="Image"]');
+    // The second picture changes the set while the first is shown (its address stays valid).
+    await picker.setInputFiles('static/img/jax_vorn.png');
+    await expect(page.getByRole('img', { name: 'jax_vorn.png' })).toBeVisible();
+    await picker.setInputFiles('static/img/lena_varga.webp');
+    await expect(page.getByRole('img', { name: 'lena_varga.webp' })).toBeVisible();
+    await expect(page.getByRole('img', { name: 'jax_vorn.png' })).toBeVisible();
+
+    const downloading = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export' }).click();
+    const download = await downloading;
+    expect(download.suggestedFilename()).toBe('Faces.zip');
+    const entries = unzipSync(new Uint8Array(readFileSync(await download.path())));
+    expect(Object.keys(entries).sort()).toEqual([
+        'Faces.md',
+        'images/jax_vorn.png',
+        'images/lena_varga.webp',
+    ]);
 });

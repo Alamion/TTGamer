@@ -12,10 +12,10 @@ invariants are in the skill index.
   (SectionCard surface, opt-in `collapsible`) on a full page; `brief` (the brief block: dense
   SectionCard, area columns, opt-in `collapsible`, `hideTitle`, `docsPath`) on a brief. Accents
   alternate by sibling parity, never stored.
-- Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`, `rating`,
-  `resource`, `reference`, `tracker` (see "Trackers" below). A `reference` with `incoming: true`
-  lists the documents linking here instead of storing links (bindings reference, "Reference
-  fields").
+- Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `markdown`, `formula`,
+  `select`, `rating`, `resource`, `reference`, `tracker` (see "Trackers" below; "Markdown" below). A
+  `reference` with `incoming: true` lists the documents linking here instead of storing links
+  (bindings reference, "Reference fields").
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones
       until the reader expands it); `rating` is a trait row (`components/stat-fields/RatingRow`, the
@@ -31,6 +31,18 @@ invariants are in the skill index.
       `FieldLabel`); unset uses `fieldLabelPosition` (rating and formula: left, others: top). Every
       numeric input (fields, resource, editor settings) is `shared/components/NumberInput`: numeric
       text only, bounded to min/max/step on blur or Enter, arrow keys step.
+- Markdown (spec 043): `rows` (4–40, starting height) is its only own setting. Its value is
+  `TemplateMarkdownValueSchema` `{ text ≤ 300,000, images? { name → image value, ≤ 100 } }`; a
+  stored string reads as `{ text }` and a text field shows a markdown value's text (cut to 10,000).
+  Not a list entry and not a table column. `MarkdownFieldControl` reads by default (an empty field
+  starts editing), edits in a textarea with a toolbar and Ctrl/Cmd+B, I, K, L, and E/Esc for the
+  mode, and shows source and result side by side from 720 px; on a brief it is read-only behind a
+  fold. Rendering is `shared/components/markdown/MarkdownView` (the syntax:
+  `shared/markdown/parse.ts`): `dice:` code rolls through `integrations/sheet-dice/noteRolls`,
+  `![[name]]` shows the value's own picture, any other `[[…]]` is inert link-styled text. Pasted or
+  picked pictures are stored with `savePortrait(file, MARKDOWN_IMAGE_LIMITS)` and named in the text;
+  names the text no longer mentions are dropped on blur, on Done/Esc, and on unmount
+  (`markdownImages.ts`), so undo while editing keeps them.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list` (exactly one
   of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data), `button` (spec 038).
 - Buttons: `label` (`labelMessage`), `icon`, `availableWhen`,

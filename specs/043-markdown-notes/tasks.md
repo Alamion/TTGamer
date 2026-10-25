@@ -159,20 +159,20 @@ when the field is left, and undo before that keeps it.
 
 ## Finish
 
-- [ ] T037 Check SC-004: add notes to the 3,000-document fixture of
+- [x] T037 Check SC-004: add notes to the 3,000-document fixture of
       `tests-e2e/timings/documents.spec.ts` and compare the window's open and search timings with
       the sheets-only run; record the numbers in design.md
-- [ ] T038 Guidance: `src/sheet_manager/AGENTS.md` (the `general` system, the Note, markdown values
+- [x] T038 Guidance: `src/sheet_manager/AGENTS.md` (the `general` system, the Note, markdown values
       and their images), `.agents/skills/sheet-templates/SKILL.md` and `references/node-tree.md`
       (the `markdown` field, the page-composition shape rule), root `AGENTS.md` §6/§8 (the
       `shared/markdown` module)
-- [ ] T039 User guide: `docs/guide/notes.mdx` (creating, editing, syntax with examples, folding,
+- [x] T039 User guide: `docs/guide/notes.mdx` (creating, editing, syntax with examples, folding,
       rolls, images, files) and its Russian mirror under `i18n/ru/…/guide/notes.mdx`; link it from
       `docs/guide/index.mdx` and the field's help link; `yarn validate:i18n`
-- [ ] T040 Backlog: mark T-048 done with a dated note in `TODO.md` that records its narrowed scope
+- [x] T040 Backlog: mark T-048 done with a dated note in `TODO.md` that records its narrowed scope
       (no inline HTML or MDX embeds); add the next slice (links, previews, backlinks, embeds) as a
       task under `gm-notes-templates`/`note-tree`
-- [ ] T041 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
+- [x] T041 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
       design.md
 
 ## Coverage

@@ -91,11 +91,20 @@ A field holds one value. Its **Label** is shown next to it (**Show label** hides
 | **Resource**           | A current value and a maximum, such as a pool of points. **Display: Tracker** draws it as one row of boxes, as for [built-in pools](#built-in-parts), up to 20 boxes.                                    |
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
+| **Markdown text**      | A long text with headings, lists, tables, callouts, rolls, and pictures; see [Markdown text](#markdown).                                                                                                 |
 | **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
 | **Tracker**            | Boxes the reader marks by level, for health, stress, or any other burden; see [Trackers](#trackers).                                                                                                     |
 
 <LiveDemo kind="example">
     <ElementExample story="fields" node="section-text" />
+</LiveDemo>
+
+## Markdown text \{#markdown}
+
+A long text written in markdown, like a [note](../notes.mdx): readers see it as a page and press **Edit** to change it. **Starting height (lines)** sets how tall its text box opens. On a brief it is read-only and folded, so long descriptions do not crowd the cards; its checklist still ticks there. It cannot be a list entry or a table column.
+
+<LiveDemo kind="example">
+    <ElementExample story="markdown" node="markdown-showcase" />
 </LiveDemo>
 
 ## Ratings \{#rating}

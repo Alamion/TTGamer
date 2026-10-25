@@ -200,6 +200,17 @@ appropriate for layout/manager operations that explicitly manage the collection.
   plugins without it are rulesets. The library (spec 013) groups by it: ruleset → "Rules only",
   modules, setting systems, user settings. Current-state detail: the sheet-templates skill
   ("Library").
+- The **General** system (`systems/general/`, spec 043) holds documents for any game: a ruleset with
+  no dice, policies, or catalogs whose core definition is the **Note** (kind `note`: `name` bound
+  with `syncsTitle`, an optional raw-YAML `frontMatter`, the text in the page's markdown field
+  `body`; one full page `general-note`, no brief). Its `library` texts replace the rules wording
+  ("Any game" instead of "Rules only"). A kind may declare `files` (`DocumentFileFormat`): the
+  toolbar exports such a document in it and turns its files into envelopes before the import batch
+  (`features/sheet/shell/kindFiles.ts`); the Note's format is markdown, or a zip with `images/` when
+  it has stored pictures (`noteFiles.ts`, `yaml` and `fflate` loaded on use). An empty markdown
+  field claims the focus of a just-created document (`features/documents/newDocumentFocus.ts`),
+  which the create dialog hands over on close. Example documents take a `localize` function for text
+  in the interface language (system code cannot import `translate`).
 - User document types and settings (spec 012) reach generic code only through the registry overlay
   (`systems/userTypes.ts`, `SystemRegistry.setUserDocumentTypes`); `user-` documents keep every
   value in `templateValues`. User catalogs (spec 015) do the same through `setUserCatalogs` and are
@@ -219,8 +230,10 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   `loadDocuments`). Place, order, and times live only in the index: the envelope, the export file,
   and the cloud contract are unchanged.
 - **Writes.** A mutation updates the loaded envelope and its entry in one `set`; a subscriber saves
-  changed records at once, coalesced within a task, and flushes on `pagehide`. `changedAt` moves at
-  most once per 5 s per document. Two tabs merge the index by id (newer `updatedAt` wins).
+  changed records at once, coalesced within a task, and flushes on `pagehide`. One write runs at a
+  time and the next takes the latest versions when it starts (`createRecordWriter`, spec 043), so
+  fast typing never queues stale snapshots ahead of the newest. `changedAt` moves at most once per 5
+  s per document. Two tabs merge the index by id (newer `updatedAt` wins).
 - **Delete is a tombstone.** Deleting removes the entry and lists the id in `pendingPurge`; the next
   start's sweep removes exactly those records (and their device images). A record with no entry and
   no tombstone gets its entry rebuilt, never deleted. Folders use the same list.

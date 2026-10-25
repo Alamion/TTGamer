@@ -230,3 +230,33 @@ guidance.
 - **Bundle after US6 (T035)**: `yaml` (96.9 KB) and `fflate` (31.8 KB) are chunks of their own,
   loaded on export or import only; main chunk 279.9 KB gzip (+0.2 since US1, strings), `common`
   353.4 KB gzip (+3.9, the file format and the toolbar wiring).
+- **SC-004 (T037)**: the 3,000-document timing now stores every other entry as a note. Sheets only
+  (the US6 run): open 55 ms, search 24 ms, 60 fps; with notes: open 24 ms, search 23 ms, 60 fps
+  (best of five warm runs; the difference is noise).
+- **Picture addresses (found in the walk)**: when a text's pictures changed, the old object URLs
+  were freed a frame later while the new ones still loaded, so a shown picture pointed at a freed
+  address for a moment (a console error, a blink). `useImageUrls` now frees the previous set only
+  after the next one is shown; the smoke test adds two pictures in a row and fails on any console
+  error.
+
+## Manual walk results (2026-10-26)
+
+Walked on a production build of the branch (`yarn ci:build`, served on port 3100 by Playwright) at
+1,400 and 600 px; the maintainer's dev server shows another branch.
+
+1. Pass: New → "note" → Note under General; the note opens in edit mode with the cursor in it.
+2. Pass: the guide's syntax sample renders beside the source at 1,400 px; at 600 px Source and
+   Result switch.
+3. Pass: after a reload the note reads; the folded callout opens with Enter; Ctrl+E edits, Esc
+   returns.
+4. Pass: ticking a checklist item in reading mode writes `[x]` into the source.
+5. Pass: `dice: 6d10>=6` rolls the 3D dice and shows "6d10>=6 = 2"; `dice: 6q` stays code with "Not
+   a roll: Unknown character “q”".
+6. Pass: a picked picture shows; deleting its line and undoing brings the reference and the picture
+   back; Esc after that keeps it.
+7. Pass in the browser: Export gives `Docks.zip` with `Docks.md` and `images/jax_vorn.png`, and
+   importing the zip makes the note again. **Left for the maintainer**: unpack it into an Obsidian
+   vault and check the note and its picture there.
+8. Covered by the editor tests (+ menu, starting height setting, a document of a user type).
+9. Covered by the note tests (the system filter labels notes "General").
+10. Pass: the library lists General last, its own types under "Any game".
