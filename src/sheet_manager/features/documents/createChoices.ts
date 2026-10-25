@@ -19,6 +19,8 @@ export interface CreateChoice {
     name: string;
     /** The setting the kind belongs to, shown beside a kind whose section has no heading. */
     context?: string;
+    /** Ruleset, then setting (none for the rules' own kinds): shown beside a recent kind. */
+    path: readonly string[];
     description?: string;
     /** User kinds may share a name; the dialog shows their description (or its absence). */
     userKind: boolean;
@@ -74,6 +76,7 @@ function choiceOf(
         definitionId,
         ...(settingId ? { settingId } : {}),
         name: node.name,
+        path: setting.ref.kind === 'rules' ? [names.ruleset] : [names.ruleset, setting.name],
         ...(node.description ? { description: node.description } : {}),
         userKind: ref.kind === 'user',
         searchText: [

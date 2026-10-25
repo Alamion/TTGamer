@@ -107,6 +107,8 @@ function traitRecord<T extends z.ZodType>(keys: readonly string[], schema: T) {
 export const V5MetadataSchema = z.object({
     portraitId: z.string().max(200).optional(),
     imageUrl: z.string().max(V5_LIMITS.text.long).optional(),
+    /** Whether the page shows the portrait card; unset shows it when there is a portrait. */
+    showPortrait: z.boolean().optional(),
 });
 
 /** Fields every V5 character carries, whatever its module. Modules extend this shape. */

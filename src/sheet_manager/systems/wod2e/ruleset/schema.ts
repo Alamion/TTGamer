@@ -70,6 +70,8 @@ export const Wod2eMetadataSchema = z.object({
     imageUrl: z.string().optional(),
     /** Device-local IndexedDB key. Exported character JSON intentionally omits it. */
     portraitId: z.string().optional(),
+    /** Whether the page shows the portrait card; unset shows it when there is a portrait. */
+    showPortrait: z.boolean().optional(),
 });
 
 export const Wod2eCharacterDataSchema = z.object({

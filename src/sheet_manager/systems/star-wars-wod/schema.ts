@@ -52,6 +52,7 @@ export const CharacterMetadataSchema = z.object({
     biography: engineMetadata.biography,
     imageUrl: engineMetadata.imageUrl,
     portraitId: engineMetadata.portraitId,
+    showPortrait: engineMetadata.showPortrait,
 });
 
 export const ForcePowerItemSchema = z.object({

@@ -65,6 +65,12 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         expect(hunter.name).toBe('Character');
         expect(hunter.context).toBe('Hunter: the Reckoning 5e');
         expect(vampire.context).toBe('Vampire: the Masquerade 5e');
+        expect(vampire.path).toEqual([
+            'World of Darkness 5th Edition',
+            'Vampire: the Masquerade 5e',
+        ]);
+        // The rules' own kinds have no setting in their path.
+        expect(v5.sections[0]!.choices[0]!.path).toEqual(['World of Darkness 5th Edition']);
         const starWars = choices()[0]!.sections[1]!;
         expect(starWars.name).toBe('Star Wars (World of Darkness 2e)');
     });

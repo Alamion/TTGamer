@@ -1,26 +1,41 @@
 meta:
     pageTitle: Home
-    pageDescription: TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation
+    pageDescription: TTGamer — character sheets, a dice roller, and rules documentation for Star Wars WoD 2e and World of Darkness V5, in the browser
 hero:
-    tagline: TTRPG Sheets and Docs
+    tagline: Character sheets, a dice roller, and rules for tabletop roleplaying games — in the browser, with your data kept on your device
     status: Active Development — v{version}
-    characterSheet: Character Sheet
-    quickStart: Quick Start
+    openSheet: Open the sheet
+    siteGuide: Site guide
+games:
+    heading: Games
+    starWars:
+        title: Star Wars WoD 2e
+        summary: The Star Wars galaxy on the World of Darkness 2nd Edition d10 pool engine. Sheets for characters, droids, creatures, vehicles, and fodder groups; rules, searchable catalogs, and a worked example of play.
+        quickStart: Quick start
+        rules: Rules
+    v5:
+        title: World of Darkness V5
+        summary: 'Hunter: the Reckoning and Vampire: the Masquerade on one engine, with Storyteller characters and groups for the people the players meet. Rolls read Desperation, Hunger, and criticals for you.'
+        hunterQuickStart: 'Hunter: quick start'
+        vampireQuickStart: 'Vampire: quick start'
+        rules: Rules
 features:
-    heading: What's Available
-    characterSheet:
-        title: Character Sheet
-        summary: Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient and droid characters; vehicle sheets are planned.
-    diceRoller:
-        title: 3D Dice Roller
-        summary: Real-time 3D dice physics with WebGL, sound effects, surface physics, roll history, and support for any dice notation. 2D fallback included.
-    documentation:
-        title: Full Documentation
-        summary: Complete rules documentation covering character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example.
-about:
-    title: About the System
-    body: A hybrid TTRPG system combining the narrative simplicity of {weg} with the mechanical depth of the {wod} d10 dice pool system. Create characters with 9 core attributes, 30 abilities, skill specializations, Force powers, and track bashing/lethal damage on a dual health system.
-    worldOfDarkness: World of Darkness
-status:
-    live: 'LIVE:'
-    docsComplete: '{count} docs complete'
+    heading: What the Site Does
+    documents:
+        title: Documents, Not Just Characters
+        summary: Characters, creatures, vehicles, and groups in folders, with search, filters, and undo. Every shipped type has a full sheet and a brief that fits a phone screen.
+    layout:
+        title: Several Documents at Once
+        summary: Arrange documents and tools like tabs in a code editor — split in any direction, drag tabs between groups, float the library or the dice roller above the page.
+    templates:
+        title: Pages You Can Change
+        summary: Every sheet is a template. Edit a page in place, or build your own settings, document types, and catalogs in the library and share them as files.
+    dice:
+        title: Dice Roller
+        summary: Dice notation with explosions, rerolls, success counting, and special dice; 3D dice with physics and sound, or plain 2D results. A trait on a sheet rolls its own pool.
+    rollSharing:
+        title: Rolls in Your Chat
+        summary: Post rolls to a Discord channel or a Matrix room, named after the character who made them.
+    storage:
+        title: Your Data Stays with You
+        summary: No account. Documents are saved in the browser as you type; export a document or a template to a file and import it on another device.

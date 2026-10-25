@@ -9,7 +9,7 @@ dist-ssr
 /coverage
 
 # Generated files
-.docusaurus
+.docusaurus*
 .cache-loader
 
 # Misc

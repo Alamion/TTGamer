@@ -15,6 +15,7 @@ import type {
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
+import { PORTRAIT_SHOWN } from '../../portraitBinding';
 import { dotsTrait as trait } from '../../wod-like/templateBuilders';
 
 /**
@@ -124,7 +125,10 @@ export const APPEARANCE_FIELDS: ReadonlyArray<[valueKey: string, label: string]>
 export const textFields = (fields: ReadonlyArray<[string, string]>, compact = false) =>
     fields.map(([key, label]) => text(`field-${key}`, label, key, { compact }));
 
-/** Portrait, identity (three columns), appearance, and biography. */
+/**
+ * Portrait, identity (three columns), appearance, and biography. The portrait shows while the
+ * Appearance card's switch is on; without it the other cards take the whole width.
+ */
 export function baseSection(
     docsPath: string | undefined,
     identityFields: ReadonlyArray<[string, string]>
@@ -137,17 +141,24 @@ export function baseSection(
             group('base-portrait', 'Portrait', [{ ...PORTRAIT, hideLabel: true }], {
                 column: 1,
                 collapsible: true,
+                visibleWhen: PORTRAIT_SHOWN,
             }),
             group('identity-fields', 'Identity', textFields(identityFields), {
                 column: 2,
                 columns: 3,
                 hideTitle: true,
             }),
-            group('base-appearance', 'Appearance', textFields(APPEARANCE_FIELDS), {
-                column: 2,
-                columns: 3,
-                collapsible: true,
-            }),
+            group(
+                'base-appearance',
+                'Appearance',
+                [
+                    ...textFields(APPEARANCE_FIELDS),
+                    primitive('field-show-portrait', 'field:show-portrait', {
+                        label: 'Show portrait',
+                    }),
+                ],
+                { column: 2, columns: 3, collapsible: true, defaultCollapsed: true }
+            ),
             group(
                 'base-biography',
                 'Biography',
@@ -158,10 +169,11 @@ export function baseSection(
                         placeholder: 'Character biography...',
                     }),
                 ],
-                { column: 2, collapsible: true }
+                { column: 2, collapsible: true, defaultCollapsed: true }
             ),
         ],
-        2
+        2,
+        [1, 2]
     );
 }
 
@@ -258,3 +270,62 @@ export function notesGroup(): GroupNode {
 
 /** Standard initiative of the classic engine. */
 export const STANDARD_INITIATIVE = 'wits + alertness';
+
+/**
+ * Health, Willpower, and the virtues in one Condition section, after the V5 sheets (spec 042).
+ * `vitals` are the health or damage track, Willpower, and what a setting checks with them during a
+ * scene (standard initiative, Force resources).
+ */
+export function conditionSection(
+    vitals: TemplateNode[],
+    virtues: GroupNode,
+    options: { title?: string; docsPath?: string; vitalsDocsPath?: string } = {}
+): SectionNode {
+    return wodSection(
+        'condition',
+        'Condition',
+        options.docsPath,
+        [
+            group('condition-vitals', options.title ?? 'Health and Willpower', vitals, {
+                column: 1,
+                docsPath: options.vitalsDocsPath,
+            }),
+            { ...virtues, column: 2 },
+        ],
+        2
+    );
+}
+
+/**
+ * A character's gear lists, each folding (spec 042): what is worn and wielded in the first column,
+ * what is carried and anything else in the second.
+ */
+export function equipmentSection(
+    gear: { first: GroupNode[]; second: GroupNode[] },
+    docsPath: string | undefined
+): SectionNode {
+    return wodSection(
+        'body',
+        'Equipment',
+        docsPath,
+        [
+            ...gear.first.map((card) => ({ ...card, column: 1 })),
+            ...gear.second.map((card) => ({ ...card, column: 2 })),
+        ],
+        2
+    );
+}
+
+/** Experience beside notes (spec 042). */
+export function experienceNotesSection(docsPath: string | undefined): SectionNode {
+    return wodSection(
+        'other',
+        'Experience and Notes',
+        docsPath,
+        [
+            { ...experienceGroup(docsPath), column: 1 },
+            { ...notesGroup(), column: 2 },
+        ],
+        2
+    );
+}

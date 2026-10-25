@@ -548,6 +548,7 @@ fieldTypes:
 defaults:
     other: Прочее
     portrait: Портрет
+    showPortrait: Показывать портрет
     physical: Физические
     social: Социальные
     mental: Ментальные
@@ -563,6 +564,14 @@ defaults:
     darkSideResistance: Сопротивление Тёмной Стороне
     forcePowers: Техники Силы
     derivedStats: Производные показатели
+    forceDerivedStats: Производные от Силы
+    condition: Состояние
+    healthAndWillpower: Здоровье и Воля
+    damageAndWillpower: Повреждения и Воля
+    equipment: Снаряжение
+    experienceAndNotes: Опыт и заметки
+    healthAndResolve: Здоровье и стойкость
+    abilitiesMeritsFlaws: Способности, достоинства и недостатки
     initiativeStandard: Инициатива (обыч.)
     initiativeLightsaber: Инициатива (свет. меч)
     maxForcePoints: Макс. Очки Силы

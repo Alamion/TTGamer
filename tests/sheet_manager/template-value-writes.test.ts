@@ -63,6 +63,14 @@ describe('template value write path', () => {
         render(createElement(DeclarativeSheetView, { template: fullSheet }));
         takeSheetIssues(); // render-time degradation (e.g. missing body handlers) is out of scope
 
+        // The portrait card shows once the folded Appearance card's switch is on.
+        expect(screen.queryByLabelText('Image URL')).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: 'Toggle Appearance section' }));
+        fireEvent.click(screen.getByRole('checkbox', { name: 'Show portrait' }));
+        expect(
+            (useDocumentStore.getState().documents[0]!.data as { metadata: object }).metadata
+        ).toMatchObject({ showPortrait: true });
+
         const urlInput = screen.getByLabelText('Image URL') as HTMLInputElement;
         fireEvent.change(urlInput, { target: { value: 'https://example.test/portrait.webp' } });
         fireEvent.blur(urlInput);

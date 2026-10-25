@@ -138,8 +138,10 @@ invariants are in the skill index.
   issue, import report) and renders no link (`template-reference-invalid` at render outside the
   editor). The schema stays lenient so old templates never quarantine.
 - Placement: `column` pins a node to a parent column (then every sibling stacks per column, unpinned
-  ones in column 1); `span` (2–4) stretches a node over columns in flowing layouts only, with
-  per-breakpoint classes (`spanClass`: 3/4-column grids have two columns at `md`).
+  ones in column 1; on the page a column whose nodes are all hidden by `visibleWhen` is dropped and
+  the others share its width, with their `columnWidths`; the editor keeps every column); `span`
+  (2–4) stretches a node over columns in flowing layouts only, with per-breakpoint classes
+  (`spanClass`: 3/4-column grids have two columns at `md`).
 - Sections and collapsible groups may set `defaultCollapsed` (collapsed until opened, then
   remembered). Select options may carry their own `labelMessage`.
 - Guardrails (`TEMPLATE_LIMITS`, `collectTreeIssues`): depth 10, 200 nodes, one id namespace across

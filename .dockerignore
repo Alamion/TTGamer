@@ -2,7 +2,7 @@
 .git
 node_modules
 build
-.docusaurus
+.docusaurus*
 coverage
 playwright-report
 test-results

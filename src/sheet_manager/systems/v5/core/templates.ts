@@ -3,6 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { dense, group, section } from '../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../types/template';
+import { PORTRAIT_SHOWN } from '../../portraitBinding';
 import {
     advantagesSection,
     attributesSection,
@@ -64,7 +65,7 @@ export const v5CoreSheetTemplate = page('v5-core-sheet', 'Mortal — Full sheet'
         'mortal',
         core.section.message,
         undefined,
-        [portraitGroup(1), { ...identity(), column: 2 }, biographyGroup(2)],
+        [portraitGroup(1, PORTRAIT_SHOWN), { ...identity(), column: 2 }, biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: core.section }
     ),
     section(

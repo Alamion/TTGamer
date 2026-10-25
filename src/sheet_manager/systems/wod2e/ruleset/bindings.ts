@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { portraitFieldBinding } from '../../portraitBinding';
+import { portraitFieldBinding, showPortraitFieldBinding } from '../../portraitBinding';
 import type {
     DocumentBindingDescriptor,
     EquipmentSectionId,
@@ -148,6 +148,7 @@ export function wod2eFieldBindings(
 ): DocumentBindingDescriptor[] {
     return [
         portraitFieldBinding(documentKinds),
+        showPortraitFieldBinding(documentKinds),
         ...metadataFields.map(([fieldKey, label]): DocumentBindingDescriptor => ({
             key: `field:${fieldKey}`,
             kind: 'field',

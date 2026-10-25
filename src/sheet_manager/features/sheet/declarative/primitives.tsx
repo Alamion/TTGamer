@@ -29,7 +29,7 @@ import type {
 } from '../../../systems/templateBindings';
 import {
     fieldBindingUpdate,
-    readDataPath,
+    readFieldBinding,
     resolveDocumentBinding,
 } from '../../../systems/templateBindings';
 import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/equipment';
@@ -920,7 +920,7 @@ function PrimitiveFieldBody({
     }
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    const raw = readDataPath(bound.data, descriptor.path);
+    const raw = readFieldBinding(descriptor, bound.data);
     if (descriptor.valueType === 'boolean') {
         return (
             <label className="flex items-center gap-2 text-sm text-textPrimary">

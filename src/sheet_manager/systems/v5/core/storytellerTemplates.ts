@@ -8,7 +8,14 @@ import {
     TEMPLATE_SCHEMA_VERSION,
     type TemplateNode,
 } from '../../../types/template';
-import { portraitGroup, trackGroup, V5_DOCS, v5Text } from '../ruleset/templateParts';
+import { PORTRAIT_SHOWN } from '../../portraitBinding';
+import {
+    portraitGroup,
+    showPortraitToggle,
+    trackGroup,
+    V5_DOCS,
+    v5Text,
+} from '../ruleset/templateParts';
 import { memberOfBriefGroup, memberOfField } from './group';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
@@ -145,6 +152,7 @@ const identityCard = () =>
             bound('difficulty', 'field:difficulty', storyteller.fields.difficulty),
             simpleFoeButton(),
             { ...memberOfField(), span: 2 },
+            showPortraitToggle(),
         ],
         { hideTitle: true, labelMessage: v5.sections.identity, columns: 2, column: 2 }
     );
@@ -184,7 +192,7 @@ export const v5StorytellerSheetTemplate = page(
             'storyteller',
             storyteller.section.message,
             STORYTELLER_DOCS,
-            [portraitGroup(1), identityCard()],
+            [portraitGroup(1, PORTRAIT_SHOWN), identityCard()],
             { columns: 2, columnWidths: [1, 2], labelMessage: storyteller.section }
         ),
         section(

@@ -1,7 +1,7 @@
 {
     "name": "ttgamer",
     "packageManager": "yarn@1.22.22",
-    "version": "3.32.0",
+    "version": "3.33.0",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -9,7 +9,7 @@
         "prestart": "yarn build:translations",
         "start": "docusaurus start",
         "prebuild": "yarn build:translations && yarn validate:data && yarn validate:i18n && yarn check:version",
-        "build": "docusaurus build",
+        "build": "DOCUSAURUS_GENERATED_FILES_DIR_NAME=.docusaurus-build docusaurus build",
         "swizzle": "docusaurus swizzle",
         "deploy": "docusaurus deploy",
         "clear": "docusaurus clear",

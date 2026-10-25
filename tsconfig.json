@@ -8,7 +8,7 @@
         },
         "strict": true
     },
-    "exclude": [".docusaurus", "build", "context"],
+    "exclude": [".docusaurus", ".docusaurus-build", "build", "context"],
     "files": [],
     "references": [
         { "path": "./tsconfig.app.json" },

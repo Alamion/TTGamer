@@ -238,6 +238,9 @@ This section owns the verification rules; other guidance links here.
   `ci:e2e` (build, then the browser tests), `ci:docker` (the site image, then the smoke tests on
   it). `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests;
   `verify:full` adds the perf tests and `ci:e2e`.
+- **Build beside the dev server**: `yarn build` writes its generated modules to
+  `.docusaurus-build/`, not the dev server's `.docusaurus/`, so a check never reloads or breaks a
+  running `yarn start`. Keep the two directories apart.
 - **Commit** (`pre-commit`): lint-staged formats and lints the staged files only (seconds); staged
   backlog or translation files also run their validator.
 - **Push** (`pre-push`): the type check and the unit tests related to the pushed changes.

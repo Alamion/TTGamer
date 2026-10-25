@@ -56,15 +56,15 @@ describe('full sheet columns in a pane (spec 034, FR-007)', () => {
         const { container } = draw(false);
         const classes = gridClasses(container);
         expect(classes).toContain('md:grid-cols-2 xl:grid-cols-3');
-        expect(classes).not.toContain('@3xl/brief');
+        expect(classes).not.toContain('/brief:');
     });
 
     it('takes the columns from the width of the pane, at the same widths, inside one', () => {
         const { container } = draw(true);
         const classes = gridClasses(container);
-        expect(classes).toContain('@3xl/brief:grid-cols-2 @7xl/brief:grid-cols-3');
+        expect(classes).toContain('@min-[720px]/brief:grid-cols-2 @min-[1200px]/brief:grid-cols-3');
         expect(classes).not.toMatch(/(^|\s)(md|xl):/);
-        expect(container.innerHTML).toContain('@7xl/brief:col-span-3');
+        expect(container.innerHTML).toContain('@min-[1200px]/brief:col-span-3');
     });
 
     it('keeps the padding of the sheet from growing with the window inside a pane', () => {
@@ -77,7 +77,7 @@ describe('full sheet columns in a pane (spec 034, FR-007)', () => {
 
     it('maps only the column classes', () => {
         expect(forArea('grid gap-4 md:grid-cols-2 p-2', true)).toBe(
-            'grid gap-4 @3xl/brief:grid-cols-2 p-2'
+            'grid gap-4 @min-[720px]/brief:grid-cols-2 p-2'
         );
         expect(forArea('md:grid-cols-2', false)).toBe('md:grid-cols-2');
     });

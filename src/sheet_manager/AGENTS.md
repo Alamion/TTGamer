@@ -257,16 +257,17 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   `document-folder-missing`. The **New** dialog (`components/dialogs/DocumentCreateDialog.tsx`)
   lists `createChoices(tree, registry)` (`features/documents/createChoices.ts`) over the library
   tree: rulesets, then settings with more than one kind (a one-kind setting shows its kind with the
-  setting's name beside it), searched with `matchesSearch` over both languages' names and user type
-  descriptions. The search is a combobox over one listbox (`data-kind="system/definition[/setting]"`
-  on options); from 640 px the details pane (start, name, folder through `MoveToPicker`, **Create**)
-  sits beside the list, below it the two are steps with **Back**. Device key
-  `ttgamer:create-dialog:v1` holds `{ recent (≤ 5), toggled }`: headings turned from their default
-  (rulesets open, the settings inside them folded); unreadable values and recent kinds that are gone
-  are dropped and reported (`create-preferences-invalid`, `create-recent-missing`).
-  `onCreated(id, { named, parentId })` lets the documents window skip its rename in place for a
-  named document. Docs buttons (`CreateCharacterButton`) use the same path and report a missing kind
-  or example as `create-kind-unavailable` with an error message.
+  setting's name beside it; a **Recent** kind shows its ruleset and setting path beside it),
+  searched with `matchesSearch` over both languages' names and user type descriptions. The search is
+  a combobox over one listbox (`data-kind="system/definition[/setting]"` on options); from 640 px
+  the details pane (start, name, folder through `MoveToPicker`, **Create**) sits beside the list,
+  below it the two are steps with **Back**. Device key `ttgamer:create-dialog:v1` holds
+  `{ recent (≤ 5), toggled }`: headings turned from their default (rulesets open, the settings
+  inside them folded); unreadable values and recent kinds that are gone are dropped and reported
+  (`create-preferences-invalid`, `create-recent-missing`). `onCreated(id, { named, parentId })` lets
+  the documents window skip its rename in place for a named document. Docs buttons
+  (`CreateCharacterButton`) use the same path and report a missing kind or example as
+  `create-kind-unavailable` with an error message.
 
 Following a link (T-057): a page's `openDocument` (reference chips, "Member of") goes through
 `DocumentLinkContext` (`features/sheet/declarative/documentLinks.ts`), which `SheetWorkspace`
@@ -405,9 +406,9 @@ duplicate template facts here. Invariants that must never be broken:
 - `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
   level.
 - Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance
-  (`max(0, min(5 + conscience - passion, 10))`); the default template shows these minimums as
-  read-only Derived Stats, while the editable resources live in the Force section's Resources group.
-  Merits/flaws may raise the stored values.
+  (`max(0, min(5 + conscience - passion, 10))`) as the lower bounds (`minFrom`) of the editable
+  resources, which sit with Health and Initiative in the Condition section's Health and Willpower
+  card (spec 042). Merits/flaws may raise the stored values.
 - Current Force Points may legitimately be zero.
 - Detailed formulas are in `.agents/skills/sheet-manager/SKILL.md`.
 
@@ -429,6 +430,11 @@ duplicate template facts here. Invariants that must never be broken:
 - Icon-only actions require accessible labels.
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.
+- Character pages (every shipped character and Storyteller character, not the V5 group's emblem)
+  show the portrait card only while `field:show-portrait` is on (`PORTRAIT_SHOWN`,
+  `systems/portraitBinding.ts`): `metadata.showPortrait`, read as "has a portrait" while unset so
+  older documents keep theirs; taking an image sets it. The switch sits in Appearance (WoD 2e
+  engine), the biography (V5), or the identity card (Storyteller character).
 - Portrait URLs accept only HTTPS or site-relative resources and must use
   `referrerPolicy="no-referrer"`. Local portraits are resized, quota-bounded IndexedDB blobs; never
   put image data URLs or blob contents in Zustand/localStorage JSON.

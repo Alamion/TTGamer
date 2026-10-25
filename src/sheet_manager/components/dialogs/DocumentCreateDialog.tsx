@@ -326,7 +326,7 @@ function CreateDialogContent({
                                         {...optionProps(row)}
                                         data-recent-kind={row.choice.key}
                                     >
-                                        <ChoiceLabel choice={row.choice} />
+                                        <ChoiceLabel choice={row.choice} recent />
                                     </div>
                                 ))}
                             </div>
@@ -493,14 +493,14 @@ function CreateDialogContent({
     );
 }
 
-function ChoiceLabel({ choice }: { choice: CreateChoice }) {
+/** A recent kind shows its whole path: outside its heading, kinds of two settings look alike. */
+function ChoiceLabel({ choice, recent = false }: { choice: CreateChoice; recent?: boolean }) {
+    const beside = recent ? choice.path.join(' / ') : choice.context;
     return (
         <>
             <span className="text-sm font-medium">
                 {choice.name}
-                {choice.context && (
-                    <span className="font-normal text-textSecondary"> · {choice.context}</span>
-                )}
+                {beside && <span className="font-normal text-textSecondary"> · {beside}</span>}
             </span>
             {choice.userKind && (
                 // Types may share a name; the description tells them apart.

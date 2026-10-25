@@ -1,10 +1,42 @@
 import Link from '@docusaurus/Link';
-import Translate, { translate } from '@docusaurus/Translate';
+import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
+import type { LucideIcon } from 'lucide-react';
+import {
+    ArrowRight,
+    BookOpen,
+    Columns3,
+    Dices,
+    FilePlus2,
+    Files,
+    HardDrive,
+    PencilRuler,
+    Send,
+} from 'lucide-react';
 import type { ReactNode } from 'react';
+
+const home = uiMessages.site.home;
+
+interface GameLink {
+    label: string;
+    href: string;
+}
+
+interface Game {
+    title: string;
+    summary: string;
+    links: GameLink[];
+}
+
+interface Feature {
+    icon: LucideIcon;
+    title: string;
+    summary: string;
+    href: string;
+}
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
@@ -25,7 +57,7 @@ function HomepageHeader() {
                 <div className="flex flex-col items-center text-center">
                     <div className="mb-4 inline-flex items-center gap-2 rounded-sm border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
                         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-jedi-green" />
-                        {translate(uiMessages.site.home.hero.status, { version })}
+                        {translate(home.hero.status, { version })}
                     </div>
                     <Heading
                         as="h1"
@@ -34,48 +66,22 @@ function HomepageHeader() {
                         {siteConfig.title}
                     </Heading>
                     <p className="mb-8 max-w-2xl text-lg font-medium text-textSecondary md:text-xl">
-                        {translate(uiMessages.site.home.hero.tagline)}
+                        {translate(home.hero.tagline)}
                     </p>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Link
                             className="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary px-8 py-3 font-bold uppercase tracking-wider text-on-primary shadow-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-xl active:scale-95"
                             to="/universal_sheet"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
-                                <path d="M14 2v6h6" />
-                                <path d="M12 18v-6" />
-                                <path d="M9 15h6" />
-                            </svg>
-                            {translate(uiMessages.site.home.hero.characterSheet)}
+                            <FilePlus2 className="h-5 w-5" aria-hidden />
+                            {translate(home.hero.openSheet)}
                         </Link>
                         <Link
                             className="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow-sm transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
-                            to="/docs/star-wars-wod-2e/quick-start"
+                            to="/docs/guide/"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                            </svg>
-                            {translate(uiMessages.site.home.hero.quickStart)}
+                            <BookOpen className="h-5 w-5" aria-hidden />
+                            {translate(home.hero.siteGuide)}
                         </Link>
                     </div>
                 </div>
@@ -84,186 +90,158 @@ function HomepageHeader() {
     );
 }
 
-function FeatureCard({
-    icon,
-    title,
-    description,
-    href,
-    badge,
-}: {
-    icon: ReactNode;
-    title: string;
-    description: string;
-    href: string;
-    badge?: string;
-}) {
+function SectionHeading({ children }: { children: ReactNode }) {
+    return (
+        <div className="mb-8 text-center">
+            <Heading
+                as="h2"
+                className="mb-2 text-2xl font-bold uppercase tracking-wide text-textPrimary"
+            >
+                {children}
+            </Heading>
+            <div className="mx-auto h-1 w-16 bg-primary" />
+        </div>
+    );
+}
+
+function GameCard({ title, summary, links }: Game) {
+    return (
+        <article className="flex h-full flex-col rounded-sm border border-border bg-bgSurface p-6 shadow-sm">
+            <Heading
+                as="h3"
+                className="mb-2 text-xl font-bold uppercase tracking-wide text-textPrimary"
+            >
+                {title}
+            </Heading>
+            <p className="mb-6 flex-1 leading-relaxed text-textSecondary">{summary}</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {links.map(({ label, href }) => (
+                    <Link
+                        key={href}
+                        to={href}
+                        className="inline-flex items-center gap-1 font-bold text-primary hover:text-primary-hover"
+                    >
+                        {label}
+                        <ArrowRight className="h-4 w-4" aria-hidden />
+                    </Link>
+                ))}
+            </div>
+        </article>
+    );
+}
+
+function FeatureCard({ icon: Icon, title, summary, href }: Feature) {
     return (
         <Link
             to={href}
             className="group block h-full rounded-sm border border-border bg-bgSurface p-6 shadow-sm transition-all duration-200 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
         >
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary/20">
-                {icon}
+                <Icon className="h-6 w-6" aria-hidden />
             </div>
             <Heading
                 as="h3"
                 className="mb-2 text-lg font-bold uppercase tracking-wide text-textPrimary"
             >
                 {title}
-                {badge && (
-                    <span className="ml-2 rounded-sm bg-droid-gold/20 px-2 py-0.5 text-xs font-mono text-droid-gold">
-                        {badge}
-                    </span>
-                )}
             </Heading>
-            <p className="text-sm leading-relaxed text-textSecondary">{description}</p>
+            <p className="text-sm leading-relaxed text-textSecondary">{summary}</p>
         </Link>
     );
 }
 
 export default function Home(): ReactNode {
-    const { siteConfig } = useDocusaurusContext();
-    const version = String(siteConfig.customFields?.version);
+    const games: Game[] = [
+        {
+            title: translate(home.games.starWars.title),
+            summary: translate(home.games.starWars.summary),
+            links: [
+                {
+                    label: translate(home.games.starWars.quickStart),
+                    href: '/docs/star-wars-wod-2e/quick-start',
+                },
+                { label: translate(home.games.starWars.rules), href: '/docs/star-wars-wod-2e/' },
+            ],
+        },
+        {
+            title: translate(home.games.v5.title),
+            summary: translate(home.games.v5.summary),
+            links: [
+                {
+                    label: translate(home.games.v5.hunterQuickStart),
+                    href: '/docs/wod-v5/hunter/quick-start',
+                },
+                {
+                    label: translate(home.games.v5.vampireQuickStart),
+                    href: '/docs/wod-v5/vampire/quick-start',
+                },
+                { label: translate(home.games.v5.rules), href: '/docs/wod-v5/' },
+            ],
+        },
+    ];
+    const features: Feature[] = [
+        {
+            icon: Files,
+            title: translate(home.features.documents.title),
+            summary: translate(home.features.documents.summary),
+            href: '/docs/guide/sheet',
+        },
+        {
+            icon: Columns3,
+            title: translate(home.features.layout.title),
+            summary: translate(home.features.layout.summary),
+            href: '/docs/guide/documents/#layout',
+        },
+        {
+            icon: PencilRuler,
+            title: translate(home.features.templates.title),
+            summary: translate(home.features.templates.summary),
+            href: '/docs/guide/template-editor/',
+        },
+        {
+            icon: Dices,
+            title: translate(home.features.dice.title),
+            summary: translate(home.features.dice.summary),
+            href: '/docs/guide/dice-roller',
+        },
+        {
+            icon: Send,
+            title: translate(home.features.rollSharing.title),
+            summary: translate(home.features.rollSharing.summary),
+            href: '/docs/guide/roll-sharing/',
+        },
+        {
+            icon: HardDrive,
+            title: translate(home.features.storage.title),
+            summary: translate(home.features.storage.summary),
+            href: '/docs/guide/sheet#storage',
+        },
+    ];
 
     return (
         <Layout
-            title={translate(uiMessages.site.home.meta.pageTitle)}
-            description={translate(uiMessages.site.home.meta.pageDescription)}
+            title={translate(home.meta.pageTitle)}
+            description={translate(home.meta.pageDescription)}
         >
             <div className="tailwind-root">
                 <HomepageHeader />
                 <main className="container mx-auto px-4 py-12">
-                    <div className="mb-12 text-center">
-                        <Heading
-                            as="h2"
-                            className="mb-2 text-2xl font-bold uppercase tracking-wide text-textPrimary"
-                        >
-                            {translate(uiMessages.site.home.features.heading)}
-                        </Heading>
-                        <div className="mx-auto h-1 w-16 bg-primary" />
-                    </div>
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        <FeatureCard
-                            icon={
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                    <circle cx="9" cy="7" r="4" />
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                </svg>
-                            }
-                            title={translate(uiMessages.site.home.features.characterSheet.title)}
-                            description={translate(
-                                uiMessages.site.home.features.characterSheet.summary
-                            )}
-                            href="/universal_sheet"
-                        />
-                        <FeatureCard
-                            icon={
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M12 20h9" />
-                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                                </svg>
-                            }
-                            title={translate(uiMessages.site.home.features.diceRoller.title)}
-                            description={translate(
-                                uiMessages.site.home.features.diceRoller.summary
-                            )}
-                            href="/docs/star-wars-wod-2e/core-rules/dice-pools"
-                        />
-                        <FeatureCard
-                            icon={
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                                    <path d="M2 12h20" />
-                                </svg>
-                            }
-                            title={translate(uiMessages.site.home.features.documentation.title)}
-                            description={translate(
-                                uiMessages.site.home.features.documentation.summary
-                            )}
-                            href="/docs/star-wars-wod-2e/"
-                        />
-                    </div>
-
-                    <div className="mt-16 rounded-sm border border-border bg-bgSurface p-8 shadow-sm">
-                        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-                            <div className="flex-1">
-                                <Heading
-                                    as="h3"
-                                    className="mb-2 text-xl font-bold uppercase tracking-wide text-textPrimary"
-                                >
-                                    {translate(uiMessages.site.home.about.title)}
-                                </Heading>
-                                <p className="text-textSecondary">
-                                    <Translate
-                                        id={uiMessages.site.home.about.body.id}
-                                        values={{
-                                            weg: (
-                                                <strong className="text-textPrimary">
-                                                    Star Wars WEG
-                                                </strong>
-                                            ),
-                                            wod: (
-                                                <strong className="text-textPrimary">
-                                                    {translate(
-                                                        uiMessages.site.home.about.worldOfDarkness
-                                                    )}
-                                                </strong>
-                                            ),
-                                        }}
-                                    >
-                                        {uiMessages.site.home.about.body.message}
-                                    </Translate>
-                                </p>
-                            </div>
+                    <section>
+                        <SectionHeading>{translate(home.games.heading)}</SectionHeading>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {games.map((game) => (
+                                <GameCard key={game.title} {...game} />
+                            ))}
                         </div>
-                    </div>
-
-                    <div className="mt-8 rounded-sm border border-droid-gold/30 bg-droid-gold/5 p-4 text-center">
-                        <p className="text-sm font-mono text-textSecondary">
-                            <span className="text-droid-gold">
-                                {translate(uiMessages.site.home.status.live)}
-                            </span>{' '}
-                            ttgamer.vercel.app{' '}
-                            <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-primary">v{version}</span>{' '}
-                            <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-jedi-green">
-                                {translate(uiMessages.site.home.status.docsComplete, { count: 29 })}
-                            </span>{' '}
-                            <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-hologram-blue">React 19 + Docusaurus 3.10</span>
-                        </p>
-                    </div>
+                    </section>
+                    <section className="mt-16">
+                        <SectionHeading>{translate(home.features.heading)}</SectionHeading>
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {features.map((feature) => (
+                                <FeatureCard key={feature.href} {...feature} />
+                            ))}
+                        </div>
+                    </section>
                 </main>
             </div>
         </Layout>

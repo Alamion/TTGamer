@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { portraitFieldBinding } from '../../portraitBinding';
+import { portraitFieldBinding, showPortraitFieldBinding } from '../../portraitBinding';
 import type {
     DocumentBindingDescriptor,
     FieldBinding,
@@ -133,4 +133,5 @@ export const storytellerTemplateBindings: readonly DocumentBindingDescriptor[] =
     },
     field('notes', 'notes', { label: storyteller.sections.notes.message }),
     portraitFieldBinding(kinds),
+    showPortraitFieldBinding(kinds),
 ];

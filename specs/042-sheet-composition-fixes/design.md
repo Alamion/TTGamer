@@ -1,0 +1,201 @@
+# Design: Shipped Sheet Composition Fixes
+
+**Spec**: [spec.md](spec.md) | **Date**: 2026-10-19
+
+## Approach
+
+Layout only: the shipped full-sheet builders move existing nodes into new or merged cards and
+sections; no binding, value key, formula, or catalog changes. The WoD 2e engine's character layout
+moves into shared section builders in `systems/wod2e/ruleset/templateParts.ts`, used by the Star
+Wars character and droid (`systems/star-wars-wod/templates/character.ts`) and the WoD 2e character
+(`systems/wod2e/templates.ts`), so the three share one layout by construction (FR-011). Creature,
+vehicle, and fodder sheets change in their own files; the vampire's predator text joins its identity
+card (`systems/v5/modules/vampire/templates/sheet.ts`). Brief builders are not touched.
+
+Each sheet's fix removes its entry from `KNOWN_EXCEPTIONS` in
+`tests/sheet_manager/page-composition.test.ts`; the list is empty at the end, and the constant goes
+with it.
+
+Delivery order: US1 (shared character layout: Star Wars character, droid, WoD 2e) → US2 (creature,
+vehicle, fodder) → US3 (vampire predator) → US4 is the empty exception list, closed in the Finish
+phase with docs, heights, and the backlog.
+
+## Target layouts
+
+Weights count a growing element as 3. Ids of kept cards and sections stay; new containers get new
+ids. Section column layout follows the existing pattern of each section (decided in the code).
+
+**Star Wars character / droid / WoD 2e** (order after the V5 sheets):
+
+| Section (id)                   | Cards                                                                                                                                                                                                       |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Base (`base`)                  | unchanged                                                                                                                                                                                                   |
+| Condition (`condition`, new)   | **Health and Willpower** (`condition-vitals`, new): health track (droid: damage track), Willpower, Initiative (Std) (SW, WoD 2e), Force Points and Dark Side Resistance (SW); **Virtues** (`force-virtues`) |
+| Attributes, Skills             | unchanged                                                                                                                                                                                                   |
+| Force (`force`, SW only)       | Force Skills, Force Powers, **Force-derived stats** (`derived-stats`): Initiative (Saber), Jumping Distance, Running Speed                                                                                  |
+| Advantages                     | unchanged (moved after Force, as V5 puts it after Disciplines)                                                                                                                                              |
+| Equipment (`body`)             | Inventory / Built-in equipment, Weapons, Armor, Implants & Cyberware (not WoD 2e); all fold as today                                                                                                        |
+| Experience and Notes (`other`) | Experience, Notes                                                                                                                                                                                           |
+
+Weights: Condition SW 10, droid 7, WoD 2e 8; Force 11; Equipment 9–12; Experience and Notes 6.
+
+**Creature**: Identity (unchanged) → **Condition** (`condition`, new) with one card **Health and
+Resolve** (`creature-resolve`, kept id): health track, Willpower, both soaks (6) → Attributes
+(unchanged) → **Abilities, Merits & Flaws** (`advantages`): cards Abilities (`creature-abilities`,
+new, the list), Merits, Flaws (9) → **Combat**: Armor, Attacks (6) → **Details**: one card
+**Details** (`creature-details`, new): description, source, notes (7).
+
+**Vehicle**: Identification, Crew & capacity (unchanged) → **Systems**: as today plus
+**Modifications & quirks** (`vehicle-modifications-group`, new, the table) → **Combat** (`combat`,
+new): **Weapons** (`vehicle-weapons`, new, the rows), **Damage** (`vehicle-damage`, new, the track)
+(6) → Crew stations (unchanged) → **Details**: one card **Details** (`vehicle-details`, new):
+description, notes (6).
+
+**Fodder group**: **Group** (`identity`): one card **Group** (`fodder-identity`): concept, leader,
+notes (5) → **Members** (`members`): one card **Members** (`fodder-members`, new): members track,
+Willpower, specialty pool, secondary pool (6) → **Attributes**: Physical, Social, Mental,
+**Abilities** (`fodder-abilities`, the list) (12) → Combat (unchanged).
+
+**Vampire**: the predator text moves into the Identity card right after the predator type field; the
+`predator` card goes.
+
+## Decisions
+
+- **D0 — Brief builders stay as they are**: the existing `virtuesGroup`, `resourcesGroup`, and other
+  parts the briefs call keep their signatures; the new sections are built by new functions, so
+  FR-005 does not rest on the snapshot diff alone.
+- **D1 — Shared section builders for the three character sheets**: `conditionSection`,
+  `equipmentSection`, and `experienceNotesSection` in the WoD 2e ruleset parts, with options for
+  what differs by kind (track binding and title, extra resources, implants, docs paths). _Why_:
+  FR-011 is then a property of the code, not of care. _Rejected_: editing the three builders side by
+  side — they already drifted (droid "Resources", WoD 2e "Derived Stats" of one field).
+- **D2 — Initiative joins Health and Willpower**: the WoD 2e engine has one derived value, which
+  cannot be a card. The standard Initiative sits with Health and Willpower on every kind that has
+  it; the Star Wars Force-derived values (saber initiative, movement) form their own card in the
+  Force section, where their skills are. _Rejected_: a one-field Derived Stats card (breaks the
+  rule); derived values in Experience (wrong subject, FR-003).
+- **D3 — Force Points and Dark Side Resistance in Condition**: they are spent and checked during a
+  scene like Willpower (FR-003 "per-scene resources"). _Rejected_: a Force resources card of two
+  fields (breaks the rule).
+- **D4 — Merging over padding**: small cards join a neighbour of the same subject (fodder notes into
+  the Group card, soaks into Health and Resolve, quick pools into Members). FR-004 forbids new
+  fields.
+- **D5 — Folding** (FR-006): Health and Willpower, Health and Resolve, Members, Combat cards, and
+  Details do not fold (play values or the creature's main text; notes that share a card with play
+  values, as in the fodder Group card, do not fold either); equipment and biography keep folding as
+  today. The vehicle Configuration card keeps its fold.
+- **D6 — Parity fixtures**: `tests/sheet_manager/fixtures/star-wars-parity.json` keeps its
+  documents, defaults, and dice pools unchanged (the frozen identities of spec 012); only its
+  `templates` part is regenerated, since the pages change on purpose. The zod-baseline
+  `shipped-templates.json` snapshot is regenerated, and its diff must touch full sheets only (briefs
+  unchanged, FR-005).
+- **D7 — Height pins**: full-sheet heights in `tests-e2e/smoke/brief-baseline.ts` keep their spec
+  033 role for briefs; a new `SHEET_PINS` holds the full-sheet heights measured after this spec for
+  the seven changed kinds (the vampire included), and the "keeps its height" check runs over
+  `SHEET_PINS` and the unchanged `BASELINE` kinds, so the vampire is checked too. Before the change
+  every changed sheet (and the vampire, not pinned today) is measured to check SC-003 (≤ 10%
+  taller).
+
+## Changed types and data
+
+- Template nodes of shipped full sheets: new section and card ids listed above; no schema change.
+  Stored documents are untouched (values are keyed by value key, not node id). Remembered folds of
+  removed containers are simply unused.
+- Users' edited copies of these pages (overrides) are their own trees and keep loading (FR-007).
+- Translations (`translations/source/{en,ru}/ui/sheet/templates.yaml`, `defaults`): new titles
+  Condition, Health and Willpower, Health and Resolve, Force-derived stats, Equipment, Experience
+  and Notes, Abilities, Merits & Flaws, Combat, Details, Members, Modifications & quirks — reusing
+  an existing key wherever one already holds the text; Star Wars titles map through `LABEL_MESSAGES`
+  as today.
+
+## Principles at risk
+
+- I (modules): Star Wars and WoD 2e share the layout through the ruleset parts they already import;
+  no system conditional enters shared code.
+- II (contracts): no persisted shape changes; the parity test still guards documents and dice.
+- VI (consistent experience): the three character sheets and the V5 sheets now read alike.
+- VIII: no third-party text added; titles are generic.
+
+## Tests
+
+- `tests/sheet_manager/page-composition.test.ts`: every shipped full sheet passes; the exception
+  list is gone.
+- `tests/sheet_manager/shipped-sheet-layout.test.ts` (new): the Star Wars character, droid, and WoD
+  2e full sheets list the same section titles in the same order apart from Force; on each of the
+  seven sheets every value key and binding bound before the change, and every formula expression
+  (`formula`, `minFrom`, `maxMinFrom`) and button roll by node id, equals the fixture captured from
+  the current trees in the first task (FR-002, FR-004, SC-002).
+- `tests/sheet_manager/shipped-sheet-overrides.test.ts` (new): an edit of `full-sheet` saved with
+  the old tree (a fixture copy) still parses and renders every value (FR-007).
+- `tests/sheet_manager/systems/wod2e/star-wars-parity.test.ts`: documents and dice unchanged;
+  templates regenerated (D6).
+- `tests/sheet_manager/zod-baseline.test.ts`: snapshot regenerated; diff limited to full sheets.
+- Existing sheet tests that find cards by id (`default-templates`, `shipped-parity`, system tests)
+  are updated where an id moved; none is weakened.
+- `tests-e2e/smoke/brief-layout.spec.ts`: full sheets match `SHEET_PINS`; briefs keep `BRIEF_PINS`
+  within 1% (SC-004).
+
+## Docs
+
+`docs/star-wars-wod-2e/character/reading-sheet.mdx` (layout map and section headings) and
+`docs/star-wars-wod-2e/equipment.mdx` ("Body section") + ru mirrors; the `sheet-templates` skill's
+composition section drops "known exceptions"; `TODO.md` T-126 done.
+
+## Manual walk
+
+1. Star Wars character, droid, WoD 2e character (built site, en and ru) → same section order;
+   Condition holds health, Willpower, virtues; rolling Willpower and a rating works.
+2. Creature, vehicle, fodder group → no loose element; damage marks, crew links, members' track
+   work; Notes and Details editable.
+3. Vampire → predator type's grants under the predator type in Identity; choosing another type
+   updates it.
+4. An edited shipped Star Wars full sheet saved before → still loads with its own layout; **Reset to
+   original** gives the new one.
+5. Every brief of the seven kinds → looks as before.
+
+## Implementation notes
+
+- **T001 heights before the change** (built site, sheet root, 375/1280 px): Star Wars character
+  7926/3473, droid 7322/3353, creature 2724/1657, vehicle 3159/1794, fodder group 2647/1605, WoD 2e
+  character 6871/3113, V5 vampire 7129/3770.
+- **Field contracts** (`tests/sheet_manager/helpers/leafContracts.ts`): every field of a page by
+  node id without its layout keys (`column`, `span`, `hideLabel`). The fixture holds all seven
+  sheets from the start and every story keeps them equal, instead of adding sheets story by story; a
+  track that joins a titled card simply shows its label again (`hideLabel` is layout).
+- **Droid card title**: "Damage and Willpower" (its track is damage); `conditionSection` takes the
+  title, the section's docs link (Star Wars: the virtues and Willpower page), and the card's.
+- **Parity fixture**: only the pages that changed are replaced, by their current schema 4 trees; the
+  untouched briefs stay in their schema 3 form, so the test still upgrades and compares them.
+- **`default-templates.test.ts`**: the pre-007 tree comparison now covers the briefs only (the full
+  sheets are pinned by the field contracts); the composition-order test lists the new order.
+- **Creature, vehicle, fodder (US2)**: the Details sections keep their default fold (the section, as
+  before); their new card hides its title under the section's. The vehicle's Modifications & quirks
+  card starts folded like the section it replaces. The fodder group's Notes field spans the Group
+  card's two columns and its Abilities card spans the Attributes row (`span`, set on the node: the
+  builders take no span option). Quick pools and notes now sit in cards that never fold, so the
+  fodder sheet starts with nothing folded (`entity-templates.test.tsx` checks folds at every level).
+- **Heights after the change (T020)**, 375/1280 px against T001: Star Wars character 7932/3749
+  (+0.1%/+7.9%), droid 7284/3272, creature 2742/1569, vehicle 3265/1769 (+3.4%/−1.4%), fodder group
+  2779/1725 (+5.0%/+7.5%), WoD 2e 6771/3201 (+2.8% wide), vampire 7079/3794 — all within SC-003. The
+  first fodder layout was 13% taller wide (quick pools and notes no longer start folded): the
+  Members card now puts the track on its own row and Willpower and both pools on the next.
+- **Docs beyond the plan**: the Star Wars quick start lists the sheet's parts too; it follows the
+  new order (en + ru).
+- **Docs embed (found by `verify:full`)**: the V5 "Predator type" page embedded the removed
+  `predator` card; it now embeds the `predator-grants-field` itself (en + ru). US3 ran targeted
+  tests only, which missed `docs-embeds.test.tsx`.
+- **Second height pin**: `tests-e2e/smoke/panes-baseline.ts` pinned the Star Wars character's full
+  sheet too (spec 034); it now reads the spec 042 pin from `SHEET_PINS`.
+- **Checks**: `yarn verify:full` — 3,114 unit and 15 perf tests passed; the browser run then failed
+  only on that second pin; after the fix `yarn ci:e2e` passed (64 tests).
+- **Manual walk (2026-10-19, built site, scripted with Playwright)**:
+    1. Star Wars character, droid, WoD 2e character: sections Base | Condition | Attributes | Skills
+       | (Force) | Advantages | Equipment | Experience and Notes; in Russian Основа | Состояние |
+       Атрибуты | Навыки | Сила | Преимущества | Снаряжение | Опыт и заметки.
+    2. Creature and vehicle screenshots: no loose element; fodder group: marking Hurt on the
+       members' track shows Bashing and survives a reload.
+    3. Vampire: Alleycat chosen, its grants show under Predator type in Identity.
+    4. An edit of the full sheet saved with the old tree: covered by
+       `shipped-sheet-overrides.test.tsx` (resolves as the edit, shows its values), not walked by
+       hand.
+    5. Briefs: every `BRIEF_PINS` height check passed in the browser run.

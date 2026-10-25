@@ -4,7 +4,6 @@ import { denseBrief, formula, group, number, primitive } from '../../../template
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type CustomTemplate,
-    type GroupNode,
     isContainerNode,
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
@@ -17,8 +16,9 @@ import {
     ATTRIBUTE_GROUPS,
     attributesSection,
     baseSection,
-    experienceGroup,
-    notesGroup,
+    conditionSection,
+    equipmentSection,
+    experienceNotesSection,
     resource,
     skillsSection,
     STANDARD_INITIATIVE,
@@ -110,48 +110,67 @@ function skills(variant: SheetVariant): SectionNode {
     );
 }
 
-function resourcesGroup(variant: SheetVariant, column: number): GroupNode {
-    return group(
-        'force-resources',
-        'Resources',
+/** Willpower, and for a sentient its Force Points and Dark Side Resistance. */
+function resources(variant: SheetVariant): TemplateNode[] {
+    return [
+        resource('resource-willpower', 'resource:willpower', 'Willpower', {
+            minFrom: MINIMUMS.willpower,
+        }),
+        ...(variant === 'droid'
+            ? []
+            : [
+                  // One tracker: the maximum framed, the current points filled (spec 020).
+                  resource('resource-force-points', 'resource:force-points', 'Force Points', {
+                      poolTracker: { display: 'row', legend: false, total: true },
+                      maxMinFrom: MINIMUMS.maxForcePoints,
+                  }),
+                  resource(
+                      'resource-dark-side',
+                      'resource:dark-side-resistance',
+                      'Dark Side Resistance',
+                      {
+                          minFrom: MINIMUMS.darkSide,
+                      }
+                  ),
+              ]),
+    ];
+}
+
+const DERIVED = {
+    initiative: STANDARD_INITIATIVE,
+    initiativeSaber: 'wits + alertness + control',
+    movement: 'max(min(control, telekinesis), 1)',
+} as const;
+
+/**
+ * Health (a droid's damage), Willpower, and the virtues (spec 042). Droids have no initiative
+ * on their sheet; a sentient also checks its Force resources here.
+ */
+function condition(variant: SheetVariant): SectionNode {
+    const isDroid = variant === 'droid';
+    return conditionSection(
         [
-            resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                minFrom: MINIMUMS.willpower,
+            primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
+                label: isDroid ? 'Damage' : 'Health',
+                // The penalty of the deepest marked level, under the table (spec 018).
+                tracker: { total: true },
             }),
-            ...(variant === 'droid'
+            ...(isDroid
                 ? []
-                : [
-                      // One tracker: the maximum framed, the current points filled (spec 020).
-                      resource('resource-force-points', 'resource:force-points', 'Force Points', {
-                          poolTracker: { display: 'row', legend: false, total: true },
-                          maxMinFrom: MINIMUMS.maxForcePoints,
-                      }),
-                      resource(
-                          'resource-dark-side',
-                          'resource:dark-side-resistance',
-                          'Dark Side Resistance',
-                          {
-                              minFrom: MINIMUMS.darkSide,
-                          }
-                      ),
-                  ]),
+                : [formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative)]),
+            ...resources(variant),
         ],
-        { column }
+        virtuesGroup(VIRTUE_KEYS, 2, DOCS.virtues),
+        {
+            title: isDroid ? 'Damage and Willpower' : 'Health and Willpower',
+            docsPath: DOCS.virtues,
+            vitalsDocsPath: DOCS.health,
+        }
     );
 }
 
-function forceSection(variant: SheetVariant): SectionNode {
-    const virtues = (column: number) => virtuesGroup(VIRTUE_KEYS, column, DOCS.virtues);
-    // Droids have no Force: virtues and Willpower only.
-    if (variant === 'droid') {
-        return section(
-            'force',
-            'Resources',
-            DOCS.virtues,
-            [virtues(1), resourcesGroup(variant, 2)],
-            2
-        );
-    }
+/** Force skills and powers, and the values that follow from them (sentients only). */
+function forceSection(): SectionNode {
     return section(
         'force',
         'Force',
@@ -163,86 +182,62 @@ function forceSection(variant: SheetVariant): SectionNode {
                 FORCE_SKILL_KEYS.map((key) => trait(key)),
                 { column: 1, docsPath: DOCS.forceSkills }
             ),
-            virtues(2),
-            resourcesGroup(variant, 2),
             group(
                 'force-powers-group',
                 'Force Powers',
                 [systemList('list-force-powers', 'list:forcePowers', 'Force Powers')],
-                { column: 3, docsPath: DOCS.forcePowers }
+                { column: 2, docsPath: DOCS.forcePowers }
+            ),
+            group(
+                'derived-stats',
+                'Force-derived stats',
+                [
+                    formula(
+                        'derived-initiative-saber',
+                        'Initiative (Saber)',
+                        DERIVED.initiativeSaber
+                    ),
+                    formula('derived-jumping', 'Jumping Distance', DERIVED.movement, {
+                        prefix: '×',
+                    }),
+                    formula('derived-running', 'Running Speed', DERIVED.movement, {
+                        prefix: '×',
+                    }),
+                ],
+                { column: 3, docsPath: DOCS.derived }
             ),
         ],
         3
     );
 }
 
-function bodySection(variant: SheetVariant): SectionNode {
-    const equipment = (id: string, title: string, bindingKey: string, docsPath: string) =>
+function equipment(variant: SheetVariant): SectionNode {
+    const gear = (id: string, title: string, bindingKey: string, docsPath: string) =>
         group(`body-${id}`, title, [primitive(`equipment-${id}`, bindingKey)], {
-            column: 1,
             collapsible: true,
             docsPath,
         });
-    const isDroid = variant === 'droid';
-    return section(
-        'body',
-        'Body',
-        DOCS.equipment,
-        [
-            equipment(
-                'inventory',
-                isDroid ? 'Built-in equipment' : 'Inventory',
-                'equipment:inventory',
-                DOCS.inventory
-            ),
-            equipment('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
-            equipment('armor', 'Armor', 'equipment:armor', DOCS.armor),
-            equipment('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
-            group(
-                'body-health',
-                isDroid ? 'Damage' : 'Health',
-                [
-                    primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
-                        hideLabel: true,
-                        label: isDroid ? 'Damage' : 'Health',
-                        // The penalty of the deepest marked level, under the table (spec 018).
-                        tracker: { total: true },
-                    }),
-                ],
-                { column: 2, docsPath: DOCS.health }
-            ),
-        ],
-        2,
-        [2, 1]
+    return equipmentSection(
+        {
+            first: [
+                gear('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
+                gear('armor', 'Armor', 'equipment:armor', DOCS.armor),
+            ],
+            second: [
+                gear(
+                    'inventory',
+                    variant === 'droid' ? 'Built-in equipment' : 'Inventory',
+                    'equipment:inventory',
+                    DOCS.inventory
+                ),
+                gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
+            ],
+        },
+        DOCS.equipment
     );
 }
 
-const DERIVED = {
-    initiative: STANDARD_INITIATIVE,
-    initiativeSaber: 'wits + alertness + control',
-    movement: 'max(min(control, telekinesis), 1)',
-} as const;
-
-function otherSection(variant: SheetVariant): SectionNode {
-    const derived = group(
-        'derived-stats',
-        'Derived Stats',
-        [
-            formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative),
-            formula('derived-initiative-saber', 'Initiative (Saber)', DERIVED.initiativeSaber),
-            formula('derived-jumping', 'Jumping Distance', DERIVED.movement, { prefix: '×' }),
-            formula('derived-running', 'Running Speed', DERIVED.movement, { prefix: '×' }),
-        ],
-        { columns: 2, docsPath: DOCS.derived }
-    );
-    const experience = experienceGroup(DOCS.experience);
-    const notes = notesGroup();
-    // Derived stats depend on Force skills, which droids do not have.
-    return variant === 'droid'
-        ? section('other', 'Other', DOCS.experience, [experience, notes], 2)
-        : section('other', 'Other', DOCS.derived, [derived, experience, notes], 3);
-}
-
+/** The layout the WoD 2e character shares (spec 042): only the Force is the sentient's own. */
 function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomTemplate {
     return {
         id: viewId,
@@ -252,12 +247,13 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children: [
             baseSection(DOCS.base, IDENTITY_FIELDS),
+            condition(variant),
             attributesSection(DOCS.attributes),
             skills(variant),
+            ...(variant === 'droid' ? [] : [forceSection()]),
             advantagesSection(DOCS.meritsFlaws),
-            forceSection(variant),
-            bodySection(variant),
-            otherSection(variant),
+            equipment(variant),
+            experienceNotesSection(DOCS.experience),
         ],
     };
 }
@@ -387,6 +383,7 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Appearance: sheetMessages.base.appearance,
     Biography: sheetMessages.base.biography,
     Portrait: defaultMessages.portrait,
+    'Show portrait': defaultMessages.showPortrait,
     Attributes: documentFields.attributes,
     Abilities: documentFields.abilities,
     Physical: defaultMessages.physical,
@@ -423,6 +420,12 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Health: documentFields.health,
     Other: defaultMessages.other,
     'Derived Stats': defaultMessages.derivedStats,
+    'Force-derived stats': defaultMessages.forceDerivedStats,
+    Condition: defaultMessages.condition,
+    'Health and Willpower': defaultMessages.healthAndWillpower,
+    'Damage and Willpower': defaultMessages.damageAndWillpower,
+    Equipment: defaultMessages.equipment,
+    'Experience and Notes': defaultMessages.experienceAndNotes,
     'Initiative (Std)': defaultMessages.initiativeStandard,
     'Initiative (Saber)': defaultMessages.initiativeLightsaber,
     'Jumping Distance': defaultMessages.jumpingDistance,

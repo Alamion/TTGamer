@@ -162,8 +162,9 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
 | Running Speed                | `×min(Control, Telekinesis)`                    |
 
 Virtues provide the minimum values (`minFrom`) for the editable Willpower and Dark Side Resistance
-resources in the character template's Force section; merits/flaws may raise them. The other formulas
-are read-only formula fields in its Other section (`systems/star-wars-wod/templates/character.ts`).
+resources in the character template's Condition section, where standard Initiative is shown too;
+merits/flaws may raise them. The Force-derived formulas (saber initiative, movement) are read-only
+fields of the Force section (`systems/star-wars-wod/templates/character.ts`).
 `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's
 penalty (Bruised 0 → Crippled −5; Incapacitated none).
 
