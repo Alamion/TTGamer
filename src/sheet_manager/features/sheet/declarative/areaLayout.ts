@@ -2,8 +2,7 @@ import { createContext, useContext } from 'react';
 
 /**
  * Whether the sheet is drawn in an area that is not the window (a pane beside others, spec 034):
- * its groups then take their columns from the width of the area, at the widths the window
- * breakpoints (`md` 768, `xl` 1280) use, instead of from the window.
+ * its groups then take their columns from the width of the area instead of from the window.
  */
 export const AreaLayoutContext = createContext(false);
 
@@ -20,18 +19,24 @@ export function useBriefPage(): boolean {
     return useContext(PageKindContext) === 'brief';
 }
 
-/** The window breakpoint classes the sheet uses for columns, and their area counterparts. */
+/**
+ * The window breakpoint classes the sheet uses for columns, and their area counterparts. The area
+ * is the sheet root's content box, so its thresholds are the content widths the page reaches at
+ * the window breakpoints (`md` 768, `xl` 1280, less the scrollbar and the root's padding): 720 and
+ * 1200 px. The root is at most `max-w-7xl` (1280 px) wide, so the container widths of those
+ * breakpoints themselves (`@3xl`, `@7xl`) would never give a pane three columns.
+ */
 const BY_AREA: Readonly<Record<string, string>> = {
-    'md:grid-cols-2': '@3xl/brief:grid-cols-2',
-    'xl:grid-cols-3': '@7xl/brief:grid-cols-3',
-    'xl:grid-cols-4': '@7xl/brief:grid-cols-4',
-    'md:col-span-2': '@3xl/brief:col-span-2',
-    'md:col-span-3': '@3xl/brief:col-span-3',
-    'md:col-span-4': '@3xl/brief:col-span-4',
-    'xl:col-span-3': '@7xl/brief:col-span-3',
-    'xl:col-span-4': '@7xl/brief:col-span-4',
+    'md:grid-cols-2': '@min-[720px]/brief:grid-cols-2',
+    'xl:grid-cols-3': '@min-[1200px]/brief:grid-cols-3',
+    'xl:grid-cols-4': '@min-[1200px]/brief:grid-cols-4',
+    'md:col-span-2': '@min-[720px]/brief:col-span-2',
+    'md:col-span-3': '@min-[720px]/brief:col-span-3',
+    'md:col-span-4': '@min-[720px]/brief:col-span-4',
+    'xl:col-span-3': '@min-[1200px]/brief:col-span-3',
+    'xl:col-span-4': '@min-[1200px]/brief:col-span-4',
     'md:[grid-template-columns:var(--template-columns)]':
-        '@3xl/brief:[grid-template-columns:var(--template-columns)]',
+        '@min-[720px]/brief:[grid-template-columns:var(--template-columns)]',
 };
 
 /** `classes` with every window breakpoint column class swapped for its area counterpart. */
