@@ -86,14 +86,14 @@ because the editor's + menu and settings complete the element that rolls and ima
 
 **Check**: `-`, `+`, and plain callouts after a reload start folded, open, and not foldable.
 
-- [ ] T020 [US2] Write the cases first in `tests/shared/markdown/MarkdownView.test.tsx`: folded
+- [x] T020 [US2] Write the cases first in `tests/shared/markdown/MarkdownView.test.tsx`: folded
       callouts show only the title, a button with `aria-expanded` toggles by click, Enter, and
       Space, `+` starts open, folding never changes the text, fold state is per view
-- [ ] T021 [US2] Folding in `src/shared/components/markdown/MarkdownView.tsx` (local state keyed by
+- [x] T021 [US2] Folding in `src/shared/components/markdown/MarkdownView.tsx` (local state keyed by
       block index) and the toolbar's Callout and Folded callout inserts in
       `MarkdownFieldControl.tsx`; stories for folded and open callouts; add them to the e2e smoke
       test
-- [ ] T022 [US2] Run the targeted tests and `yarn verify:fast`; commit the story
+- [x] T022 [US2] Run the targeted tests and `yarn verify:fast`; commit the story
 
 ## User Story 5 - Markdown in my own pages (P2)
 

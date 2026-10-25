@@ -206,3 +206,11 @@ guidance.
   empty markdown field claims the focus for its document, and the create dialog hands the focus to
   the claim when it closes (instead of back to the New button). An unnamed document created from the
   documents window keeps asking for its name there, as before.
+- **Record writer (found in US2)**: the browser test typed a note and reloaded; the text came back
+  cut at a different place each run. Each change queued its own write of a snapshot, so fast typing
+  built a backlog that a reload cut short. `createRecordWriter` now takes the versions to write when
+  the previous write ends: at most one write runs and one waits, always the latest version. Writing
+  every change in parallel (relying on IndexedDB's transaction order) was tried and was worse: one
+  transaction per keystroke made the backlog longer. A reload within milliseconds of the last
+  keystroke can still lose it, as on any page that saves asynchronously, so the smoke test waits for
+  the record before reloading.

@@ -1,7 +1,17 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { createContext, memo, type ReactNode, useContext, useEffect, useMemo } from 'react';
+import { ChevronRight } from 'lucide-react';
+import {
+    createContext,
+    memo,
+    type ReactNode,
+    useContext,
+    useEffect,
+    useId,
+    useMemo,
+    useState,
+} from 'react';
 
 import { parseMarkdown } from '../../markdown/parse';
 import type {
@@ -302,20 +312,7 @@ function Block({ block }: { block: MarkdownBlock }): ReactNode {
                 </blockquote>
             );
         case 'callout':
-            return (
-                <div
-                    className={clsx(
-                        'my-2 rounded-sm border-l-4 px-3 py-2',
-                        TONE_CLASSES[calloutTone(block.kind)]
-                    )}
-                    data-callout={block.kind}
-                >
-                    <p className="font-bold">
-                        <Inlines nodes={block.title} />
-                    </p>
-                    <Blocks blocks={block.children} />
-                </div>
-            );
+            return <Callout callout={block} />;
         case 'list':
             return <List list={block} />;
         case 'table':
@@ -357,6 +354,55 @@ function Block({ block }: { block: MarkdownBlock }): ReactNode {
     }
 }
 
+/**
+ * A callout; `-` starts it folded and `+` open (spec 043, US2). Folding is the reader's state in
+ * this view only: never written into the text, never shared with another view.
+ */
+function Callout({ callout }: { callout: Extract<MarkdownBlock, { type: 'callout' }> }) {
+    const [open, setOpen] = useState(callout.fold !== 'closed');
+    const bodyId = useId();
+    const foldable = callout.fold !== null;
+    return (
+        <div
+            className={clsx(
+                'my-2 rounded-sm border-l-4 px-3 py-2',
+                TONE_CLASSES[calloutTone(callout.kind)]
+            )}
+            data-callout={callout.kind}
+        >
+            {foldable ? (
+                <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls={bodyId}
+                    onClick={() => setOpen((current) => !current)}
+                    className="flex w-full items-center gap-1 text-left font-bold focus:outline-hidden focus-visible:ring-1 focus-visible:ring-primary"
+                >
+                    <ChevronRight
+                        aria-hidden
+                        className={clsx(
+                            'h-4 w-4 shrink-0 transition-transform',
+                            open && 'rotate-90'
+                        )}
+                    />
+                    <span>
+                        <Inlines nodes={callout.title} />
+                    </span>
+                </button>
+            ) : (
+                <p className="font-bold">
+                    <Inlines nodes={callout.title} />
+                </p>
+            )}
+            {(!foldable || open) && (
+                <div id={bodyId}>
+                    <Blocks blocks={callout.children} />
+                </div>
+            )}
+        </div>
+    );
+}
+
 function Blocks({ blocks }: { blocks: readonly MarkdownBlock[] }) {
     return blocks.map((block, index) => <Block key={index} block={block} />);
 }
@@ -392,7 +438,7 @@ export function MarkdownView({
             tops.map(({ block }) => block),
             issues
         );
-        issues.forEach(onIssue);
+        for (const issue of issues) onIssue(issue);
     }, [tops, onIssue]);
     return (
         <SlotsContext.Provider value={slots}>

@@ -167,6 +167,10 @@ export interface RecordWriter {
  * Saves changed documents once the current task ends, one write per document however often it
  * changed within it. Saving at once (as the whole collection was before) keeps a reload right after
  * an edit from losing it. A failed write stays queued for the next flush and is reported.
+ *
+ * The versions to write are taken when the previous write has ended, not when they were scheduled:
+ * changes made while a write runs (fast typing in a long note, spec 043) become one write of the
+ * latest version instead of a queue of stale ones that delays the latest and a reload cuts short.
  */
 export function createRecordWriter({
     delay = 0,
@@ -181,14 +185,15 @@ export function createRecordWriter({
 
     const run = (): Promise<void> => {
         timer = undefined;
-        const batch = [...pending];
-        pending.clear();
         running = running.then(async () => {
+            const batch = [...pending];
+            pending.clear();
             await Promise.all(
                 batch.map(async ([id, document]) => {
                     try {
                         await write(id, document);
                     } catch (error) {
+                        // A newer version scheduled meanwhile replaces the failed one.
                         if (!pending.has(id)) pending.set(id, document);
                         reportSheetIssue({
                             code: 'document-write-failed',

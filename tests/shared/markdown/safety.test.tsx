@@ -35,6 +35,9 @@ const ALLOWED = new Set([
     'TH',
     'TD',
     'BUTTON',
+    // The fold chevron of a callout (a Lucide icon).
+    'svg',
+    'path',
 ]);
 
 const HOSTILE = [
