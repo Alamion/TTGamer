@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.34.0
+
+### Minor feat
+
+- **Notes for any game (spec 043, T-048)**: **New** → **Note** under **General** makes a markdown note that belongs to no game system and lives in the documents window like any other document. Every line is its own paragraph; the text and its result stand side by side while you edit, and **Done** or `Esc` turns the note into a page to read. **How notes work** under **Start with** in the New dialog is an example note that shows everything below
+- **Markdown Obsidian understands (spec 043)**: headings, bold, italic, struck-out and highlighted text, code, links, lists, checklists you tick while reading, tables, quotes, and callouts. A callout with `-` starts folded and one with `+` can fold — a place for history, twists, and whatever the players have not reached yet. HTML in a note shows as text and never runs
+- **Rolls in notes (spec 043)**: `` `dice: 6d10>=6` `` is a roll as in the Obsidian Dice Roller plugin; a click rolls it in the dice roller, names it after the note, and shares it to Discord or Matrix like any roll
+- **Pictures in notes (spec 043)**: paste a screenshot or press **Image** while editing; the picture is stored on this device and `![[its name]]` goes where the cursor was. A web picture works by its HTTPS address
+- **Markdown files (spec 043)**: **Export** saves a note as a `.md` file, or as a `.zip` with an `images` folder when it has pictures, ready to unpack into an Obsidian vault. **Import** takes `.md` and `.zip` files as new notes and keeps their front matter (tags, aliases, dates)
+- **Markdown text on your own pages (spec 043)**: the template editor's **+** menu has a **Markdown text** element with a starting height; on a brief it is read-only and folded, and checklists still tick
+
+### Fix
+
+- **Fast typing survives a reload**: every document now writes its latest version after the running write instead of queueing each change, so reloading the page right after typing no longer loses the last words
+
 ## v3.33.0
 
 ### Minor feat
