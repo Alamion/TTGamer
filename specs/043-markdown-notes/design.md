@@ -163,3 +163,27 @@ guidance.
 9. Documents window filter by system → "General" lists the notes.
 10. Library → General shows the Note page and lets a setting be created on it, with headings that
     make sense for a ruleset without rules.
+
+## Implementation notes
+
+- **Bundle baseline (T001)**, production build before any change: main chunk 1,039.4 KB (277.7 KB
+  gzip); JS loaded first on `/universal_sheet` 282.2 KB gzip; all JS 1,366.2 KB gzip in 131 files.
+- **Callout colors (D1)**: the semantic tokens `info`, `success`, `warning`, `error` instead of the
+  Star Wars names: a shared component should not speak a setting's palette, and these tokens already
+  exist (no storybook palette change).
+- **Line cache (D7)**: inline parses are cached by line text (at most 20,000 lines, then cleared).
+  Measured in happy-dom on a 300,000-character note with distinct lines: a cold parse 81 ms, a
+  re-parse after one edited line 16 ms, the re-render 105 ms. Without the cache a re-parse cost the
+  full parse (170 ms) on every pause.
+- **Link safety**: `safeHref` also refuses a colon before any path part (`&#106;avascript:`), found
+  by the hostile corpus; React never decodes it, but it is not a relative link either.
+- **Empty field opens in edit mode**: any empty markdown field starts in edit mode (no focus taken),
+  which covers the new empty note without a hand-off from the create dialog (T015 only adds the
+  cursor).
+- **Limit (D6)**: the textarea's `maxLength` stops input at 300,000 characters, so no write is
+  rejected; the status line says the text is full.
+- **Editor entries in Foundation**: the field factory, the element registry entry, the
+  `fieldTypes.markdown` label, and the table-column and list-entry exclusions are required by the
+  compiler with the new type, so they ship with Foundation; US5 adds the + menu entry and settings.
+  The base storybook story (T016) also ships with Foundation: the storybook test requires a story
+  for every field type.

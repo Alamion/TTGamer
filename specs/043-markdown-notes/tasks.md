@@ -8,46 +8,46 @@ because the editor's + menu and settings complete the element that rolls and ima
 
 ## Foundation
 
-- [ ] T001 Measure before changing anything: the size of the sheet chunk (`/universal_sheet`) and of
+- [x] T001 Measure before changing anything: the size of the sheet chunk (`/universal_sheet`) and of
       the main chunk in a production build; record both under "Implementation notes" in design.md
-- [ ] T002 Write `tests/shared/markdown/parse.test.ts` first: every block and inline of FR-003
+- [x] T002 Write `tests/shared/markdown/parse.test.ts` first: every block and inline of FR-003
       (ATX/setext headings, rules, fenced code with info string, quotes with lazy continuation,
       tight/loose/nested/task lists with their source line, pipe tables, inline code, escapes,
       entities, emphasis and strong with flanking rules, links with titles and balanced parentheses,
       autolinks, bare URLs, `==highlight==`), every line of a paragraph its own paragraph, callouts
       with `-`/`+`/no marker → `fold` `closed`/`open`/`null`, `[[x]]`, `[[x|alias]]`, `![[x]]` kept
       verbatim, `||x||` literal
-- [ ] T003 Write `tests/shared/markdown/safety.test.ts` first: `<script>`, `<img onerror>`,
+- [x] T003 Write `tests/shared/markdown/safety.test.ts` first: `<script>`, `<img onerror>`,
       `<details>`, `javascript:`/`data:`/`vbscript:` links, entity-encoded schemes → rendered text
       or inert spans, no element outside the renderer's whitelist in the DOM (SC-005, FR-009)
-- [ ] T004 `src/shared/markdown/parse.ts` and `src/shared/markdown/types.ts`: the block and inline
+- [x] T004 `src/shared/markdown/parse.ts` and `src/shared/markdown/types.ts`: the block and inline
       AST of design D1, ported from WorldInfo Workspace `src/core/preview.ts` (docblock names the
       source), no HTML in any node; links limited to http(s), mailto, `#`, relative paths; T002
       passes
-- [ ] T005 `src/shared/components/markdown/MarkdownView.tsx`: renders the AST with slots
+- [x] T005 `src/shared/components/markdown/MarkdownView.tsx`: renders the AST with slots
       `renderCode`, `resolveEmbed`, `onToggleTask`, `onIssue`; callout types map to existing palette
       tokens only (design D1); unknown callout types render as a neutral callout and call `onIssue`,
       which the sheet field forwards to `diagnostics.ts`; memoize blocks by source text; T003 passes
-- [ ] T006 Write `tests/shared/markdown/MarkdownView.perf.test.tsx`: parse + render of a
+- [x] T006 Write `tests/shared/markdown/MarkdownView.perf.test.tsx`: parse + render of a
       300,000-character note within 200 ms and within a bound of a same-run 30,000-character
       baseline, best of several warm runs (SC-002)
-- [ ] T007 `src/sheet_manager/types/template.ts`: `MarkdownFieldSchema` (`type: 'markdown'`, field
+- [x] T007 `src/sheet_manager/types/template.ts`: `MarkdownFieldSchema` (`type: 'markdown'`, field
       base shape, `minRows` 4–40, default 12) in the field union and `TEMPLATE_FIELD_TYPES`;
       `src/sheet_manager/types/templateValues.ts`: markdown value schema `{ text, images? }`,
       `TEMPLATE_VALUES_LIMITS.markdownMaxLength` 300,000 and `markdownImagesMax` 100, value
       switches, `coerceStoredValue` text ↔ markdown (cut over 10,000 characters with
       `template-value-unreadable`); regenerate `tests/sheet_manager/fixtures/zod-baseline/*.json`
-- [ ] T008 Write `tests/sheet_manager/markdown-field.test.tsx` first: reading mode by default, Edit
+- [x] T008 Write `tests/sheet_manager/markdown-field.test.tsx` first: reading mode by default, Edit
       and Done buttons, Ctrl/Cmd+E toggles and Esc leaves edit mode, split at ≥ 720 px vs
       source/result toggle below, Ctrl/Cmd+B/I/K/L and toolbar buttons wrap the selection, the limit
       stops input with a `role="status"` line and a `template-value-write-rejected` report, writes
       go through `updateTemplateValues`, coercion from a text value
-- [ ] T009 `src/sheet_manager/features/sheet/declarative/MarkdownFieldControl.tsx` (textarea,
+- [x] T009 `src/sheet_manager/features/sheet/declarative/MarkdownFieldControl.tsx` (textarea,
       toolbar of labelled buttons, shortcuts via `insertText` with a value-write fallback,
       `useDeferredValue` preview, `Splitter` or toggle by `ResizeObserver` width) and its entry in
       `registry/declarativeFieldRegistry.ts` and `fieldControls.tsx`; strings in
       `translations/source/{en,ru}/ui/shared/markdown.yaml`; T008 passes
-- [ ] T010 Run `yarn verify` (schema edits) and commit the foundation
+- [x] T010 Run `yarn verify` (schema edits) and commit the foundation
 
 ## User Story 1 - Write a formatted note (P1)
 
@@ -73,7 +73,7 @@ because the editor's + menu and settings complete the element that rolls and ima
       page" instead of an exception entry; the `general-note` page passes `shipped-parity.test.tsx`
 - [ ] T015 [US1] A newly created empty note opens in edit mode with the cursor in the text
       (`createFromChoice.ts` hand-off); case in `tests/sheet_manager/systems/general/note.test.ts`
-- [ ] T016 [US1] Base storybook stories in `src/sheet_manager/storybook/stories.ts` (reading,
+- [x] T016 [US1] Base storybook stories in `src/sheet_manager/storybook/stories.ts` (reading,
       editing, full note) and their `REQUIRED_VARIANTS` tags in
       `tests/sheet_manager/storybook.test.tsx` (constitution VI, FR-012)
 - [ ] T017 [US1] `tests-e2e/smoke/notes.spec.ts`: create a note, write a heading and a list, reload,

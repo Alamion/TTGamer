@@ -1259,6 +1259,37 @@ const brief = story(
     true
 );
 
+const MARKDOWN_SAMPLE = [
+    '# Session 12 plan',
+    'Every line is its own paragraph:',
+    'the docks at night, rain, **Ines** waits by the crates.',
+    '## Prepare',
+    '- [x] Map of the docks',
+    '- [ ] Motives of the gang',
+    '  - Bruno owes ==money==',
+    '| NPC | Motive |',
+    '|:---|---:|',
+    '| Ines | money |',
+    '> "Come alone." — the letter',
+    '> [!info]- History of the docks',
+    '> Built by the guild a century ago.',
+    '> [!warning]+ What the players see',
+    '> Two guards, one ~~asleep~~ awake.',
+    '`inline code`, [a link](https://example.org), and [[Ines Ruiz]] (a link to come).',
+].join('\n');
+
+const markdown = story(
+    'markdown',
+    'Markdown text',
+    'Markdown text (spec 043): reading mode by default; Edit or Ctrl+E shows the source with a toolbar, side by side on a wide pane and as a toggle on a narrow one. Folded callouts start folded; checklist items tick in reading mode.',
+    ENGINE,
+    [
+        { id: 'markdown-showcase', type: 'markdown', label: 'Session plan' },
+        { id: 'markdown-empty', type: 'markdown', label: 'Empty (opens in edit mode)', minRows: 4 },
+    ],
+    { 'markdown-showcase': { text: MARKDOWN_SAMPLE } }
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     brief,
@@ -1269,6 +1300,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     listEntries,
     trackers,
     buttons,
+    markdown,
 ];
 
 let allStories: readonly ElementStory[] | undefined;

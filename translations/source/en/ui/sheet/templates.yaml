@@ -539,6 +539,7 @@ fieldTypes:
     resource: Resource
     reference: Document reference
     image: Image
+    markdown: Markdown text
     formula: Derived value (read-only)
     table: Table
     fields: Field group

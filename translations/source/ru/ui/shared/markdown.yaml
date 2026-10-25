@@ -1,0 +1,24 @@
+view:
+    insecureImage: 'Здесь загружаются только картинки по HTTPS: {url}'
+    unresolvedEmbed: Пока ни с чем не связано
+    unfold: Показать «{title}»
+    fold: Скрыть «{title}»
+editor:
+    edit: Править
+    done: Готово
+    editTitle: Править текст (Ctrl+E)
+    doneTitle: Вернуться к чтению (Ctrl+E или Esc)
+    toolbar: Оформление
+    bold: Жирный (Ctrl+B)
+    italic: Курсив (Ctrl+I)
+    link: Ссылка (Ctrl+K)
+    checklist: Пункт чек-листа (Ctrl+L)
+    callout: Выноска
+    foldedCallout: Свёрнутая выноска
+    calloutTitle: Заголовок
+    linkText: текст
+    source: Исходник
+    preview: Результат
+    split: Ширина исходника
+    full: Текст заполнен ({max} символов); сократите его, чтобы писать дальше.
+    empty: Пока ничего не написано.

@@ -539,6 +539,7 @@ fieldTypes:
     resource: Ресурс
     reference: Ссылка на документ
     image: Изображение
+    markdown: Текст markdown
     formula: Вычисляемое значение (только чтение)
     table: Таблица
     fields: Группа полей

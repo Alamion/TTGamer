@@ -198,6 +198,7 @@ export const ELEMENT_EDITORS: { [T in TemplateNodeType]: ElementEditor<NodeOf<T>
     resource: field('resource'),
     reference: field('reference'),
     image: field('image'),
+    markdown: field('markdown'),
     formula: field('formula'),
     // Not in the "+" menu: a field becomes a tracker through its Type setting.
     tracker: field('tracker'),

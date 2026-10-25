@@ -28,7 +28,7 @@ export function contentSettings({
     const types = itemOfList
         ? LIST_ITEM_TYPES
         : inTable
-          ? TEMPLATE_FIELD_TYPES.filter((type) => type !== 'tracker')
+          ? TEMPLATE_FIELD_TYPES.filter((type) => type !== 'tracker' && type !== 'markdown')
           : TEMPLATE_FIELD_TYPES;
     return (
         <>

@@ -29,7 +29,9 @@ export function mapFieldItems(
                 const item = listItemField(node);
                 if (item.id !== fieldId) return node;
                 const next = map(item);
-                return next.type === 'formula' || next.type === 'tracker'
+                return next.type === 'formula' ||
+                    next.type === 'tracker' ||
+                    next.type === 'markdown'
                     ? node
                     : { ...node, item: next };
             }
