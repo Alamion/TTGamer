@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.33.0
+
+### Minor feat
+
+- **One layout for the classic characters (spec 042, T-126)**: the Star Wars character, the droid, and the World of Darkness 2nd Edition character share one order — Base, Condition, Attributes, Skills, (Force), Advantages, Equipment, Experience and Notes. Health, Willpower, Initiative, and the virtues sit together under **Condition**, and the Force-derived values have their own card in the Force section
+- **Creatures, vehicles, and fodder groups made of cards (spec 042)**: abilities, attacks, damage, weapons, modifications, members, and notes each sit in a card of their own — **Condition**, **Combat**, and **Details** gather what belongs together, so no section is a single bare list or track. Every value stays where it was stored
+- **Predator grants beside the predator type (spec 042)**: on the vampire sheet, what the predator type gives shows right under it in the identity card
+- **A home page that matches the project (T-127)**: the games the site supports with their quick starts, and what it does today — documents and their layout, templates, the dice roller, roll sharing, data on the device — with links into the site guide
+- **Portraits when you want them**: a character's portrait card shows once **Show portrait** is on (in **Appearance**, in the V5 biography, or in a Storyteller character's identity card); without it the other cards take the whole width. Documents that already had a portrait keep showing it. With the portrait on, it takes a third of the width on every character sheet
+- **Tidier character sheets**: **Appearance** and **Biography** start folded, and **Equipment** puts weapons and armor in the first column and the inventory (with implants or built-in equipment) in the second
+
+### Fix
+
+- **Columns in panes**: a document in a pane as wide as the page shows three columns again, as it does on its own
+- **Recent kinds in the New dialog**: each names its rules and setting beside it, so two kinds with the same name (a hunter's and a vampire's Character) no longer look alike
+- **Predator type page**: the example on the rules page shows the grants field after the sheet change
+
 ## v3.32.0
 
 ### Minor feat
