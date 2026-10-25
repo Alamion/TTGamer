@@ -35,25 +35,42 @@ function notesFor(node: LibraryNode, plural: ReturnType<typeof usePluralMessage>
     }
     switch (node.level) {
         case 'ruleset': {
-            notes.push(translate(labels.details.rulesetIntro));
             const system = systemRegistry.getSystem(node.systemId);
+            notes.push(translate(system?.library?.intro ?? labels.details.rulesetIntro));
             const names = (system?.coreDefinitions ?? [])
                 .map((id) => systemRegistry.getDocumentDefinition(node.systemId, id))
                 .map((definition) => (definition ? translate(definition.label) : undefined))
                 .filter(Boolean)
                 .join(', ');
-            if (names) notes.push(translate(labels.details.coreCharacters, { names }));
+            if (names) {
+                notes.push(
+                    translate(system?.library?.coreTypes ?? labels.details.coreCharacters, {
+                        names,
+                    })
+                );
+            }
             break;
         }
         case 'setting':
-            if (node.ref.kind === 'rules') notes.push(translate(labels.details.rulesOnlyNote));
-            else if (node.ownership === 'shipped')
+            if (node.ref.kind === 'rules') {
+                notes.push(
+                    translate(
+                        systemRegistry.getSystem(node.ref.systemId)?.library?.ownTypesNote ??
+                            labels.details.rulesOnlyNote
+                    )
+                );
+            } else if (node.ownership === 'shipped')
                 notes.push(translate(labels.details.shippedSettingNote));
             notes.push(plural(labels.counts.documents, node.documentCount));
             break;
         case 'type': {
             if (node.ref.kind === 'shipped') notes.push(translate(labels.details.shippedTypeNote));
-            if (node.ref.kind === 'core') notes.push(translate(labels.details.coreTypeNote));
+            if (node.ref.kind === 'core') {
+                const library = node.systemId
+                    ? systemRegistry.getSystem(node.systemId)?.library
+                    : undefined;
+                notes.push(translate(library?.coreTypeNote ?? labels.details.coreTypeNote));
+            }
             notes.push(plural(labels.counts.documents, node.documentCount));
             const current = node.pages.find(({ isDefault }) => isDefault);
             if (current) {
@@ -68,8 +85,16 @@ function notesFor(node: LibraryNode, plural: ReturnType<typeof usePluralMessage>
             }
             if (node.fallback === 'stored-values')
                 notes.push(translate(labels.details.storedValuesNote));
-            if (node.fallback === 'rules-only')
-                notes.push(translate(labels.details.rulesOnlyFallback));
+            if (node.fallback === 'rules-only') {
+                const library = node.systemId
+                    ? systemRegistry.getSystem(node.systemId)?.library
+                    : undefined;
+                notes.push(
+                    translate(labels.details.rulesOnlyFallback, {
+                        name: translate(library?.ownTypes ?? labels.rulesOnly),
+                    })
+                );
+            }
             break;
         }
         case 'catalog':

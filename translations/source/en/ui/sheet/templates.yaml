@@ -120,6 +120,7 @@ editor:
     numberMax: Max
     numberStep: Step
     multiline: Multiline
+    markdownRows: Starting height (lines)
     presentation: Presentation
     accentColor: Accent color
     accentPrimary: Primary accent

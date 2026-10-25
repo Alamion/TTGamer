@@ -41,6 +41,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
         expect(groups.map(({ name }) => name)).toEqual([
             'World of Darkness 2nd Edition',
             'World of Darkness 5th Edition',
+            'General',
         ]);
         expect(keys()).toEqual([
             'wod-2e/wod2e-character',
@@ -54,6 +55,7 @@ describe('create choices from the library tree (spec 039, D1)', () => {
             'wod-v5/v5-group',
             'wod-v5/hunter',
             'wod-v5/vampire',
+            'general/note',
         ]);
     });
 

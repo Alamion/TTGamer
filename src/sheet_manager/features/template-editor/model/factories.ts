@@ -26,7 +26,7 @@ export function baseField(type: TemplateField['type'], label: string): TemplateF
         case 'image':
             return { ...base, type: 'image' };
         case 'markdown':
-            return { ...base, type: 'markdown', minRows: 12 };
+            return { ...base, type: 'markdown', rows: 12 };
         case 'formula':
             return { ...base, type: 'formula', formula: '' };
         case 'select':

@@ -27,8 +27,10 @@ import {
 
 import { Splitter } from '../../../../shared/components/Splitter';
 import { reportSheetIssue } from '../../../diagnostics';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
+import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
 import type { TemplateFieldControlProps } from './fieldControls';
 import {
     applyEdit,
@@ -114,6 +116,13 @@ export function MarkdownFieldControl({
     const width = useWidth(containerRef);
     const deferredText = useDeferredValue(text);
     const editing = mode === 'edit' && !disabled;
+    const documentId = useDocumentSource().document?.id;
+    // An empty text starts in edit mode; a document just created gives it the cursor (T015).
+    const [startedEmpty] = useState(text === '');
+    useEffect(() => {
+        if (!startedEmpty || disabled || !documentId) return;
+        return claimNewDocumentFocus(documentId, () => textareaRef.current?.focus());
+    }, [startedEmpty, disabled, documentId]);
     const split = width >= SPLIT_MIN_WIDTH;
     const full = text.length >= TEMPLATE_VALUES_LIMITS.markdownMaxLength;
 
@@ -232,7 +241,7 @@ export function MarkdownFieldControl({
             value={text}
             onChange={(event) => writeText(event.target.value)}
             maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
-            rows={own.minRows}
+            rows={own.rows}
             aria-label={own.label}
             spellCheck
             className="w-full resize-y rounded-sm border border-border bg-bgSurface p-2 font-mono text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary"

@@ -78,6 +78,7 @@ export const SETTINGS = {
     },
     labelPosition: { group: 'content', label: editor.labelPosition, appliesTo: field, carry: true },
     multiline: { group: 'look', label: editor.multiline },
+    rows: { group: 'look', label: editor.markdownRows },
     // Buttons (spec 038)
     icon: { group: 'content', label: editor.buttonIcon },
     roll: { group: 'value', label: editor.buttonRoll },

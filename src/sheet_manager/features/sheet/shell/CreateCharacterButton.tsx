@@ -26,7 +26,7 @@ function describeTarget(systemId: string, definitionId: string, exampleId: strin
     if (exampleId) {
         const example = definition.examples?.find(({ id }) => id === exampleId);
         if (!example) return undefined;
-        return { copy: example.create().metadata.title || translate(example.label) };
+        return { copy: example.create(translate).metadata.title || translate(example.label) };
     }
     const kind = `${translate(definition.label)} (${translate(documentSettingLabel(system, definition))})`;
     return { kind };

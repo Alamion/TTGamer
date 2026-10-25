@@ -1,11 +1,17 @@
 import { useDocumentTypeStore } from '../store/documentTypeStore';
 import { useTemplateStore } from '../store/templateStore';
+import { generalSystem } from './general';
 import { SystemRegistry } from './registry';
 import { starWarsWodSystem } from './star-wars-wod';
 import { v5System } from './v5';
 import { wod2eSystem } from './wod2e';
 
-export const systemRegistry = new SystemRegistry([starWarsWodSystem, wod2eSystem, v5System]);
+export const systemRegistry = new SystemRegistry([
+    starWarsWodSystem,
+    wod2eSystem,
+    v5System,
+    generalSystem,
+]);
 
 /** Keeps the registry's user-type overlay in step with the type and template stores. */
 function syncUserDocumentTypes(): void {

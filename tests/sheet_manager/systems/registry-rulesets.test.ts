@@ -12,7 +12,11 @@ const plugin = (id: string, ruleset?: string) => ({
 
 describe('ruleset declarations (spec 013)', () => {
     it('lists the shipped rulesets and the settings declared on them', () => {
-        expect(systemRegistry.listRulesets().map(({ id }) => id)).toEqual(['wod-2e', 'wod-v5']);
+        expect(systemRegistry.listRulesets().map(({ id }) => id)).toEqual([
+            'wod-2e',
+            'wod-v5',
+            'general',
+        ]);
         expect(systemRegistry.settingSystemsOf('wod-2e').map(({ id }) => id)).toEqual([
             'star-wars-wod',
         ]);

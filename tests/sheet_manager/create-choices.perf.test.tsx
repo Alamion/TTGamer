@@ -25,8 +25,8 @@ function best(runs: number, work: () => void): number {
 }
 
 describe('create dialog at 100 kinds (spec 039, SC-002)', () => {
-    // Eleven shipped kinds, three core kinds of the user setting, and 86 user types.
-    beforeEach(() => seedUserKinds(86));
+    // Twelve shipped kinds, three core kinds of the user setting, and 85 user types.
+    beforeEach(() => seedUserKinds(85));
     afterEach(() => {
         cleanup();
         resetUserKinds();

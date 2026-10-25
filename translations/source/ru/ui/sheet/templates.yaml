@@ -120,6 +120,7 @@ editor:
     numberMax: Максимум
     numberStep: Шаг
     multiline: Многострочное
+    markdownRows: Начальная высота (строк)
     presentation: Отображение
     accentColor: Цвет акцента
     accentPrimary: Основной акцент

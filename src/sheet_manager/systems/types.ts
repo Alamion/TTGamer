@@ -52,7 +52,11 @@ export interface DocumentModule {
 export interface DocumentExample {
     id: string;
     label: DocumentViewLabel;
-    create: () => UnknownDocumentEnvelope;
+    /**
+     * A fresh copy of the example. Text it writes in the interface language goes through
+     * `localize` (the UI passes `translate`; system code cannot import it, spec 043).
+     */
+    create: (localize?: (message: DocumentViewLabel) => string) => UnknownDocumentEnvelope;
     /**
      * Examples of the same system copied together with this one (a group's members, spec 040);
      * the copy's values that name them are pointed at their copies.
@@ -106,6 +110,18 @@ export interface SystemPlugin {
      * ruleset. Absent on rulesets themselves.
      */
     ruleset?: SystemId;
+    /**
+     * Library wording for a ruleset whose own types are not characters (spec 043): its intro, the
+     * name and note of its own types without a setting ("Rules only" otherwise), and what its core
+     * types are called (`{names}`) and say inside a user setting.
+     */
+    library?: {
+        intro: DocumentViewLabel;
+        ownTypes: DocumentViewLabel;
+        ownTypesNote: DocumentViewLabel;
+        coreTypes: DocumentViewLabel;
+        coreTypeNote: DocumentViewLabel;
+    };
 }
 
 export interface TraitPoolFlags {

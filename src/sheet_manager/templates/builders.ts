@@ -89,6 +89,23 @@ export function text(
     };
 }
 
+/** A markdown text (spec 043); `rows` is the starting height of its source. */
+export function markdown(
+    id: string,
+    label: string,
+    valueKey: string,
+    options: FieldOptions & { rows?: number } = {}
+): TemplateField {
+    return {
+        id,
+        type: 'markdown',
+        label,
+        valueKey,
+        rows: options.rows ?? 12,
+        ...fieldCommon(options),
+    };
+}
+
 export function number(
     id: string,
     label: string,

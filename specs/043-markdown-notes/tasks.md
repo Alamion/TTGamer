@@ -32,7 +32,7 @@ because the editor's + menu and settings complete the element that rolls and ima
       300,000-character note within 200 ms and within a bound of a same-run 30,000-character
       baseline, best of several warm runs (SC-002)
 - [x] T007 `src/sheet_manager/types/template.ts`: `MarkdownFieldSchema` (`type: 'markdown'`, field
-      base shape, `minRows` 4–40, default 12) in the field union and `TEMPLATE_FIELD_TYPES`;
+      base shape, `rows` 4–40, default 12) in the field union and `TEMPLATE_FIELD_TYPES`;
       `src/sheet_manager/types/templateValues.ts`: markdown value schema `{ text, images? }`,
       `TEMPLATE_VALUES_LIMITS.markdownMaxLength` 300,000 and `markdownImagesMax` 100, value
       switches, `coerceStoredValue` text ↔ markdown (cut over 10,000 characters with
@@ -53,34 +53,34 @@ because the editor's + menu and settings complete the element that rolls and ima
 
 **Check**: create a Note, type each supported block, reload, see the same note in reading mode.
 
-- [ ] T011 [US1] Write `tests/sheet_manager/systems/general/note.test.ts` first: `noteDefinition`
+- [x] T011 [US1] Write `tests/sheet_manager/systems/general/note.test.ts` first: `noteDefinition`
       parses `{ name, frontMatter? }`, the `general-note` page renders name and body, the create
       choices show the Note in a "General" group with any registry, the documents window's system
       filter labels it "General", the library node of General has no empty "Rules only" heading, a
       user setting on General offers the Note, the name syncs the title
-- [ ] T012 [US1] `src/sheet_manager/systems/general/` (plugin `general`: ruleset, no dice, policies,
+- [x] T012 [US1] `src/sheet_manager/systems/general/` (plugin `general`: ruleset, no dice, policies,
       or catalogs; `documents: [noteDefinition]`; `coreDefinitions: ['note']`), the definition,
       `field:name` binding with `syncsTitle`, the `general-note` template (name + a `markdown` field
       with coordinate `body`), and an example note showing the syntax; register it last in
       `src/sheet_manager/systems/index.ts`; labels in
       `translations/source/{en,ru}/ui/sheet/general.yaml`; adjust the library tree labels if T011
       shows an empty heading; T011 passes
-- [ ] T013 [US1] Task checkboxes in reading mode, and in the brief's read-only look, toggle
+- [x] T013 [US1] Task checkboxes in reading mode, and in the brief's read-only look, toggle
       `[ ]`/`[x]` on their source line through `onToggleTask` (FR-005); cases in
       `tests/sheet_manager/markdown-field.test.tsx`
-- [ ] T014 [US1] `tests/sheet_manager/page-composition.test.ts`: the shape rule "a full page whose
+- [x] T014 [US1] `tests/sheet_manager/page-composition.test.ts`: the shape rule "a full page whose
       only growing element is one markdown field, with at most a name field beside it, is a document
       page" instead of an exception entry; the `general-note` page passes `shipped-parity.test.tsx`
-- [ ] T015 [US1] A newly created empty note opens in edit mode with the cursor in the text
+- [x] T015 [US1] A newly created empty note opens in edit mode with the cursor in the text
       (`createFromChoice.ts` hand-off); case in `tests/sheet_manager/systems/general/note.test.ts`
 - [x] T016 [US1] Base storybook stories in `src/sheet_manager/storybook/stories.ts` (reading,
       editing, full note) and their `REQUIRED_VARIANTS` tags in
       `tests/sheet_manager/storybook.test.tsx` (constitution VI, FR-012)
-- [ ] T017 [US1] `tests-e2e/smoke/notes.spec.ts`: create a note, write a heading and a list, reload,
+- [x] T017 [US1] `tests-e2e/smoke/notes.spec.ts`: create a note, write a heading and a list, reload,
       reading mode shows them
-- [ ] T018 [US1] Bundle check: rebuild, compare the sheet and main chunks with T001, confirm the
+- [x] T018 [US1] Bundle check: rebuild, compare the sheet and main chunks with T001, confirm the
       parser and view are not in the main chunk; record the numbers in design.md
-- [ ] T019 [US1] Run `yarn verify:full` (new shared component) and commit the story
+- [x] T019 [US1] Run `yarn verify:full` (new shared component) and commit the story
 
 ## User Story 2 - Organize a long note with foldable callouts (P1)
 

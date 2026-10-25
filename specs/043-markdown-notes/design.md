@@ -89,7 +89,7 @@ guidance.
 
 ## Changed types and data
 
-- `types/template.ts`: `MarkdownFieldSchema` (`type: 'markdown'`, base shape, `minRows` 4–40,
+- `types/template.ts`: `MarkdownFieldSchema` (`type: 'markdown'`, base shape, `rows` 4–40,
   default 12) in the field union and `TEMPLATE_FIELD_TYPES`; additive, no template schema bump
   (older builds reject templates using it, as with every new type).
 - `types/templateValues.ts`: markdown value schema and `TEMPLATE_VALUES_LIMITS.markdownMaxLength` /
@@ -187,3 +187,22 @@ guidance.
   compiler with the new type, so they ship with Foundation; US5 adds the + menu entry and settings.
   The base storybook story (T016) also ships with Foundation: the storybook test requires a story
   for every field type.
+- **Bundle after US1 (T018)**: main chunk 1,046.6 KB (279.7 KB gzip, +2.0): only translation
+  strings, most of it the example note's text, since `uiMessages` ships in the main chunk; the
+  parser, view, and field are in the shared `common` chunk (349.5 KB gzip, +9.6), never in main. All
+  JS 1,377.4 KB gzip (+11.2).
+- **`minRows` → `rows`**: the editor's settings registry names a property once, and `minRows` is
+  already a table's "Minimum rows" in the limits group; the field's starting height is `rows` under
+  its look settings ("Starting height (lines)").
+- **Library wording**: General is a ruleset, and the library's ruleset texts speak of "rules
+  characters". `SystemPlugin.library` (optional) gives a ruleset its own intro, the name and note of
+  its own types ("Any game" instead of "Rules only"), and its core-type texts; the "Rules only"
+  fallback note now names the node through `{name}`. Generic code reads the declared texts, never a
+  system id.
+- **Example text in the interface language**: system code is also loaded by Node scripts, which
+  cannot import `@docusaurus/Translate`. `DocumentExample.create` takes an optional `localize` (the
+  UI passes `translate`; without it the English message is used).
+- **The cursor in a new note (T015)**: `features/documents/newDocumentFocus.ts` holds claims; an
+  empty markdown field claims the focus for its document, and the create dialog hands the focus to
+  the claim when it closes (instead of back to the New button). An unnamed document created from the
+  documents window keeps asking for its name there, as before.

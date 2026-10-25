@@ -183,11 +183,11 @@ const ImageFieldSchema = z.object({
     type: z.literal('image'),
 });
 
-/** Markdown text with its own editor and rendering (spec 043); `minRows` is the starting height. */
+/** Markdown text with its own editor and rendering (spec 043); `rows` is the starting height. */
 const MarkdownFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('markdown'),
-    minRows: z.number().int().min(4).max(40).default(12),
+    rows: z.number().int().min(4).max(40).default(12),
 });
 
 /**

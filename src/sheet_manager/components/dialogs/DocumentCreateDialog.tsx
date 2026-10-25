@@ -20,6 +20,7 @@ import {
     writeCreatePreferences,
 } from '../../features/documents/createChoices';
 import { createFromChoice } from '../../features/documents/createFromChoice';
+import { takeNewDocumentFocus } from '../../features/documents/newDocumentFocus';
 import { useLibraryTree } from '../../features/sheet/data/useLibraryTree';
 import type { Folder as FolderRecord } from '../../store/documentIndex';
 import { useDocumentStore } from '../../store/documentStore';
@@ -170,6 +171,7 @@ function CreateDialogContent({
     const [step, setStep] = useState<'kinds' | 'details'>('kinds');
     // Focus moves after the step's pane is shown (a hidden field cannot take it).
     const focusNextRef = useRef<'name' | 'search' | undefined>(undefined);
+    const createdIdRef = useRef<string | undefined>(undefined);
     useEffect(() => {
         const target = focusNextRef.current;
         if (!target) return;
@@ -228,6 +230,7 @@ function CreateDialogContent({
             ...(exampleId ? { exampleId } : {}),
         });
         const named = name.trim() !== '';
+        createdIdRef.current = created.id;
         onCreated?.(created.id, { named, parentId: target });
         // Unnamed, the owner places the focus on the name to type; named, it returns as usual.
         onClose(!named);
@@ -252,9 +255,14 @@ function CreateDialogContent({
     return (
         <Dialog.Content
             onCloseAutoFocus={(event) => {
-                // The owner places the focus on what was made (a name to type).
-                if (justCreatedRef.current && onCreated) event.preventDefault();
+                const createdId = createdIdRef.current;
+                const ownerPlacesFocus = justCreatedRef.current && onCreated;
+                createdIdRef.current = undefined;
                 justCreatedRef.current = false;
+                // What was made may want the cursor (a note's text); else an unnamed document's
+                // owner places it on the name to type.
+                if (createdId && takeNewDocumentFocus(createdId)) event.preventDefault();
+                else if (ownerPlacesFocus) event.preventDefault();
             }}
             onOpenAutoFocus={(event) => {
                 event.preventDefault();

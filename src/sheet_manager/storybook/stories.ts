@@ -1285,7 +1285,7 @@ const markdown = story(
     ENGINE,
     [
         { id: 'markdown-showcase', type: 'markdown', label: 'Session plan' },
-        { id: 'markdown-empty', type: 'markdown', label: 'Empty (opens in edit mode)', minRows: 4 },
+        { id: 'markdown-empty', type: 'markdown', label: 'Empty (opens in edit mode)', rows: 4 },
     ],
     { 'markdown-showcase': { text: MARKDOWN_SAMPLE } }
 );
