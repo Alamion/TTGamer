@@ -51,9 +51,9 @@ export const BASELINE: Readonly<Record<string, KindHeights>> = {
 export const BRIEF_PINS: Readonly<Record<string, { 375: number; 1280: number }>> = {
     'star-wars-wod/character': { 375: 623, 1280: 333 },
     'star-wars-wod/droid': { 375: 595, 1280: 333 },
-    // 375 px measured here and 371 on the CI runner, whose system font sets lines a little
-    // shorter: the pin sits between them, since 1% of this small brief is under 4 px.
-    'star-wars-wod/creature': { 375: 373, 1280: 299 },
+    // Measured here 375 and 299 px, on the CI runner 371 and 296: its system font sets lines a
+    // little shorter. The pins sit between them, since 1% of this small brief is 3–4 px.
+    'star-wars-wod/creature': { 375: 373, 1280: 298 },
     // The crew links take the compact look of a brief (spec 041): pinned anew.
     'star-wars-wod/vehicle': { 375: 397, 1280: 362 },
     'star-wars-wod/fodder-group': { 375: 381, 1280: 315 },
