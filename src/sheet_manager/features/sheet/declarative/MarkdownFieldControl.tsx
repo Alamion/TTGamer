@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useNoteRollCode } from '@site/src/integrations/sheet-dice/noteRolls';
 import {
     type MarkdownIssue,
     MarkdownView,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import {
     type KeyboardEvent,
+    type ReactNode,
     useCallback,
     useDeferredValue,
     useEffect,
@@ -102,10 +104,12 @@ const modeButton =
 function BriefMarkdown({
     label,
     text,
+    renderCode,
     onToggleTask,
 }: {
     label: string;
     text: string;
+    renderCode: (code: string) => ReactNode;
     onToggleTask?: (line: number) => void;
 }) {
     const [open, setOpen] = useState(false);
@@ -133,6 +137,7 @@ function BriefMarkdown({
                     ) : (
                         <MarkdownView
                             source={text}
+                            renderCode={renderCode}
                             onToggleTask={onToggleTask}
                             onIssue={reportIssue}
                             headingOffset={2}
@@ -167,6 +172,7 @@ export function MarkdownFieldControl({
     const editButtonRef = useRef<HTMLButtonElement>(null);
     const width = useWidth(containerRef);
     const deferredText = useDeferredValue(text);
+    const renderCode = useNoteRollCode();
     const editing = mode === 'edit' && !readOnly;
     const documentId = useDocumentSource().document?.id;
     // An empty text starts in edit mode; a document just created gives it the cursor (T015).
@@ -282,6 +288,7 @@ export function MarkdownFieldControl({
     const preview = (
         <MarkdownView
             source={editing ? deferredText : text}
+            renderCode={renderCode}
             onToggleTask={disabled ? undefined : toggleTask}
             onIssue={reportIssue}
         />
@@ -310,6 +317,7 @@ export function MarkdownFieldControl({
             <BriefMarkdown
                 label={own.label}
                 text={text}
+                renderCode={renderCode}
                 onToggleTask={disabled ? undefined : toggleTask}
             />
         );

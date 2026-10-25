@@ -65,7 +65,9 @@ export type SheetIssueCode =
     /** The dice panel could not be drawn as a tab; it slides in as on other pages (spec 036). */
     | 'dice-tab-unavailable'
     /** Markdown shown in a fallback look: an unknown callout type, a non-HTTPS image (spec 043). */
-    | 'markdown-render-issue';
+    | 'markdown-render-issue'
+    /** A `dice:` code in a markdown text is not valid notation; it shows as code (spec 043). */
+    | 'markdown-roll-invalid';
 
 export interface SheetIssue {
     code: SheetIssueCode;

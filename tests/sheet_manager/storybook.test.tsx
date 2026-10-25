@@ -343,8 +343,10 @@ describe('element storybook (constitution VI, T-069)', () => {
         expect(
             document.querySelectorAll('div[data-reorder-list] [data-row-move]').length
         ).toBeGreaterThan(0);
-        // The deliberate formula errors report; nothing else may.
-        const unexpected = takeSheetIssues().filter(({ code }) => code !== 'formula-error');
+        // The deliberate formula errors and the invalid markdown roll report; nothing else may.
+        const unexpected = takeSheetIssues().filter(
+            ({ code }) => code !== 'formula-error' && code !== 'markdown-roll-invalid'
+        );
         expect(unexpected).toEqual([]);
         // Formulas and computed limits read the sample values; only the two error examples fail.
         expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toEqual([

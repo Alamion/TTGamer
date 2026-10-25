@@ -1,0 +1,2 @@
+roll: Бросить {notation}
+invalid: 'Это не бросок: {reason}'

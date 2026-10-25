@@ -1280,6 +1280,7 @@ const MARKDOWN_SAMPLE = [
     '> [!warning]+ What the players see',
     '> Two guards, one ~~asleep~~ awake.',
     '`inline code`, [a link](https://example.org), and [[Ines Ruiz]] (a link to come).',
+    'Ambush: `dice: 6d10>=6`',
 ].join('\n');
 
 const markdown = story(
@@ -1290,8 +1291,14 @@ const markdown = story(
     [
         { id: 'markdown-showcase', type: 'markdown', label: 'Session plan' },
         { id: 'markdown-empty', type: 'markdown', label: 'Empty (opens in edit mode)', rows: 4 },
+        { id: 'markdown-invalid-roll', type: 'markdown', label: 'Error: not a roll', rows: 4 },
     ],
-    { 'markdown-showcase': { text: MARKDOWN_SAMPLE } }
+    {
+        'markdown-showcase': { text: MARKDOWN_SAMPLE },
+        'markdown-invalid-roll': {
+            text: 'The `dice: 6q` code stays code, with the reason on hover.',
+        },
+    }
 );
 
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [

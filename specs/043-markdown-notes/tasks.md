@@ -114,14 +114,14 @@ because the editor's + menu and settings complete the element that rolls and ima
 
 **Check**: valid `dice:` code rolls through the dice flow; invalid stays text with the reason.
 
-- [ ] T027 [US3] Write `tests/integrations/note-rolls.test.tsx` first: `` `dice: 6d10>=6` `` renders
+- [x] T027 [US3] Write `tests/integrations/note-rolls.test.tsx` first: `` `dice: 6d10>=6` `` renders
       a roll button that rolls exactly that notation with the note's title as the name and the note
       as source; invalid notation keeps the code with the diagnostic in `title` and
       `aria-describedby` and reports through `diagnostics.ts`; other inline code stays code
-- [ ] T028 [US3] `src/integrations/sheet-dice/noteRolls.tsx`: the `renderCode` slot using
+- [x] T028 [US3] `src/integrations/sheet-dice/noteRolls.tsx`: the `renderCode` slot using
       `validateNotation`/`diagnoseNotation` and `useSheetDiceActions().rollImmediately`, passed by
       `MarkdownFieldControl.tsx`; T027 passes; storybook stories for a roll and an invalid roll
-- [ ] T029 [US3] Run the targeted tests and `yarn verify:fast`; commit the story
+- [x] T029 [US3] Run the targeted tests and `yarn verify:fast`; commit the story
 
 ## User Story 4 - Images in a note (P2)
 
