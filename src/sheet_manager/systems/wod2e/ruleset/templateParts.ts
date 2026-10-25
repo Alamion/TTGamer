@@ -172,7 +172,8 @@ export function baseSection(
                 { column: 2, collapsible: true, defaultCollapsed: true }
             ),
         ],
-        2
+        2,
+        [1, 2]
     );
 }
 

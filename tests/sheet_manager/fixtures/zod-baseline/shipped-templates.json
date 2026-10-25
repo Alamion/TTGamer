@@ -15,6 +15,10 @@
      "labelMessage": "ttgamer.ui.sheet.base.title",
      "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
      "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
      "children": [
       {
        "id": "base-portrait",
@@ -1222,6 +1226,10 @@
      "labelMessage": "ttgamer.ui.sheet.base.title",
      "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
      "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
      "children": [
       {
        "id": "base-portrait",
@@ -5744,6 +5752,10 @@
      "title": "Base",
      "labelMessage": "ttgamer.ui.sheet.base.title",
      "columns": 2,
+     "columnWidths": [
+      1,
+      2
+     ],
      "children": [
       {
        "id": "base-portrait",
