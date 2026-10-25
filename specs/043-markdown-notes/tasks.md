@@ -99,16 +99,16 @@ because the editor's + menu and settings complete the element that rolls and ima
 
 **Check**: add the element to a user page, set it up, write in a document; the storybook shows it.
 
-- [ ] T023 [US5] Write the editor cases first in the existing template editor tests
+- [x] T023 [US5] Write the editor cases first in the existing template editor tests
       (`tests/sheet_manager/template-editor*.test.tsx`): + menu offers Markdown on full pages and
       briefs, settings label / value key / starting height, type change text ↔ markdown keeps the
       text
-- [ ] T024 [US5] Factory case in `template-editor/model/factories.ts`, entry in
+- [x] T024 [US5] Factory case in `template-editor/model/factories.ts`, entry in
       `template-editor/elements/registry.tsx`, settings in `panels/field/` and
       `settings/registry.ts`, `fieldTypes.markdown` label in en/ru YAML; T023 passes
-- [ ] T025 [US5] On a brief the element is read-only rendered text, folded by default; case in
+- [x] T025 [US5] On a brief the element is read-only rendered text, folded by default; case in
       `tests/sheet_manager/markdown-field.test.tsx`; brief-look story and its tag
-- [ ] T026 [US5] Run the targeted tests and `yarn verify:fast`; commit the story
+- [x] T026 [US5] Run the targeted tests and `yarn verify:fast`; commit the story
 
 ## User Story 3 - Roll from a note (P2)
 

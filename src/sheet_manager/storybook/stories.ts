@@ -1254,8 +1254,12 @@ const brief = story(
                 defaultCollapsed: true,
             }
         ),
+        // Markdown on a brief (spec 043): read-only behind its fold; the checklist still ticks.
+        block('brief-markdown-block', 'Plan', [
+            { id: 'brief-markdown', type: 'markdown', label: 'Plan', hideLabel: true },
+        ]),
     ],
-    undefined,
+    { 'brief-markdown': { text: '- [x] Map of the docks\n- [ ] Ask about the shipment' } },
     true
 );
 

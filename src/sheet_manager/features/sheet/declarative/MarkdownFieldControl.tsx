@@ -9,6 +9,7 @@ import { clsx } from 'clsx';
 import {
     Bold,
     Check,
+    ChevronRight,
     Italic,
     Link,
     ListChecks,
@@ -21,6 +22,7 @@ import {
     useCallback,
     useDeferredValue,
     useEffect,
+    useId,
     useRef,
     useState,
 } from 'react';
@@ -31,6 +33,7 @@ import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
+import { useBriefPage } from './areaLayout';
 import type { TemplateFieldControlProps } from './fieldControls';
 import {
     applyEdit,
@@ -95,6 +98,52 @@ const toolButton =
 const modeButton =
     'inline-flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs font-bold text-textSecondary hover:border-primary hover:text-primary focus:outline-hidden focus-visible:ring-1 focus-visible:ring-primary';
 
+/** The brief look: the text behind a fold, read-only except its checklist (spec 043, US5). */
+function BriefMarkdown({
+    label,
+    text,
+    onToggleTask,
+}: {
+    label: string;
+    text: string;
+    onToggleTask?: (line: number) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const bodyId = useId();
+    const view = uiMessages.shared.markdown.view;
+    return (
+        <div className="flex min-w-0 flex-col gap-1">
+            <button
+                type="button"
+                aria-expanded={open}
+                aria-controls={bodyId}
+                onClick={() => setOpen((current) => !current)}
+                className={clsx(modeButton, 'self-start')}
+            >
+                <ChevronRight
+                    aria-hidden
+                    className={clsx('h-3.5 w-3.5 transition-transform', open && 'rotate-90')}
+                />
+                {translate(open ? view.fold : view.unfold, { title: label })}
+            </button>
+            {open && (
+                <div id={bodyId} className="text-sm">
+                    {text === '' ? (
+                        <p className="text-textSecondary">{translate(messages.empty)}</p>
+                    ) : (
+                        <MarkdownView
+                            source={text}
+                            onToggleTask={onToggleTask}
+                            onIssue={reportIssue}
+                            headingOffset={2}
+                        />
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
 /** A markdown field (spec 043): rendered text to read, a plain text field with help to write. */
 export function MarkdownFieldControl({
     disabled,
@@ -105,8 +154,11 @@ export function MarkdownFieldControl({
     const own = field as MarkdownField;
     const current = readValue(value);
     const text = current.text;
+    // A brief only shows the text, folded (spec 043, US5): it is edited on the full page.
+    const brief = useBriefPage();
+    const readOnly = disabled || brief;
     const [mode, setMode] = useState<'read' | 'edit'>(() =>
-        text === '' && !disabled ? 'edit' : 'read'
+        text === '' && !readOnly ? 'edit' : 'read'
     );
     const [narrowView, setNarrowView] = useState<'source' | 'result'>('source');
     const [sourceWidth, setSourceWidth] = useState<number | null>(null);
@@ -115,14 +167,14 @@ export function MarkdownFieldControl({
     const editButtonRef = useRef<HTMLButtonElement>(null);
     const width = useWidth(containerRef);
     const deferredText = useDeferredValue(text);
-    const editing = mode === 'edit' && !disabled;
+    const editing = mode === 'edit' && !readOnly;
     const documentId = useDocumentSource().document?.id;
     // An empty text starts in edit mode; a document just created gives it the cursor (T015).
     const [startedEmpty] = useState(text === '');
     useEffect(() => {
-        if (!startedEmpty || disabled || !documentId) return;
+        if (!startedEmpty || readOnly || !documentId) return;
         return claimNewDocumentFocus(documentId, () => textareaRef.current?.focus());
-    }, [startedEmpty, disabled, documentId]);
+    }, [startedEmpty, readOnly, documentId]);
     const split = width >= SPLIT_MIN_WIDTH;
     const full = text.length >= TEMPLATE_VALUES_LIMITS.markdownMaxLength;
 
@@ -161,7 +213,7 @@ export function MarkdownFieldControl({
     };
 
     const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        if (disabled) return;
+        if (readOnly) return;
         const command = event.ctrlKey || event.metaKey;
         const key = event.key.toLowerCase();
         if (command && !event.shiftKey && !event.altKey && key === 'e') {
@@ -252,6 +304,16 @@ export function MarkdownFieldControl({
         Math.max(sourceWidth ?? Math.round(width / 2), PANE_MIN),
         Math.max(PANE_MIN, width - PANE_MIN)
     );
+
+    if (brief) {
+        return (
+            <BriefMarkdown
+                label={own.label}
+                text={text}
+                onToggleTask={disabled ? undefined : toggleTask}
+            />
+        );
+    }
 
     return (
         // Ctrl+E and Esc work wherever focus is inside the field: its buttons or the text.

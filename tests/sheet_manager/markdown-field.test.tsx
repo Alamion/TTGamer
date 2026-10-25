@@ -30,6 +30,15 @@ class FixedResizeObserver {
     disconnect() {}
 }
 
+const brief = CustomTemplateSchema.parse({
+    id: 'markdown-brief',
+    name: 'Markdown Brief',
+    documentKind: 'character',
+    schemaVersion: 4,
+    pageKind: 'brief',
+    children: [{ id: 'body', type: 'markdown', label: 'Body' }],
+});
+
 const template = CustomTemplateSchema.parse({
     id: 'markdown-kit',
     name: 'Markdown Kit',
@@ -38,7 +47,7 @@ const template = CustomTemplateSchema.parse({
     children: [{ id: 'body', type: 'markdown', label: 'Body' }],
 });
 
-function mount(body: unknown) {
+function mount(body: unknown, page = template) {
     const document = {
         id: 'doc-md',
         kind: 'character',
@@ -49,9 +58,9 @@ function mount(body: unknown) {
         templateValues: body === undefined ? {} : { body },
         data: { metadata: { name: 'Plan', type: 'sentient' } },
     } as never;
-    useTemplateStore.setState({ templates: [template], quarantine: [] });
+    useTemplateStore.setState({ templates: [page], quarantine: [] });
     useDocumentStore.setState({ documents: [document], currentDocumentId: 'doc-md' });
-    return render(createElement(DeclarativeSheetView, { template }));
+    return render(createElement(DeclarativeSheetView, { template: page }));
 }
 
 const stored = () => useDocumentStore.getState().documents[0]?.templateValues.body;
@@ -163,5 +172,25 @@ describe('markdown field', () => {
             fireEvent.click(first!);
         });
         expect(stored()).toEqual({ text: '- [x] one\n- [x] two' });
+    });
+
+    it('folds read-only text on a brief, where its checklist still ticks', async () => {
+        mount({ text: '# Plan\n- [ ] one' }, brief);
+        expect(screen.queryByRole('button', { name: /Edit/ })).toBeNull();
+        expect(screen.queryByRole('heading', { name: 'Plan' })).toBeNull();
+        const toggle = screen.getByRole('button', { name: 'Show Body' });
+        expect(toggle.getAttribute('aria-expanded')).toBe('false');
+        fireEvent.click(toggle);
+        expect(screen.getByRole('heading', { name: 'Plan' })).toBeTruthy();
+        expect(screen.queryByRole('textbox')).toBeNull();
+        await act(async () => {
+            fireEvent.click(screen.getByRole('checkbox'));
+        });
+        expect(stored()).toEqual({ text: '# Plan\n- [x] one' });
+    });
+
+    it('starts an empty field on a brief folded too, never in edit mode', () => {
+        mount(undefined, brief);
+        expect(screen.queryByRole('textbox')).toBeNull();
     });
 });

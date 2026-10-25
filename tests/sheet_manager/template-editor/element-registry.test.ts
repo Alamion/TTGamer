@@ -66,18 +66,20 @@ describe('element registry (spec 025, US3)', () => {
         ).toBe('notes');
     });
 
-    it('offers group, field, list, and button in the "+" menu (a tracker is a field type)', () => {
+    it('offers group, field, markdown, list, and button in the "+" menu (a tracker is a field type)', () => {
         const offered = (place: { atRoot: boolean; brief: boolean }) =>
             PALETTE.filter((entry) => entry.offered?.(place) ?? true).map(({ key }) => key);
         expect(offered({ atRoot: true, brief: false })).toEqual([
             'group',
             'field',
+            'markdown',
             'list',
             'button',
         ]);
         expect(offered({ atRoot: false, brief: false })).toEqual([
             'group',
             'field',
+            'markdown',
             'list',
             'button',
         ]);
@@ -85,16 +87,23 @@ describe('element registry (spec 025, US3)', () => {
         expect(offered({ atRoot: true, brief: true })).toEqual([
             'brief',
             'field',
+            'markdown',
             'list',
             'button',
         ]);
-        expect(offered({ atRoot: false, brief: true })).toEqual(['field', 'list', 'button']);
+        expect(offered({ atRoot: false, brief: true })).toEqual([
+            'field',
+            'markdown',
+            'list',
+            'button',
+        ]);
         const build = (key: string, atRoot: boolean, brief = false) =>
             PALETTE.find((entry) => entry.key === key)!.build({ atRoot, brief }).type;
         expect(build('button', false)).toBe('button');
         expect(build('group', true)).toBe('section');
         expect(build('group', false)).toBe('group');
         expect(build('brief', true, true)).toBe('brief');
+        expect(build('markdown', false, true)).toBe('markdown');
     });
 
     it('fails the type check when a type has no entry', () => {
