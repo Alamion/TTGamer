@@ -32,7 +32,11 @@ note:
             ## Callouts
             > [!tip] An open callout
             > For anything you want to stand out.
+
             > [!spoiler]- A folded callout
             > Starts folded: open it when the players get there.
             ## Rolls
             Ambush: `dice: 6d10>=6`
+            ## Pictures
+            Paste a screenshot while editing, or press the picture button on the toolbar: it is stored on this device, and `![[its name]]` appears where the cursor was.
+            A web picture works by its HTTPS address: `![Map](https://…)`.

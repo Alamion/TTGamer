@@ -71,6 +71,33 @@ describe('blocks', () => {
         expect(plain).toMatchObject({ kind: 'warning', fold: null, title: [text('Warning')] });
     });
 
+    it('starts a new block at a callout header inside a quote, nested callouts stay inside', () => {
+        const parsed = parseMarkdown(
+            '> [!tip] Open\n> body\n> [!spoiler]- Folded\n> hidden\n> plain quote\n> [!note] After\n> > [!info] Nested'
+        );
+        expect(parsed.map(({ block, line }) => [block.type, line])).toEqual([
+            ['callout', 0],
+            ['callout', 2],
+            ['callout', 5],
+        ]);
+        expect(parsed[1]?.block).toMatchObject({
+            kind: 'spoiler',
+            fold: 'closed',
+            children: [
+                { type: 'paragraph', children: [text('hidden')] },
+                { type: 'paragraph', children: [text('plain quote')] },
+            ],
+        });
+        expect(parsed[2]?.block).toMatchObject({
+            kind: 'note',
+            children: [{ type: 'callout', kind: 'info' }],
+        });
+        expect(blocksOf('> a quote\n> [!warning] Then a callout').map(({ type }) => type)).toEqual([
+            'quote',
+            'callout',
+        ]);
+    });
+
     it('nests lists by indentation, keeps loose lists whole, and marks tasks with their line', () => {
         const [list] = blocksOf('- [ ] buy dice\n  - [x] d10s\n\n- second\n3. third');
         expect(list).toEqual({

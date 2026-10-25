@@ -185,11 +185,17 @@ function Inline({ node }: { node: MarkdownInline }) {
         }
         case 'link':
             return node.href.startsWith('#') ? (
-                <a href={node.href} title={node.title}>
+                <a href={node.href} title={node.title} className={LINK_CLASSES}>
                     <Inlines nodes={node.children} />
                 </a>
             ) : (
-                <a href={node.href} title={node.title} target="_blank" rel="noreferrer noopener">
+                <a
+                    href={node.href}
+                    title={node.title}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className={LINK_CLASSES}
+                >
                     <Inlines nodes={node.children} />
                 </a>
             );
@@ -201,7 +207,12 @@ function Inline({ node }: { node: MarkdownInline }) {
                 return (
                     <span className="text-textSecondary">
                         {translate(messages.insecureImage)}{' '}
-                        <a href={node.src} target="_blank" rel="noreferrer noopener">
+                        <a
+                            href={node.src}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className={LINK_CLASSES}
+                        >
                             {node.alt || node.src}
                         </a>
                     </span>
@@ -220,6 +231,9 @@ function Inline({ node }: { node: MarkdownInline }) {
             return <InertLink text={node.alias ?? node.target} title={node.target} />;
     }
 }
+
+const LINK_CLASSES =
+    'text-primary underline underline-offset-2 hover:text-primary-hover focus-visible:outline-1 focus-visible:outline-primary';
 
 /** A link that does nothing yet (spec 043 FR-010): looks like a link, reads as text. */
 function InertLink({ text, title }: { text: string; title?: string }) {

@@ -191,6 +191,10 @@ guidance.
   strings, most of it the example note's text, since `uiMessages` ships in the main chunk; the
   parser, view, and field are in the shared `common` chunk (349.5 KB gzip, +9.6), never in main. All
   JS 1,377.4 KB gzip (+11.2).
+- **Callout headers split quotes (maintainer review)**: a quoted `[!type]` line after other quoted
+  lines starts a new callout, since every line is its own paragraph and the maintainer expected it;
+  Obsidian joins such lines, so the guide asks for a blank line between callouts meant for a vault,
+  and the example note has one. Links in the view are colored and underlined.
 - **`minRows` → `rows`**: the editor's settings registry names a property once, and `minRows` is
   already a table's "Minimum rows" in the limits group; the field's starting height is `rows` under
   its look settings ("Starting height (lines)").

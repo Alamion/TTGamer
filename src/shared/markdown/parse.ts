@@ -462,7 +462,10 @@ function blocks(lines: readonly Line[]): MarkdownTopBlock[] {
             while (index < lines.length) {
                 const current = lines[index] ?? { text: '', line: 0 };
                 if (QUOTE.test(current.text)) {
-                    quoted.push({ ...current, text: current.text.replace(/^ {0,3}>[ \t]?/, '') });
+                    const text = current.text.replace(/^ {0,3}>[ \t]?/, '');
+                    // Every line is its own paragraph, so a callout header starts its own block.
+                    if (quoted.length > 0 && CALLOUT.test(text)) break;
+                    quoted.push({ ...current, text });
                 } else if (
                     // Lazy continuation: a plain line right after quoted text.
                     current.text.trim() !== '' &&
