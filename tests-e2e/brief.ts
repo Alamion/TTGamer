@@ -34,7 +34,9 @@ export async function showView(page: Page, view: 'sheet' | 'brief'): Promise<voi
 
 /** Measures the open view at the current window size; `areaWidth` narrows only the sheet root. */
 export async function measureView(page: Page, areaWidth?: number): Promise<ViewSize> {
-    return page.evaluate((width) => {
+    return page.evaluate(async (width) => {
+        // The test fonts (fixtures.ts) load after the page draws; measure in them, not before.
+        await document.fonts.ready;
         const root = document.querySelector<HTMLElement>('[data-template-root]')!;
         root.style.maxWidth = width ? `${width}px` : '';
         root.style.marginInline = width ? '0' : '';

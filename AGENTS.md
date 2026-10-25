@@ -253,9 +253,10 @@ This section owns the verification rules; other guidance links here.
 - **CI** runs every `ci:*` command on push and pull requests. Perf tests there are reported, not
   blocking, because shared runners are noisy.
 - **Browser tests** (`tests-e2e/`) serve `build/` on port 3100, never the dev server. A smoke test
-  fails on any uncaught or logged error and any failed request to the site. Browser timings print
-  next to their budgets and never fail a run. Locate controls by role and label, and wait for
-  states, never for fixed delays.
+  fails on any uncaught or logged error and any failed request to the site. Every page draws in the
+  fonts of `tests-e2e/fonts`, not the machine's, so pinned heights hold on any machine. Browser
+  timings print next to their budgets and never fail a run. Locate controls by role and label, and
+  wait for states, never for fixed delays.
 - **Test DOM**: component tests use `// @vitest-environment happy-dom`. A file uses `jsdom` only
   where happy-dom differs, and says why in the docblock (today: style colors read back as
   `rgb(...)`).
