@@ -80,4 +80,18 @@ describe('slots', () => {
         expect(screen.getByText('![[gone.png]]')).toBeTruthy();
         expect(onIssue).toHaveBeenCalledWith({ code: 'unknown-callout', kind: 'weird' });
     });
+
+    it('shows a picture that is not HTTPS as a link with the reason, and reports it', () => {
+        const onIssue = vi.fn();
+        render(<MarkdownView source="![Map](http://e.org/map.png)" onIssue={onIssue} />);
+        expect(screen.queryByRole('img')).toBeNull();
+        expect(screen.getByText(/Only HTTPS images load here/)).toBeTruthy();
+        expect(screen.getByRole('link', { name: 'Map' }).getAttribute('href')).toBe(
+            'http://e.org/map.png'
+        );
+        expect(onIssue).toHaveBeenCalledWith({
+            code: 'insecure-image',
+            src: 'http://e.org/map.png',
+        });
+    });
 });

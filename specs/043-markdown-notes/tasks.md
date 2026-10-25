@@ -128,16 +128,16 @@ because the editor's + menu and settings complete the element that rolls and ima
 **Check**: paste, pick, and an HTTPS image render after a reload; a removed reference frees the blob
 when the field is left, and undo before that keeps it.
 
-- [ ] T030 [US4] Write `tests/sheet_manager/markdown-images.test.ts` first: paste and pick store a
+- [x] T030 [US4] Write `tests/sheet_manager/markdown-images.test.ts` first: paste and pick store a
       blob, add `images[name]`, insert `![[name]]` at the cursor; names are unique; removing the
       reference keeps the entry until blur or unmount, then drops it and `deviceImageIdsOf` no
       longer lists the blob; undo before blur shows the image again; `http:` images render as a link
       with an explanation; over 100 images is refused with a status line
-- [ ] T031 [US4] Paste and file pick in `MarkdownFieldControl.tsx` through
+- [x] T031 [US4] Paste and file pick in `MarkdownFieldControl.tsx` through
       `persistence/portraitStorage.ts`, pruning of unreferenced names on blur and unmount (design
       D5), the `resolveEmbed` slot for `![[name]]` of the value's images (others stay inert,
       FR-010); T030 passes; storybook story with an image
-- [ ] T032 [US4] Run `yarn verify` (persistence) and commit the story
+- [x] T032 [US4] Run `yarn verify` (persistence) and commit the story
 
 ## User Story 6 - Markdown files in and out (P3)
 

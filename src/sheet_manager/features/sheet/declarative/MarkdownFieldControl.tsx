@@ -11,6 +11,7 @@ import {
     Bold,
     Check,
     ChevronRight,
+    ImagePlus,
     Italic,
     Link,
     ListChecks,
@@ -30,8 +31,10 @@ import {
 } from 'react';
 
 import { Splitter } from '../../../../shared/components/Splitter';
+import { randomToken } from '../../../../shared/utils/random';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
+import { deletePortrait, loadPortrait, savePortrait } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
@@ -45,6 +48,7 @@ import {
     toggleChecklist,
     wrapSelection,
 } from './markdownEdits';
+import { MARKDOWN_IMAGE_LIMITS, withImage, withoutUnusedImages } from './markdownImages';
 
 const messages = uiMessages.shared.markdown.editor;
 type MarkdownField = Extract<TemplateField, { type: 'markdown' }>;
@@ -100,16 +104,49 @@ const toolButton =
 const modeButton =
     'inline-flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs font-bold text-textSecondary hover:border-primary hover:text-primary focus:outline-hidden focus-visible:ring-1 focus-visible:ring-primary';
 
+/** Object URLs of a text's stored pictures by name; addresses of web pictures as they are. */
+function useImageUrls(images: TemplateMarkdownValue['images']): Readonly<Record<string, string>> {
+    const [urls, setUrls] = useState<Readonly<Record<string, string>>>({});
+    useEffect(() => {
+        let cancelled = false;
+        const created: string[] = [];
+        void (async () => {
+            const next: Record<string, string> = {};
+            for (const [name, image] of Object.entries(images ?? {})) {
+                if (image.source === 'url') {
+                    next[name] = image.url;
+                    continue;
+                }
+                const blob = await loadPortrait(image.blobId);
+                if (cancelled) return;
+                if (!blob) continue;
+                const url = URL.createObjectURL(blob);
+                created.push(url);
+                next[name] = url;
+            }
+            if (!cancelled) setUrls(next);
+        })();
+        return () => {
+            cancelled = true;
+            // The next set replaces these; revoking after a frame keeps the pictures from blinking.
+            requestAnimationFrame(() => created.forEach((url) => URL.revokeObjectURL(url)));
+        };
+    }, [images]);
+    return urls;
+}
+
 /** The brief look: the text behind a fold, read-only except its checklist (spec 043, US5). */
 function BriefMarkdown({
     label,
     text,
     renderCode,
+    resolveEmbed,
     onToggleTask,
 }: {
     label: string;
     text: string;
     renderCode: (code: string) => ReactNode;
+    resolveEmbed: (name: string) => string | undefined;
     onToggleTask?: (line: number) => void;
 }) {
     const [open, setOpen] = useState(false);
@@ -138,6 +175,7 @@ function BriefMarkdown({
                         <MarkdownView
                             source={text}
                             renderCode={renderCode}
+                            resolveEmbed={resolveEmbed}
                             onToggleTask={onToggleTask}
                             onIssue={reportIssue}
                             headingOffset={2}
@@ -189,6 +227,58 @@ export function MarkdownFieldControl({
         [current, onChange]
     );
 
+    // Pictures (spec 043, US4): the latest value and writer for async saves and the unmount prune.
+    const latest = useRef({ value: current, onChange });
+    useEffect(() => {
+        latest.current = { value: current, onChange };
+    });
+    const imageUrls = useImageUrls(current.images);
+    const resolveEmbed = useCallback((name: string) => imageUrls[name], [imageUrls]);
+    const [imageStatus, setImageStatus] = useState<string | undefined>();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const addImages = async (files: readonly File[]) => {
+        let at = textareaRef.current?.selectionStart ?? latest.current.value.text.length;
+        for (const file of files) {
+            let blobId: string;
+            try {
+                blobId = await savePortrait(file, MARKDOWN_IMAGE_LIMITS);
+            } catch (error) {
+                setImageStatus(translate(messages.imageFailed));
+                reportSheetIssue({
+                    code: 'markdown-image-rejected',
+                    message: 'A picture could not be stored with a markdown text',
+                    details: { type: file.type, size: file.size, error: String(error) },
+                });
+                continue;
+            }
+            const wanted = file.name || `paste-${randomToken(6)}.png`;
+            const next = withImage(latest.current.value, at, wanted, { source: 'device', blobId });
+            if (!next) {
+                setImageStatus(
+                    translate(messages.imagesFull, {
+                        max: TEMPLATE_VALUES_LIMITS.markdownImagesMax,
+                    })
+                );
+                void deletePortrait(blobId);
+                break;
+            }
+            setImageStatus(undefined);
+            at += next.text.length - latest.current.value.text.length;
+            latest.current.value = next;
+            latest.current.onChange(next);
+        }
+    };
+
+    // A picture whose reference is gone is freed once the text is left, so undo can bring it back.
+    const pruneImages = useCallback(() => {
+        const next = withoutUnusedImages(latest.current.value);
+        if (!next) return;
+        latest.current.value = next;
+        latest.current.onChange(next);
+    }, []);
+    useEffect(() => () => pruneImages(), [pruneImages]);
+
     const toggleTask = useCallback(
         (line: number) => writeText(toggleTaskLine(text, line)),
         [text, writeText]
@@ -210,6 +300,8 @@ export function MarkdownFieldControl({
     };
 
     const setReading = () => {
+        // The text field goes away without a blur event: free unused pictures here too.
+        pruneImages();
         setMode('read');
         requestAnimationFrame(() => editButtonRef.current?.focus());
     };
@@ -289,6 +381,7 @@ export function MarkdownFieldControl({
         <MarkdownView
             source={editing ? deferredText : text}
             renderCode={renderCode}
+            resolveEmbed={resolveEmbed}
             onToggleTask={disabled ? undefined : toggleTask}
             onIssue={reportIssue}
         />
@@ -299,6 +392,15 @@ export function MarkdownFieldControl({
             ref={textareaRef}
             value={text}
             onChange={(event) => writeText(event.target.value)}
+            onBlur={pruneImages}
+            onPaste={(event) => {
+                const files = [...event.clipboardData.files].filter(({ type }) =>
+                    type.startsWith('image/')
+                );
+                if (files.length === 0) return;
+                event.preventDefault();
+                void addImages(files);
+            }}
             maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
             rows={own.rows}
             aria-label={own.label}
@@ -318,6 +420,7 @@ export function MarkdownFieldControl({
                 label={own.label}
                 text={text}
                 renderCode={renderCode}
+                resolveEmbed={resolveEmbed}
                 onToggleTask={disabled ? undefined : toggleTask}
             />
         );
@@ -354,6 +457,29 @@ export function MarkdownFieldControl({
                                         <Icon className="h-4 w-4" aria-hidden />
                                     </button>
                                 ))}
+                                <button
+                                    type="button"
+                                    className={toolButton}
+                                    aria-label={translate(messages.image)}
+                                    title={translate(messages.image)}
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <ImagePlus className="h-4 w-4" aria-hidden />
+                                </button>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    hidden
+                                    aria-label={translate(messages.image)}
+                                    onChange={(event) => {
+                                        const files = [...(event.target.files ?? [])];
+                                        event.target.value = '';
+                                        void addImages(files);
+                                    }}
+                                />
                             </div>
                             {!split && (
                                 <div className="flex items-center gap-1" role="group">
@@ -435,6 +561,11 @@ export function MarkdownFieldControl({
                 <p className="text-sm text-textSecondary">{translate(messages.empty)}</p>
             ) : (
                 preview
+            )}
+            {imageStatus && (
+                <p role="status" className="text-xs text-warning">
+                    {imageStatus}
+                </p>
             )}
             {editing && full && (
                 <p role="status" className="text-xs text-warning">

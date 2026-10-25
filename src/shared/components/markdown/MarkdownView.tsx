@@ -200,7 +200,10 @@ function Inline({ node }: { node: MarkdownInline }) {
             if (/^http:/i.test(node.src)) {
                 return (
                     <span className="text-textSecondary">
-                        {translate(messages.insecureImage, { url: node.src })}
+                        {translate(messages.insecureImage)}{' '}
+                        <a href={node.src} target="_blank" rel="noreferrer noopener">
+                            {node.alt || node.src}
+                        </a>
                     </span>
                 );
             }

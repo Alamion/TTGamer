@@ -214,3 +214,8 @@ guidance.
   transaction per keystroke made the backlog longer. A reload within milliseconds of the last
   keystroke can still lose it, as on any page that saves asynchronously, so the smoke test waits for
   the record before reloading.
+- **Pictures (US4)**: `savePortrait` takes optional limits; pictures in a markdown text are stored
+  up to 2,048 px on the long edge and 1.5 MB (a portrait stays 768 px and 512 KB), sharing the 50 MB
+  quota. Unused pictures are freed on blur, when editing ends with Done or Esc (the text field goes
+  away without a blur event), and on unmount. A picture that is not HTTPS shows as a link after a
+  short reason.

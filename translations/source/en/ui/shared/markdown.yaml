@@ -1,5 +1,5 @@
 view:
-    insecureImage: 'Only HTTPS images load here: {url}'
+    insecureImage: 'Only HTTPS images load here:'
     unresolvedEmbed: Not linked yet
     unfold: Show {title}
     fold: Hide {title}
@@ -13,6 +13,9 @@ editor:
     italic: Italic (Ctrl+I)
     link: Link (Ctrl+K)
     checklist: Checklist item (Ctrl+L)
+    image: Image
+    imageFailed: This image could not be added.
+    imagesFull: 'A text holds at most {max} images.'
     callout: Callout
     foldedCallout: Folded callout
     calloutTitle: Title

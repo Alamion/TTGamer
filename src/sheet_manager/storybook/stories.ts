@@ -1281,6 +1281,7 @@ const MARKDOWN_SAMPLE = [
     '> Two guards, one ~~asleep~~ awake.',
     '`inline code`, [a link](https://example.org), and [[Ines Ruiz]] (a link to come).',
     'Ambush: `dice: 6d10>=6`',
+    '![[logo.svg]]',
 ].join('\n');
 
 const markdown = story(
@@ -1294,7 +1295,12 @@ const markdown = story(
         { id: 'markdown-invalid-roll', type: 'markdown', label: 'Error: not a roll', rows: 4 },
     ],
     {
-        'markdown-showcase': { text: MARKDOWN_SAMPLE },
+        'markdown-showcase': {
+            text: MARKDOWN_SAMPLE,
+            images: {
+                'logo.svg': { source: 'url', url: 'https://ttgamer.vercel.app/img/logo.svg' },
+            },
+        },
         'markdown-invalid-roll': {
             text: 'The `dice: 6q` code stays code, with the reason on hover.',
         },

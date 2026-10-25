@@ -1,5 +1,5 @@
 view:
-    insecureImage: 'Здесь загружаются только картинки по HTTPS: {url}'
+    insecureImage: 'Здесь загружаются только картинки по HTTPS:'
     unresolvedEmbed: Пока ни с чем не связано
     unfold: Показать «{title}»
     fold: Скрыть «{title}»
@@ -13,6 +13,9 @@ editor:
     italic: Курсив (Ctrl+I)
     link: Ссылка (Ctrl+K)
     checklist: Пункт чек-листа (Ctrl+L)
+    image: Картинка
+    imageFailed: Не удалось добавить эту картинку.
+    imagesFull: 'В тексте может быть не больше {max} картинок.'
     callout: Выноска
     foldedCallout: Свёрнутая выноска
     calloutTitle: Заголовок

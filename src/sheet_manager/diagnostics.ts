@@ -67,7 +67,9 @@ export type SheetIssueCode =
     /** Markdown shown in a fallback look: an unknown callout type, a non-HTTPS image (spec 043). */
     | 'markdown-render-issue'
     /** A `dice:` code in a markdown text is not valid notation; it shows as code (spec 043). */
-    | 'markdown-roll-invalid';
+    | 'markdown-roll-invalid'
+    /** A picture could not be stored with a markdown text (not an image, too large, quota). */
+    | 'markdown-image-rejected';
 
 export interface SheetIssue {
     code: SheetIssueCode;

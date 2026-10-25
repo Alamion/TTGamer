@@ -59,13 +59,21 @@ function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob>
     });
 }
 
-async function compressPortrait(file: File): Promise<Blob> {
+/** How large a stored picture may be: a portrait by default, a map in a markdown text (spec 043). */
+export interface ImageLimits {
+    maxEdge: number;
+    maxBytes: number;
+}
+
+const PORTRAIT_LIMITS: ImageLimits = { maxEdge: MAX_EDGE, maxBytes: MAX_PORTRAIT_BYTES };
+
+async function compressPortrait(file: File, limits: ImageLimits): Promise<Blob> {
     if (!file.type.startsWith('image/')) throw new Error('Select an image file.');
     if (file.size > MAX_SOURCE_BYTES) throw new Error('Portrait source must be 10 MB or smaller.');
 
     const image = await decodeImage(file);
     try {
-        const initialScale = Math.min(1, MAX_EDGE / Math.max(image.width, image.height));
+        const initialScale = Math.min(1, limits.maxEdge / Math.max(image.width, image.height));
         let width = Math.max(1, Math.round(image.width * initialScale));
         let height = Math.max(1, Math.round(image.height * initialScale));
 
@@ -79,7 +87,7 @@ async function compressPortrait(file: File): Promise<Blob> {
 
             for (const quality of [0.82, 0.68, 0.54]) {
                 const blob = await canvasToBlob(canvas, quality);
-                if (blob.size <= MAX_PORTRAIT_BYTES) return blob;
+                if (blob.size <= limits.maxBytes) return blob;
             }
 
             width = Math.max(1, Math.round(width * 0.75));
@@ -89,11 +97,16 @@ async function compressPortrait(file: File): Promise<Blob> {
         image.close();
     }
 
-    throw new Error('Portrait could not be compressed below 512 KB.');
+    throw new Error(
+        `Image could not be compressed below ${Math.round(limits.maxBytes / 1024)} KB.`
+    );
 }
 
-export async function savePortrait(file: File): Promise<string> {
-    const blob = await compressPortrait(file);
+export async function savePortrait(
+    file: File,
+    limits: ImageLimits = PORTRAIT_LIMITS
+): Promise<string> {
+    const blob = await compressPortrait(file, limits);
     const store = await getStore();
     const keys = await store.keys();
     let usedBytes = 0;
