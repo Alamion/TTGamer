@@ -61,8 +61,8 @@ rendered note in reading mode.
    typed, like other fields.
 3. **Given** lines typed one under another without blank lines, **When** they render, **Then** each
    line is its own paragraph.
-4. **Given** a saved note, **When** it is opened again, **Then** it shows in reading mode, and one
-   action (a button, or a keyboard shortcut) switches to editing and back.
+4. **Given** a saved note, **When** it is opened again, **Then** it shows in reading mode; the Edit
+   button or Ctrl/Cmd+E switches to editing, and the Done button, Ctrl/Cmd+E, or Esc switches back.
 5. **Given** a phone-width pane, **When** the GM edits, **Then** source and result are one view at a
    time with a toggle between them, not two cramped columns.
 6. **Given** selected text in edit mode, **When** the GM presses the bold shortcut or a toolbar
@@ -126,15 +126,18 @@ was. A web image by its HTTPS address works too.
 **Why this priority**: maps and portraits are a large part of prep material.
 
 **Independent Test**: paste an image, pick a file, and write an HTTPS image; reload; all three
-render; deleting the reference and leaving the note frees the stored image.
+render; deleting the reference and leaving the text field frees the stored image, while undo before
+that brings the image back.
 
 **Acceptance Scenarios**:
 
 1. **Given** edit mode, **When** the GM pastes or picks an image, **Then** it is stored on the
    device with the note and a reference is inserted at the cursor.
-2. **Given** a stored image that no line of the note references any more, **When** the note is
-   saved, **Then** the image is deleted, as with other document images.
-3. **Given** an image address that is not HTTPS, **When** the note renders, **Then** it shows as a
+2. **Given** a stored image that no line of the note references any more, **When** the text field
+   loses focus or closes, **Then** the image is deleted, as with other document images.
+3. **Given** a deleted image line, **When** the GM undoes the deletion before leaving the field,
+   **Then** the image shows again.
+4. **Given** an image address that is not HTTPS, **When** the note renders, **Then** it shows as a
    plain link with an explanation instead of loading.
 
 ---
@@ -213,9 +216,11 @@ same body byte for byte, unknown front matter keys kept.
   by pointer and keyboard and expose their expanded state. They are the only spoiler form: `||…||`
   renders as literal text.
 - **FR-005**: Task list checkboxes MUST be toggleable in reading mode, writing the change into the
-  text.
-- **FR-006**: Reading mode MUST be the default when a note opens; editing MUST show source and
-  result side by side when the pane is wide enough and as a toggle when it is not.
+  text; this includes the read-only look on a brief, since ticking changes the value, not the text
+  around it.
+- **FR-006**: Reading mode MUST be the default when a note opens, except a newly created empty note,
+  which opens in edit mode; editing MUST show source and result side by side when the pane is wide
+  enough and as a toggle when it is not.
 - **FR-006a**: The source editor MUST be a plain text field with keyboard shortcuts for bold,
   italic, link, and checklist, and a toolbar of labelled, keyboard-reachable buttons for those plus
   a callout and a folded callout; it MUST NOT add syntax highlighting in this slice.
@@ -223,7 +228,8 @@ same body byte for byte, unknown front matter keys kept.
   dice flow, with the note as the roll's source; invalid notation MUST stay as text with the
   parser's message.
 - **FR-008**: Pasted or picked images MUST be stored on the device with the document and freed when
-  no longer referenced; external images MUST be HTTPS only.
+  no longer referenced once the text field loses focus or closes (so undo while editing keeps them);
+  external images MUST be HTTPS only.
 - **FR-009**: Raw HTML MUST never be interpreted; the renderer's output MUST be safe for any input.
 - **FR-010**: `[[…]]` and `![[…]]` MUST round-trip unchanged. `![[name]]` naming an image stored
   with the same document renders that image (the form pasted images are inserted in); every other
@@ -248,8 +254,8 @@ same body byte for byte, unknown front matter keys kept.
 
 - **SC-001**: A GM new to the site creates a note and writes a heading, a list, and a folded callout
   in under two minutes using only the guide page.
-- **SC-002**: While typing in a 20,000-word note, the rendered result keeps up with typing with no
-  pause a user notices.
+- **SC-002**: While typing in a 20,000-word note, typing is never blocked, and the rendered result
+  catches up within 200 ms of a pause in typing on a note at the 300,000-character limit.
 - **SC-003**: Export followed by import gives back the same body text for 100% of the syntax
   examples on the guide page.
 - **SC-004**: With 3,000 notes stored, the documents window opens and searches by name as fast as it
@@ -261,7 +267,8 @@ same body byte for byte, unknown front matter keys kept.
 
 - A Note carries no publisher notice, since it uses no publisher material (FR-002).
 - The composition rule for shipped pages (sections → cards → fields) governs character sheets; the
-  Note page is one markdown element and is exempt by its shape, not by an exception list.
+  Note page (a name field and one markdown element) is exempt by its shape, not by an exception
+  list.
 - Inline roll syntax `` `dice: …` `` follows the Obsidian Dice Roller plugin, so vault notes roll as
   they are.
 - The size limit per markdown value is 300,000 characters and 100 images (design D6).

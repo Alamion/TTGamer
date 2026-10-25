@@ -24,12 +24,15 @@ guidance.
   (heading, paragraph line, rule, code, quote, callout with `fold: 'open' | 'closed' | null`, list
   with task items and their source line, table) and inlines (text, emphasis, strong, highlight,
   code, link, autolink, wikilink, embed). `shared/components/markdown/MarkdownView.tsx` renders it
-  with slots: `renderCode(code)` and `resolveEmbed(name)`, `onToggleTask(line)`. _Why_: the syntax
-  is non-standard (every line a paragraph, Obsidian callouts and embeds), the interactive parts need
-  React nodes, and the project already hand-writes its dice parser. _Rejected_: markdown-it /
-  micromark with plugins — a client dependency of 30–100 KB plus three plugins to reach the same
-  syntax; rendering the Workspace HTML string with `dangerouslySetInnerHTML` — no place for React
-  controls and one escape bug from an XSS.
+  with slots: `renderCode(code)`, `resolveEmbed(name)`, `onToggleTask(line)`, `onIssue(issue)`.
+  Callout colors map each type to an existing palette token (note/info → hologram blue, tip/success
+  → jedi green, warning/spoiler → droid gold, danger/bug → primary, others neutral); no new token,
+  so the storybook's palette page is unchanged. _Why_: the syntax is non-standard (every line a
+  paragraph, Obsidian callouts and embeds), the interactive parts need React nodes, and the project
+  already hand-writes its dice parser. _Rejected_: markdown-it / micromark with plugins — a client
+  dependency of 30–100 KB plus three plugins to reach the same syntax; rendering the Workspace HTML
+  string with `dangerouslySetInnerHTML` — no place for React controls and one escape bug from an
+  XSS.
 - **D2 — A new field type `markdown`**, not a `format` option on `text`. _Why_: its value has
   another shape (`{ text, images }`, D5), another size limit (D6), another editor and renderer; as
   an option every text code path would branch on it. Switching the type in the editor converts
@@ -52,16 +55,19 @@ guidance.
   and key order would change on the round trip.
 - **D5 — Markdown value `{ text: string, images?: Record<name, ImageValue> }`**: pasted or picked
   images are stored with `portraitStorage` and named `paste-<randomToken>.png` (or the file name,
-  made unique); the text gets `![[name]]`. On every write the control drops `images` entries whose
-  name no `![[…]]` of the text mentions; `deviceImageIdsOf` already walks nested values, so the
-  existing write path frees the blobs. HTTPS URL images stay plain `![alt](url)`. _Rejected_: images
-  as separate page values — the name→blob link would live outside the field and leak on copy and
-  type change.
+  made unique); the text gets `![[name]]`. When the textarea loses focus or the control unmounts, it
+  drops `images` entries whose name no `![[…]]` of the text mentions; `deviceImageIdsOf` already
+  walks nested values, so the existing write path frees the blobs. HTTPS URL images stay plain
+  `![alt](url)`. _Rejected_: pruning on every write — undo of a deleted image line would bring back
+  a reference to a freed blob; images as separate page values — the name→blob link would live
+  outside the field and leak on copy and type change.
 - **D6 — Limits**: markdown text ≤ 300,000 characters (≈ 45,000 words; the spec's 20,000-word case
   fits twice); ≤ 100 images per value. At the limit the textarea stops taking input and a
   `role="status"` line says the note is full. _Why_: a record is written whole per change
   (`recordWriter`); 300 K characters keep a write well under a frame (measured in the perf test).
-- **D7 — Editing view**: reading mode by default per pane (state not stored). Edit mode: a
+- **D7 — Editing view**: reading mode by default per pane (state not stored); a new empty note opens
+  in edit mode. Edit/Done buttons and Ctrl/Cmd+E switch modes (Obsidian's toggle key), Esc leaves
+  edit mode. A brief shows the field read-only and folded; its checkboxes still tick. Edit mode: a
   `Splitter` with textarea and preview when the field is ≥ 720 px wide (ResizeObserver), else a
   source/result toggle. The preview renders `useDeferredValue(text)` and memoizes blocks by their
   source text, so typing stays responsive in long notes. Shortcuts: Ctrl/Cmd+B, I, K, and Ctrl/Cmd+L
@@ -73,13 +79,13 @@ guidance.
   calls `useSheetDiceActions({ characterName: note title, rollSource })` → `rollImmediately`.
   Invalid notation keeps the code with the diagnostic in its `title` and `aria-describedby`.
   _Rejected_: the docs' `InlineRoll` — it rolls locally without history or sharing.
-- **D9 — Markdown files**: the toolbar's Export of a document whose page is the Note writes `.md`
-  (no images) or `.zip` (`note.md` + `images/`); Import accepts `.md` and `.zip` beside `.json`.
-  `yaml` (moved to dependencies) and `fflate` (direct dependency; today only transitive) load with
-  `import()` on these actions only. Front matter: `title` is owned; everything else stays in
-  `frontMatter` via `parseDocument` / `toString`. Failures join the existing rejected-files list.
-  _Rejected_: a hand-written zip reader — zip64, data descriptors, and deflate variants from other
-  tools are where hand-written readers break.
+- **D9 — Markdown files**: the toolbar's Export of a document of the Note kind (`general/note`, by
+  definition, whatever page shows it) writes `.md` (no images) or `.zip` (`note.md` + `images/`);
+  Import accepts `.md` and `.zip` beside `.json`. `yaml` (moved to dependencies) and `fflate`
+  (direct dependency; today only transitive) load with `import()` on these actions only. Front
+  matter: `title` is owned; everything else stays in `frontMatter` via `parseDocument` / `toString`.
+  Failures join the existing rejected-files list. _Rejected_: a hand-written zip reader — zip64,
+  data descriptors, and deflate variants from other tools are where hand-written readers break.
 
 ## Changed types and data
 
@@ -107,10 +113,13 @@ guidance.
   hostile corpus test guards it (SC-005).
 - VI: the storybook gets the field (reading, editing, folded and open callouts, roll, invalid roll,
   image, full note); callout titles are buttons with `aria-expanded`; toolbar buttons are labelled.
-  The composition test gains one shape rule — a full page whose content is one growing element is a
-  document page, not a sheet — instead of an exception list entry.
+  The base stories ship with US1, the first story that commits the element. The composition test
+  gains one shape rule — a full page whose only growing element is one markdown field, with at most
+  a name field beside it, is a document page, not a sheet — instead of an exception list entry.
 - VII: `yaml`/`fflate` are lazy; the renderer is part of the sheet chunk only; 300 K limit and
-  deferred preview (D6, D7); `yarn verify:full` for the dependency change.
+  deferred preview (D6, D7). The new shared component and the dependencies are gated by
+  `yarn verify:full` and a bundle check: the sheet chunk's size before and after the parser and
+  view, and `yaml`/`fflate` in chunks of their own, recorded under "Implementation notes".
 
 ## Tests
 
@@ -119,16 +128,18 @@ guidance.
 - `tests/shared/markdown/safety.test.ts`: hostile HTML and `javascript:`/`data:` links render inert.
 - `tests/shared/markdown/MarkdownView.test.tsx`: folding by click and keyboard with `aria-expanded`,
   task toggle reports the right line, slots called.
-- `tests/shared/markdown/MarkdownView.perf.test.tsx`: parse + render of a 300 K note against a
-  same-run baseline.
+- `tests/shared/markdown/MarkdownView.perf.test.tsx`: parse + render of a 300 K note within 200 ms
+  (best of several warm runs) and within a bound of the same-run 30 K baseline (SC-002).
 - `tests/sheet_manager/markdown-field.test.tsx`: edit/read toggle, wide split vs narrow toggle,
   shortcuts wrap the selection, limit status, value write and coercion from text.
 - `tests/sheet_manager/markdown-images.test.ts`: paste stores and inserts `![[name]]`; removing the
-  reference prunes `images` and frees the blob.
+  reference prunes `images` and frees the blob on blur or unmount, not before; undo before blur
+  keeps the image.
 - `tests/integrations/note-rolls.test.tsx`: `dice:` rolls with the note as source; invalid stays
   text with the diagnostic.
 - `tests/sheet_manager/systems/general/*.test.ts`: definition parse, page, create choice in its own
-  group, filter label, user setting on General offers the Note.
+  group, filter label, the library node of General reads well (no empty "Rules only" heading), user
+  setting on General offers the Note.
 - `tests/sheet_manager/note-files.test.ts`: `.md` and `.zip` export → import round trip (body
   byte-exact, foreign front matter kept, images restored), oversize and broken files rejected.
 - Existing: `shipped-parity`, `page-composition` (new shape rule), `storybook`, `docs-embeds`.
@@ -139,12 +150,16 @@ guidance.
 1. New → search "note" → Note under General → empty note in edit mode, cursor in the text.
 2. Type the guide's syntax sample on a wide pane → preview beside it follows; narrow the pane →
    toggle replaces the split.
-3. Reload → reading mode; folded callout folded; click and Enter unfold it.
+3. Reload → reading mode; folded callout folded; click and Enter unfold it; Ctrl/Cmd+E edits, Esc
+   returns.
 4. Tick a checklist item in reading mode → the source shows `[x]`.
 5. `` `dice: 6d10>=6` `` → roll lands in history named after the note; `` `dice: 6q` `` stays text
    with the reason on hover.
-6. Paste a screenshot → image appears; delete its line, leave the note → stored image is gone.
+6. Paste a screenshot → image appears; delete its line, Ctrl/Cmd+Z → image back; delete it again and
+   click outside the text → stored image is gone.
 7. Export → `.zip` with `note.md` + `images/`; unpack into an Obsidian vault → note and image show;
    import the zip → identical note.
 8. Template editor on a user type → + Markdown → write in a document of that type.
 9. Documents window filter by system → "General" lists the notes.
+10. Library → General shows the Note page and lets a setting be created on it, with headings that
+    make sense for a ruleset without rules.
