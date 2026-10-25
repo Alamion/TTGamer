@@ -62,11 +62,13 @@ function equipment(): TemplateNode {
             collapsible: true,
         });
     return equipmentSection(
-        [
-            gear('inventory', 'Inventory', 'equipment:inventory'),
-            gear('weapons', 'Weapons', 'equipment:weapons'),
-            gear('armor', 'Armor', 'equipment:armor'),
-        ],
+        {
+            first: [
+                gear('weapons', 'Weapons', 'equipment:weapons'),
+                gear('armor', 'Armor', 'equipment:armor'),
+            ],
+            second: [gear('inventory', 'Inventory', 'equipment:inventory')],
+        },
         undefined
     );
 }
@@ -169,6 +171,7 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Appearance: sheet.base.appearance,
     Biography: sheet.base.biography,
     Portrait: defaults.portrait,
+    'Show portrait': defaults.showPortrait,
     Attributes: documentFields.attributes,
     Abilities: documentFields.abilities,
     Physical: defaults.physical,

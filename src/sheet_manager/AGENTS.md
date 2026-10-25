@@ -430,6 +430,11 @@ duplicate template facts here. Invariants that must never be broken:
 - Icon-only actions require accessible labels.
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.
+- Character pages (every shipped character and Storyteller character, not the V5 group's emblem)
+  show the portrait card only while `field:show-portrait` is on (`PORTRAIT_SHOWN`,
+  `systems/portraitBinding.ts`): `metadata.showPortrait`, read as "has a portrait" while unset so
+  older documents keep theirs; taking an image sets it. The switch sits in Appearance (WoD 2e
+  engine), the biography (V5), or the identity card (Storyteller character).
 - Portrait URLs accept only HTTPS or site-relative resources and must use
   `referrerPolicy="no-referrer"`. Local portraits are resized, quota-bounded IndexedDB blobs; never
   put image data URLs or blob contents in Zustand/localStorage JSON.

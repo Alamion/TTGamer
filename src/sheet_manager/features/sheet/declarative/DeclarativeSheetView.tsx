@@ -947,11 +947,41 @@ function ChildrenGrid({
         return <div className={AREA_FLOW}>{children}</div>;
     }
     if (columns && columns > 1 && stacked) {
-        const stacks = Array.from({ length: columns }, (_, columnIndex) =>
+        const placed = Array.from({ length: columns }, (_, columnIndex) =>
             nodes
                 .map((node, index) => ({ node, index }))
                 .filter(({ node }) => Math.min(node.column ?? 1, columns) === columnIndex + 1)
         );
+        // On the page, a column whose elements are all hidden gives its width to the others.
+        const hidden = (node: TemplateNode) =>
+            node.visibleWhen !== undefined && !pageApi.isVisible(node.visibleWhen, node.id);
+        const kept = overlay
+            ? placed.map((_, columnIndex) => columnIndex)
+            : placed.flatMap((stack, columnIndex) =>
+                  stack.length > 0 && stack.every(({ node }) => hidden(node)) ? [] : [columnIndex]
+              );
+        if (kept.length < columns) {
+            return (
+                <ChildrenGrid
+                    parentId={parentId}
+                    nodes={kept.flatMap((columnIndex) =>
+                        placed[columnIndex]!.map(({ node }) => ({
+                            ...node,
+                            column: kept.indexOf(columnIndex) + 1,
+                        }))
+                    )}
+                    pageApi={pageApi}
+                    columns={kept.length}
+                    columnWidths={
+                        columnWidths?.length === columns
+                            ? kept.map((columnIndex) => columnWidths[columnIndex]!)
+                            : undefined
+                    }
+                    area={area}
+                />
+            );
+        }
+        const stacks = placed;
         return (
             <div
                 className={

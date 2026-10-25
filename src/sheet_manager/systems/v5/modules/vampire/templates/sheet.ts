@@ -10,6 +10,7 @@ import {
     TEMPLATE_SCHEMA_VERSION,
     type TemplateField,
 } from '../../../../../types/template';
+import { PORTRAIT_SHOWN } from '../../../../portraitBinding';
 import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
@@ -96,7 +97,7 @@ function vampireSection(): SectionNode {
         'vampire',
         vampire.sections.vampire.message,
         undefined,
-        [portraitGroup(1), vampireIdentityGroup({ column: 2 }), biographyGroup(2)],
+        [portraitGroup(1, PORTRAIT_SHOWN), vampireIdentityGroup({ column: 2 }), biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.vampire }
     );
 }

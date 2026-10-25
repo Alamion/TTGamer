@@ -29,6 +29,7 @@ import { V5_ATTRIBUTE_GROUPS, V5_SKILL_GROUPS, type V5TraitGroup } from './profi
  */
 
 const v5 = uiMessages.sheet.v5;
+const defaults = uiMessages.sheet.templates.defaults;
 
 type Message = { id: string; message: string };
 
@@ -125,11 +126,22 @@ const PORTRAIT: TemplateField = {
     hideLabel: true,
 };
 
-export function portraitGroup(column: number): GroupNode {
+/** A character's portrait shows while its switch is on (`PORTRAIT_SHOWN`); a group's always. */
+export function portraitGroup(column: number, visibleWhen?: VisibleWhen): GroupNode {
     return group('portrait', v5.sections.portrait.message, [PORTRAIT], {
         column,
         collapsible: true,
         labelMessage: v5.sections.portrait,
+        visibleWhen,
+    });
+}
+
+/** The switch that shows a character's portrait card. */
+export function showPortraitToggle(options: { column?: number } = {}) {
+    return primitive('show-portrait', 'field:show-portrait', {
+        label: defaults.showPortrait.message,
+        labelMessage: defaults.showPortrait,
+        ...options,
     });
 }
 
@@ -157,6 +169,7 @@ export function biographyGroup(column: number): GroupNode {
                 multiline: true,
                 column: 1,
             }),
+            showPortraitToggle({ column: 2 }),
         ],
         { column, columns: 2, defaultCollapsed: true, labelMessage: v5.sections.biography }
     );

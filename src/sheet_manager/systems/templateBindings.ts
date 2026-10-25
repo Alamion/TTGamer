@@ -241,15 +241,20 @@ export function readDataPath(data: unknown, path: readonly string[]): unknown {
     return current;
 }
 
+/** A field binding's value: through its adapter, or at its path. */
+export const readFieldBinding = (binding: FieldBinding, data: unknown): unknown =>
+    binding.adapter ? binding.adapter.read(data) : readDataPath(data, binding.path);
+
 /**
  * The top-level update (`{ [path[0]]: nextRecord }`) that writes `value` at a field binding's
- * path, preserving sibling keys and applying the binding's `constrain`.
+ * path, preserving sibling keys and applying the binding's `constrain`; an adapter writes its own.
  */
 export function fieldBindingUpdate(
     binding: FieldBinding,
     data: unknown,
     value: unknown
 ): Record<string, unknown> {
+    if (binding.adapter) return binding.adapter.update(data, value);
     const [head, ...rest] = binding.path;
     if (!head) return {};
     const setIn = (current: unknown, keys: readonly string[]): unknown => {

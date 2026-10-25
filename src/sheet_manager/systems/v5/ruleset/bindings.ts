@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { portraitFieldBinding } from '../../portraitBinding';
+import { portraitFieldBinding, showPortraitFieldBinding } from '../../portraitBinding';
 import type {
     DocumentBindingDescriptor,
     FieldBinding,
@@ -172,6 +172,7 @@ export function buildV5CoreBindings(
             v5.fields.chronicleTenets.message
         ),
         portraitFieldBinding(documentKinds),
+        showPortraitFieldBinding(documentKinds),
         {
             key: 'equipment:weapons',
             kind: 'equipment',

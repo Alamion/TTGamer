@@ -15,6 +15,7 @@ import type {
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
+import { PORTRAIT_SHOWN } from '../../portraitBinding';
 import { dotsTrait as trait } from '../../wod-like/templateBuilders';
 
 /**
@@ -124,7 +125,10 @@ export const APPEARANCE_FIELDS: ReadonlyArray<[valueKey: string, label: string]>
 export const textFields = (fields: ReadonlyArray<[string, string]>, compact = false) =>
     fields.map(([key, label]) => text(`field-${key}`, label, key, { compact }));
 
-/** Portrait, identity (three columns), appearance, and biography. */
+/**
+ * Portrait, identity (three columns), appearance, and biography. The portrait shows while the
+ * Appearance card's switch is on; without it the other cards take the whole width.
+ */
 export function baseSection(
     docsPath: string | undefined,
     identityFields: ReadonlyArray<[string, string]>
@@ -137,17 +141,24 @@ export function baseSection(
             group('base-portrait', 'Portrait', [{ ...PORTRAIT, hideLabel: true }], {
                 column: 1,
                 collapsible: true,
+                visibleWhen: PORTRAIT_SHOWN,
             }),
             group('identity-fields', 'Identity', textFields(identityFields), {
                 column: 2,
                 columns: 3,
                 hideTitle: true,
             }),
-            group('base-appearance', 'Appearance', textFields(APPEARANCE_FIELDS), {
-                column: 2,
-                columns: 3,
-                collapsible: true,
-            }),
+            group(
+                'base-appearance',
+                'Appearance',
+                [
+                    ...textFields(APPEARANCE_FIELDS),
+                    primitive('field-show-portrait', 'field:show-portrait', {
+                        label: 'Show portrait',
+                    }),
+                ],
+                { column: 2, columns: 3, collapsible: true, defaultCollapsed: true }
+            ),
             group(
                 'base-biography',
                 'Biography',
@@ -158,7 +169,7 @@ export function baseSection(
                         placeholder: 'Character biography...',
                     }),
                 ],
-                { column: 2, collapsible: true }
+                { column: 2, collapsible: true, defaultCollapsed: true }
             ),
         ],
         2
@@ -284,13 +295,22 @@ export function conditionSection(
     );
 }
 
-/** A character's gear lists, each folding, in two columns (spec 042). */
-export function equipmentSection(gear: GroupNode[], docsPath: string | undefined): SectionNode {
+/**
+ * A character's gear lists, each folding (spec 042): what is worn and wielded in the first column,
+ * what is carried and anything else in the second.
+ */
+export function equipmentSection(
+    gear: { first: GroupNode[]; second: GroupNode[] },
+    docsPath: string | undefined
+): SectionNode {
     return wodSection(
         'body',
         'Equipment',
         docsPath,
-        gear.map((card, index) => ({ ...card, column: (index % 2) + 1 })),
+        [
+            ...gear.first.map((card) => ({ ...card, column: 1 })),
+            ...gear.second.map((card) => ({ ...card, column: 2 })),
+        ],
         2
     );
 }

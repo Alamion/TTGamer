@@ -218,17 +218,21 @@ function equipment(variant: SheetVariant): SectionNode {
             docsPath,
         });
     return equipmentSection(
-        [
-            gear(
-                'inventory',
-                variant === 'droid' ? 'Built-in equipment' : 'Inventory',
-                'equipment:inventory',
-                DOCS.inventory
-            ),
-            gear('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
-            gear('armor', 'Armor', 'equipment:armor', DOCS.armor),
-            gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
-        ],
+        {
+            first: [
+                gear('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
+                gear('armor', 'Armor', 'equipment:armor', DOCS.armor),
+            ],
+            second: [
+                gear(
+                    'inventory',
+                    variant === 'droid' ? 'Built-in equipment' : 'Inventory',
+                    'equipment:inventory',
+                    DOCS.inventory
+                ),
+                gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
+            ],
+        },
         DOCS.equipment
     );
 }
@@ -379,6 +383,7 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Appearance: sheetMessages.base.appearance,
     Biography: sheetMessages.base.biography,
     Portrait: defaultMessages.portrait,
+    'Show portrait': defaultMessages.showPortrait,
     Attributes: documentFields.attributes,
     Abilities: documentFields.abilities,
     Physical: defaultMessages.physical,

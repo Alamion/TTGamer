@@ -22,6 +22,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -135,6 +139,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.appearance",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "columns": 3,
        "children": [
         {
@@ -190,6 +195,13 @@
          "valueKey": "features",
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "field-show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         }
        ]
       },
@@ -200,6 +212,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.biography",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "children": [
         {
          "id": "field-biography",
@@ -1058,27 +1071,11 @@
      "columns": 2,
      "children": [
       {
-       "id": "body-inventory",
-       "type": "group",
-       "title": "Inventory",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
-       "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
-       "collapsible": true,
-       "children": [
-        {
-         "id": "equipment-inventory",
-         "type": "primitive",
-         "bindingKey": "equipment:inventory"
-        }
-       ]
-      },
-      {
        "id": "body-weapons",
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 2,
+       "column": 1,
        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
        "collapsible": true,
        "children": [
@@ -1102,6 +1099,22 @@
          "id": "equipment-armor",
          "type": "primitive",
          "bindingKey": "equipment:armor"
+        }
+       ]
+      },
+      {
+       "id": "body-inventory",
+       "type": "group",
+       "title": "Inventory",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
+       "column": 2,
+       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "equipment-inventory",
+         "type": "primitive",
+         "bindingKey": "equipment:inventory"
         }
        ]
       },
@@ -1216,6 +1229,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -1329,6 +1346,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.appearance",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "columns": 3,
        "children": [
         {
@@ -1384,6 +1402,13 @@
          "valueKey": "features",
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "field-show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         }
        ]
       },
@@ -1394,6 +1419,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.biography",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "children": [
         {
          "id": "field-biography",
@@ -2118,27 +2144,11 @@
      "columns": 2,
      "children": [
       {
-       "id": "body-inventory",
-       "type": "group",
-       "title": "Built-in equipment",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment",
-       "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
-       "collapsible": true,
-       "children": [
-        {
-         "id": "equipment-inventory",
-         "type": "primitive",
-         "bindingKey": "equipment:inventory"
-        }
-       ]
-      },
-      {
        "id": "body-weapons",
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 2,
+       "column": 1,
        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
        "collapsible": true,
        "children": [
@@ -2162,6 +2172,22 @@
          "id": "equipment-armor",
          "type": "primitive",
          "bindingKey": "equipment:armor"
+        }
+       ]
+      },
+      {
+       "id": "body-inventory",
+       "type": "group",
+       "title": "Built-in equipment",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment",
+       "column": 2,
+       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+       "collapsible": true,
+       "children": [
+        {
+         "id": "equipment-inventory",
+         "type": "primitive",
+         "bindingKey": "equipment:inventory"
         }
        ]
       },
@@ -5725,6 +5751,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -5820,6 +5850,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.appearance",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "columns": 3,
        "children": [
         {
@@ -5875,6 +5906,13 @@
          "valueKey": "features",
          "type": "text",
          "multiline": false
+        },
+        {
+         "id": "field-show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         }
        ]
       },
@@ -5885,6 +5923,7 @@
        "labelMessage": "ttgamer.ui.sheet.base.biography",
        "column": 2,
        "collapsible": true,
+       "defaultCollapsed": true,
        "children": [
         {
          "id": "field-biography",
@@ -6584,26 +6623,11 @@
      "columns": 2,
      "children": [
       {
-       "id": "body-inventory",
-       "type": "group",
-       "title": "Inventory",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
-       "column": 1,
-       "collapsible": true,
-       "children": [
-        {
-         "id": "equipment-inventory",
-         "type": "primitive",
-         "bindingKey": "equipment:inventory"
-        }
-       ]
-      },
-      {
        "id": "body-weapons",
        "type": "group",
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
-       "column": 2,
+       "column": 1,
        "collapsible": true,
        "children": [
         {
@@ -6625,6 +6649,21 @@
          "id": "equipment-armor",
          "type": "primitive",
          "bindingKey": "equipment:armor"
+        }
+       ]
+      },
+      {
+       "id": "body-inventory",
+       "type": "group",
+       "title": "Inventory",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
+       "column": 2,
+       "collapsible": true,
+       "children": [
+        {
+         "id": "equipment-inventory",
+         "type": "primitive",
+         "bindingKey": "equipment:inventory"
         }
        ]
       }
@@ -7350,6 +7389,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -7492,6 +7535,14 @@
          "valueKey": "biography-history",
          "type": "text",
          "multiline": true
+        },
+        {
+         "id": "show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait",
+         "column": 2
         }
        ]
       }
@@ -8745,6 +8796,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -8927,6 +8982,14 @@
          "valueKey": "biography-history",
          "type": "text",
          "multiline": true
+        },
+        {
+         "id": "show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait",
+         "column": 2
         }
        ]
       }
@@ -10483,6 +10546,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -10588,6 +10655,14 @@
          "valueKey": "biography-history",
          "type": "text",
          "multiline": true
+        },
+        {
+         "id": "show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait",
+         "column": 2
         }
        ]
       }
@@ -11605,6 +11680,10 @@
        "title": "Portrait",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.portrait",
        "column": 1,
+       "visibleWhen": {
+        "coordinate": "show-portrait",
+        "equals": true
+       },
        "collapsible": true,
        "children": [
         {
@@ -11690,6 +11769,13 @@
          ],
          "multiple": true,
          "incoming": true
+        },
+        {
+         "id": "show-portrait",
+         "type": "primitive",
+         "bindingKey": "field:show-portrait",
+         "label": "Show portrait",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         }
        ]
       }

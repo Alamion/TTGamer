@@ -226,6 +226,13 @@
             "required": false,
             "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
         },
+        "field-show-portrait": {
+            "id": "field-show-portrait",
+            "type": "primitive",
+            "label": "Show portrait",
+            "bindingKey": "field:show-portrait",
+            "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
+        },
         "field-species": {
             "id": "field-species",
             "type": "text",
@@ -1075,6 +1082,13 @@
             "multiline": false,
             "required": false,
             "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
+        },
+        "field-show-portrait": {
+            "id": "field-show-portrait",
+            "type": "primitive",
+            "label": "Show portrait",
+            "bindingKey": "field:show-portrait",
+            "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         },
         "field-species": {
             "id": "field-species",
@@ -2832,6 +2846,13 @@
             "required": false,
             "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
         },
+        "field-show-portrait": {
+            "id": "field-show-portrait",
+            "type": "primitive",
+            "label": "Show portrait",
+            "bindingKey": "field:show-portrait",
+            "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
+        },
         "list-backgrounds": {
             "id": "list-backgrounds",
             "type": "list",
@@ -3921,6 +3942,13 @@
             "formula": "ceil(blood-potency / 2)",
             "required": false,
             "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.rouseReroll"
+        },
+        "show-portrait": {
+            "id": "show-portrait",
+            "type": "primitive",
+            "label": "Show portrait",
+            "bindingKey": "field:show-portrait",
+            "labelMessage": "ttgamer.ui.sheet.templates.defaults.showPortrait"
         },
         "sire-field": {
             "id": "sire-field",

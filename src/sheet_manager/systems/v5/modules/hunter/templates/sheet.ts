@@ -8,6 +8,7 @@ import {
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../../../types/template';
+import { PORTRAIT_SHOWN } from '../../../../portraitBinding';
 import { memberOfField } from '../../../core/group';
 import {
     advantagesSection,
@@ -104,7 +105,7 @@ function hunterSection(): SectionNode {
         'hunter',
         hunter.sections.hunter.message,
         undefined,
-        [portraitGroup(1), hunterIdentityGroup({ column: 2 }), biographyGroup(2)],
+        [portraitGroup(1, PORTRAIT_SHOWN), hunterIdentityGroup({ column: 2 }), biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: hunter.sections.hunter }
     );
 }

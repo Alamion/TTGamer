@@ -548,6 +548,7 @@ fieldTypes:
 defaults:
     other: Other
     portrait: Portrait
+    showPortrait: Show portrait
     physical: Physical
     social: Social
     mental: Mental
