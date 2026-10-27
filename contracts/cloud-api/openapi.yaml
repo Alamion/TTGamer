@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
     title: TTGamer cloud API
-    version: 0.1.0
+    version: 0.2.0
     summary: The cloud space of TTGamer — accounts, documents, library items, quotas, shared rolls.
     description: |
         Draft for review by the frontend and the backend (spec 030). Changes are recorded in
@@ -222,6 +222,35 @@ paths:
                                 $ref: '#/components/schemas/Error'
                 '413':
                     $ref: '#/components/responses/QuotaExceeded'
+    /documents/mentions:
+        get:
+            tags: [documents]
+            operationId: listMentions
+            summary: The cloud documents whose links name a document, by its name (proposed, 0.2.0).
+            description: |
+                Matches `links[].reference` whose last `/` part equals `name`, compared without case
+                and with a trailing `.md` dropped. Which of several same-named documents a link
+                means is decided by the client from its folders (nearest first), so the server
+                returns every link of the name.
+            parameters:
+                - name: name
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      minLength: 1
+                      maxLength: 200
+                - $ref: '#/components/parameters/Cursor'
+                - $ref: '#/components/parameters/Limit'
+            responses:
+                '200':
+                    description: Documents with the links that name it, at most `limit` documents.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MentionPage'
+                '401':
+                    $ref: '#/components/responses/Error'
     /documents/{document_id}:
         parameters:
             - name: document_id
@@ -724,6 +753,67 @@ components:
                     description: Opaque; keys are the document's value keys, never renamed.
                 data:
                     description: Opaque system data; never validated or renamed by the server.
+                links:
+                    type: array
+                    maxItems: 2000
+                    description: |
+                        Proposed (0.2.0): the links the document's markdown makes, as written, read by
+                        the client because `template_values` stay opaque. The server stores them
+                        with the document and answers `GET /documents/mentions` from them; it never
+                        rewrites the document's text. Absent means none.
+                    items:
+                        $ref: '#/components/schemas/DocumentLink'
+        DocumentLink:
+            type: object
+            description: One `[[link]]` or `![[embed]]` of a document's markdown (spec 044).
+            required: [reference, embed, key, line, context]
+            properties:
+                reference:
+                    type: string
+                    minLength: 1
+                    maxLength: 1000
+                    description: The name and its folder path as written (`World/Items/Sword`).
+                section:
+                    type: string
+                    maxLength: 1000
+                alias:
+                    type: string
+                    maxLength: 1000
+                embed:
+                    type: boolean
+                key:
+                    type: string
+                    minLength: 1
+                    maxLength: 128
+                    description: The template value key of the markdown the link is in.
+                line:
+                    type: integer
+                    minimum: 0
+                context:
+                    type: string
+                    maxLength: 160
+                    description: The line around the link.
+        Mention:
+            type: object
+            required: [document_id, links]
+            properties:
+                document_id:
+                    type: string
+                    format: uuid
+                links:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DocumentLink'
+        MentionPage:
+            type: object
+            required: [items]
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Mention'
+                next_cursor:
+                    type: string
         StoredDocument:
             type: object
             required: [document, revision, size_bytes, created_at, updated_at]

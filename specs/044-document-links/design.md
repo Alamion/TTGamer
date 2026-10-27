@@ -223,3 +223,41 @@ proposal, guide, guidance).
 - **Unit run under machine load**: one full unit run during US6 timed out in eleven pane, splitter,
   and script files while other heavy jobs ran on the machine (load average about 105); the same
   files passed on a rerun (134 tests in 19 s), so nothing was quarantined.
+- **Bundle after the feature (T051)**: main chunk 1,083.1 KB (290.0 KB gzip, +1.0: translation
+  strings); `common` 1,476.4 KB (379.4 KB gzip, +13.7: links, card, suggestions, keeper, field); all
+  JS 1,485.1 KB gzip (+12.4) in 134 files. No new dependency (Radix Popover was already one).
+- **Browser timings (`verify:full`)**: "Mentioned in" shows 216 ms after the note is drawn with
+  3,000 documents × 10 links (budget 500, SC-003); the documents window opens in 48 ms and searches
+  in 35 ms. "Panes: open a second document beside" read 252 ms against its 200 ms budget (232 ms in
+  an earlier run of this branch, on a machine under heavy load); timings are reported, not asserted,
+  and the maintainer may want to compare it with `master` on a quiet machine.
+- **A note's mode followed the page, not the document (found by the smoke test)**: the page stays
+  mounted when another note is shown, so a new empty note opened after one being read stayed in
+  reading mode without the cursor (a spec 043 defect). The field now keeps its mode and its "started
+  empty" per document id.
+- **Contract tests**: a proposed contract version may be ahead of the one the frontend implements
+  (0.2.0 proposed, 0.1.0 implemented); the report test now checks "not newer than the contract", and
+  the validator test no longer names the version.
+
+## Walk results
+
+`yarn verify:full` passed: 3,298 unit tests, 20 perf tests, 69 browser tests. The maintainer's dev
+server runs `master`, so the walk ran as browser and unit tests on this branch's build:
+
+1. Pass (`tests-e2e/smoke/links.spec.ts`): `[[Ine` suggests Ines Ruiz, Enter writes the link, a
+   click opens her, Back returns.
+2. Covered by unit tests (`markdown-links-field.test.tsx`): Ctrl-click and middle click open a new
+   tab.
+3. Pass for a markdown link (smoke); reference chips by unit test (`document-preview-card`).
+4. Covered by unit tests: `#` lists sections; a section link scrolls to its anchor.
+5. Covered by unit tests: a missing name offers a note in the same folder.
+6. Pass (smoke) for a rename typed on the sheet; window renames, moves, and Undo by unit tests
+   (`link-keeper.test.ts`).
+7. Covered by unit tests: a nearer document of the same name rewrites the link with a path.
+8. Pass (smoke): "Mentioned in" lists the note with its line; the field on a character page by unit
+   test.
+9. Covered by unit tests: embeds of a note, a section, and a sheet part.
+10. Pass (smoke): after a reload the link resolves, and the export keeps it as written.
+
+**Left for the maintainer**: hovering and a long press on a real touch screen, and step 9 by eye
+(how an embedded brief looks inside a note).

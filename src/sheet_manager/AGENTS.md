@@ -291,6 +291,44 @@ document opened another way replaces the current entry's name, and the first doc
 loading never overwrites an address that names another. Without the provider a link only sets the
 current document.
 
+Links between documents (spec 044): markdown keeps `[[Name]]`, `[[Folder/Name#Section|text]]`, and
+`![[…]]` as written; which document a link means is computed, never stored
+(`features/documents/linkResolve.ts`: name without case or `.md`, a written folder path narrows by
+suffix, then the most shared leading folders with the link's document, then the earliest
+`createdAt`).
+
+- **Link index.** Each document's links as written (`documentLinkRows`, a line scan of `{ text }`
+  values in `shared/markdown/links.ts`) are saved by the record writer after `doc:<id>` in their own
+  database (`persistence/linkStorage.ts`, IndexedDB `ttgamer-links`, an empty record too) and
+  removed by the purge. `store/linkIndexStore.ts` keeps them in memory with a name → sources map;
+  start-up reads all records with one cursor when idle and re-reads documents without one
+  (`link-index-rebuilt`). A second tab sees another tab's links after a reload.
+- **Following** (`followLink.ts`, `DocumentLink.tsx`): through `DocumentLinkContext`; Ctrl/Cmd or
+  middle click `openInNewTab`. A section scrolls to an anchor: every titled or labelled page node
+  sits in a `display: contents` wrapper with `data-node-id`, `data-section` (shown name), and
+  `data-section-source` (`declarative/sectionAnchors.tsx`); markdown headings carry `data-section`,
+  top-level markdown blocks `data-line`. The page root carries `data-document-id`. A missing name
+  offers the kind that declares `newFromLink` (the General note), in the link's folder.
+- **Suggestions** (`linkSuggestions.ts`, `declarative/LinkSuggestions.tsx`): `[[` lists names,
+  prefix matches then nearest; `#` lists a note's headings and the default page's titles and labels.
+  The folder path is written only when the name alone resolves elsewhere.
+- **Preview card** (`DocumentPreviewCard.tsx`, Radix Popover): 400 ms hover or focus, 500 ms touch
+  press, Esc; the brief through `DocumentRenderContext` (the workspace's `renderDocument`), else a
+  note's title and first lines, read-only. Reference chips and incoming references use it. Cards do
+  not open cards (`PreviewDepthContext`). Embeds (`DocumentEmbed.tsx`) reuse its content with the
+  whole text or one section, two levels deep, a document already on the path as a link; a stored
+  picture or a missing picture name is never a document.
+- **Keeping links** (`linkKeeper.ts`): `planLinkEdits(before, after)` rewrites a link only when the
+  change would send it to another document and its target still exists (to the new name, or the full
+  folder path); deleting changes no text. Tree changes plan inside `runTreeChange` and keep the
+  edits on the history step (undo reverses only those links, a link edited by hand meanwhile is left
+  and counted); `linkKeeperRuntime.ts`, started by `SheetWorkspace`, takes other changes: new or
+  imported documents at once, a name typed on a sheet after 1.5 s, on `focusout`, or on `pagehide`,
+  pushed as one rename step when it rewrote links. `LinksKeptStatus` says how many.
+- **"Mentioned in"** is the `mentions` field type (`MentionsFieldControl.tsx`): reads the map, keeps
+  the links that resolve here, at most 200 sources (`mentions-truncated`), `maxShown` before "Show
+  all". It stores nothing; it is at the bottom of `general-note` and in the + menu.
+
 ### Workspace layout (spec 036)
 
 - **Tree** (`features/sheet/panes/layoutTree.ts`, pure): groups (`GroupNode`: tabs, the shown one,

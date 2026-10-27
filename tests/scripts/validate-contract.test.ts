@@ -37,7 +37,9 @@ describe('validate:contract (spec 030)', () => {
     });
 
     it('reports a version that is not semantic', async () => {
-        const file = await contractWith((text) => text.replace('version: 0.1.0', 'version: draft'));
+        const file = await contractWith((text) =>
+            text.replace(/version: \d+\.\d+\.\d+/, 'version: draft')
+        );
         expect(await validateContract(file)).toContain('info.version must be x.y.z');
     });
 });

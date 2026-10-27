@@ -215,3 +215,14 @@ describe('suggestions while a link is typed', () => {
         expect(screen.queryByRole('listbox')).toBeNull();
     });
 });
+
+describe('another document on the same page', () => {
+    it('starts an empty note in edit mode after a note that was being read', () => {
+        mountNote('Some text', [noteEnvelope('empty', 'Fresh', '')]);
+        expect(screen.queryByRole('textbox', { name: 'Text' })).toBeNull();
+        act(() => useDocumentStore.setState({ currentDocumentId: 'empty' }));
+        expect(screen.getByRole('textbox', { name: 'Text' })).toBeTruthy();
+        act(() => useDocumentStore.setState({ currentDocumentId: 'note-1' }));
+        expect(screen.queryByRole('textbox', { name: 'Text' })).toBeNull();
+    });
+});

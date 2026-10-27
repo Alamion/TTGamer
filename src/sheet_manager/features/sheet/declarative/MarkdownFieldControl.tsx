@@ -228,9 +228,25 @@ export function MarkdownFieldControl({
     // A brief only shows the text, folded (spec 043, US5): it is edited on the full page.
     const brief = useBriefPage();
     const readOnly = disabled || brief;
-    const [mode, setMode] = useState<'read' | 'edit'>(() =>
-        text === '' && !readOnly ? 'edit' : 'read'
-    );
+    const documentId = useDocumentSource().document?.id;
+    // The page stays mounted when another document of its kind is shown (a link, a new note):
+    // the mode and whether the text started empty belong to the document they were taken for.
+    const [opened, setOpened] = useState(() => ({
+        documentId,
+        mode: (text === '' && !readOnly ? 'edit' : 'read') as 'read' | 'edit',
+        startedEmpty: text === '',
+    }));
+    const openedNow =
+        opened.documentId === documentId
+            ? opened
+            : {
+                  documentId,
+                  mode: (text === '' && !readOnly ? 'edit' : 'read') as 'read' | 'edit',
+                  startedEmpty: text === '',
+              };
+    if (openedNow !== opened) setOpened(openedNow);
+    const mode = openedNow.mode;
+    const setMode = (next: 'read' | 'edit') => setOpened({ ...openedNow, mode: next });
     const [narrowView, setNarrowView] = useState<'source' | 'result'>('source');
     const [sourceWidth, setSourceWidth] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -240,9 +256,8 @@ export function MarkdownFieldControl({
     const deferredText = useDeferredValue(text);
     const renderCode = useNoteRollCode();
     const editing = mode === 'edit' && !readOnly;
-    const documentId = useDocumentSource().document?.id;
     // An empty text starts in edit mode; a document just created gives it the cursor (T015).
-    const [startedEmpty] = useState(text === '');
+    const startedEmpty = openedNow.startedEmpty;
     useEffect(() => {
         if (!startedEmpty || readOnly || !documentId) return;
         return claimNewDocumentFocus(documentId, () => textareaRef.current?.focus());

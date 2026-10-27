@@ -12,6 +12,21 @@
 4. Each side declares the version it implements: the backend in `GET /version`, the frontend in
    `src/integrations/cloud-api/version.ts`.
 
+## 0.2.0 — 2026-10-27
+
+- **Author**: frontend (spec 044).
+- **Approval**: pending — backend.
+- Links between documents: a document may carry `links` (each `[[link]]` of its markdown as
+  written: reference, section, alias, embed, value key, line, and the line around it), which the
+  client reads because `template_values` stay opaque. `GET /documents/mentions?name=` returns the
+  documents whose links name a document, so "Mentioned in" can include cloud documents. Which of
+  several same-named documents a link means stays the client's choice (nearest by folders, then
+  the earliest created).
+- An addition: a server or client built against 0.1.0 is not broken. The frontend keeps declaring
+  0.1.0 until this version is approved and implemented.
+- Open for the backend's review: whether `links` travel with the envelope (as proposed) or on a
+  separate endpoint, and how mentions are paged for a name with many documents.
+
 ## 0.1.0 — 2026-10-08
 
 - **Author**: frontend (spec 030).

@@ -178,7 +178,9 @@ check fo it existence before killing processes or creating new one.
   an option to these instead of copying them; their contract tests in `tests/shared/` run against
   every user. Markdown anywhere renders through `shared/components/markdown/MarkdownView` (spec
   043): the parser builds nodes, never HTML, and callers fill its slots (code spans, embeds, task
-  ticks, issues) instead of post-processing its output.
+  ticks, issues) instead of post-processing its output. Links between documents resolve through
+  `features/documents/linkResolve.ts` and show one preview card for markdown links and reference
+  fields (spec 044); a document's links live in the link index beside its record.
 - The document collection is the index: generic code reads `entries` (or `DocumentRef`s) and loads
   one document by id when it needs its data; it never scans the loaded `documents`
   (`src/sheet_manager/AGENTS.md`, "Documents: Storage, Tree, and Window").

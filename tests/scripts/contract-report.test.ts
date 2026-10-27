@@ -27,7 +27,13 @@ describe('contract:report (spec 030, US2)', () => {
             ])
         );
         expect(envelope?.differing.map(({ field }) => field)).toEqual(['id']);
-        expect(report.implementedVersion).toBe(report.contractVersion);
+        // A proposed version may be ahead of the one the frontend implements, never behind it.
+        const parts = (version: string) => version.split('.').map(Number);
+        const [implemented, contract] = [report.implementedVersion, report.contractVersion].map(
+            parts
+        );
+        const order = implemented!.findIndex((part, index) => part !== contract![index]);
+        expect(order < 0 || implemented![order]! < contract![order]!).toBe(true);
     });
 
     it('names a field whose type was changed in the contract (SC-004)', async () => {

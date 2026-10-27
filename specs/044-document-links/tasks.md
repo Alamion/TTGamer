@@ -185,22 +185,22 @@ field to a character page.
 
 ## Finish
 
-- [ ] T046 Cloud contract proposal 0.2.0 (FR-011): `contracts/cloud-api/openapi.yaml` (`links` on
+- [x] T046 Cloud contract proposal 0.2.0 (FR-011): `contracts/cloud-api/openapi.yaml` (`links` on
       `StoredDocument`, `GET /documents/mentions`) and an entry in `contracts/cloud-api/CHANGES.md`
       (author frontend, approval pending); `IMPLEMENTED_CONTRACT_VERSION` stays 0.1.0;
       `yarn validate:contract`
-- [ ] T047 Write `tests-e2e/smoke/links.spec.ts`: write a link with suggestions, follow it, Back,
+- [x] T047 Write `tests-e2e/smoke/links.spec.ts`: write a link with suggestions, follow it, Back,
       preview, rename keeps the link, reload keeps everything; export of the note keeps the link
       text, and the guide's link examples round-trip in `tests/sheet_manager/note-files.test.ts`
       (SC-005)
-- [ ] T048 Update guidance: `src/sheet_manager/AGENTS.md` (links, link index, keeper, card,
+- [x] T048 Update guidance: `src/sheet_manager/AGENTS.md` (links, link index, keeper, card,
       `mentions` field), root `AGENTS.md` (§8: links through `linkResolve` and the card),
       `.agents/skills/sheet-templates` (`mentions` in the node tree),
       `contracts/cloud-api/README.md` if it lists versions
-- [ ] T049 User guide en + ru: `docs/guide/notes.mdx` "Links between documents" rewritten (writing,
+- [x] T049 User guide en + ru: `docs/guide/notes.mdx` "Links between documents" rewritten (writing,
       following, preview, keeping, Mentioned in, embeds); `docs/guide/template-editor/elements.mdx`
       the `mentions` element; reference fields' preview where the guide describes them
-- [ ] T050 Backlog: `TODO.md` T-128 and T-051 marked done with the scope note
-- [ ] T051 Bundle review: measure the chunks again and record the difference in design.md
-- [ ] T052 Run `yarn verify:full`; walk the steps in design.md "Manual walk" (SC-006); record
+- [x] T050 Backlog: `TODO.md` T-128 and T-051 marked done with the scope note
+- [x] T051 Bundle review: measure the chunks again and record the difference in design.md
+- [x] T052 Run `yarn verify:full`; walk the steps in design.md "Manual walk" (SC-006); record
       results in design.md; commit the finish

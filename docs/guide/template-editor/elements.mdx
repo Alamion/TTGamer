@@ -92,6 +92,7 @@ A field holds one value. Its **Label** is shown next to it (**Show label** hides
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
 | **Markdown text**      | A long text with headings, lists, tables, callouts, rolls, and pictures; see [Markdown text](#markdown).                                                                                                 |
+| **Mentioned in**       | The documents whose markdown links to this one; see [Mentioned in](#mentions).                                                                                                                           |
 | **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
 | **Tracker**            | Boxes the reader marks by level, for health, stress, or any other burden; see [Trackers](#trackers).                                                                                                     |
 
@@ -106,6 +107,10 @@ A long text written in markdown, like a [note](../notes.mdx): readers see it as 
 <LiveDemo kind="example">
     <ElementExample story="markdown" node="markdown-showcase" />
 </LiveDemo>
+
+## Mentioned in \{#mentions}
+
+A read-only list of the documents whose markdown links to the shown one, each with the line around the link; a click opens that document at the line. **Entries shown before “Show all”** sets how many show at first. It stores nothing, so it cannot be a list entry or a table column. Every note has one at its bottom; see [links between documents](../notes.mdx#links).
 
 ## Ratings \{#rating}
 
@@ -132,7 +137,7 @@ Formulas and display conditions read the rating's number; its text and flags do 
 
 **Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. A page of the rules themselves (the V5 mortal's, a Storyteller character's, a group's) offers every kind of those rules, the Hunter and Vampire ones included. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
 
-On the sheet, the search offers the reader's documents of those kinds from the same setting, never the document itself.
+On the sheet, the search offers the reader's documents of those kinds from the same setting, never the document itself. Pointing at a linked document shows its card, as for a [link in a note](../notes.mdx#links).
 
 **Show the documents that link here** turns the field around: it stores nothing and lists, read-only, the documents of the allowed kinds whose own fields link to this document. Every V5 character page uses one for **Member of**, the groups whose members include the character.
 

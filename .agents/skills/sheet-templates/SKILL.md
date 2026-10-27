@@ -156,7 +156,8 @@ columns from the sheet area's width, no box); its ratings show short labels unle
 - A growing element (a list, a table, built-in rows, equipment, a track, a multiline text, a
   markdown text, a multiple reference, a tracker) counts as a card's worth of fields on its own.
 - A document page is not a sheet: a full page whose only growing element is one markdown field, with
-  at most a one-line name field beside it (the Note), is exempt by that shape (spec 043).
+  at most a one-line name field beside it and a "Mentioned in" field below (the Note), is exempt by
+  that shape (spec 043, 044).
 - A brief has no sections and no cards: its only container is the brief block (`dense()`), a plain
   separator between clearly different kinds of fields (attributes apart from skills), not a block
   per field. The editor offers it only on briefs, and sections and cards only on full pages.

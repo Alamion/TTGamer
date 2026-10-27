@@ -14,7 +14,12 @@ function bloodCellsOverlap(page: Page): Promise<string[]> {
             root.querySelector('[aria-label="Blood Potency"]'),
             root.querySelector('[role="group"][aria-label^="Humanity"]'),
             root.querySelector('button[aria-label="Rouse check"]'),
-        ].map((cell) => cell!.closest('[data-column] > *')!.getBoundingClientRect());
+        ].map((cell) => {
+            // A section anchor (spec 044) takes no box: the grid item is the element inside it.
+            const item = cell!.closest('[data-column] > *')!;
+            const box = item.classList.contains('contents') ? item.firstElementChild! : item;
+            return box.getBoundingClientRect();
+        });
         const problems: string[] = [];
         cells.forEach((box, index) => {
             if (box.width < 1) problems.push(`cell ${index} has no width`);

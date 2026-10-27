@@ -12,10 +12,10 @@ invariants are in the skill index.
   (SectionCard surface, opt-in `collapsible`) on a full page; `brief` (the brief block: dense
   SectionCard, area columns, opt-in `collapsible`, `hideTitle`, `docsPath`) on a brief. Accents
   alternate by sibling parity, never stored.
-- Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `markdown`, `formula`,
-  `select`, `rating`, `resource`, `reference`, `tracker` (see "Trackers" below; "Markdown" below). A
-  `reference` with `incoming: true` lists the documents linking here instead of storing links
-  (bindings reference, "Reference fields").
+- Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `markdown`, `mentions`,
+  `formula`, `select`, `rating`, `resource`, `reference`, `tracker` (see "Trackers" below;
+  "Markdown" below). A `reference` with `incoming: true` lists the documents linking here instead of
+  storing links (bindings reference, "Reference fields").
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones
       until the reader expands it); `rating` is a trait row (`components/stat-fields/RatingRow`, the
@@ -39,10 +39,14 @@ invariants are in the skill index.
   mode, and shows source and result side by side from 720 px; on a brief it is read-only behind a
   fold. Rendering is `shared/components/markdown/MarkdownView` (the syntax:
   `shared/markdown/parse.ts`): `dice:` code rolls through `integrations/sheet-dice/noteRolls`,
-  `![[name]]` shows the value's own picture, any other `[[…]]` is inert link-styled text. Pasted or
-  picked pictures are stored with `savePortrait(file, MARKDOWN_IMAGE_LIMITS)` and named in the text;
-  names the text no longer mentions are dropped on blur, on Done/Esc, and on unmount
+  `![[name]]` shows the value's own picture; other `[[…]]` and `![[…]]` are links and embeds between
+  documents (spec 044, `src/sheet_manager/AGENTS.md`, "Links between documents"). Pasted or picked
+  pictures are stored with `savePortrait(file, MARKDOWN_IMAGE_LIMITS)` and named in the text; names
+  the text no longer mentions are dropped on blur, on Done/Esc, and on unmount
   (`markdownImages.ts`), so undo while editing keeps them.
+- Mentions (spec 044): `maxShown` (1–50, default 8) is its only own setting; it stores no value and
+  lists the documents whose markdown links to the shown one. Not a list entry and not a table
+  column; read-only like a formula.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list` (exactly one
   of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data), `button` (spec 038).
 - Buttons: `label` (`labelMessage`), `icon`, `availableWhen`,
