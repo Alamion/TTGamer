@@ -6,3 +6,6 @@ createPrompt:
     body: 'No document is named {name}. Create a note with this name next to this one and open it?'
     confirm: Create note
     cancel: Cancel
+suggestions:
+    documents: Documents to link
+    sections: 'Sections of {name}'

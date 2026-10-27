@@ -6,3 +6,6 @@ createPrompt:
     body: 'Документа с именем {name} нет. Создать рядом с этой заметку с таким именем и открыть её?'
     confirm: Создать заметку
     cancel: Отмена
+suggestions:
+    documents: Документы для ссылки
+    sections: 'Разделы: {name}'

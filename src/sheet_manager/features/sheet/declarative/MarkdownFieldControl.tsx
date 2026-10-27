@@ -47,6 +47,7 @@ import { DocumentLink } from '../../documents/DocumentLink';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
 import { useBriefPage } from './areaLayout';
 import type { TemplateFieldControlProps } from './fieldControls';
+import { useLinkSuggestions } from './LinkSuggestions';
 import {
     applyEdit,
     insertCallout,
@@ -321,6 +322,19 @@ export function MarkdownFieldControl({
         requestAnimationFrame(() => textarea.setSelectionRange(edit.selectFrom, edit.selectTo));
     };
 
+    const replaceRange = (from: number, to: number, insert: string) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        textarea.focus();
+        textarea.setSelectionRange(from, to);
+        if (!insertUndoably(insert)) {
+            writeText(applyEdit(textarea.value, { from, to, insert, selectFrom: 0, selectTo: 0 }));
+        }
+        const end = from + insert.length;
+        requestAnimationFrame(() => textarea.setSelectionRange(end, end));
+    };
+    const links = useLinkSuggestions({ textareaRef, text, replace: replaceRange });
+
     const setReading = () => {
         // The text field goes away without a blur event: free unused pictures here too.
         pruneImages();
@@ -411,25 +425,32 @@ export function MarkdownFieldControl({
     );
 
     const source = (
-        <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(event) => writeText(event.target.value)}
-            onBlur={pruneImages}
-            onPaste={(event) => {
-                const files = [...event.clipboardData.files].filter(({ type }) =>
-                    type.startsWith('image/')
-                );
-                if (files.length === 0) return;
-                event.preventDefault();
-                void addImages(files);
-            }}
-            maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
-            rows={own.rows}
-            aria-label={own.label}
-            spellCheck
-            className="w-full resize-y rounded-sm border border-border bg-bgSurface p-2 font-mono text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary"
-        />
+        <div className="relative">
+            <textarea
+                ref={textareaRef}
+                value={text}
+                {...links.textareaProps}
+                onChange={(event) => writeText(event.target.value)}
+                onBlur={() => {
+                    links.textareaProps.onBlur();
+                    pruneImages();
+                }}
+                onPaste={(event) => {
+                    const files = [...event.clipboardData.files].filter(({ type }) =>
+                        type.startsWith('image/')
+                    );
+                    if (files.length === 0) return;
+                    event.preventDefault();
+                    void addImages(files);
+                }}
+                maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
+                rows={own.rows}
+                aria-label={own.label}
+                spellCheck
+                className="w-full resize-y rounded-sm border border-border bg-bgSurface p-2 font-mono text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary"
+            />
+            {links.list}
+        </div>
     );
 
     const splitWidth = Math.min(

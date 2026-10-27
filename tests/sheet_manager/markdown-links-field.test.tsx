@@ -132,3 +132,86 @@ describe('sections', () => {
         ]);
     });
 });
+
+describe('suggestions while a link is typed', () => {
+    const textarea = () => screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Text' });
+
+    function type(value: string) {
+        fireEvent.change(textarea(), { target: { value } });
+        textarea().setSelectionRange(value.length, value.length);
+        fireEvent.select(textarea());
+    }
+
+    function mountEditing(others: ReturnType<typeof noteEnvelope>[]) {
+        mountNote('', others);
+    }
+
+    it('lists documents by name with their kind, and Enter inserts the link', () => {
+        mountEditing([
+            noteEnvelope('ines', 'Ines Ruiz', ''),
+            noteEnvelope('inn', 'Inn of the Seven', ''),
+            noteEnvelope('bruno', 'Bruno Kessel', ''),
+        ]);
+        type('Meet [[in');
+        const options = screen.getAllByRole('option');
+        expect(options.map((option) => option.textContent)).toEqual([
+            'Ines RuizNote',
+            'Inn of the SevenNote',
+        ]);
+        expect(textarea().getAttribute('aria-activedescendant')).toBe(options[0]!.id);
+        fireEvent.keyDown(textarea(), { key: 'ArrowDown' });
+        expect(textarea().getAttribute('aria-activedescendant')).toBe(options[1]!.id);
+        fireEvent.keyDown(textarea(), { key: 'ArrowUp' });
+        fireEvent.keyDown(textarea(), { key: 'Enter' });
+        expect(textarea().value).toBe('Meet [[Ines Ruiz]]');
+        expect(screen.queryByRole('listbox')).toBeNull();
+    });
+
+    it('writes a folder path when the nearest rule would pick another document', () => {
+        useDocumentStore.setState({
+            folders: [
+                {
+                    id: 'far',
+                    name: 'World 2',
+                    parentId: null,
+                    rank: 1,
+                    createdAt: '2026-01-01T00:00:00.000Z',
+                    changedAt: '2026-01-01T00:00:00.000Z',
+                    updatedAt: 0,
+                },
+            ],
+        });
+        mountEditing([noteEnvelope('a', 'Sword', ''), noteEnvelope('b', 'Sword', '')]);
+        useDocumentStore.setState((state) => ({
+            entries: state.entries.map((entry) =>
+                entry.id === 'b' ? { ...entry, parentId: 'far' } : entry
+            ),
+        }));
+        type('[[Sw');
+        expect(screen.getAllByRole('option')[1]?.textContent).toContain('World 2');
+        fireEvent.click(screen.getAllByRole('option')[1]!);
+        expect(textarea().value).toBe('[[World 2/Sword]]');
+    });
+
+    it('lists the sections of the named document after #', async () => {
+        mountEditing([noteEnvelope('docks', 'Docks', '# History\n## Who works here')]);
+        type('[[Docks#hi');
+        await screen.findByRole('listbox', { name: 'Sections of Docks' });
+        expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+            'History',
+        ]);
+        fireEvent.keyDown(textarea(), { key: 'Tab' });
+        expect(textarea().value).toBe('[[Docks#History]]');
+    });
+
+    it('closes on Esc without ending the editing, and keeps the text', () => {
+        mountEditing([noteEnvelope('ines', 'Ines Ruiz', '')]);
+        type('[[Ine');
+        expect(screen.getByRole('listbox')).toBeTruthy();
+        fireEvent.keyDown(textarea(), { key: 'Escape' });
+        expect(screen.queryByRole('listbox')).toBeNull();
+        expect(textarea().value).toBe('[[Ine');
+        type('[[Nobody here');
+        expect(screen.queryByRole('listbox')).toBeNull();
+    });
+});

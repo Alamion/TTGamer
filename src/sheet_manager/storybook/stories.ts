@@ -1279,7 +1279,7 @@ const MARKDOWN_SAMPLE = [
     '> Built by the guild a century ago.',
     '> [!warning]+ What the players see',
     '> Two guards, one ~~asleep~~ awake.',
-    '`inline code`, [a link](https://example.org), and [[Ines Ruiz]] (a link to come).',
+    '`inline code`, [a link](https://example.org), and [[Ines Ruiz]] (a link between documents).',
     'Ambush: `dice: 6d10>=6`',
     '![[logo.svg]]',
 ].join('\n');
@@ -1287,12 +1287,13 @@ const MARKDOWN_SAMPLE = [
 const markdown = story(
     'markdown',
     'Markdown text',
-    'Markdown text (spec 043): reading mode by default; Edit or Ctrl+E shows the source with a toolbar, side by side on a wide pane and as a toggle on a narrow one. Folded callouts start folded; checklist items tick in reading mode.',
+    'Markdown text (spec 043): reading mode by default; Edit or Ctrl+E shows the source with a toolbar, side by side on a wide pane and as a toggle on a narrow one. Folded callouts start folded; checklist items tick in reading mode. Links (spec 044): a link to a document on this device opens it, one to a missing name shows dashed; in the links field type `[[` for documents of this device and `#` after a name for its sections.',
     ENGINE,
     [
         { id: 'markdown-showcase', type: 'markdown', label: 'Session plan' },
         { id: 'markdown-empty', type: 'markdown', label: 'Empty (opens in edit mode)', rows: 4 },
         { id: 'markdown-invalid-roll', type: 'markdown', label: 'Error: not a roll', rows: 4 },
+        { id: 'markdown-links', type: 'markdown', label: 'Links and suggestions', rows: 4 },
     ],
     {
         'markdown-showcase': {
@@ -1303,6 +1304,9 @@ const markdown = story(
         },
         'markdown-invalid-roll': {
             text: 'The `dice: 6q` code stays code, with the reason on hover.',
+        },
+        'markdown-links': {
+            text: 'A missing name: [[Nobody by this name]].\nType `[[` on a new line to see suggestions.',
         },
     }
 );

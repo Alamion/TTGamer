@@ -70,23 +70,23 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 
 **Check**: type `[[in`, pick Ines Ruiz; type `[[Bruno Kessel#`, pick Skills.
 
-- [ ] T016 [US2] Extend `tests/sheet_manager/markdown-links-field.test.tsx` first (suggestions
+- [x] T016 [US2] Extend `tests/sheet_manager/markdown-links-field.test.tsx` first (suggestions
       part): `[[` opens a listbox over the textarea as an ARIA combobox; matches show kind and
       folder, nearest first; arrows and Enter insert `[[Name]]` with the cursor after it, or a
       folder path when the nearest rule would pick another; `#` after a name lists a note's headings
       or a sheet's section, card, block, and field labels; Esc or no match closes and keeps the text
       (FR-005)
-- [ ] T017 [US2] `src/sheet_manager/features/documents/linkSuggestions.ts`: matches from `query.ts`
+- [x] T017 [US2] `src/sheet_manager/features/documents/linkSuggestions.ts`: matches from `query.ts`
       normalized names ordered by `linkResolve` nearness (at most 20), and `sectionsOf(entry)`
       (stored note headings, or labels of the default full page)
-- [ ] T018 [US2] `src/sheet_manager/features/sheet/declarative/caretPosition.ts`: caret coordinates
+- [x] T018 [US2] `src/sheet_manager/features/sheet/declarative/caretPosition.ts`: caret coordinates
       of a textarea by mirror element;
       `src/sheet_manager/features/sheet/declarative/LinkSuggestions.tsx` and
       `MarkdownFieldControl.tsx` wiring (`aria-autocomplete`, `aria-activedescendant`); T016 passes
-- [ ] T019 [US2] Write `tests/sheet_manager/link-suggestions.perf.test.ts`: suggestions over 3,000
+- [x] T019 [US2] Write `tests/sheet_manager/link-suggestions.perf.test.ts`: suggestions over 3,000
       entries within 100 ms per keystroke (SC-001)
-- [ ] T020 [US2] Storybook: the suggestions list in `src/sheet_manager/storybook/stories.ts`
-- [ ] T021 [US2] Run the targeted and perf tests and `yarn verify:fast`; commit the story
+- [x] T020 [US2] Storybook: the suggestions list in `src/sheet_manager/storybook/stories.ts`
+- [x] T021 [US2] Run the targeted and perf tests and `yarn verify:fast`; commit the story
 
 ## User Story 3 - Preview a linked document (P2)
 
