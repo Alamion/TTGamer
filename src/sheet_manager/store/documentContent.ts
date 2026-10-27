@@ -10,6 +10,7 @@ import {
     recordIdOf,
     recordKey,
 } from './documentIndex';
+import { saveDocumentLinks } from './linkIndexStore';
 
 /** Where document records live; localForage in the app, a map in tests. */
 export interface RecordStorage {
@@ -220,7 +221,13 @@ export function createRecordWriter({
     };
 }
 
-export const recordWriter = createRecordWriter();
+/** A document and, after it, its link record (spec 044, D3). */
+async function writeDocument(id: string, document: UnknownDocumentEnvelope): Promise<void> {
+    await writeRecord(id, document);
+    await saveDocumentLinks(document);
+}
+
+export const recordWriter = createRecordWriter({ write: writeDocument });
 
 /** Clean launches after the migration before the v4 backup is deleted. */
 export const BACKUP_CLEAN_LAUNCHES = 2;

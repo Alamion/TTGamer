@@ -7,39 +7,39 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 
 ## Foundation
 
-- [ ] T001 Measure before changing anything: main chunk and the `/universal_sheet` chunks in a
+- [x] T001 Measure before changing anything: main chunk and the `/universal_sheet` chunks in a
       production build; record them under "Implementation notes" in design.md
-- [ ] T002 Write `tests/shared/markdown/links.test.ts` first: `extractLinks` finds `[[Name]]`,
+- [x] T002 Write `tests/shared/markdown/links.test.ts` first: `extractLinks` finds `[[Name]]`,
       `[[Folder/Name]]`, `[[Name|alias]]`, `[[Name#Section]]`, `![[…]]` with their line and a
       context of at most 160 characters, skips code spans and fenced blocks; `rewriteLinks` changes
       only the named links and keeps alias, section, and `!` (FR-010)
-- [ ] T003 `src/shared/markdown/links.ts`: `LinkRef`, `extractLinks(text)`,
+- [x] T003 `src/shared/markdown/links.ts`: `LinkRef`, `extractLinks(text)`,
       `rewriteLinks(text,     edits)` as a line scan (design D4); `src/shared/markdown/parse.ts` and
       `types.ts`: wikilink and embed nodes carry `path` and `section`; T002 and
       `tests/shared/markdown/parse.test.ts` pass
-- [ ] T004 Write `tests/sheet_manager/link-resolve.test.ts` first: name match is case-insensitive
+- [x] T004 Write `tests/sheet_manager/link-resolve.test.ts` first: name match is case-insensitive
       and ignores a trailing `.md`; a written folder path narrows by suffix; among several the one
       sharing the most leading folders with the source wins, then the earliest `createdAt` (missing
       times last, then id); unresolved returns nothing (FR-001)
-- [ ] T005 `src/sheet_manager/features/documents/linkResolve.ts`: name buckets built once per
+- [x] T005 `src/sheet_manager/features/documents/linkResolve.ts`: name buckets built once per
       `entries` array, `resolveLink(link, sourceEntry, buckets)`, `folderPathOf(entry)`, and
       `linkTextFor(target, source, buckets)` (the name, or the full folder path when the name alone
       resolves elsewhere) (design D1); T004 passes
-- [ ] T006 Write `tests/sheet_manager/link-index.test.ts` first: a saved document writes its link
+- [x] T006 Write `tests/sheet_manager/link-index.test.ts` first: a saved document writes its link
       record in the same writer pass; markdown values are the `{ text }` template values; purge
       removes the record; boot re-extracts sources without a current-version record in chunks and
       reports `link-index-rebuilt` once; an invalid record is re-extracted; the reverse map lists
       sources by normalized name (FR-007)
-- [ ] T007 `src/sheet_manager/persistence/linkStorage.ts`: localForage store `links`, Zod record
+- [x] T007 `src/sheet_manager/persistence/linkStorage.ts`: localForage store `links`, Zod record
       `{ v: 1, links }`, read, write, remove, `iterate`; memory variant for tests beside
       `createMemoryRecordStorage`
-- [ ] T008 `src/sheet_manager/store/linkIndexStore.ts` (not persisted): reverse map and `ready`;
+- [x] T008 `src/sheet_manager/store/linkIndexStore.ts` (not persisted): reverse map and `ready`;
       `src/sheet_manager/store/documentContent.ts` writer writes the link record after `doc:<id>`;
       `src/sheet_manager/store/documentBoot.ts` purge removes it and an idle rebuild fills missing
       records; diagnostics codes `link-index-rebuilt`, `link-unresolved`, `link-section-missing`,
       `links-kept`, `link-preview-missing`, `mentions-truncated` in
       `src/sheet_manager/diagnostics.ts`; T006 passes
-- [ ] T009 Run `yarn verify` (store and persistence change) and commit the foundation
+- [x] T009 Run `yarn verify` (store and persistence change) and commit the foundation
 
 ## User Story 1 - Follow a link from a note (P1)
 

@@ -12,6 +12,7 @@ import {
 } from './documentContent';
 import { entryOf, nextRank } from './documentIndex';
 import type { DocumentStoreState } from './documentStore';
+import { forgetDocumentLinks, scheduleLinkIndexLoad } from './linkIndexStore';
 
 /** The part of the store the start-up work needs. */
 export interface BootApi {
@@ -77,6 +78,7 @@ export async function purgeDeleted(api: BootApi): Promise<void> {
         try {
             const images = deviceImageIdsOf(await readRecord(id));
             await removeRecord(id);
+            await forgetDocumentLinks(id);
             await Promise.all([...images].map((imageId) => deletePortrait(imageId)));
             done.add(id);
             purgedIds.add(id);
@@ -111,6 +113,11 @@ export async function bootDocuments(api: BootApi): Promise<void> {
         repairFolderLoops(api);
         await reconcileIndex(api);
         await purgeDeleted(api);
+        // Off the start-up path: the sheet waits only for the open document.
+        scheduleLinkIndexLoad(
+            () => api.getState().entries.map(({ id }) => id),
+            (id) => readEnvelope(id, undefined)
+        );
         if (opened) await countCleanLaunch();
     } catch (error) {
         reportSheetIssue({

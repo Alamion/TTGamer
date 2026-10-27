@@ -172,3 +172,16 @@ proposal, guide, guidance).
    editor → it lists the notes linking to that character.
 9. `![[Bruno Kessel]]` and `![[How notes work#Callouts]]` → brief and section in place.
 10. Reload → everything above still resolves; export the note → links unchanged in the `.md`.
+
+## Implementation notes
+
+- **Bundle baseline (T001)**, production build before any change: main chunk 1,078.4 KB (289.0 KB
+  gzip); `common` 1,435.5 KB (365.7 KB gzip); all JS 1,472.6 KB gzip in 134 files.
+- **Target parts by a helper, not on the nodes (T003)**: `splitLinkTarget` in
+  `shared/markdown/links.ts` reads `Folder/Name#Section` from the raw target the wikilink and embed
+  nodes already carry, so `MarkdownView` and its callers keep their node shape; `linkName` (the
+  compare form of a name) lives there too, since the store reads it as well as the resolver.
+- **Link records always written (T008)**: a document without links gets an empty record, so the
+  start-up rebuild re-reads only documents never indexed (all of them once, the first time). The
+  records live in their own IndexedDB database (`ttgamer-links`), not a second store of the
+  documents' database, so localForage never has to upgrade that database's version.

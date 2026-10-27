@@ -69,7 +69,21 @@ export type SheetIssueCode =
     /** A `dice:` code in a markdown text is not valid notation; it shows as code (spec 043). */
     | 'markdown-roll-invalid'
     /** A picture could not be stored with a markdown text (not an image, too large, quota). */
-    | 'markdown-image-rejected';
+    | 'markdown-image-rejected'
+    /** Link records were missing or invalid and were read again from their documents (spec 044). */
+    | 'link-index-rebuilt'
+    /** A document's link record could not be saved; "Mentioned in" may miss it until it is. */
+    | 'link-index-write-failed'
+    /** A link names no document; it shows as unresolved (spec 044). */
+    | 'link-unresolved'
+    /** A link's `#section` is not on its target; the target opened at the top. */
+    | 'link-section-missing'
+    /** Links in other documents were rewritten to keep their targets, or left as edited. */
+    | 'links-kept'
+    /** A preview card or embed could not show its document (missing, unreadable). */
+    | 'link-preview-missing'
+    /** More documents mention this one than "Mentioned in" reads. */
+    | 'mentions-truncated';
 
 export interface SheetIssue {
     code: SheetIssueCode;
