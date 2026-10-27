@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useNoteRollCode } from '@site/src/integrations/sheet-dice/noteRolls';
 import {
+    type MarkdownEmbed,
     type MarkdownIssue,
     MarkdownView,
     type MarkdownWikilink,
@@ -43,6 +44,7 @@ import {
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
+import { DocumentEmbed } from '../../documents/DocumentEmbed';
 import { DocumentLink } from '../../documents/DocumentLink';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
 import { useBriefPage } from './areaLayout';
@@ -163,12 +165,14 @@ function BriefMarkdown({
     text,
     renderCode,
     resolveEmbed,
+    renderEmbed,
     onToggleTask,
 }: {
     label: string;
     text: string;
     renderCode: (code: string) => ReactNode;
     resolveEmbed: (name: string) => string | undefined;
+    renderEmbed: (node: MarkdownEmbed) => ReactNode;
     onToggleTask?: (line: number) => void;
 }) {
     const [open, setOpen] = useState(false);
@@ -199,6 +203,7 @@ function BriefMarkdown({
                             renderCode={renderCode}
                             resolveEmbed={resolveEmbed}
                             renderWikilink={renderWikilink}
+                            renderEmbed={renderEmbed}
                             onToggleTask={onToggleTask}
                             onIssue={reportIssue}
                             headingOffset={2}
@@ -257,6 +262,12 @@ export function MarkdownFieldControl({
     });
     const imageUrls = useImageUrls(current.images);
     const resolveEmbed = useCallback((name: string) => imageUrls[name], [imageUrls]);
+    // A stored picture is never a document, even while its address is still loading (spec 044).
+    const images = current.images;
+    const renderEmbed = useCallback(
+        (node: MarkdownEmbed) => (images?.[node.name] ? undefined : <DocumentEmbed node={node} />),
+        [images]
+    );
     const [imageStatus, setImageStatus] = useState<string | undefined>();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -419,6 +430,7 @@ export function MarkdownFieldControl({
             renderCode={renderCode}
             resolveEmbed={resolveEmbed}
             renderWikilink={renderWikilink}
+            renderEmbed={renderEmbed}
             onToggleTask={disabled ? undefined : toggleTask}
             onIssue={reportIssue}
         />
@@ -465,6 +477,7 @@ export function MarkdownFieldControl({
                 text={text}
                 renderCode={renderCode}
                 resolveEmbed={resolveEmbed}
+                renderEmbed={renderEmbed}
                 onToggleTask={disabled ? undefined : toggleTask}
             />
         );

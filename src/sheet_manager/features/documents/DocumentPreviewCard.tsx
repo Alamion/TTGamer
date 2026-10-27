@@ -1,7 +1,13 @@
 import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import * as Popover from '@radix-ui/react-popover';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { MarkdownView } from '@site/src/shared/components/markdown/MarkdownView';
+import {
+    type MarkdownEmbed,
+    MarkdownView,
+    type MarkdownWikilink,
+} from '@site/src/shared/components/markdown/MarkdownView';
+import { linkName } from '@site/src/shared/markdown/links';
 import { type ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { reportSheetIssue } from '../../diagnostics';
@@ -9,10 +15,15 @@ import { DocumentSourceContext, useStoreDocumentSource } from '../../hooks/useDo
 import { useDocumentStore } from '../../store/documentStore';
 import { systemRegistry } from '../../systems';
 import type { UnknownDocumentEnvelope } from '../../types/document';
+import type { TemplateNode } from '../../types/template';
 import { TemplateMarkdownValueSchema } from '../../types/templateValues';
+import { DeclarativeSheetView } from '../sheet/declarative/DeclarativeSheetView';
+import { anchorName, sourceAnchorNames } from '../sheet/declarative/sectionAnchors';
 import { briefViewOf } from '../sheet/panes/views';
+import { DocumentEmbed } from './DocumentEmbed';
 import { DocumentLink } from './DocumentLink';
 import { DocumentRenderContext, PreviewDepthContext } from './documentRender';
+import { defaultPageOf, sectionText } from './linkSuggestions';
 
 /**
  * A linked document without leaving the page (spec 044, US3, design D9): its brief, or for a
@@ -29,23 +40,37 @@ const NOTE_LINES = 12;
 
 const reportedMissing = new Set<string>();
 
-/** The first markdown text of a document, cut to its first lines. */
-function openingLines(document: UnknownDocumentEnvelope): string {
-    for (const value of Object.values(document.templateValues)) {
+/** The markdown texts of a document with the pictures each one stores. */
+function markdownValues(
+    document: UnknownDocumentEnvelope
+): Array<{ text: string; images: ReadonlySet<string> }> {
+    return Object.values(document.templateValues).flatMap((value) => {
         const markdown = TemplateMarkdownValueSchema.safeParse(value);
-        if (markdown.success && markdown.data.text.trim()) {
-            return markdown.data.text.split('\n').slice(0, NOTE_LINES).join('\n');
-        }
-    }
-    return '';
+        return markdown.success
+            ? [
+                  {
+                      text: markdown.data.text,
+                      images: new Set(Object.keys(markdown.data.images ?? {})),
+                  },
+              ]
+            : [];
+    });
 }
 
-const renderNestedLink = (node: Parameters<typeof DocumentLink>[0]['node']) => (
-    <DocumentLink node={node} />
-);
+const renderNestedLink = (node: MarkdownWikilink) => <DocumentLink node={node} />;
+
+/** Embeds inside a drawn document: its own pictures stay pictures (shown as their names). */
+const nestedEmbeds = (images: ReadonlySet<string>) => (node: MarkdownEmbed) =>
+    images.has(node.name) ? undefined : <DocumentEmbed node={node} />;
 
 /** Gives a drawn document its own, read-only source. */
-function ReadOnlyDocument({ documentId, children }: { documentId: string; children: ReactNode }) {
+export function ReadOnlyDocument({
+    documentId,
+    children,
+}: {
+    documentId: string;
+    children: ReactNode;
+}) {
     const source = useStoreDocumentSource(documentId);
     const readOnly = useMemo(() => ({ ...source, readOnly: true }), [source]);
     return (
@@ -53,10 +78,71 @@ function ReadOnlyDocument({ documentId, children }: { documentId: string; childr
     );
 }
 
-/** What a card or an embed shows of a document: its brief, or its title and first lines. */
-export function DocumentPreviewContent({ documentId }: { documentId: string }) {
+/** One section of a document: a markdown heading's part, or a titled node of its page. */
+function sectionContent(
+    document: UnknownDocumentEnvelope,
+    section: string,
+    locale: string
+): ReactNode {
+    for (const { text, images } of markdownValues(document)) {
+        const part = sectionText(text, section);
+        if (part !== undefined) {
+            return (
+                <MarkdownView
+                    source={part}
+                    renderWikilink={renderNestedLink}
+                    renderEmbed={nestedEmbeds(images)}
+                    headingOffset={2}
+                    className="text-sm"
+                />
+            );
+        }
+    }
+    const page = defaultPageOf({ ...document, templateId: document.metadata.templateId }, locale);
+    const sources =
+        page &&
+        sourceAnchorNames(
+            defaultPageOf({ ...document, templateId: document.metadata.templateId }, 'en')
+                ?.children ?? []
+        );
+    const wanted = linkName(section);
+    const find = (nodes: readonly TemplateNode[]): TemplateNode | undefined => {
+        for (const node of nodes) {
+            const shown = anchorName(node);
+            if (
+                (shown && linkName(shown) === wanted) ||
+                linkName(sources?.get(node.id) ?? '') === wanted
+            ) {
+                return node;
+            }
+            if ('children' in node && Array.isArray(node.children)) {
+                const inner = find(node.children as readonly TemplateNode[]);
+                if (inner) return inner;
+            }
+        }
+        return undefined;
+    };
+    const node = page && find(page.children);
+    if (!page || !node) return undefined;
+    return <DeclarativeSheetView template={{ ...page, children: [node] }} embedded />;
+}
+
+/**
+ * What a card or an embed shows of a document: its brief, or its title and first lines (`whole`:
+ * all of its text); with `section`, only that part of it.
+ */
+export function DocumentPreviewContent({
+    documentId,
+    whole = false,
+    section,
+}: {
+    documentId: string;
+    whole?: boolean;
+    section?: string;
+}) {
     const render = useContext(DocumentRenderContext);
     const depth = useContext(PreviewDepthContext);
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const entry = useDocumentStore((state) => state.entries.find(({ id }) => id === documentId));
     const document = useDocumentStore((state) =>
         state.documents.find(({ id }) => id === documentId)
@@ -81,6 +167,8 @@ export function DocumentPreviewContent({ documentId }: { documentId: string }) {
     }, [document, entry, documentId]);
 
     const missing = !entry || failed;
+    const part = document && section ? sectionContent(document, section, locale) : undefined;
+    const sectionMissing = Boolean(document && section && part === undefined);
     useEffect(() => {
         if (!missing || reportedMissing.has(documentId)) return;
         reportedMissing.add(documentId);
@@ -90,6 +178,14 @@ export function DocumentPreviewContent({ documentId }: { documentId: string }) {
             details: { documentId },
         });
     }, [missing, documentId]);
+    useEffect(() => {
+        if (!sectionMissing) return;
+        reportSheetIssue({
+            code: 'link-section-missing',
+            message: 'An embedded section is not on its document; the whole document shows',
+            details: { documentId, section },
+        });
+    }, [sectionMissing, documentId, section]);
 
     if (missing) {
         return <p className="m-0 text-sm text-textSecondary">{translate(messages.missing)}</p>;
@@ -106,30 +202,35 @@ export function DocumentPreviewContent({ documentId }: { documentId: string }) {
         document.definitionId
     );
     const brief = definition ? briefViewOf(definition) : undefined;
+    const [first] = markdownValues(document).filter(({ text }) => text.trim());
+    const text =
+        first && (whole ? first.text : first.text.split('\n').slice(0, NOTE_LINES).join('\n'));
     return (
         <PreviewDepthContext.Provider value={depth + 1}>
             <ReadOnlyDocument documentId={documentId}>
-                {brief && render ? (
-                    render(documentId, brief)
-                ) : (
-                    <div className="grid gap-1">
-                        <p className="m-0 font-semibold text-textPrimary">
-                            {document.metadata.title}
-                        </p>
-                        {openingLines(document) ? (
-                            <MarkdownView
-                                source={openingLines(document)}
-                                renderWikilink={renderNestedLink}
-                                headingOffset={2}
-                                className="text-sm"
-                            />
-                        ) : (
-                            <p className="m-0 text-sm text-textSecondary">
-                                {translate(messages.empty)}
+                {part ??
+                    (brief && render ? (
+                        render(documentId, brief)
+                    ) : (
+                        <div className="grid gap-1">
+                            <p className="m-0 font-semibold text-textPrimary">
+                                {document.metadata.title}
                             </p>
-                        )}
-                    </div>
-                )}
+                            {first && text ? (
+                                <MarkdownView
+                                    source={text}
+                                    renderWikilink={renderNestedLink}
+                                    renderEmbed={nestedEmbeds(first.images)}
+                                    headingOffset={2}
+                                    className="text-sm"
+                                />
+                            ) : (
+                                <p className="m-0 text-sm text-textSecondary">
+                                    {translate(messages.empty)}
+                                </p>
+                            )}
+                        </div>
+                    ))}
             </ReadOnlyDocument>
         </PreviewDepthContext.Provider>
     );

@@ -280,7 +280,7 @@ export const MARKDOWN_LINK_CLASSES =
     'text-primary underline underline-offset-2 hover:text-primary-hover focus-visible:outline-1 focus-visible:outline-primary';
 
 /** A link that does nothing yet (spec 043 FR-010): looks like a link, reads as text. */
-function InertLink({ text, title }: { text: string; title?: string }) {
+export function InertLink({ text, title }: { text: string; title?: string }) {
     return (
         <span
             className="text-primary underline decoration-dotted underline-offset-2"

@@ -173,15 +173,15 @@ field to a character page.
 
 **Check**: a note embeds a character, a note, and a section of a note.
 
-- [ ] T043 [US6] Extend `tests/sheet_manager/document-preview-card.test.tsx` first (embeds):
+- [x] T043 [US6] Extend `tests/sheet_manager/document-preview-card.test.tsx` first (embeds):
       `![[Name]]` shows the preview content in place; `![[Note#Heading]]` shows the blocks to the
       next heading of the same or higher level; `![[Sheet#Section]]` shows that node; depth stops at
       2; a cycle shows a link; a name the field's `images` holds stays a picture (FR-012)
-- [ ] T044 [US6] `src/sheet_manager/features/documents/DocumentEmbed.tsx`: the embed rendering over
+- [x] T044 [US6] `src/sheet_manager/features/documents/DocumentEmbed.tsx`: the embed rendering over
       `DocumentPreviewContent`, an embed-path context for depth and cycles, the heading slice, and a
       one-node page for a sheet section; `MarkdownFieldControl.tsx` passes `renderEmbed`; T043
       passes
-- [ ] T045 [US6] Run the targeted tests and `yarn verify:fast`; commit the story
+- [x] T045 [US6] Run the targeted tests and `yarn verify:fast`; commit the story
 
 ## Finish
 

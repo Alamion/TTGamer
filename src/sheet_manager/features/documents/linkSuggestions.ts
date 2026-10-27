@@ -10,6 +10,7 @@ import { useTemplateStore } from '../../store/templateStore';
 import { systemRegistry } from '../../systems';
 import { resolveEffectiveTemplate } from '../../systems/view';
 import type { UnknownDocumentEnvelope } from '../../types/document';
+import type { CustomTemplate } from '../../types/template';
 import { TemplateMarkdownValueSchema } from '../../types/templateValues';
 import { localizeTemplate } from '../sheet/declarative/localizeTemplate';
 import { anchorName } from '../sheet/declarative/sectionAnchors';
@@ -113,29 +114,55 @@ function headingsOf(tops: readonly MarkdownTopBlock[]): string[] {
 }
 
 /** The page a document is shown on by default, in the shown language. */
-function pageNames(entry: DocumentIndexEntry, locale: string): string[] {
+export function defaultPageOf(
+    entry: Pick<DocumentIndexEntry, 'systemId' | 'definitionId' | 'templateId'>,
+    locale: string
+): CustomTemplate | undefined {
     const definition = systemRegistry.getDocumentDefinition(entry.systemId, entry.definitionId);
-    if (!definition) return [];
+    if (!definition) return undefined;
     const view = definition.views.find(({ id }) => id === definition.defaultViewId);
     const templateId =
         entry.templateId ?? (view?.layout.type === 'declarative' ? view.layout.templateId : null);
-    if (!templateId) return [];
+    if (!templateId) return undefined;
     const resolved = resolveEffectiveTemplate(
         templateId,
         useTemplateStore.getState(),
         entry.systemId,
         definition.kind
     );
-    if (!resolved) return [];
+    return resolved ? localizeTemplate(resolved.template, locale) : undefined;
+}
+
+/** The text of a markdown section: from its heading to the next heading as high or higher. */
+export function sectionText(text: string, section: string): string | undefined {
+    const wanted = linkName(section);
+    const tops = parseMarkdown(text);
+    const start = tops.findIndex(
+        ({ block }) => block.type === 'heading' && linkName(plainText(block.children)) === wanted
+    );
+    const heading = tops[start];
+    if (!heading || heading.block.type !== 'heading') return undefined;
+    const { level } = heading.block;
+    const end = tops
+        .slice(start + 1)
+        .find(({ block }) => block.type === 'heading' && block.level <= level);
+    const lines = text.split('\n');
+    return lines.slice(heading.line, end ? end.line : lines.length).join('\n');
+}
+
+/** The page's titles and labels. */
+function pageNames(entry: DocumentIndexEntry, locale: string): string[] {
+    const page = defaultPageOf(entry, locale);
+    if (!page) return [];
     const names: string[] = [];
-    const visit = (nodes: ReturnType<typeof localizeTemplate>['children']) => {
+    const visit = (nodes: CustomTemplate['children']) => {
         for (const node of nodes) {
             const name = anchorName(node);
             if (name) names.push(name);
             if ('children' in node && Array.isArray(node.children)) visit(node.children);
         }
     };
-    visit(localizeTemplate(resolved.template, locale).children);
+    visit(page.children);
     return names;
 }
 

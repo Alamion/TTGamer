@@ -215,3 +215,11 @@ proposal, guide, guidance).
 - **Opening at a line (T038)**: each top-level markdown block sits in a box-less wrapper with its
   source line (`data-line`), so a mention opens its source and scrolls to the block holding that
   line; the document page rule (`page-composition.test.ts`) allows the note's mentions field.
+- **A missing picture name stays a picture reference (T044)**: an unresolved `![[name.png]]` (any
+  picture extension) is shown as the inert reference text, not as a link offering a note, so a note
+  imported without its pictures does not ask to create notes named after them.
+- **A whole note in an embed**: `![[Note]]` shows all of its text (the card shows its first lines);
+  a section shows from its heading to the next heading as high or higher.
+- **Unit run under machine load**: one full unit run during US6 timed out in eleven pane, splitter,
+  and script files while other heavy jobs ran on the machine (load average about 105); the same
+  files passed on a rerun (134 tests in 19 s), so nothing was quarantined.

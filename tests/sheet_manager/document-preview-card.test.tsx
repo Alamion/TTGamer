@@ -4,11 +4,14 @@ import {
     DocumentPreviewTrigger,
 } from '@site/src/sheet_manager/features/documents/DocumentPreviewCard';
 import { DocumentRenderContext } from '@site/src/sheet_manager/features/documents/documentRender';
+import { defaultPageOf } from '@site/src/sheet_manager/features/documents/linkSuggestions';
+import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { ReferenceFieldControl } from '@site/src/sheet_manager/features/sheet/declarative/fieldControls';
+import { anchorName } from '@site/src/sheet_manager/features/sheet/declarative/sectionAnchors';
 import { briefViewOf } from '@site/src/sheet_manager/features/sheet/panes/views';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import { noteEnvelope } from '@site/src/sheet_manager/systems/general/note';
+import { noteEnvelope, noteTemplate } from '@site/src/sheet_manager/systems/general/note';
 import type { TemplateField } from '@site/src/sheet_manager/types/template';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
@@ -154,5 +157,103 @@ describe('reference fields', () => {
         fireEvent.pointerEnter(screen.getByText('Docks'), { pointerType: 'mouse' });
         advance(450);
         expect(card()?.textContent).toContain('Rain at night.');
+    });
+});
+
+describe('embeds (US6)', () => {
+    function mountNote(body: string, others: ReturnType<typeof noteEnvelope>[] = []) {
+        vi.useRealTimers();
+        useDocumentStore.setState({
+            documents: [noteEnvelope('host', 'Host', body), ...others],
+            currentDocumentId: 'host',
+        });
+        return render(<DeclarativeSheetView template={noteTemplate} />);
+    }
+
+    it('shows a whole note in place, and one section of it', () => {
+        const docks = noteEnvelope(
+            'docks',
+            'Docks',
+            '# Docks\nIntro.\n## History\nBuilt by the guild.\n### Fire\nBurned once.\n## Today\nQuiet.'
+        );
+        const { container } = mountNote('![[Docks]]\n\n![[Docks#History]]', [docks]);
+        const [whole, part] = [...container.querySelectorAll('[data-embed="docks"]')];
+        expect(whole?.textContent).toContain('Quiet.');
+        expect(part?.textContent).toContain('Built by the guild.');
+        expect(part?.textContent).toContain('Burned once.');
+        expect(part?.textContent).not.toContain('Quiet.');
+    });
+
+    it('shows one titled part of a sheet through a one-node page', () => {
+        vi.useRealTimers();
+        const kind = (() => {
+            for (const system of systemRegistry.getSystems()) {
+                for (const definition of system.documents) {
+                    const page = defaultPageOf(
+                        { systemId: system.id, definitionId: definition.id },
+                        'en'
+                    );
+                    const titled = page?.children.find((node) => anchorName(node));
+                    if (page && titled && definition.id !== 'note') {
+                        return { systemId: system.id, definitionId: definition.id, titled };
+                    }
+                }
+            }
+            throw new Error('no kind with a titled page part');
+        })();
+        useDocumentStore.setState({ documents: [noteEnvelope('host', 'Host', '')] });
+        const id = useDocumentStore.getState().createDocument(kind.systemId, kind.definitionId, {
+            activate: false,
+            title: 'Bruno',
+        }).id;
+        const name = anchorName(kind.titled)!;
+        const host = noteEnvelope('host', 'Host', `![[Bruno#${name}]]`);
+        useDocumentStore.setState((state) => ({
+            documents: state.documents.map((document) =>
+                document.id === 'host' ? host : document
+            ),
+            currentDocumentId: 'host',
+        }));
+        const { container } = render(<DeclarativeSheetView template={noteTemplate} />);
+        const embed = container.querySelector(`[data-embed="${id}"]`);
+        expect(embed?.querySelector(`[data-node-id="${kind.titled.id}"]`)).toBeTruthy();
+    });
+
+    it('stops at two levels and cuts a cycle with a link', () => {
+        const { container } = mountNote('![[A]]', [
+            noteEnvelope('a', 'A', 'in A ![[B]]'),
+            noteEnvelope('b', 'B', 'in B ![[C]] and ![[A]]'),
+            noteEnvelope('c', 'C', 'in C'),
+        ]);
+        expect(container.querySelector('[data-embed="a"] [data-embed="b"]')).toBeTruthy();
+        // Two deep already: C and the way back to A are links.
+        expect(container.querySelector('[data-embed="c"]')).toBeNull();
+        const inner = container.querySelector('[data-embed="b"]')!;
+        expect([...inner.querySelectorAll('a')].map((link) => link.textContent)).toEqual([
+            'C',
+            'A',
+        ]);
+    });
+
+    it('keeps a stored picture a picture even when a document has its name', () => {
+        useDocumentStore.setState({
+            documents: [
+                {
+                    ...noteEnvelope('host', 'Host', ''),
+                    templateValues: {
+                        body: {
+                            text: '![[map.png]]',
+                            images: { 'map.png': { source: 'url', url: 'https://e.org/map.png' } },
+                        },
+                    },
+                },
+                noteEnvelope('map', 'map.png', 'not a picture'),
+            ],
+            currentDocumentId: 'host',
+        });
+        vi.useRealTimers();
+        const { container } = render(<DeclarativeSheetView template={noteTemplate} />);
+        expect(container.querySelector('[data-embed]')).toBeNull();
+        expect(screen.getByRole('img').getAttribute('src')).toBe('https://e.org/map.png');
     });
 });
