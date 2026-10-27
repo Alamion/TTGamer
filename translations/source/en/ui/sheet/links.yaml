@@ -9,3 +9,8 @@ createPrompt:
 suggestions:
     documents: Documents to link
     sections: 'Sections of {name}'
+preview:
+    label: 'Preview of {name}'
+    loading: Loading…
+    missing: This document is not available.
+    empty: Nothing written yet.

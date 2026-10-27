@@ -9,3 +9,8 @@ createPrompt:
 suggestions:
     documents: Документы для ссылки
     sections: 'Разделы: {name}'
+preview:
+    label: 'Предпросмотр: {name}'
+    loading: Загрузка…
+    missing: Этот документ недоступен.
+    empty: Пока ничего не написано.

@@ -92,25 +92,25 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 
 **Check**: point at a link in a note, a Star Wars vehicle's crew link, and a V5 group member.
 
-- [ ] T022 [US3] Write `tests/sheet_manager/document-preview-card.test.tsx` first: opens 400 ms
+- [x] T022 [US3] Write `tests/sheet_manager/document-preview-card.test.tsx` first: opens 400 ms
       after hover or keyboard focus and on a 500 ms touch press; closes 200 ms after leaving trigger
       and card or on Esc with focus back on the trigger; shows the brief view read-only, or for a
       document without a brief its title and first 12 lines; a link inside the card follows; a
       missing target reports `link-preview-missing`; reference chips and incoming references show
       the same card (FR-006)
-- [ ] T023 [US3] `src/sheet_manager/features/documents/DocumentPreviewContent.tsx`: loads the target
+- [x] T023 [US3] `src/sheet_manager/features/documents/DocumentPreviewContent.tsx`: loads the target
       by id (`loadIntoCache`), renders the brief (`briefViewOf`) inside `PaneSourceProvider` with a
       read-only source, or the note lines through `MarkdownView`
-- [ ] T024 [US3] `src/sheet_manager/features/documents/DocumentPreviewCard.tsx`: the trigger and the
+- [x] T024 [US3] `src/sheet_manager/features/documents/DocumentPreviewCard.tsx`: the trigger and the
       Radix Popover with the timings of design D9, 360 × 480 px at most, scrolling
-- [ ] T025 [US3] `src/sheet_manager/features/documents/DocumentLink.tsx` wraps resolved links in the
+- [x] T025 [US3] `src/sheet_manager/features/documents/DocumentLink.tsx` wraps resolved links in the
       card; `src/sheet_manager/features/sheet/declarative/fieldControls.tsx` wraps reference names
       and incoming reference names; T022 passes
-- [ ] T026 [US3] Write `tests/sheet_manager/document-preview-card.perf.test.tsx`: the card's content
+- [x] T026 [US3] Write `tests/sheet_manager/document-preview-card.perf.test.tsx`: the card's content
       shows within 300 ms after the pause for a document not yet loaded (SC-002)
-- [ ] T027 [US3] Storybook: the card with a brief and with a note in
+- [x] T027 [US3] Storybook: the card with a brief and with a note in
       `src/sheet_manager/storybook/stories.ts`
-- [ ] T028 [US3] Run the targeted and perf tests and `yarn verify:fast`; commit the story
+- [x] T028 [US3] Run the targeted and perf tests and `yarn verify:fast`; commit the story
 
 ## User Story 4 - Keep links when documents are renamed or moved (P2)
 

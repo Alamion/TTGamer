@@ -23,6 +23,7 @@ import {
 import type { TemplateField } from '../../../types/template';
 import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
+import { DocumentPreviewTrigger } from '../../documents/DocumentPreviewCard';
 import { LINKED_FROM_LIMIT, useLinkedFrom } from '../../documents/linkedFrom';
 import { useBriefPage } from './areaLayout';
 import { useDocumentTraitDiceRoll } from './boundDocument';
@@ -707,18 +708,20 @@ function IncomingReferences({
                             !compact && 'border-border bg-bgBase'
                         )}
                     >
-                        <span>{name}</span>
-                        {onOpenDocument && (
-                            <button
-                                type="button"
-                                onClick={() => onOpenDocument(id)}
-                                aria-label={translate(referenceMessages.open, { title: name })}
-                                title={translate(referenceMessages.open, { title: name })}
-                                className="rounded-sm p-0.5 text-textSecondary hover:text-primary"
-                            >
-                                <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                            </button>
-                        )}
+                        <DocumentPreviewTrigger documentId={id} name={name}>
+                            <span>{name}</span>
+                            {onOpenDocument && (
+                                <button
+                                    type="button"
+                                    onClick={() => onOpenDocument(id)}
+                                    aria-label={translate(referenceMessages.open, { title: name })}
+                                    title={translate(referenceMessages.open, { title: name })}
+                                    className="rounded-sm p-0.5 text-textSecondary hover:text-primary"
+                                >
+                                    <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                                </button>
+                            )}
+                        </DocumentPreviewTrigger>
                     </li>
                 ))}
             </ul>
@@ -811,9 +814,17 @@ function OutgoingReferences({
                                         (title ? 'border-border bg-bgBase' : 'border-error/50')
                                 )}
                             >
-                                <span className={clsx(compact && 'min-w-0 truncate')}>
-                                    {title ?? translate(referenceMessages.missing)}
-                                </span>
+                                {title ? (
+                                    <DocumentPreviewTrigger documentId={id} name={title}>
+                                        <span className={clsx(compact && 'min-w-0 truncate')}>
+                                            {title}
+                                        </span>
+                                    </DocumentPreviewTrigger>
+                                ) : (
+                                    <span className={clsx(compact && 'min-w-0 truncate')}>
+                                        {translate(referenceMessages.missing)}
+                                    </span>
+                                )}
                                 {outOfScope.has(id) && (
                                     <span className="text-xs text-textSecondary">
                                         {translate(referenceMessages.outOfScope)}

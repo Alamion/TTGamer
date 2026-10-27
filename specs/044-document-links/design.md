@@ -192,3 +192,9 @@ proposal, guide, guidance).
   move, and the scroll goes to its first child. The page root carries `data-document-id`.
 - **The kind a missing link creates is declared**: `DocumentDefinition.newFromLink` (the General
   note sets it), so generic code finds it through the registry without naming a system.
+- **The card in the storybook (T027)**: the storybook shows template elements on a sandbox page, and
+  the card is not one; it is reached from the markdown story's links (a link to a document on the
+  device), whose note says so. Reference chips show it on the reference field stories.
+- **Workspace renderer as context**: cards draw a brief through `DocumentRenderContext`, which
+  `SheetWorkspace` provides from its `renderDocument`; without it (docs pages, tests) a card shows
+  the title and first lines, so `features/documents` never imports the sheet's page renderer.

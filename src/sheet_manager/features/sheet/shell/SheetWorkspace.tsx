@@ -20,6 +20,7 @@ import {
     systemRegistry,
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
+import { DocumentRenderContext } from '../../documents/documentRender';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
 import { DocumentLinkContext } from '../declarative/documentLinks';
 import { FloatingTabs } from '../panes/FloatingTabs';
@@ -240,101 +241,106 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
 
     return (
         <DocumentLinkContext.Provider value={followLink}>
-            <div className="bg-bgSurface p-4">
-                <SheetToolbar
-                    hasDocument={Boolean(currentDocument)}
-                    onCreate={() => setCreateDialogOpen(true)}
-                    onExport={() => void handleExport()}
-                    importAccept={importAccept()}
-                    onImport={handleImport}
-                    onManage={() => openTool('documents')}
-                    onReset={() => setResetDialogOpen(true)}
-                    onManageTemplates={() => openTool('library')}
-                    end={<div ref={setNoticeSlot} className="contents" />}
-                    viewMode={
-                        currentDocument && currentDefinition && currentView ? (
-                            <>
-                                {!several && (
-                                    <ViewModeSelect
-                                        views={selectableViews(
-                                            currentDefinition,
-                                            currentDocument,
-                                            settings
-                                        )}
-                                        value={templateSelectValue(
-                                            activeTemplateId,
-                                            currentView.id
-                                        )}
-                                        onChangeTemplate={(templateId) =>
-                                            updateDocumentMetadata(currentDocument.id, {
-                                                templateId: templateId ?? undefined,
-                                            })
-                                        }
-                                        onChangeView={(preferredViewId) =>
-                                            updateDocumentMetadata(currentDocument.id, {
-                                                preferredViewId,
-                                            })
-                                        }
-                                        templateOptions={templateOptions}
-                                    />
-                                )}
-                                <GameTermsMenu />
-                            </>
-                        ) : undefined
-                    }
-                />
-                {currentDocument && <TermHintNotice />}
-                {!currentDocument && currentDocumentId !== null && (
-                    <p role="status" className="py-6 text-center text-sm text-textSecondary">
-                        {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
-                    </p>
-                )}
-                {!currentDocument && currentDocumentId === null && (
-                    <div className="py-6 text-center">
-                        <h2 className="mb-2 text-xl font-bold text-textPrimary">
-                            <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentTitle" />
-                        </h2>
-                        <p className="mb-4 text-sm text-textSecondary">
-                            <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentDescription" />
+            <DocumentRenderContext.Provider value={renderDocument}>
+                <div className="bg-bgSurface p-4">
+                    <SheetToolbar
+                        hasDocument={Boolean(currentDocument)}
+                        onCreate={() => setCreateDialogOpen(true)}
+                        onExport={() => void handleExport()}
+                        importAccept={importAccept()}
+                        onImport={handleImport}
+                        onManage={() => openTool('documents')}
+                        onReset={() => setResetDialogOpen(true)}
+                        onManageTemplates={() => openTool('library')}
+                        end={<div ref={setNoticeSlot} className="contents" />}
+                        viewMode={
+                            currentDocument && currentDefinition && currentView ? (
+                                <>
+                                    {!several && (
+                                        <ViewModeSelect
+                                            views={selectableViews(
+                                                currentDefinition,
+                                                currentDocument,
+                                                settings
+                                            )}
+                                            value={templateSelectValue(
+                                                activeTemplateId,
+                                                currentView.id
+                                            )}
+                                            onChangeTemplate={(templateId) =>
+                                                updateDocumentMetadata(currentDocument.id, {
+                                                    templateId: templateId ?? undefined,
+                                                })
+                                            }
+                                            onChangeView={(preferredViewId) =>
+                                                updateDocumentMetadata(currentDocument.id, {
+                                                    preferredViewId,
+                                                })
+                                            }
+                                            templateOptions={templateOptions}
+                                        />
+                                    )}
+                                    <GameTermsMenu />
+                                </>
+                            ) : undefined
+                        }
+                    />
+                    {currentDocument && <TermHintNotice />}
+                    {!currentDocument && currentDocumentId !== null && (
+                        <p role="status" className="py-6 text-center text-sm text-textSecondary">
+                            {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
                         </p>
-                    </div>
+                    )}
+                    {!currentDocument && currentDocumentId === null && (
+                        <div className="py-6 text-center">
+                            <h2 className="mb-2 text-xl font-bold text-textPrimary">
+                                <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentTitle" />
+                            </h2>
+                            <p className="mb-4 text-sm text-textSecondary">
+                                <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentDescription" />
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                <ConfirmDialog
+                    open={resetDialogOpen}
+                    onOpenChange={setResetDialogOpen}
+                    onConfirm={handleResetConfirm}
+                    title={translate(uiMessages.sheet.documents.toolbar.resetTitle)}
+                    description={translate(uiMessages.sheet.documents.toolbar.resetDescription)}
+                    confirmLabel={translate(uiMessages.sheet.documents.toolbar.reset)}
+                    cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
+                    variant="danger"
+                />
+                <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+                <ImportSummaryDialog
+                    summary={importSummary}
+                    onClose={() => setImportSummary(null)}
+                />
+                <ImportConflictDialog
+                    offerApplyToRest={offerApplyToRest}
+                    open={importConflict !== null}
+                    subject={importConflict ?? 'document'}
+                    onResolve={resolveConflict}
+                />
+
+                {currentDocument ? (
+                    <PaneArea
+                        documentId={currentDocument.id}
+                        renderDocument={renderDocument}
+                        notices={notices}
+                        toolbarSlot={noticeSlot}
+                    />
+                ) : (
+                    // With no document there is no layout to dock in: the tools float.
+                    <FloatingTabs
+                        notices={notices}
+                        renderDocument={renderDocument}
+                        titleOf={(key) => tabKindOf(key)?.title() ?? key}
+                    />
                 )}
-            </div>
-
-            <ConfirmDialog
-                open={resetDialogOpen}
-                onOpenChange={setResetDialogOpen}
-                onConfirm={handleResetConfirm}
-                title={translate(uiMessages.sheet.documents.toolbar.resetTitle)}
-                description={translate(uiMessages.sheet.documents.toolbar.resetDescription)}
-                confirmLabel={translate(uiMessages.sheet.documents.toolbar.reset)}
-                cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
-                variant="danger"
-            />
-            <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
-            <ImportSummaryDialog summary={importSummary} onClose={() => setImportSummary(null)} />
-            <ImportConflictDialog
-                offerApplyToRest={offerApplyToRest}
-                open={importConflict !== null}
-                subject={importConflict ?? 'document'}
-                onResolve={resolveConflict}
-            />
-
-            {currentDocument ? (
-                <PaneArea
-                    documentId={currentDocument.id}
-                    renderDocument={renderDocument}
-                    notices={notices}
-                    toolbarSlot={noticeSlot}
-                />
-            ) : (
-                // With no document there is no layout to dock in: the tools float.
-                <FloatingTabs
-                    notices={notices}
-                    renderDocument={renderDocument}
-                    titleOf={(key) => tabKindOf(key)?.title() ?? key}
-                />
-            )}
+            </DocumentRenderContext.Provider>
         </DocumentLinkContext.Provider>
     );
 }

@@ -11,6 +11,7 @@ import { ConfirmDialog } from '../../components/dialogs/ConfirmDialog';
 import { reportSheetIssue } from '../../diagnostics';
 import { useDocumentSource } from '../../hooks/useDocumentSource';
 import { useDocumentStore } from '../../store/documentStore';
+import { DocumentPreviewTrigger } from './DocumentPreviewCard';
 import { createLinkedDocument, linkNoteKind, useFollowDocument } from './followLink';
 import { linkBuckets, resolveLink } from './linkResolve';
 
@@ -63,17 +64,19 @@ export function DocumentLink({ node }: { node: MarkdownWikilink }) {
             follow(entry.id, { newTab, ...(target.section ? { section: target.section } : {}) });
         };
         return (
-            <a
-                href={`?doc=${encodeURIComponent(entry.id)}`}
-                className={MARKDOWN_LINK_CLASSES}
-                title={translate(messages.link.openInNewTab, { name: entry.name })}
-                onClick={(event) => open(event, event.ctrlKey || event.metaKey)}
-                onAuxClick={(event) => {
-                    if (event.button === 1) open(event, true);
-                }}
-            >
-                {text}
-            </a>
+            <DocumentPreviewTrigger documentId={entry.id} name={entry.name}>
+                <a
+                    href={`?doc=${encodeURIComponent(entry.id)}`}
+                    className={MARKDOWN_LINK_CLASSES}
+                    title={translate(messages.link.openInNewTab, { name: entry.name })}
+                    onClick={(event) => open(event, event.ctrlKey || event.metaKey)}
+                    onAuxClick={(event) => {
+                        if (event.button === 1) open(event, true);
+                    }}
+                >
+                    {text}
+                </a>
+            </DocumentPreviewTrigger>
         );
     }
 

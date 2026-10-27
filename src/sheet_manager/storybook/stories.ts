@@ -1287,7 +1287,7 @@ const MARKDOWN_SAMPLE = [
 const markdown = story(
     'markdown',
     'Markdown text',
-    'Markdown text (spec 043): reading mode by default; Edit or Ctrl+E shows the source with a toolbar, side by side on a wide pane and as a toggle on a narrow one. Folded callouts start folded; checklist items tick in reading mode. Links (spec 044): a link to a document on this device opens it, one to a missing name shows dashed; in the links field type `[[` for documents of this device and `#` after a name for its sections.',
+    'Markdown text (spec 043): reading mode by default; Edit or Ctrl+E shows the source with a toolbar, side by side on a wide pane and as a toggle on a narrow one. Folded callouts start folded; checklist items tick in reading mode. Links (spec 044): a link to a document on this device opens it and shows its card on hover, focus, or a long press (the brief, or the first lines of a note), one to a missing name shows dashed; in the links field type `[[` for documents of this device and `#` after a name for its sections.',
     ENGINE,
     [
         { id: 'markdown-showcase', type: 'markdown', label: 'Session plan' },
