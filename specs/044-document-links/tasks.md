@@ -50,7 +50,8 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
       the pane store's `openInNewTab`; an alias shows as the text; an unresolved link has its own
       look, and a click asks, then creates a General note of that name in the source's folder and
       opens it; a section link scrolls to the `data-section` element or the top and reports
-      `link-section-missing` (FR-002, FR-003, FR-004)
+      `link-section-missing`; a section of a shipped page matches in the shown language and by its
+      English source text (FR-002, FR-003, FR-004)
 - [ ] T011 [US1] `src/shared/components/markdown/MarkdownView.tsx`: slots `renderWikilink(node)` and
       `renderEmbed(node)` (pictures through `resolveEmbed` first), `data-section` on headings;
       `tests/shared/markdown/MarkdownView.test.tsx` covers the slots and the attribute
@@ -78,8 +79,9 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 - [ ] T017 [US2] `src/sheet_manager/features/documents/linkSuggestions.ts`: matches from `query.ts`
       normalized names ordered by `linkResolve` nearness (at most 20), and `sectionsOf(entry)`
       (stored note headings, or labels of the default full page)
-- [ ] T018 [US2] `src/shared/components/markdown/caretPosition.ts`: caret coordinates of a textarea
-      by mirror element; `src/sheet_manager/features/sheet/declarative/LinkSuggestions.tsx` and
+- [ ] T018 [US2] `src/sheet_manager/features/sheet/declarative/caretPosition.ts`: caret coordinates
+      of a textarea by mirror element;
+      `src/sheet_manager/features/sheet/declarative/LinkSuggestions.tsx` and
       `MarkdownFieldControl.tsx` wiring (`aria-autocomplete`, `aria-activedescendant`); T016 passes
 - [ ] T019 [US2] Write `tests/sheet_manager/link-suggestions.perf.test.ts`: suggestions over 3,000
       entries within 100 ms per keystroke (SC-001)
@@ -119,16 +121,20 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
       writes a folder path; a move rewrites only where nearness changed; a folder move keeps inner
       links unchanged; a new, copied, imported, or moved-in document of the same name nearer to a
       source rewrites that source's links to keep their target; deleting rewrites nothing; undo
-      restores every previous text and skips the keeper; redo re-runs it (FR-008)
+      reverts only the rewritten links and skips the keeper, keeping edits made to those notes after
+      the rename, and leaves a link changed by hand meanwhile (reported); redo re-runs it; a name
+      typed in the sheet is taken after 1.5 s, on blur, or on `pagehide`, and a rename from the
+      documents window is not taken twice (FR-008)
 - [ ] T030 [US4] `src/sheet_manager/features/documents/linkKeeper.ts`: affected names from entries
       before and after; sources from the reverse map; resolve before and after; edits through
       `rewriteLinks`; documents loaded by id and written with `updateTemplateValues`; returns the
-      previous texts (design D5)
+      link edits for undo (design D5)
 - [ ] T031 [US4] `src/sheet_manager/features/documents/history.ts` and `treeActions.ts`: a history
-      entry carries `texts`; `runTreeChange` runs the keeper and attaches them; undo restores them
-      without the keeper (design D6)
-- [ ] T032 [US4] A rename typed in a sheet's name field: taken after 1.5 s of quiet as a rename from
-      the baseline name, pushed to the documents history with its texts
+      entry carries link edits; `runTreeChange` runs the keeper and attaches them; undo applies the
+      reverse edits without the keeper (design D6)
+- [ ] T032 [US4] A rename typed in a sheet's name field: taken after 1.5 s of quiet, on the field's
+      blur, or on `pagehide` as a rename from the baseline name, pushed to the documents history
+      with its link edits; renames made by tree operations are marked and skipped
       (`src/sheet_manager/features/documents/nameSettle.ts`, wired where the store syncs the title)
 - [ ] T033 [US4] Create, example copies (`createFromChoice.ts`), and imports (`importBatch.ts`) run
       the keeper without a history entry; the `links-kept` message names the count; T029 passes
@@ -159,7 +165,8 @@ field to a character page.
 - [ ] T040 [US5] `src/sheet_manager/systems/general/note.ts`: `noteTemplate` gains the `mentions`
       field at the bottom; storybook story in `src/sheet_manager/storybook/stories.ts`; T036 passes
 - [ ] T041 [US5] Add a "Mentioned in" timing to `tests-e2e/timings/documents.spec.ts` (3,000
-      documents, 10 links each) next to the link index boot timing (SC-003)
+      documents, 10 links each) next to the link index boot timing; a reported timing, while the
+      measurement in design D3 is the check of SC-003
 - [ ] T042 [US5] Run `yarn verify` (schema change) and commit the story
 
 ## User Story 6 - Embed a document in a note (P4)

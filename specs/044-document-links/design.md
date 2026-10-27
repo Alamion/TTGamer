@@ -38,7 +38,9 @@ proposal, guide, guidance).
   context, 4.6 MB): `iterate` + reverse map 55–85 ms, keys 15 ms. _So_ "Mentioned in" covers every
   markdown field of every document (SC-003 met; the smaller-scope fallback is not needed).
   _Rejected_: links inside index entries — the slim store value is written whole on every change
-  (4.6 MB each time); one aggregate record — the same rewrite cost per save.
+  (4.6 MB each time); one aggregate record — the same rewrite cost per save. _Limit_: a second tab's
+  reverse map is not refreshed by the first tab's writes until it reloads (the index entries are
+  merged across tabs, the link map is not).
 - **D4 — Extraction is a scan, not a parse** (`shared/markdown/links.ts`): line by line, skipping
   fenced blocks and code spans, `[[…]]`/`![[…]]` with `|`, `#`, and a path; values are every
   template value shaped `{ text }` (markdown values). _Why_: a 300,000-character note is scanned in
@@ -51,19 +53,26 @@ proposal, guide, guidance).
   `!` kept). Rewritten documents are loaded by id and written through `updateTemplateValues`.
   _Rejected_: re-resolving on read only (spec Q answered A).
 - **D6 — Where it runs and how it undoes**: tree changes (`runTreeChange`) run the keeper after the
-  operations and attach the previous texts to the same history entry; Undo restores those texts
-  exactly and skips the keeper, Redo re-runs it. A rename typed into a sheet's name field is taken
-  once the name has been quiet for 1.5 s (baseline name → current) and pushed to the same documents
-  history as a rename, so Ctrl+Z undoes both. Create, example copies, and imports run the keeper
-  without an undo entry (their rewrites keep targets, so nothing needs reverting). A message names
-  the count (`links-kept`). _Rejected_: a keeper per keystroke — would rewrite `[[I]]`, `[[In]]`, …
+  operations and attach the link edits (document, key, link before and after) to the same history
+  entry; Undo applies the reverse edits through `rewriteLinks` and skips the keeper, so edits made
+  to those documents since stay; a link changed by hand meanwhile is left alone and reported
+  (`links-kept` with `skipped`). Redo re-runs the keeper. A rename typed into a sheet's name field
+  is taken once the name has been quiet for 1.5 s, on the field's blur, or on `pagehide` (baseline
+  name → current), and pushed to the same documents history as a rename, so Ctrl+Z undoes both;
+  renames made by tree operations (which also write the title) are marked and not taken again.
+  Create, example copies, and imports run the keeper without an undo entry (their rewrites keep
+  targets, so nothing needs reverting). A message names the count (`links-kept`). _Rejected_: a
+  keeper per keystroke — would rewrite `[[I]]`, `[[In]]`, …
 - **D7 — Following** reuses `DocumentLinkContext` (history, `?doc=`); Ctrl/Cmd/middle click calls
   the pane store's `openInNewTab`. A section scrolls to the element marked `data-section` with that
   name: note headings (`MarkdownView` adds the attribute) and sheet sections, cards, brief blocks,
-  and field labels (`DeclarativeSheetView` adds it from node labels). An unresolved click asks in a
+  and field labels (`DeclarativeSheetView` adds it from node labels). Shipped labels are translated,
+  so a section matches the label in the shown language or its English source text
+  (`data-section-source`), and suggestions insert the shown label. An unresolved click asks in a
   small confirm dialog and calls `createFromChoice` for the General note in the source's folder.
 - **D8 — Suggestions** in `MarkdownFieldControl`: the textarea is an ARIA combobox while the caret
-  sits after an open `[[`; a listbox placed at the caret (mirror-element measurement, no new
+  sits after an open `[[`; a listbox placed at the caret (mirror-element measurement in
+  `features/sheet/declarative/caretPosition.ts`, kept out of `shared/` while it has one user; no new
   dependency) shows up to 20 matches from `query.ts` normalized names, nearest first (D1 order),
   with kind and folder. After `#` it lists the target's sections: note headings from its stored
   text, or the labels of sections, cards, blocks, and fields of its default full page.
@@ -82,14 +91,14 @@ proposal, guide, guidance).
   document already on the embed path shows as a link (cycle). Pictures win: a name the field's
   `images` holds is a picture. _Why_: the content component is the preview card's; the extras are
   the heading slice and the one-node page (~120 lines). _Rejected_: deferring — the cost is small.
-- **D12 — "Mentioned in" is a field type** `mentions` (`types/template.ts`, read-only, label and
+- **D11 — "Mentioned in" is a field type** `mentions` (`types/template.ts`, read-only, label and
   `rows` to show before "Show all", default 8): drawn as a list of source names with their kind and
   the context line, each opening the source at the line. In the **+** menu after `markdown`; not
   allowed in list items or table columns (no value to hold). Shipped only at the bottom of
   `general-note`. A brief draws it compact. _Why_: the maintainer's choice (spec Q); it reuses the
   field machinery and lets authors place it. _Rejected_: a fixed footer under every page or the
   documents window details — no control for authors, and brief heights are pinned.
-- **D11 — Cloud contract** (FR-011): proposal 0.2.0 in `openapi.yaml` and `CHANGES.md` (author
+- **D12 — Cloud contract** (FR-011): proposal 0.2.0 in `openapi.yaml` and `CHANGES.md` (author
   frontend, approval pending): `StoredDocument` gains optional `links` (the D3 rows, snake_case),
   sent by the client because `template_values` stay opaque to the server;
   `GET /documents/mentions?name=…` returns sources whose links name it (the client resolves

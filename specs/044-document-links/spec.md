@@ -36,8 +36,8 @@ roadmap path `gm-notes-templates`.
 - Q: When the nearest document of a name changes (the target moves, or a same-name document appears
   nearer), what do existing links point to? → A: Links resolve live by the nearest rule, but every
   change that would move an existing link to another document (renaming or moving its target,
-  creating, copying, importing, or moving in a document of the same name) rewrites that link with a
-  folder path so it keeps its target; the change and the rewrites undo as one step.
+  creating (from an example too), importing, or moving in a document of the same name) rewrites that
+  link with a folder path so it keeps its target; the change and the rewrites undo as one step.
 - Q: Where does "Mentioned in" show? → A: As a field of its own, drawn as a list: by default only at
   the bottom of the General pages (today the Note), and any template author can place it on other
   pages from the template editor.
@@ -118,8 +118,8 @@ member of a V5 group.
    **Then** the same card shows the member's brief.
 4. **Given** the card is open, **When** the GM clicks a link inside it, **Then** that document opens
    as if the link were followed from the page.
-5. **Given** a keyboard user focuses a link, **When** they press the preview key, **Then** the card
-   opens, Esc closes it, and focus returns to the link.
+5. **Given** a keyboard user moves focus to a link, **When** focus stays on it for the same pause as
+   a hover, **Then** the card opens, Esc closes it, and focus stays on the link.
 
 ---
 
@@ -143,8 +143,8 @@ restores the old state and the old links.
 3. **Given** a link that resolved to another document of the same old name, **When** one of them is
    renamed, **Then** only links that resolved to the renamed document change.
 4. **Given** a note in `World/Characters` linking `[[Sword]]` to `World/Items/Sword`, **When** the
-   GM creates (or copies, imports, or moves in) another "Sword" in `World/Characters`, **Then** the
-   existing link is rewritten `[[World/Items/Sword]]` and still opens the first sword.
+   GM creates (from an example too, imports, or moves in) another "Sword" in `World/Characters`,
+   **Then** the existing link is rewritten `[[World/Items/Sword]]` and still opens the first sword.
 5. **Given** that note, **When** `World/Items/Sword` moves to `Archive/`, **Then** the link keeps
    opening it, rewritten with a path only if the nearest rule would now pick another sword.
 
@@ -199,8 +199,9 @@ preview card (Story 3, design D10).
   chooses one explicitly.
 - **Picture or document**: `![[map.png]]` stays a picture when the note stores a picture of that
   name; only otherwise is it a document embed.
-- **Deleted target**: its links show as unresolved; restoring the document (Undo) resolves them
-  again. Deleting never rewrites other documents' text.
+- **Deleted target**: its links resolve to the next nearest document of that name, or show as
+  unresolved when no other has it (as in Obsidian); restoring the document (Undo) resolves them to
+  it again. Deleting never rewrites other documents' text.
 - **Rename to a taken name**: rewritten links use the folder path when the new name is no longer
   unique, so they keep resolving to the renamed document.
 - **Moving a folder**: moving a folder counts as moving every document in it; links between
@@ -236,9 +237,10 @@ preview card (Story 3, design D10).
   makes (target as written, resolved document, field, line), updated when a document is saved,
   imported, deleted, or restored, and rebuilt when missing or out of date.
 - **FR-008**: Any change that would make an existing link resolve to a different document — renaming
-  or moving its target, or creating, copying, importing, or moving in a document of the same name —
-  MUST rewrite that link (new name, or a folder path when the nearest rule would pick another
-  document), keeping aliases and sections, report the count, and undo as one step with the change.
+  or moving its target, or creating (from an example too), importing, or moving in a document of the
+  same name — MUST rewrite that link (new name, or a folder path when the nearest rule would pick
+  another document), keeping aliases and sections, report the count, and undo as one step with the
+  change; undo reverts only the rewritten links, never other edits made to those documents since.
 - **FR-009**: A read-only "Mentioned in" field MUST list, from the link index, the documents whose
   markdown links to the shown document, with the line around each link, opening the source at that
   line; it MUST be offered in the template editor's **+** menu and sit at the bottom of the shipped
@@ -278,8 +280,8 @@ preview card (Story 3, design D10).
 
 - Links resolve among the documents on this device; cloud documents join through FR-011 later.
 - A new note created from an unresolved link starts empty in the source note's folder.
-- Ctrl-click opens a new tab in the documents window layout of spec 036; when the layout is full, it
-  replaces the oldest unpinned tab as opening any document does.
+- Ctrl-click opens a new tab in the workspace layout (spec 036); when the layout is full, the
+  layout's own rule for opening one more document applies.
 - Reference fields keep their stored ids; only the preview card is added to them.
 - Plain text fields are out of scope; links work in markdown fields only.
 - Links to library items, catalog entries, and rules pages are out of scope.
