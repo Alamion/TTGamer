@@ -82,6 +82,8 @@ export interface DocumentDefinition<TData = unknown> {
     examples?: readonly DocumentExample[];
     /** A file format of the kind's own, used instead of the JSON export (spec 043: markdown). */
     files?: DocumentFileFormat;
+    /** A link to a name no document has offers to create a document of this kind (spec 044). */
+    newFromLink?: true;
 }
 
 /** How a kind's documents leave and arrive as files of their own format (spec 043, D9). */

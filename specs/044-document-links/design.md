@@ -185,3 +185,10 @@ proposal, guide, guidance).
   start-up rebuild re-reads only documents never indexed (all of them once, the first time). The
   records live in their own IndexedDB database (`ttgamer-links`), not a second store of the
   documents' database, so localForage never has to upgrade that database's version.
+- **Section anchors by wrapper (T013)**: instead of a `data-section` attribute in every container
+  and field component, each titled or labelled node is wrapped in a `display: contents` element with
+  `data-node-id`, `data-section` (shown name), and `data-section-source` (source name)
+  (`declarative/sectionAnchors.tsx`); it takes no box, so layouts and pinned brief heights do not
+  move, and the scroll goes to its first child. The page root carries `data-document-id`.
+- **The kind a missing link creates is declared**: `DocumentDefinition.newFromLink` (the General
+  note sets it), so generic code finds it through the registry without naming a system.

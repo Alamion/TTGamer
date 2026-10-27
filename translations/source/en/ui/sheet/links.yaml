@@ -1,0 +1,8 @@
+link:
+    openInNewTab: '{name} (Ctrl+click: in a new tab)'
+    unresolved: 'No document is named {name} yet: click to create a note'
+createPrompt:
+    title: 'Create “{name}”?'
+    body: 'No document is named {name}. Create a note with this name next to this one and open it?'
+    confirm: Create note
+    cancel: Cancel

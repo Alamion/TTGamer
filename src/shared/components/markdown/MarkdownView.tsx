@@ -31,8 +31,12 @@ export interface MarkdownViewProps {
     source: string;
     /** Replaces an inline code span (a roll control); `undefined` keeps the plain code. */
     renderCode?: (code: string) => ReactNode;
-    /** The URL of an `![[name]]` embed; `undefined` shows the embed as inert text. */
+    /** The URL of an `![[name]]` picture; `undefined` passes the embed to `renderEmbed`. */
     resolveEmbed?: (name: string) => string | undefined;
+    /** An `![[name]]` that is not a picture (a document); `undefined` shows it as inert text. */
+    renderEmbed?: (node: MarkdownEmbed) => ReactNode;
+    /** A `[[link]]`; `undefined` shows it as inert link-styled text. */
+    renderWikilink?: (node: MarkdownWikilink) => ReactNode;
     /** Ticks a task's checkbox on its source line; without it checkboxes are read-only. */
     onToggleTask?: (line: number) => void;
     onIssue?: (issue: MarkdownIssue) => void;
@@ -41,9 +45,14 @@ export interface MarkdownViewProps {
     className?: string;
 }
 
+export type MarkdownEmbed = Extract<MarkdownInline, { type: 'embed' }>;
+export type MarkdownWikilink = Extract<MarkdownInline, { type: 'wikilink' }>;
+
 interface Slots {
     renderCode?: (code: string) => ReactNode;
     resolveEmbed?: (name: string) => string | undefined;
+    renderEmbed?: (node: MarkdownEmbed) => ReactNode;
+    renderWikilink?: (node: MarkdownWikilink) => ReactNode;
     onToggleTask?: (line: number) => void;
     headingOffset: number;
 }
@@ -141,12 +150,39 @@ function collectIssues(blocks: readonly MarkdownBlock[], issues: MarkdownIssue[]
     }
 }
 
+/** What inline nodes read as, without markup (a heading's section name). */
+export function plainText(nodes: readonly MarkdownInline[]): string {
+    return nodes
+        .map((node) => {
+            switch (node.type) {
+                case 'text':
+                    return node.text;
+                case 'code':
+                    return node.code;
+                case 'strong':
+                case 'em':
+                case 'del':
+                case 'mark':
+                case 'link':
+                    return plainText(node.children);
+                case 'image':
+                    return node.alt;
+                case 'embed':
+                    return node.alt ?? node.name;
+                case 'wikilink':
+                    return node.alias ?? node.target;
+            }
+        })
+        .join('')
+        .trim();
+}
+
 function Inlines({ nodes }: { nodes: readonly MarkdownInline[] }) {
     return nodes.map((node, index) => <Inline key={index} node={node} />);
 }
 
 function Inline({ node }: { node: MarkdownInline }) {
-    const { renderCode, resolveEmbed } = useContext(SlotsContext);
+    const { renderCode, resolveEmbed, renderEmbed, renderWikilink } = useContext(SlotsContext);
     switch (node.type) {
         case 'text':
             return node.text;
@@ -185,7 +221,7 @@ function Inline({ node }: { node: MarkdownInline }) {
         }
         case 'link':
             return node.href.startsWith('#') ? (
-                <a href={node.href} title={node.title} className={LINK_CLASSES}>
+                <a href={node.href} title={node.title} className={MARKDOWN_LINK_CLASSES}>
                     <Inlines nodes={node.children} />
                 </a>
             ) : (
@@ -194,7 +230,7 @@ function Inline({ node }: { node: MarkdownInline }) {
                     title={node.title}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className={LINK_CLASSES}
+                    className={MARKDOWN_LINK_CLASSES}
                 >
                     <Inlines nodes={node.children} />
                 </a>
@@ -211,7 +247,7 @@ function Inline({ node }: { node: MarkdownInline }) {
                             href={node.src}
                             target="_blank"
                             rel="noreferrer noopener"
-                            className={LINK_CLASSES}
+                            className={MARKDOWN_LINK_CLASSES}
                         >
                             {node.alt || node.src}
                         </a>
@@ -225,14 +261,22 @@ function Inline({ node }: { node: MarkdownInline }) {
             if (src) {
                 return <img src={src} alt={node.alt ?? node.name} className="max-w-full" />;
             }
-            return <InertLink text={`![[${node.name}${node.alt ? `|${node.alt}` : ''}]]`} />;
+            return (
+                renderEmbed?.(node) ?? (
+                    <InertLink text={`![[${node.name}${node.alt ? `|${node.alt}` : ''}]]`} />
+                )
+            );
         }
         case 'wikilink':
-            return <InertLink text={node.alias ?? node.target} title={node.target} />;
+            return (
+                renderWikilink?.(node) ?? (
+                    <InertLink text={node.alias ?? node.target} title={node.target} />
+                )
+            );
     }
 }
 
-const LINK_CLASSES =
+export const MARKDOWN_LINK_CLASSES =
     'text-primary underline underline-offset-2 hover:text-primary-hover focus-visible:outline-1 focus-visible:outline-primary';
 
 /** A link that does nothing yet (spec 043 FR-010): looks like a link, reads as text. */
@@ -302,6 +346,7 @@ function Block({ block }: { block: MarkdownBlock }): ReactNode {
             const Tag = `h${String(level)}` as 'h2';
             return (
                 <Tag
+                    data-section={plainText(block.children)}
                     className={clsx('mt-3 mb-1 text-textPrimary', HEADING_CLASSES[block.level - 1])}
                 >
                     <Inlines nodes={block.children} />
@@ -438,6 +483,8 @@ export function MarkdownView({
     source,
     renderCode,
     resolveEmbed,
+    renderEmbed,
+    renderWikilink,
     onToggleTask,
     onIssue,
     headingOffset = 1,
@@ -445,8 +492,15 @@ export function MarkdownView({
 }: MarkdownViewProps) {
     const tops = useMemo(() => parseMarkdown(source), [source]);
     const slots = useMemo(
-        () => ({ renderCode, resolveEmbed, onToggleTask, headingOffset }),
-        [renderCode, resolveEmbed, onToggleTask, headingOffset]
+        () => ({
+            renderCode,
+            resolveEmbed,
+            renderEmbed,
+            renderWikilink,
+            onToggleTask,
+            headingOffset,
+        }),
+        [renderCode, resolveEmbed, renderEmbed, renderWikilink, onToggleTask, headingOffset]
     );
     useEffect(() => {
         if (!onIssue) return;

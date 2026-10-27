@@ -27,6 +27,7 @@ import { CompactTextField } from '../../../components/stat-fields/CompactSheetFi
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
 import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
     clampFieldNumber,
@@ -75,6 +76,7 @@ import { localizeTemplate } from './localizeTemplate';
 import { PageScopeContext } from './PageScope';
 import { ScoreTracker } from './PoolTracker';
 import { PrimitiveNodeView, SystemListView } from './primitives';
+import { SectionAnchor, sourceAnchorNames, SourceAnchorNamesContext } from './sectionAnchors';
 import { SheetButton } from './SheetButton';
 import { ShortLabelScope } from './ShortLabelScope';
 import { aboveParent, offeredByParent, parentRatings } from './tableParent';
@@ -900,9 +902,13 @@ function ChildrenGrid({
                 showHidden={overlay !== null}
             />
         );
-        return overlay
-            ? framedNode(overlay, pageApi, version, node, parentId, index, column, content)
-            : content;
+        return overlay ? (
+            framedNode(overlay, pageApi, version, node, parentId, index, column, content)
+        ) : (
+            <SectionAnchor key={node.id} node={node}>
+                {content}
+            </SectionAnchor>
+        );
     };
     const endSlot = overlay?.renderEndSlot({ parentId, index: nodes.length, column: null });
     const isProportional = columns !== undefined && columns > 1 && columnWidths?.length === columns;
@@ -1098,10 +1104,13 @@ export function DeclarativeSheetView({
     const values = pageApi.values;
     const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
     const pageScope = useMemo(() => ({ pageApi, template: localized }), [pageApi, localized]);
+    const anchorSources = useMemo(() => sourceAnchorNames(template.children), [template]);
+    const documentId = useDocumentSource().document?.id;
 
     return (
         <div
             data-template-root={template.id}
+            data-document-id={documentId}
             className={
                 embedded
                     ? '@container/brief min-w-0 space-y-6'
@@ -1115,9 +1124,11 @@ export function DeclarativeSheetView({
             <TermHintProvider>
                 <OverlayVersionContext.Provider value={version}>
                     <PageScopeContext.Provider value={pageScope}>
-                        <PageKindContext.Provider value={template.pageKind ?? 'full'}>
-                            <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
-                        </PageKindContext.Provider>
+                        <SourceAnchorNamesContext.Provider value={anchorSources}>
+                            <PageKindContext.Provider value={template.pageKind ?? 'full'}>
+                                <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                            </PageKindContext.Provider>
+                        </SourceAnchorNamesContext.Provider>
                     </PageScopeContext.Provider>
                 </OverlayVersionContext.Provider>
             </TermHintProvider>

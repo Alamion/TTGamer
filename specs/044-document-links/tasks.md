@@ -45,26 +45,26 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 
 **Check**: a note links an existing character, a missing name, and a section; follow each.
 
-- [ ] T010 [US1] Write `tests/sheet_manager/markdown-links-field.test.tsx` first (follow part): a
+- [x] T010 [US1] Write `tests/sheet_manager/markdown-links-field.test.tsx` first (follow part): a
       resolved link opens its target through `DocumentLinkContext`; Ctrl/Cmd and middle click call
       the pane store's `openInNewTab`; an alias shows as the text; an unresolved link has its own
       look, and a click asks, then creates a General note of that name in the source's folder and
       opens it; a section link scrolls to the `data-section` element or the top and reports
       `link-section-missing`; a section of a shipped page matches in the shown language and by its
       English source text (FR-002, FR-003, FR-004)
-- [ ] T011 [US1] `src/shared/components/markdown/MarkdownView.tsx`: slots `renderWikilink(node)` and
+- [x] T011 [US1] `src/shared/components/markdown/MarkdownView.tsx`: slots `renderWikilink(node)` and
       `renderEmbed(node)` (pictures through `resolveEmbed` first), `data-section` on headings;
       `tests/shared/markdown/MarkdownView.test.tsx` covers the slots and the attribute
-- [ ] T012 [US1] `src/sheet_manager/features/documents/DocumentLink.tsx`: the wikilink rendering
+- [x] T012 [US1] `src/sheet_manager/features/documents/DocumentLink.tsx`: the wikilink rendering
       (resolved link, unresolved link with the create prompt through `createFromChoice`), click
       handling, and the scroll to a section after the target is shown
-- [ ] T013 [US1] `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx` (and the
+- [x] T013 [US1] `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx` (and the
       container and field wrappers it uses): `data-section` from the labels of sections, cards,
       brief blocks, and fields
-- [ ] T014 [US1] `src/sheet_manager/features/sheet/declarative/MarkdownFieldControl.tsx` passes
+- [x] T014 [US1] `src/sheet_manager/features/sheet/declarative/MarkdownFieldControl.tsx` passes
       `renderWikilink`; translations in `translations/source/{en,ru}/ui/sheet/links.yaml`; T010
       (follow part) passes
-- [ ] T015 [US1] Run the targeted tests and `yarn verify:fast`; commit the story
+- [x] T015 [US1] Run the targeted tests and `yarn verify:fast`; commit the story
 
 ## User Story 2 - Write links with suggestions (P1)
 

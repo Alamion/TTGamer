@@ -4,6 +4,7 @@ import { useNoteRollCode } from '@site/src/integrations/sheet-dice/noteRolls';
 import {
     type MarkdownIssue,
     MarkdownView,
+    type MarkdownWikilink,
 } from '@site/src/shared/components/markdown/MarkdownView';
 import { toggleTaskLine } from '@site/src/shared/markdown/parse';
 import { clsx } from 'clsx';
@@ -42,6 +43,7 @@ import {
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
+import { DocumentLink } from '../../documents/DocumentLink';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
 import { useBriefPage } from './areaLayout';
 import type { TemplateFieldControlProps } from './fieldControls';
@@ -56,6 +58,9 @@ import {
 import { withImage, withoutUnusedImages } from './markdownImages';
 
 const messages = uiMessages.shared.markdown.editor;
+
+/** `[[links]]` between documents (spec 044): followed, or offered for creation. */
+const renderWikilink = (node: MarkdownWikilink) => <DocumentLink node={node} />;
 type MarkdownField = Extract<TemplateField, { type: 'markdown' }>;
 
 /** Wide enough for source and result side by side (design D7). */
@@ -192,6 +197,7 @@ function BriefMarkdown({
                             source={text}
                             renderCode={renderCode}
                             resolveEmbed={resolveEmbed}
+                            renderWikilink={renderWikilink}
                             onToggleTask={onToggleTask}
                             onIssue={reportIssue}
                             headingOffset={2}
@@ -398,6 +404,7 @@ export function MarkdownFieldControl({
             source={editing ? deferredText : text}
             renderCode={renderCode}
             resolveEmbed={resolveEmbed}
+            renderWikilink={renderWikilink}
             onToggleTask={disabled ? undefined : toggleTask}
             onIssue={reportIssue}
         />

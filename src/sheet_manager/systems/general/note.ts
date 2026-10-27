@@ -109,4 +109,5 @@ export const noteDefinition: DocumentDefinition = {
     ],
     migrate: (data) => data,
     examples: EXAMPLES,
+    newFromLink: true,
 };
