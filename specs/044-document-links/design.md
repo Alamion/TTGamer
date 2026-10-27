@@ -198,3 +198,14 @@ proposal, guide, guidance).
 - **Workspace renderer as context**: cards draw a brief through `DocumentRenderContext`, which
   `SheetWorkspace` provides from its `renderDocument`; without it (docs pages, tests) a card shows
   the title and first lines, so `features/documents` never imports the sheet's page renderer.
+- **Redo writes the step's edits again (T031)**: undo applies a step's link edits in reverse and
+  redo applies the same edits forward, instead of planning anew; for the same tree change both give
+  the same text, and a link edited by hand meanwhile is left alone either way.
+- **Moving a source counts (T030)**: a document moved to another folder has every link of its own
+  checked too, since nearness is read from where the link is; FR-008's "any change" covers it.
+- **Where a name typed on a sheet is taken (T032)**: `linkKeeperRuntime.ts` watches the index while
+  the workspace is open: a new, copied, or imported document is kept at once, a name once quiet for
+  1.5 s, on `focusout`, or on `pagehide`; tree changes run inside `withoutKeeper`, so a rename from
+  the documents window (which also writes the title) is taken once. A typed rename joins the
+  documents history only when it rewrote links. A short status line (`LinksKeptStatus`) says how
+  many links were kept or put back: the app had no message line to reuse.

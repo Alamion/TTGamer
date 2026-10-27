@@ -14,3 +14,8 @@ preview:
     loading: Loading…
     missing: This document is not available.
     empty: Nothing written yet.
+kept:
+    status: 'Links kept: {links} in {documents} other documents.'
+    restored: 'Links put back: {links} in {documents} documents.'
+    skipped: '{skipped} were edited since and stay as they are.'
+    rename: 'Rename to {name}'

@@ -25,7 +25,12 @@ import { isUserKind } from '../systems/userTypes';
 import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';
 import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
-import { type TemplatePageValues, TemplatePageValuesSchema } from '../types/templateValues';
+import {
+    TEMPLATE_VALUES_LIMITS,
+    TemplateMarkdownValueSchema,
+    type TemplatePageValues,
+    TemplatePageValuesSchema,
+} from '../types/templateValues';
 import { bootDocuments } from './documentBoot';
 import {
     deviceImageIdsOf,
@@ -399,6 +404,54 @@ async function renameDocumentContent(id: string, name: string): Promise<void> {
         });
     }
     updateDocumentMetadata(id, { title: name });
+}
+
+/**
+ * Rewrites the markdown values of a document, loaded or not (spec 044, keeping links): `rewrite`
+ * gets each markdown value's key and text and returns the text to keep. Returns whether anything
+ * changed; a text that would grow past the markdown limit is left as it was.
+ */
+export async function rewriteDocumentMarkdown(
+    id: string,
+    rewrite: (key: string, text: string) => string
+): Promise<boolean> {
+    const store = useDocumentStore;
+    let document = store.getState().documents.find((candidate) => candidate.id === id);
+    if (!document) {
+        const entry = store.getState().entries.find((candidate) => candidate.id === id);
+        document = (await readEnvelope(id, entry)) ?? undefined;
+        if (!document) return false;
+        const loaded = document;
+        store.setState((state) => ({
+            documents: state.documents.some((candidate) => candidate.id === id)
+                ? state.documents
+                : loadInto(state.documents, loaded, keepIds(state, id)),
+        }));
+        document = store.getState().documents.find((candidate) => candidate.id === id) ?? loaded;
+    }
+    const values: TemplatePageValues = { ...document.templateValues };
+    let changed = false;
+    for (const [key, value] of Object.entries(values)) {
+        const markdown = TemplateMarkdownValueSchema.safeParse(value);
+        if (!markdown.success) continue;
+        const text = rewrite(key, markdown.data.text);
+        if (text === markdown.data.text || text.length > TEMPLATE_VALUES_LIMITS.markdownMaxLength) {
+            continue;
+        }
+        values[key] = { ...markdown.data, text };
+        changed = true;
+    }
+    if (!changed) return false;
+    store.setState(({ documents, entries }) => {
+        const current = documents.find((candidate) => candidate.id === id);
+        if (!current) return {};
+        const next = { ...current, templateValues: values };
+        return {
+            documents: documents.map((candidate) => (candidate.id === id ? next : candidate)),
+            entries: syncEntry(entries, next, { touch: true }),
+        };
+    });
+    return true;
 }
 
 /** The ids a read must not evict: the one being shown, the current one, and the panes' documents. */

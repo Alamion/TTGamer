@@ -116,7 +116,7 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 
 **Check**: three notes link to Ines; rename her; undo; create a nearer Sword.
 
-- [ ] T029 [US4] Write `tests/sheet_manager/link-keeper.test.ts` first: a rename rewrites links that
+- [x] T029 [US4] Write `tests/sheet_manager/link-keeper.test.ts` first: a rename rewrites links that
       resolved to the document (alias, section, `!` kept) and no others; renaming to a taken name
       writes a folder path; a move rewrites only where nearness changed; a folder move keeps inner
       links unchanged; a new, copied, imported, or moved-in document of the same name nearer to a
@@ -125,22 +125,22 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
       the rename, and leaves a link changed by hand meanwhile (reported); redo re-runs it; a name
       typed in the sheet is taken after 1.5 s, on blur, or on `pagehide`, and a rename from the
       documents window is not taken twice (FR-008)
-- [ ] T030 [US4] `src/sheet_manager/features/documents/linkKeeper.ts`: affected names from entries
+- [x] T030 [US4] `src/sheet_manager/features/documents/linkKeeper.ts`: affected names from entries
       before and after; sources from the reverse map; resolve before and after; edits through
       `rewriteLinks`; documents loaded by id and written with `updateTemplateValues`; returns the
       link edits for undo (design D5)
-- [ ] T031 [US4] `src/sheet_manager/features/documents/history.ts` and `treeActions.ts`: a history
+- [x] T031 [US4] `src/sheet_manager/features/documents/history.ts` and `treeActions.ts`: a history
       entry carries link edits; `runTreeChange` runs the keeper and attaches them; undo applies the
       reverse edits without the keeper (design D6)
-- [ ] T032 [US4] A rename typed in a sheet's name field: taken after 1.5 s of quiet, on the field's
+- [x] T032 [US4] A rename typed in a sheet's name field: taken after 1.5 s of quiet, on the field's
       blur, or on `pagehide` as a rename from the baseline name, pushed to the documents history
       with its link edits; renames made by tree operations are marked and skipped
       (`src/sheet_manager/features/documents/nameSettle.ts`, wired where the store syncs the title)
-- [ ] T033 [US4] Create, example copies (`createFromChoice.ts`), and imports (`importBatch.ts`) run
+- [x] T033 [US4] Create, example copies (`createFromChoice.ts`), and imports (`importBatch.ts`) run
       the keeper without a history entry; the `links-kept` message names the count; T029 passes
-- [ ] T034 [US4] Write `tests/sheet_manager/link-keeper.perf.test.ts`: renaming a document linked
+- [x] T034 [US4] Write `tests/sheet_manager/link-keeper.perf.test.ts`: renaming a document linked
       from 100 notes rewrites them within 2 s (SC-004)
-- [ ] T035 [US4] Run `yarn verify` (store change) and commit the story
+- [x] T035 [US4] Run `yarn verify` (store change) and commit the story
 
 ## User Story 5 - See what mentions a document (P3)
 

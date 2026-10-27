@@ -1,9 +1,15 @@
+import type { LinkEdit } from './linkKeeper';
 import type { TreeOperation, TreeResult } from './operations';
 
 /** What one step of history holds: the operations that undo it, or redo it once undone. */
 export interface HistoryStep {
     label: string;
     operations: TreeOperation[];
+    /**
+     * Links the change rewrote in other documents (spec 044): `applied` while the change is in
+     * effect (undo puts them back), not after an undo (redo writes them again).
+     */
+    links?: { edits: LinkEdit[]; applied: boolean };
 }
 
 export interface HistorySnapshot {
@@ -13,7 +19,7 @@ export interface HistorySnapshot {
 
 export const HISTORY_LIMIT = 50;
 
-type Run = (operations: readonly TreeOperation[]) => TreeResult;
+type Run = (operations: readonly TreeOperation[], step: HistoryStep) => TreeResult;
 
 /**
  * Undo and redo of tree changes, kept in memory until the page is reloaded (spec 032, Q2). A step
@@ -37,6 +43,11 @@ export class OperationHistory {
     };
 
     readonly getSnapshot = (): HistorySnapshot => this.snapshot;
+
+    /** The step a later undo takes, so work finished after the change can join it. */
+    latest(): HistoryStep | undefined {
+        return this.undoSteps.at(-1);
+    }
 
     /** Remembers a change just made; a new change ends the redo line. */
     push(step: HistoryStep) {
@@ -64,9 +75,15 @@ export class OperationHistory {
     private travel(from: HistoryStep[], to: HistoryStep[], run: Run): TreeResult | null {
         const step = from.pop();
         if (!step) return null;
-        const result = run(step.operations);
+        const result = run(step.operations, step);
         if (result.inverse.length > 0) {
-            to.push({ label: step.label, operations: result.inverse });
+            to.push({
+                label: step.label,
+                operations: result.inverse,
+                ...(step.links
+                    ? { links: { edits: step.links.edits, applied: !step.links.applied } }
+                    : {}),
+            });
             if (to.length > this.limit) to.shift();
         }
         this.publish();
