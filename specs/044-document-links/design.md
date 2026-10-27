@@ -209,3 +209,9 @@ proposal, guide, guidance).
   the documents window (which also writes the title) is taken once. A typed rename joins the
   documents history only when it rewrote links. A short status line (`LinksKeptStatus`) says how
   many links were kept or put back: the app had no message line to reuse.
+- **`maxShown`, not `rows` (T037)**: the editor's settings registry names a property once with one
+  label, and `rows` is the markdown field's "Starting height (lines)"; the mentions field's limit is
+  `maxShown` ("Entries shown before “Show all”"), 1–50, default 8.
+- **Opening at a line (T038)**: each top-level markdown block sits in a box-less wrapper with its
+  source line (`data-line`), so a mention opens its source and scrolls to the block holding that
+  line; the document page rule (`page-composition.test.ts`) allows the note's mentions field.

@@ -10,6 +10,7 @@ note:
     view: Note
     name: Name
     body: Text
+    mentions: Mentioned in
     example:
         label: How notes work
         name: How notes work

@@ -121,6 +121,7 @@ editor:
     numberStep: Step
     multiline: Multiline
     markdownRows: Starting height (lines)
+    mentionsShown: 'Entries shown before “Show all”'
     presentation: Presentation
     accentColor: Accent color
     accentPrimary: Primary accent
@@ -171,6 +172,8 @@ editor:
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
     paletteMarkdown: Markdown text
     paletteMarkdownHint: 'A long text with headings, lists, tables, and folding callouts'
+    paletteMentions: Mentioned in
+    paletteMentionsHint: 'Documents that link here, with the line around each link'
     paletteList: List
     paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
     valueSource: Stores value in
@@ -543,6 +546,7 @@ fieldTypes:
     reference: Document reference
     image: Image
     markdown: Markdown text
+    mentions: Mentioned in
     formula: Derived value (read-only)
     table: Table
     fields: Field group

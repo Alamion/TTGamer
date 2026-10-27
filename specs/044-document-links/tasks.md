@@ -147,27 +147,27 @@ US3, US4, US5, US6, Finish. US6 follows US3 because embeds reuse the preview car
 **Check**: two notes and a location type's description link to the note Docks; open Docks; add the
 field to a character page.
 
-- [ ] T036 [US5] Write `tests/sheet_manager/mentioned-in.test.tsx` first: the `mentions` field lists
+- [x] T036 [US5] Write `tests/sheet_manager/mentioned-in.test.tsx` first: the `mentions` field lists
       the sources whose links resolve to the shown document with their kind and context line; a
       click opens the source scrolled to that line; a source that stops linking leaves the list;
       more than `rows` entries fold behind "Show all"; more than 200 sources report
       `mentions-truncated`; the field is in the + menu after `markdown`, refused in list items and
       table columns, and sits at the bottom of `general-note` only (FR-009)
-- [ ] T037 [US5] `src/sheet_manager/types/template.ts`: `MentionsFieldSchema` (`type: 'mentions'`,
+- [x] T037 [US5] `src/sheet_manager/types/template.ts`: `MentionsFieldSchema` (`type: 'mentions'`,
       `rows` 1–50, default 8) in the field and node unions and `TEMPLATE_FIELD_TYPES`, excluded from
       list items and table columns; update `tests/sheet_manager/zod-baseline.test.ts` snapshot
-- [ ] T038 [US5] `src/sheet_manager/features/sheet/declarative/MentionsFieldControl.tsx`: reads the
+- [x] T038 [US5] `src/sheet_manager/features/sheet/declarative/MentionsFieldControl.tsx`: reads the
       reverse map, resolves each source's links, loads at most 200 source link records for context;
       compact on a brief; opens at the line through `DocumentLink` scrolling
-- [ ] T039 [US5] Template editor: `elements/registry.tsx` palette entry, `model/factories.ts`,
+- [x] T039 [US5] Template editor: `elements/registry.tsx` palette entry, `model/factories.ts`,
       `model/fields.ts`, settings (label, `rows`) in `settings/registry.ts`; translations in
       `templates.yaml` and `links.yaml` (en, ru)
-- [ ] T040 [US5] `src/sheet_manager/systems/general/note.ts`: `noteTemplate` gains the `mentions`
+- [x] T040 [US5] `src/sheet_manager/systems/general/note.ts`: `noteTemplate` gains the `mentions`
       field at the bottom; storybook story in `src/sheet_manager/storybook/stories.ts`; T036 passes
-- [ ] T041 [US5] Add a "Mentioned in" timing to `tests-e2e/timings/documents.spec.ts` (3,000
+- [x] T041 [US5] Add a "Mentioned in" timing to `tests-e2e/timings/documents.spec.ts` (3,000
       documents, 10 links each) next to the link index boot timing; a reported timing, while the
       measurement in design D3 is the check of SC-003
-- [ ] T042 [US5] Run `yarn verify` (schema change) and commit the story
+- [x] T042 [US5] Run `yarn verify` (schema change) and commit the story
 
 ## User Story 6 - Embed a document in a note (P4)
 

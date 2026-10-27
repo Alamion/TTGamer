@@ -66,13 +66,14 @@ describe('element registry (spec 025, US3)', () => {
         ).toBe('notes');
     });
 
-    it('offers group, field, markdown, list, and button in the "+" menu (a tracker is a field type)', () => {
+    it('offers group, field, markdown, mentions, list, and button in the "+" menu (a tracker is a field type)', () => {
         const offered = (place: { atRoot: boolean; brief: boolean }) =>
             PALETTE.filter((entry) => entry.offered?.(place) ?? true).map(({ key }) => key);
         expect(offered({ atRoot: true, brief: false })).toEqual([
             'group',
             'field',
             'markdown',
+            'mentions',
             'list',
             'button',
         ]);
@@ -80,6 +81,7 @@ describe('element registry (spec 025, US3)', () => {
             'group',
             'field',
             'markdown',
+            'mentions',
             'list',
             'button',
         ]);
@@ -88,12 +90,14 @@ describe('element registry (spec 025, US3)', () => {
             'brief',
             'field',
             'markdown',
+            'mentions',
             'list',
             'button',
         ]);
         expect(offered({ atRoot: false, brief: true })).toEqual([
             'field',
             'markdown',
+            'mentions',
             'list',
             'button',
         ]);
@@ -104,6 +108,7 @@ describe('element registry (spec 025, US3)', () => {
         expect(build('group', false)).toBe('group');
         expect(build('brief', true, true)).toBe('brief');
         expect(build('markdown', false, true)).toBe('markdown');
+        expect(build('mentions', true)).toBe('mentions');
     });
 
     it('fails the type check when a type has no entry', () => {

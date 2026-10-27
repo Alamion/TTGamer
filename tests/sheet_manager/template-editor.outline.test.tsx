@@ -145,13 +145,13 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the five element kinds with descriptions', () => {
+    it('offers exactly the six element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['group', 'field', 'markdown', 'list', 'button']);
+        expect(options).toEqual(['group', 'field', 'markdown', 'mentions', 'list', 'button']);
         const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });
@@ -177,6 +177,14 @@ describe('add-element menu and element sources', () => {
                 'Starting height (lines)'
             )
         ).toHaveProperty('value', '12');
+        // "Mentioned in" (spec 044) with how many entries show before "Show all".
+        const mentions = addFromRootMenu('mentions');
+        expect(mentions.getAttribute('data-node-type')).toBe('mentions');
+        expect(
+            within(settings(mentions.getAttribute('data-outline-row')!)).getByLabelText(
+                'Entries shown before “Show all”'
+            )
+        ).toHaveProperty('value', '8');
         // A tracker is a field of the Tracker type (not in the menu); its Source can switch it
         // to a built-in track.
         const added = addFromRootMenu('field');

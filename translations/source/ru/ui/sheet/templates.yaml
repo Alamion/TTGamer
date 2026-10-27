@@ -121,6 +121,7 @@ editor:
     numberStep: Шаг
     multiline: Многострочное
     markdownRows: Начальная высота (строк)
+    mentionsShown: 'Строк до «Показать все»'
     presentation: Отображение
     accentColor: Цвет акцента
     accentPrimary: Основной акцент
@@ -171,6 +172,8 @@ editor:
     paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
     paletteMarkdown: Текст markdown
     paletteMarkdownHint: 'Длинный текст с заголовками, списками, таблицами и сворачиваемыми выносками'
+    paletteMentions: Упоминается в
+    paletteMentionsHint: 'Документы, которые ссылаются сюда, со строкой вокруг каждой ссылки'
     paletteList: Список
     paletteListHint: 'Записи по одной или строки таблицы: свои, навыки, достоинства, снаряжение…'
     valueSource: Где хранится значение
@@ -543,6 +546,7 @@ fieldTypes:
     reference: Ссылка на документ
     image: Изображение
     markdown: Текст markdown
+    mentions: Упоминается в
     formula: Вычисляемое значение (только чтение)
     table: Таблица
     fields: Группа полей

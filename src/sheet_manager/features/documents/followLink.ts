@@ -63,9 +63,30 @@ export function scrollToSection(documentId: string, section: string): void {
     requestAnimationFrame(look);
 }
 
+/** Scrolls to the markdown block holding a source line once the document is drawn. */
+export function scrollToLine(documentId: string, line: number): void {
+    const started = Date.now();
+    const look = () => {
+        const root = documentRoot(documentId);
+        const blocks = root ? [...root.querySelectorAll<HTMLElement>('[data-line]')] : [];
+        const at = blocks.reduce<HTMLElement | undefined>((best, block) => {
+            const from = Number(block.dataset.line);
+            return from <= line && (!best || from >= Number(best.dataset.line)) ? block : best;
+        }, undefined);
+        if (at) {
+            anchorTarget(at).scrollIntoView({ block: 'center' });
+            return;
+        }
+        if (Date.now() - started < SECTION_WAIT_MS) requestAnimationFrame(look);
+    };
+    requestAnimationFrame(look);
+}
+
 export interface FollowOptions {
     newTab?: boolean;
     section?: string;
+    /** A source line of the target's markdown to show ("Mentioned in"). */
+    line?: number;
 }
 
 /** Opens a linked document as a reference field does; previews never leave themselves. */
@@ -73,12 +94,13 @@ export function useFollowDocument(): (documentId: string, options?: FollowOption
     const { preview } = useDocumentSource();
     const followLink = useContext(DocumentLinkContext);
     return useCallback(
-        (documentId, { newTab = false, section } = {}) => {
+        (documentId, { newTab = false, section, line } = {}) => {
             if (preview) return;
             if (newTab) openInNewTab(documentId);
             else if (followLink) followLink(documentId);
             else useDocumentStore.getState().setCurrentDocument(documentId);
             if (section) scrollToSection(documentId, section);
+            else if (line !== undefined) scrollToLine(documentId, line);
         },
         [preview, followLink]
     );

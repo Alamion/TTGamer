@@ -19,3 +19,10 @@ kept:
     restored: 'Links put back: {links} in {documents} documents.'
     skipped: '{skipped} were edited since and stay as they are.'
     rename: 'Rename to {name}'
+mentions:
+    empty: No document links here yet.
+    loading: Looking for links…
+    showAll: 'Show all ({count})'
+    showFewer: Show fewer
+    open: 'Open {name} at this line'
+    truncated: 'More documents link here than are listed ({count} shown).'

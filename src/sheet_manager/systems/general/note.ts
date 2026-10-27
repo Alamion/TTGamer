@@ -1,7 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { z } from 'zod';
 
-import { markdown, text } from '../../templates/builders';
+import { markdown, mentions, text } from '../../templates/builders';
 import {
     DocumentDefinitionIdSchema,
     DocumentKindSchema,
@@ -62,6 +62,7 @@ export const noteTemplate: CustomTemplate = {
             hideLabel: true,
             rows: 20,
         }),
+        mentions('note-mentions', labels.mentions.message, { labelMessage: labels.mentions }),
     ],
 };
 

@@ -472,7 +472,12 @@ function Blocks({ blocks }: { blocks: readonly MarkdownBlock[] }) {
 /** Equal source on the same line renders equally: unchanged blocks skip rendering. */
 const TopBlock = memo(
     function TopBlock({ top }: { top: MarkdownTopBlock }) {
-        return <Block block={top.block} />;
+        // A box-less wrapper names the block's source line, so a link can open the text there.
+        return (
+            <div className="contents" data-line={top.line}>
+                <Block block={top.block} />
+            </div>
+        );
     },
     (previous, next) =>
         previous.top.source === next.top.source && previous.top.line === next.top.line

@@ -10,6 +10,7 @@ note:
     view: Заметка
     name: Название
     body: Текст
+    mentions: Упоминается в
     example:
         label: Как устроены заметки
         name: Как устроены заметки
