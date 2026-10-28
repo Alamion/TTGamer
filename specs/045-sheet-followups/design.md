@@ -157,3 +157,8 @@ Five independent stories, each its own commit, smallest risk first after the P1:
 - **Ctrl-click in the browser test** checks the link's target and that no card opens; waiting for
   the new tab to load was flaky under load. The unit test checks the click is not prevented.
 - **Browser timing (SC-001)**: first open 172–313 ms, later opens 115–178 ms.
+- **US2**: `badge` is optional on `SystemPlugin` (falls back to the label), so test systems need
+  none. Badges: "SW", "WoD 2e", "V5", "General" ("Общее"); the Russian Star Wars badge stays "SW".
+  Documents window timing (T013), 3,000 documents: open 31–52 ms (53 before), search 18–23 ms (37
+  before); that list holds one system, so it shows no badges: the badge cost is one pass over the
+  rows plus a span on the drawn (virtualized) rows.

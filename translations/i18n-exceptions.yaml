@@ -42,6 +42,10 @@
 - rule: identical
   match: /^(VtM|H:tR) 5e$/
   reason: game-line abbreviations (VtM 5e, H:tR 5e) are the same in every locale
+- rule: identical
+  match: /^(SW|WoD 2e)$/
+  reason: system badges in the documents window (spec 045) are abbreviations, the same in every
+      locale like V5
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
   match: stamina

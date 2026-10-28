@@ -15,3 +15,10 @@ export const documentLabeler: DocumentLabeler = {
     },
     title: entryTitle,
 };
+
+/** A system's short badge and its full name (documents window rows, spec 045). */
+export function systemBadge(systemId: string): { badge: string; name: string } {
+    const system = systemRegistry.getSystem(systemId);
+    if (!system) return { badge: systemId, name: systemId };
+    return { badge: translate(system.badge ?? system.label), name: translate(system.label) };
+}

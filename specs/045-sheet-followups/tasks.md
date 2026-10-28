@@ -52,16 +52,16 @@ opens the page in a new tab.
 
 **Check**: with documents of three systems, each row shows its badge; all of one system, none.
 
-- [ ] T010 [US2] Write `tests/sheet_manager/documents-badges.test.tsx` first: a badge per document
+- [x] T010 [US2] Write `tests/sheet_manager/documents-badges.test.tsx` first: a badge per document
       row with the system's full name as accessible name; an own type shows its owner's system; a
       General note shows "General"; no badges when every shown row has one system or a system filter
       is on; folders have none (FR-005, FR-006)
-- [ ] T011 [US2] `src/sheet_manager/systems/types.ts`: `badge` on `SystemPlugin`; set it in
+- [x] T011 [US2] `src/sheet_manager/systems/types.ts`: `badge` on `SystemPlugin`; set it in
       `general`, `wod2e`, `star-wars-wod`, `v5` with YAML `sheet.<system>.badge` (en, ru);
       `features/documents/labeler.ts`: `systemBadge(systemId)` with the label as full name
-- [ ] T012 [US2] `src/sheet_manager/components/documents/DocumentsTree.tsx`: the badge in the row's
+- [x] T012 [US2] `src/sheet_manager/components/documents/DocumentsTree.tsx`: the badge in the row's
       `badges` slot, hidden when the shown rows share one system (design D5)
-- [ ] T013 [US2] Run the targeted tests and the documents window timing with 3,000 documents against
+- [x] T013 [US2] Run the targeted tests and the documents window timing with 3,000 documents against
       its last value (SC-002); commit the story
 
 ## User Story 3 - Name documents of my own types (P2)

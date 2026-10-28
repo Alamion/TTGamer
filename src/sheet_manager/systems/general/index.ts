@@ -14,6 +14,7 @@ const library = uiMessages.sheet.general.library;
 export const generalSystem: SystemPlugin = {
     id: GENERAL_SYSTEM_ID,
     label: uiMessages.sheet.general.system,
+    badge: uiMessages.sheet.general.badge,
     documents: [{ ...noteDefinition, files: noteFileFormat }],
     defaultTemplates: [noteTemplate],
     templateBindings: noteTemplateBindings,

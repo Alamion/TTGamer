@@ -47,6 +47,7 @@ export const wod2eCharacterDefinition: DocumentDefinition = {
 export const wod2eSystem: SystemPlugin = {
     id: SystemIdSchema.parse(WOD2E_SYSTEM_ID),
     label: uiMessages.sheet.wod2e.system,
+    badge: uiMessages.sheet.wod2e.badge,
     documents: [wod2eCharacterDefinition],
     defaultTemplates: wod2eTemplates,
     templateBindings: buildWod2eCoreBindings(wod2eProfile, new Set(['character'])),
