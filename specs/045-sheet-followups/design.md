@@ -33,12 +33,13 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   render. _Rejected_: rendering the whole page hidden and showing part with CSS (every widget of the
   page would run).
 - **D3 — Russian anchors**: Russian headings slug differently (`## Атрибуты` → `#атрибуты`), so an
-  English anchor finds nothing there. Every heading a shipped docs link targets gets an explicit
-  `{#english-id}` in the Russian page (the parity check already requires explicit anchors to match),
-  and a test checks each shipped link's anchor exists in both languages. A user's link whose anchor
-  is missing shows the page's first section with a note (spec FR-003 corrected: the Russian build
-  holds no English pages, so an English fallback is impossible). _Rejected_: mapping anchors by
-  heading position at runtime (needs the English table of contents in the Russian build).
+  English anchor finds nothing there. Every heading a shipped docs link targets gets the same
+  explicit `{#english-id}` in the English and the Russian page (the parity check requires explicit
+  anchors to match in both), and a test checks each shipped link's anchor exists in both languages.
+  A user's link whose anchor is missing shows the page's first section with a note (spec FR-003
+  corrected: the Russian build holds no English pages, so an English fallback is impossible).
+  _Rejected_: mapping anchors by heading position at runtime (needs the English table of contents in
+  the Russian build).
 - **D4 — Click behavior** (clarified): a plain click opens the card; Ctrl/⌘, Shift, or a middle
   click keeps the browser's default (new tab). External links never get a card.
 - **D5 — Badge source**: `SystemPlugin.badge` (a short translated message, e.g. "SW", "V5", "W20",
@@ -85,7 +86,7 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   document's name). No stored shape changes: the name already lives in `metadata.title`.
 - Template schema: none. Trackers keep their stored shape (spec 018 FR-030 holds).
 - `portraitStorage.ts`: `listPortraitIds()`, and the session's saved ids.
-- Russian docs: explicit `{#id}` on headings that shipped docs links target.
+- Docs: the same explicit `{#id}` on the English and Russian headings that shipped links target.
 
 ## Principles at risk
 

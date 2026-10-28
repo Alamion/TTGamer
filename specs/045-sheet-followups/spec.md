@@ -102,8 +102,9 @@ sheet, and see it in the list, a `[[link]]` suggestion, and a roll's name.
 
 **Acceptance Scenarios**:
 
-1. **Given** a text field on any page, **When** the author opens its value source, **Then**
-   **Document name** is offered, for built-in and own kinds alike.
+1. **Given** a text field on any page, **When** the author opens its value source, **Then** an own
+   kind offers **Document name**; a built-in kind offers its own name field, which already is the
+   document's name.
 2. **Given** a field storing the document name, **When** the reader types in it, **Then** the
    document's name changes as when renamed in the documents window (links to it are kept, spec 044).
 3. **Given** the document is renamed in the documents window, **When** the page is shown, **Then**
@@ -206,8 +207,9 @@ open it; the entry and its stored file are gone.
   accessible full name, except when the badge would be the same on every shown row.
 - **FR-006**: Each system MUST have a short badge label in both languages; own types and settings
   MUST show the badge of the system they belong to.
-- **FR-007**: Any text field MUST be able to store the document's name ("Document name" source), for
-  built-in and own kinds; editing either side MUST update the other.
+- **FR-007**: Any text field MUST be able to store the document's name: through the kind's own name
+  field where it has one, through a "Document name" source otherwise (own kinds); editing either
+  side MUST update the other.
 - **FR-008**: The editor's "no name" hint MUST cover own types.
 - **FR-009**: A roll from a document with an empty name MUST be named after the document's type.
 - **FR-010**: A tracker MUST be readable in formulas as a number: its deepest marked level's value

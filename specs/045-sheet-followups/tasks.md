@@ -31,17 +31,22 @@ opens the page in a new tab.
       `SectionCard.tsx` and `CollapsibleBlock.tsx` pass `preview`
 - [ ] T005 [US1] Card strings in `translations/source/{en,ru}/ui/shared` (open the page, loading,
       section not found, unavailable), then `yarn build:translations`
-- [ ] T006 [US1] Write `tests/docs/docs-links-anchors.test.ts`: every shipped `docsPath`
-      (`systems/*/templates/docs.ts` and other template constants) names an existing route, and its
-      anchor is a heading in the English page and an explicit `{#id}` heading in the Russian page
+- [ ] T006 [US1] Write `tests/docs/docs-links-anchors.test.ts`: every shipped `docsPath` (collected
+      by walking every system's shipped templates, V5 and wod2e parts included) names an existing
+      route, and its anchor is the same explicit `{#id}` heading in the English and the Russian page
       (design D3)
-- [ ] T007 [US1] Add explicit `{#english-id}` to the Russian headings the shipped links target
-      (`i18n/ru/docusaurus-plugin-content-docs/current/**`) until T006 passes; `yarn validate:i18n`
+- [ ] T007 [US1] Add the same explicit `{#english-id}` to the English (`docs/**`) and Russian
+      (`i18n/ru/docusaurus-plugin-content-docs/current/**`) headings the shipped links target until
+      T006 passes; `yarn validate:i18n`
 - [ ] T008 [US1] E2E `tests-e2e/smoke/docs-fragment.spec.ts`: "?" on a Star Wars section shows the
-      fragment, styled (a known width), and Ctrl-click opens a new page; a browser timing prints
-      first-open and repeat-open times against SC-001's 1 s and 500 ms
-- [ ] T009 [US1] Run `yarn verify:full` (route and documentation-path change, AGENTS.md §11) and
-      commit the story
+      fragment, styled (a known width), and Ctrl-click opens a new page; browser timing
+      `tests-e2e/timings/docs-fragment.spec.ts`: first-open and repeat-open times against SC-001's 1
+      s and 500 ms
+- [ ] T008a [US1] Storybook: a section with a docs link (card on click) in
+      `src/sheet_manager/features/storybook/stories.ts` (constitution VI)
+- [ ] T009 [US1] Measure the main and `/universal_sheet` chunks before and after (constitution VII,
+      a new shared component) and record them in design.md; run `yarn verify:full` and commit the
+      story
 
 ## User Story 2 - Tell games apart in the documents window (P2)
 
@@ -89,7 +94,8 @@ rolled notation; the Star Wars health penalty reads the same way.
       number", several copies the one marked deepest (with bonus values too) or most filled; the
       tracker key is in the numeric coordinates and the formula suggestions; a tracker named in its
       own lengths formula is a cycle; Star Wars wounds give the penalty, V5 Health and Willpower the
-      filled count, members the worst one (FR-010–FR-012)
+      filled count, members the worst one; a button's rolled notation changes after a box is marked
+      (FR-010–FR-012, SC-004)
 - [ ] T020 [US4] `src/sheet_manager/features/sheet/data/tracker.ts`:
       `trackerReading(field,     value)` (design D8)
 - [ ] T021 [US4] `features/sheet/declarative/hooks.ts` `resolveBase`: a tracker value reads through
@@ -110,9 +116,11 @@ and its stored file are gone; a planted orphan file is deleted at idle.
       no document names and keeps those of live, pending-purge, and this session's saves; the sweep
       reads no record beyond the link index's and the pending-purge ones (FR-013, FR-014, SC-005,
       SC-006)
-- [ ] T025 [US5] A shared pure helper for "pictures the text names" used by
+- [ ] T025 [US5] Only on the first load of a record from storage (a document already in memory is
+      not pruned again): a shared pure helper for "pictures the text names" used by
       `MarkdownFieldControl.tsx`'s prune and by `openDocument` in `store/documentStore.ts`, which
-      saves the pruned document through the normal writer (design D10)
+      saves the pruned document through the normal writer and reports `pictures-pruned` with the
+      count (design D10)
 - [ ] T026 [US5] `src/sheet_manager/persistence/portraitStorage.ts`: `listPortraitIds()` and the ids
       saved this session; `store/documentBoot.ts` passes `scheduleLinkIndexLoad` a reader that
       collects `deviceImageIdsOf`, then sweeps after the load (same generation) (design D11);
