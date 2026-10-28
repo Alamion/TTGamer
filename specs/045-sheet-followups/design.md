@@ -177,3 +177,13 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   no penalties, so they count marked boxes. The on-page test reads a formula field
   (`max(1, 3 + wounds)`), which shares the evaluator a button's dice notation uses. One older test
   kept `health` out of the formula space; it now expects it in.
+- **US5, the sweep (D11 changed)**: the link index does not read documents at start-up, only its own
+  link records (a document is read only when its record is missing), so there was no read to share.
+  Keeping picture ids in link records instead was rejected: a link record that failed to save would
+  be stale and the sweep would delete a live picture. The sweep reads the document records itself,
+  at idle, at most once a week per device (`ttgamer.pictures.sweptAt`), in chunks of 50, and stops
+  before deleting anything if one record cannot be read; pictures stored in the last day are spared
+  (another tab may be adding one), and deleted documents waiting for their purge keep theirs. SC-006
+  ("no extra reads") does not hold: about 3,000 record reads once a week at idle instead. The prune
+  on open runs on both load paths (`openDocument` and `loadIntoCache`, which panes and preview cards
+  use) and reuses `withoutUnusedImages`.

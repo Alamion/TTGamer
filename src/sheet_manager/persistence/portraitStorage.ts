@@ -136,3 +136,13 @@ export async function deletePortrait(portraitId?: string): Promise<void> {
     const store = await getStore();
     await store.removeItem(portraitId);
 }
+
+/** Every stored picture with when it was stored (the picture sweep, spec 045). */
+export async function listStoredPictures(): Promise<Array<{ id: string; createdAt: number }>> {
+    const store = await getStore();
+    const pictures: Array<{ id: string; createdAt: number }> = [];
+    await store.iterate<PortraitRecord, void>((record, id) => {
+        pictures.push({ id, createdAt: record?.createdAt ?? 0 });
+    });
+    return pictures;
+}

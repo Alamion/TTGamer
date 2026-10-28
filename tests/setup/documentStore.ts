@@ -6,6 +6,7 @@ type ContentModule = typeof import('@site/src/sheet_manager/store/documentConten
 let content: ContentModule | undefined;
 let links: typeof import('@site/src/sheet_manager/persistence/linkStorage') | undefined;
 let linkIndex: typeof import('@site/src/sheet_manager/store/linkIndexStore') | undefined;
+let boot: typeof import('@site/src/sheet_manager/store/documentBoot') | undefined;
 
 /**
  * The document store gets two test conveniences, applied when a test file first imports it (so
@@ -21,6 +22,7 @@ vi.mock('@site/src/sheet_manager/store/documentStore', async (importOriginal) =>
     links = await import('@site/src/sheet_manager/persistence/linkStorage');
     linkIndex = await import('@site/src/sheet_manager/store/linkIndexStore');
     links.configureLinkStorage(links.createMemoryLinkStorage());
+    boot = await import('@site/src/sheet_manager/store/documentBoot');
 
     const { useDocumentStore } = original;
     const setState = useDocumentStore.setState.bind(useDocumentStore);
@@ -58,7 +60,8 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-    // A start-up link index load a test scheduled must not run in the next one.
+    // A start-up link index load or picture sweep a test scheduled must not run in the next one.
     linkIndex?.resetLinkIndex();
+    boot?.cancelPictureSweep();
     await content?.recordWriter.flush();
 });

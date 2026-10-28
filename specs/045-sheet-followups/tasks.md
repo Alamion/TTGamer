@@ -111,21 +111,21 @@ rolled notation; the Star Wars health penalty reads the same way.
 **Check**: a stored note naming a picture its text lost: after a reload and opening it, the entry
 and its stored file are gone; a planted orphan file is deleted at idle.
 
-- [ ] T024 [US5] Write `tests/sheet_manager/picture-cleanup.test.ts` first: opening a document drops
+- [x] T024 [US5] Write `tests/sheet_manager/picture-cleanup.test.ts` first: opening a document drops
       picture entries its text no longer names and deletes their files; the idle sweep deletes files
       no document names and keeps those of live, pending-purge, and this session's saves; the sweep
       reads no record beyond the link index's and the pending-purge ones (FR-013, FR-014, SC-005,
       SC-006)
-- [ ] T025 [US5] Only on the first load of a record from storage (a document already in memory is
+- [x] T025 [US5] Only on the first load of a record from storage (a document already in memory is
       not pruned again): a shared pure helper for "pictures the text names" used by
       `MarkdownFieldControl.tsx`'s prune and by `openDocument` in `store/documentStore.ts`, which
       saves the pruned document through the normal writer and reports `pictures-pruned` with the
       count (design D10)
-- [ ] T026 [US5] `src/sheet_manager/persistence/portraitStorage.ts`: `listPortraitIds()` and the ids
+- [x] T026 [US5] `src/sheet_manager/persistence/portraitStorage.ts`: `listPortraitIds()` and the ids
       saved this session; `store/documentBoot.ts` passes `scheduleLinkIndexLoad` a reader that
       collects `deviceImageIdsOf`, then sweeps after the load (same generation) (design D11);
       diagnostics code `pictures-swept`
-- [ ] T027 [US5] Run `yarn verify` (persistence change) and commit the story; F-010 marked done in
+- [x] T027 [US5] Run `yarn verify` (persistence change) and commit the story; F-010 marked done in
       `TOFIX.md`
 
 ## Finish
