@@ -3,6 +3,7 @@ import { notationDiagnosticMessage } from '@site/src/dice_roller/components/dice
 import { diagnoseNotation } from '@site/src/dice_roller/dice-logic/dice-parser';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { reportSheetIssue } from '@site/src/sheet_manager/diagnostics';
+import { rollNameOf } from '@site/src/sheet_manager/features/sheet/data/documentLabels';
 import {
     useDocumentRollSource,
     useDocumentSource,
@@ -26,7 +27,7 @@ export function useNoteRollCode(): (code: string) => ReactNode {
     const { document } = useDocumentSource();
     const rollSource = useDocumentRollSource();
     const { rollImmediately } = useSheetDiceActions({
-        characterName: document?.metadata.title || undefined,
+        characterName: document ? rollNameOf(document) : undefined,
         rollSource,
     });
     return useCallback(

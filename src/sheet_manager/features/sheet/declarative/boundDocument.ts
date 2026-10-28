@@ -7,6 +7,7 @@ import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { systemRegistry } from '../../../systems';
 import type { CharacterView } from '../../../systems/capabilities';
 import { readCharacter } from '../../../systems/capabilities';
+import { kindLabel, rollNameOf } from '../data/documentLabels';
 
 export interface BoundDocument {
     /** Document data as bindings address it (the character view for character documents). */
@@ -16,8 +17,10 @@ export interface BoundDocument {
     update: (updates: Record<string, unknown>) => void;
     /** Renames the document (entity pages keep the title in step with their name field). */
     setTitle: (title: string) => void;
-    /** Display name for roll labels, when the document has one. */
+    /** The document's name, when it has one. */
     name?: string;
+    /** What rolls are named after: the name, else the document's kind (spec 045, D7). */
+    rollName?: string;
 }
 
 /**
@@ -94,6 +97,9 @@ export function useBoundDocument(): BoundDocument | undefined {
                 update,
                 setTitle,
                 name: character.metadata.name,
+                rollName:
+                    character.metadata.name ||
+                    (document ? kindLabel(document.systemId, document.kind) : undefined),
             };
         }
         if (capability || !document || typeof document.data !== 'object' || !document.data) {
@@ -105,6 +111,7 @@ export function useBoundDocument(): BoundDocument | undefined {
             update,
             setTitle,
             name: document.metadata.title || undefined,
+            rollName: rollNameOf(document),
         };
     }, [capability, character, document, readOnly, setTitle, update]);
 }

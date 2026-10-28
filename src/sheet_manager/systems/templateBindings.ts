@@ -1,3 +1,5 @@
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import { systemRegistry } from './index';
 
 /**
@@ -216,6 +218,8 @@ export interface FieldBinding extends BindingBase {
     numeric?: (raw: unknown) => number | undefined;
     /** Writing this field also renames the document (entities without a metadata name). */
     syncsTitle?: boolean;
+    /** The value is the document's name itself, stored nowhere else ("Document name", spec 045). */
+    title?: true;
     /**
      * Custom mapping for values not stored at a single path (e.g. a portrait split across
      * `imageUrl` / `portraitId`): `read` yields the field value, `update` the top-level update.
@@ -350,12 +354,41 @@ export interface NumericCoordinate {
     label: string;
 }
 
+/** The coordinate of the shared "Document name" source (spec 045, D6). */
+export const DOCUMENT_NAME_COORDINATE = 'document-name';
+
+const documentNameBindings = new Map<string, FieldBinding>();
+
+/** The shared name source of a kind that has no name field of its own (own types, D6). */
+function documentNameBinding(documentKind: string): FieldBinding {
+    let binding = documentNameBindings.get(documentKind);
+    if (!binding) {
+        binding = {
+            key: `field:${DOCUMENT_NAME_COORDINATE}`,
+            kind: 'field',
+            label: uiMessages.sheet.templates.editor.sourceDocumentName.message,
+            documentKinds: new Set([documentKind]),
+            path: [],
+            valueType: 'string',
+            coordinate: DOCUMENT_NAME_COORDINATE,
+            title: true,
+        };
+        documentNameBindings.set(documentKind, binding);
+    }
+    return binding;
+}
+
 export function listDocumentBindings(
     systemId: string,
     documentKind: string
 ): readonly DocumentBindingDescriptor[] {
-    const bindings = systemRegistry.getSystem(systemId)?.templateBindings ?? [];
-    return bindings.filter((binding) => binding.documentKinds.has(documentKind));
+    const system = systemRegistry.getSystem(systemId);
+    if (!system) return [];
+    const bindings = (system.templateBindings ?? []).filter((binding) =>
+        binding.documentKinds.has(documentKind)
+    );
+    const named = bindings.some((binding) => binding.kind === 'field' && binding.syncsTitle);
+    return named ? bindings : [...bindings, documentNameBinding(documentKind)];
 }
 
 export function resolveDocumentBinding(

@@ -376,9 +376,11 @@ function BoundFieldCell({
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
     const fallback = catalogText;
     const stored = bound
-        ? binding.adapter
-            ? binding.adapter.read(bound.data)
-            : readDataPath(bound.data, binding.path)
+        ? binding.title
+            ? (bound.name ?? '')
+            : binding.adapter
+              ? binding.adapter.read(bound.data)
+              : readDataPath(bound.data, binding.path)
         : undefined;
     // A name typed before the title followed it (older documents) names the document now.
     const unnamed = bound !== undefined && bound.name === undefined;
@@ -396,6 +398,10 @@ function BoundFieldCell({
     // control still checks safety), not the stricter HTTPS-only template value rules.
     const value = binding.valueType === 'image' ? stored : coerceStoredValue(field, stored);
     const onChange = (next: unknown) => {
+        if (binding.title) {
+            bound.setTitle(typeof next === 'string' ? next : '');
+            return;
+        }
         if (binding.adapter) {
             bound.update(binding.adapter.update(bound.data, next));
             return;

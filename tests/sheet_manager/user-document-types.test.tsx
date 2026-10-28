@@ -203,7 +203,11 @@ describe('user document types (spec 012, US4)', () => {
         const source = within(settingsOf('motto')).getByLabelText(
             'Stores value in'
         ) as HTMLSelectElement;
-        expect([...source.options].map(({ value }) => value)).toEqual(['custom']);
+        // An own type stores only its own values, and its name (spec 045).
+        expect([...source.options].map(({ value }) => value)).toEqual([
+            'custom',
+            'field:document-name',
+        ]);
 
         fireEvent.change(within(settingsOf('motto')).getByLabelText('Field type'), {
             target: { value: 'select' },

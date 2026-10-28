@@ -162,3 +162,10 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   Documents window timing (T013), 3,000 documents: open 31–52 ms (53 before), search 18–23 ms (37
   before); that list holds one system, so it shows no badges: the badge cost is one pass over the
   rows plus a span on the drawn (virtualized) rows.
+- **US3**: the shared binding is added per kind (a cached binding with that kind) whenever the
+  kind's system exists and has no `syncsTitle` field for it; an unknown system still lists none.
+  Besides the field cell and button writes, the `title` flag is handled where a field binding is
+  read by path: primitive field nodes, display conditions, and formula text reads. Rolls take
+  `BoundDocument.rollName` (`rollNameOf`: the name, else the kind's label) in buttons, trait dots,
+  rating dots, and note rolls. Two older tests expected own types to offer no document source and
+  the "no name" hint to stay quiet for kinds without a name field; both now expect the new source.

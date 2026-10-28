@@ -69,20 +69,20 @@ opens the page in a new tab.
 **Check**: an own type's text field set to **Document name**: typing renames the document, and the
 list, `[[` suggestions, and a roll show it.
 
-- [ ] T014 [US3] Write `tests/sheet_manager/document-name-binding.test.tsx` first: the source is
+- [x] T014 [US3] Write `tests/sheet_manager/document-name-binding.test.tsx` first: the source is
       offered for a kind without a name binding and not added where one exists; typing writes
       `metadata.title` through the rename path (the link keeper takes it); a rename in the documents
       window shows in the field; the "no name" notice now covers own types; a roll of a document
       with an empty name is named after its type (FR-007–FR-009)
-- [ ] T015 [US3] `src/sheet_manager/systems/templateBindings.ts`: `title?: true` on `FieldBinding`,
+- [x] T015 [US3] `src/sheet_manager/systems/templateBindings.ts`: `title?: true` on `FieldBinding`,
       the shared `field:document-name` binding appended by `listDocumentBindings` when no
       `syncsTitle` field binding exists; its label in YAML (en, ru) (design D6)
-- [ ] T016 [US3] Read and write paths: `features/sheet/declarative/hooks.ts` (writes),
+- [x] T016 [US3] Read and write paths: `features/sheet/declarative/hooks.ts` (writes),
       `systems/templateBindings.ts` reads, `boundDocument.ts` (bound documents of own kinds), so a
       `title` binding reads `metadata.title` and writes through `updateDocumentMetadata`
-- [ ] T017 [US3] `src/sheet_manager/features/sheet/data/boundDocument.ts`: roll name falls back to
+- [x] T017 [US3] `src/sheet_manager/features/sheet/data/boundDocument.ts`: roll name falls back to
       the kind label through `documentLabeler` (design D7)
-- [ ] T018 [US3] Run `yarn verify` (binding contract change) and commit the story
+- [x] T018 [US3] Run `yarn verify` (binding contract change) and commit the story
 
 ## User Story 4 - Use a tracker in a formula (P2)
 

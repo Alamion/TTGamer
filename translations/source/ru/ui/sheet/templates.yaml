@@ -180,6 +180,7 @@ editor:
     sourceCustom: Своё значение (в шаблоне)
     sourceTraits: Характеристики
     sourceResources: Ресурсы
+    sourceDocumentName: Имя документа
     sourceDetails: Сведения о персонаже
     sourceTypeLocked: Тип определяется значением листа персонажа.
     listSource: Записи
