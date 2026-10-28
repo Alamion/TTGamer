@@ -245,6 +245,10 @@ proposal, guide, guidance).
   strip out of reach; it now scrolls only the nearest box the reader can scroll, below the sticky
   navbar. A notes smoke test typed before the text field took focus and lost a line; it now waits
   for the focus.
+- **Touch review**: a long press showed both the card and the browser's link menu, and any tap
+  closed the card (a touch ends with a pointer leave, and the link loses focus). A long press now
+  replaces the browser's menu (`contextmenu` prevented, iOS callout off); that card closes only on a
+  tap outside or Esc, scrolls within the height Radix reports, and offers Open / Open in new tab.
 
 ## Walk results
 
