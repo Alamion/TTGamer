@@ -187,3 +187,26 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   ("no extra reads") does not hold: about 3,000 record reads once a week at idle instead. The prune
   on open runs on both load paths (`openDocument` and `loadIntoCache`, which panes and preview cards
   use) and reuses `withoutUnusedImages`.
+- **Found on the way**: the inventory's "?" pointed at `#tools-gear`, which never existed (fixed by
+  the explicit anchor); the "?" of a section header sits inside its toggle button and is not exposed
+  as a link (`TOFIX.md` F-011, not changed here).
+- **Final `verify:full`**: 3,328 unit, 20 perf, and 72 browser tests passed. Timings: docs card
+  first open 287 ms, later 170 ms; documents window open 57 ms; "panes: open a second document
+  beside" 221 ms and "move a tab to the next group" 233 ms stay over their 200 ms budgets, as on
+  `master` before this spec (229–257 ms there).
+
+## Walk results
+
+The dev server on port 3000 runs `master`, so the walk ran through the browser and unit tests:
+
+1. Pass (smoke): Star Wars character, "?" on Attributes shows the Attributes part only, styled;
+   Ctrl-click leaves the link to the browser (target `_blank`, no card).
+2. Covered: the Russian build carries the same anchors (anchors test, both languages); not opened by
+   eye.
+3. Left for the maintainer: a phone tap on "?" (the card is the same Radix popover as spec 044's,
+   whose touch behavior was checked on a phone).
+4. Pass (unit): badges per system, the owner's system for own types, none when one system shows.
+5. Pass (unit): Document name on an own type renames the document and follows a rename.
+6. Pass (unit): `max(1, 3 + wounds)` drops from 3 to 1 once two levels are marked.
+7. Pass (unit): the Star Wars health penalty reads by `health`.
+8. Pass (unit): a stored note naming a dropped picture loses it on open, and its file is deleted.

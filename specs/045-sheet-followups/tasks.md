@@ -130,11 +130,11 @@ and its stored file are gone; a planted orphan file is deleted at idle.
 
 ## Finish
 
-- [ ] T028 Update the module notes and skills (one owner per rule): `src/sheet_manager/AGENTS.md`
+- [x] T028 Update the module notes and skills (one owner per rule): `src/sheet_manager/AGENTS.md`
       (badges, document name binding, picture sweep), the `sheet-templates` skill formulas reference
       (tracker readings), `docusaurus-integration` skill (docs fragments and the `{#id}` rule for
       linked Russian headings); the user guide en + ru (template editor: Document name source,
       trackers in formulas; sheet: docs card); `TODO.md` T-059, T-102, T-111, T-083 closed with
       notes
-- [ ] T029 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
+- [x] T029 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
       design.md
