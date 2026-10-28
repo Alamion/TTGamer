@@ -14,6 +14,8 @@ preview:
     loading: Loading…
     missing: This document is not available.
     empty: Nothing written yet.
+    open: Open
+    openInNewTab: Open in new tab
 kept:
     status: 'Links kept: {links} in {documents} other documents.'
     restored: 'Links put back: {links} in {documents} documents.'

@@ -101,7 +101,11 @@ export function MentionsFieldControl({ field }: TemplateFieldControlProps) {
             <ul className="m-0 grid list-none gap-1 p-0" aria-label={own.label}>
                 {shown.map(({ source, line, context }, index) => (
                     <li key={`${source.id}:${String(line)}:${String(index)}`} className="min-w-0">
-                        <DocumentPreviewTrigger documentId={source.id} name={source.name}>
+                        <DocumentPreviewTrigger
+                            documentId={source.id}
+                            name={source.name}
+                            onFollow={(newTab) => follow(source.id, { newTab, line })}
+                        >
                             <button
                                 type="button"
                                 onClick={() => follow(source.id, { line })}

@@ -14,6 +14,8 @@ preview:
     loading: Загрузка…
     missing: Этот документ недоступен.
     empty: Пока ничего не написано.
+    open: Открыть
+    openInNewTab: Открыть в новой вкладке
 kept:
     status: 'Ссылки сохранены: {links} в других документах ({documents}).'
     restored: 'Ссылки возвращены: {links} в документах ({documents}).'

@@ -314,10 +314,13 @@ suffix, then the most shared leading folders with the link's document, then the 
   The folder path is written only when the name alone resolves elsewhere.
 - **Preview card** (`DocumentPreviewCard.tsx`, Radix Popover): 400 ms hover or focus, 500 ms touch
   press, Esc; the brief through `DocumentRenderContext` (the workspace's `renderDocument`), else a
-  note's title and first lines, read-only. Reference chips and incoming references use it. Cards do
-  not open cards (`PreviewDepthContext`). Embeds (`DocumentEmbed.tsx`) reuse its content with the
-  whole text or one section, two levels deep, a document already on the path as a link; a stored
-  picture or a missing picture name is never a document.
+  note's title and first lines, read-only. A long press (or Android's `contextmenu`) replaces the
+  browser's link menu: that card ignores pointer leave and blur, scrolls within the space Radix
+  reports, and offers Open / Open in new tab through `onFollow`. Mouse-only closers: a touch ends
+  with a pointer leave. Reference chips and incoming references use it. Cards do not open cards
+  (`PreviewDepthContext`). Embeds (`DocumentEmbed.tsx`) reuse its content with the whole text or one
+  section, two levels deep, a document already on the path as a link; a stored picture or a missing
+  picture name is never a document.
 - **Keeping links** (`linkKeeper.ts`): `planLinkEdits(before, after)` rewrites a link only when the
   change would send it to another document and its target still exists (to the new name, or the full
   folder path); deleting changes no text. Tree changes plan inside `runTreeChange` and keep the

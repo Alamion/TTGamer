@@ -59,12 +59,14 @@ export function DocumentLink({ node }: { node: MarkdownWikilink }) {
     }, [entry, preview, sourceId, target.reference]);
 
     if (entry) {
+        const followEntry = (newTab: boolean) =>
+            follow(entry.id, { newTab, ...(target.section ? { section: target.section } : {}) });
         const open = (event: MouseEvent, newTab: boolean) => {
             event.preventDefault();
-            follow(entry.id, { newTab, ...(target.section ? { section: target.section } : {}) });
+            followEntry(newTab);
         };
         return (
-            <DocumentPreviewTrigger documentId={entry.id} name={entry.name}>
+            <DocumentPreviewTrigger documentId={entry.id} name={entry.name} onFollow={followEntry}>
                 <a
                     href={`?doc=${encodeURIComponent(entry.id)}`}
                     className={MARKDOWN_LINK_CLASSES}

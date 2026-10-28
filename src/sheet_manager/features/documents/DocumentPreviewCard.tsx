@@ -24,6 +24,7 @@ import { briefViewOf } from '../sheet/panes/views';
 import { DocumentEmbed } from './DocumentEmbed';
 import { DocumentLink } from './DocumentLink';
 import { DocumentRenderContext, PreviewDepthContext } from './documentRender';
+import { useFollowDocument } from './followLink';
 import { defaultPageOf, sectionText } from './linkSuggestions';
 
 /**
@@ -239,38 +240,66 @@ export function DocumentPreviewContent({
 
 /**
  * Wraps a link to a document: its card opens after a pause on hover or keyboard focus, or on a
- * long press, and closes a moment after the pointer leaves link and card, or on Esc. Inside a card
- * the link is left as it is: cards do not open cards.
+ * long press, and closes a moment after the pointer leaves link and card, or on Esc. A long press
+ * replaces the browser's link menu: its card stays until a tap outside, scrolls, and offers to
+ * open the document. Inside a card the link is left as it is: cards do not open cards.
  */
 export function DocumentPreviewTrigger({
     documentId,
     name,
+    onFollow,
     children,
 }: {
     documentId: string;
     name: string;
+    /** How the card's open actions follow the link; by default to the document's top. */
+    onFollow?: (newTab: boolean) => void;
     children: ReactNode;
 }) {
     const depth = useContext(PreviewDepthContext);
+    const follow = useFollowDocument();
     const [open, setOpen] = useState(false);
+    // Opened by a long press: only a tap outside or Esc closes it.
+    const [held, setHeld] = useState(false);
     const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const pressed = useRef(false);
+    const touching = useRef(false);
 
     useEffect(() => () => clearTimeout(timer.current), []);
 
     if (depth > 0) return children;
 
     const later = (next: boolean, delay: number) => {
+        if (held) return;
         clearTimeout(timer.current);
         timer.current = setTimeout(() => setOpen(next), delay);
     };
     const cancel = () => clearTimeout(timer.current);
+    const hold = () => {
+        clearTimeout(timer.current);
+        pressed.current = true;
+        setHeld(true);
+        setOpen(true);
+    };
+    const openDocument = (newTab: boolean) => {
+        setOpen(false);
+        setHeld(false);
+        if (onFollow) onFollow(newTab);
+        else follow(documentId, { newTab });
+    };
 
     return (
-        <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Root
+            open={open}
+            onOpenChange={(next) => {
+                setOpen(next);
+                if (!next) setHeld(false);
+            }}
+        >
             <Popover.Anchor asChild>
                 <span
-                    className="inline"
+                    // iOS shows its link menu on a long press unless the callout is off.
+                    className="inline [-webkit-touch-callout:none]"
                     onPointerEnter={(event) => {
                         if (event.pointerType === 'mouse') later(true, OPEN_DELAY_MS);
                     }}
@@ -280,14 +309,25 @@ export function DocumentPreviewTrigger({
                     onPointerDown={(event) => {
                         if (event.pointerType !== 'touch') return;
                         pressed.current = false;
+                        touching.current = true;
                         clearTimeout(timer.current);
-                        timer.current = setTimeout(() => {
-                            pressed.current = true;
-                            setOpen(true);
-                        }, LONG_PRESS_MS);
+                        timer.current = setTimeout(hold, LONG_PRESS_MS);
                     }}
                     onPointerUp={(event) => {
-                        if (event.pointerType === 'touch' && !pressed.current) cancel();
+                        if (event.pointerType !== 'touch') return;
+                        touching.current = false;
+                        if (!pressed.current) cancel();
+                    }}
+                    // The page started scrolling under the finger.
+                    onPointerCancel={() => {
+                        touching.current = false;
+                        if (!pressed.current) cancel();
+                    }}
+                    onContextMenu={(event) => {
+                        // Android's link menu: the card takes its place.
+                        if (!touching.current) return;
+                        event.preventDefault();
+                        if (!pressed.current) hold();
                     }}
                     onClickCapture={(event) => {
                         // The click that ends a long press only opened the card.
@@ -313,11 +353,36 @@ export function DocumentPreviewTrigger({
                     // Hover and focus show the card; they never move focus into it.
                     onOpenAutoFocus={(event) => event.preventDefault()}
                     onCloseAutoFocus={(event) => event.preventDefault()}
-                    onPointerEnter={cancel}
-                    onPointerLeave={() => later(false, CLOSE_DELAY_MS)}
-                    className="z-[1000] max-h-[480px] w-[360px] max-w-[calc(100vw-1rem)] overflow-auto rounded-md border border-border bg-bgSurface p-3 shadow-lg"
+                    // A touch ends with a pointer leave; only the mouse leaving closes the card.
+                    onPointerEnter={(event) => {
+                        if (event.pointerType === 'mouse') cancel();
+                    }}
+                    onPointerLeave={(event) => {
+                        if (event.pointerType === 'mouse') later(false, CLOSE_DELAY_MS);
+                    }}
+                    className="z-[1000] flex max-h-[min(480px,var(--radix-popover-content-available-height))] w-[360px] max-w-[calc(100vw-1rem)] flex-col rounded-md border border-border bg-bgSurface shadow-lg"
                 >
-                    <DocumentPreviewContent documentId={documentId} />
+                    <div className="min-h-0 flex-1 overflow-auto overscroll-contain p-3">
+                        <DocumentPreviewContent documentId={documentId} />
+                    </div>
+                    {held && (
+                        <div className="flex flex-wrap gap-2 border-t border-border p-2">
+                            <button
+                                type="button"
+                                onClick={() => openDocument(false)}
+                                className="rounded-lg bg-primary-muted px-3 py-1.5 text-sm font-medium text-white hover:bg-primary"
+                            >
+                                {translate(messages.open)}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => openDocument(true)}
+                                className="rounded-lg border border-border bg-bgSurface px-3 py-1.5 text-sm font-medium text-textSecondary hover:bg-bgBase"
+                            >
+                                {translate(messages.openInNewTab)}
+                            </button>
+                        </div>
+                    )}
                 </Popover.Content>
             </Popover.Portal>
         </Popover.Root>

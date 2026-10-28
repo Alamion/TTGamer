@@ -101,6 +101,34 @@ describe('the preview card', () => {
         expect(followed).toHaveBeenCalledTimes(1);
     });
 
+    it('takes the place of the browser menu on a long press, stays through taps, and opens', () => {
+        const link = mountLink();
+        fireEvent.pointerDown(link, { pointerType: 'touch' });
+        const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+        act(() => void link.dispatchEvent(menu));
+        expect(menu.defaultPrevented).toBe(true);
+        expect(card()).toBeTruthy();
+        fireEvent.pointerUp(link, { pointerType: 'touch' });
+        // A tap inside the card ends with the pointer leaving it and the link losing focus.
+        fireEvent.pointerLeave(card()!, { pointerType: 'touch' });
+        fireEvent.blur(link);
+        advance(500);
+        expect(card()).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'Open in new tab' }));
+        expect(card()).toBeNull();
+    });
+
+    it('leaves the browser menu alone without a touch, and a scroll cancels the press', () => {
+        const link = mountLink();
+        const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+        link.dispatchEvent(menu);
+        expect(menu.defaultPrevented).toBe(false);
+        fireEvent.pointerDown(link, { pointerType: 'touch' });
+        fireEvent.pointerCancel(link, { pointerType: 'touch' });
+        advance(600);
+        expect(card()).toBeNull();
+    });
+
     it('draws the brief of a kind that has one through the workspace renderer', () => {
         const [systemId, definitionId, viewId] = (() => {
             for (const system of systemRegistry.getSystems()) {
