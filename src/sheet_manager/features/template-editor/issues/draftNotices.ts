@@ -11,7 +11,9 @@ export type DraftNotice = 'noName';
  */
 export function collectDraftNotices(draft: EditorDraft): DraftNotice[] {
     const bindings = listDocumentBindings(draft.systemId, draft.documentKind);
-    const names = bindings.filter((binding) => binding.kind === 'field' && binding.syncsTitle);
+    const names = bindings.filter(
+        (binding) => binding.kind === 'field' && (binding.syncsTitle || binding.title)
+    );
     if (names.length === 0) return [];
 
     let stored = false;

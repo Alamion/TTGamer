@@ -25,6 +25,7 @@ import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
 import { DocumentPreviewTrigger } from '../../documents/DocumentPreviewCard';
 import { LINKED_FROM_LIMIT, useLinkedFrom } from '../../documents/linkedFrom';
+import { rollNameOf } from '../data/documentLabels';
 import { useBriefPage } from './areaLayout';
 import { useDocumentTraitDiceRoll } from './boundDocument';
 import { PoolTracker } from './PoolTracker';
@@ -470,7 +471,8 @@ function RatingFieldControlRender({
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'rating'> }) {
     const traitDiceRoll = useDocumentTraitDiceRoll();
-    const characterName = useDocumentSource().document?.metadata.title || undefined;
+    const shown = useDocumentSource().document;
+    const characterName = shown ? rollNameOf(shown) : undefined;
     const effectiveMax = ratingEffectiveMax(field, resolvedMax);
     const stored = typeof value === 'number' ? value : undefined;
     // Display clamp (A4): a lowered computed maximum hides the excess without rewriting

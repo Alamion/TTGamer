@@ -36,6 +36,19 @@ props, and `@theme/Heading` with `as` prop.
   only apply under the root and when class names are used); `@source` there scans `src` and `docs`
 - Module pages import their Tailwind CSS file directly (e.g., `../../css/set_tailwind_styles.css`)
 
+## Docs Fragments in the App
+
+- A sheet section's "?" (`DocsPreviewLink`, `shared/components/DocsFragmentCard.tsx`, spec 045)
+  shows part of a docs page in a card: `shared/components/docsFragments.ts` finds the page's content
+  chunk in `@generated/routesChunkNames` and loads it through `@generated/registry` (both already in
+  the main bundle; this file is their only reader). MDX v3 hands its `wrapper` one element that
+  draws the page; the card draws it and keeps the blocks from the anchored heading to the next one
+  of the same or higher level. `DocsHelpLink` stays a plain link elsewhere, so the navbar does not
+  load the card.
+- A heading a shipped sheet links to carries the same explicit `\{#id}` in the English and the
+  Russian page (Russian headings slug differently); `tests/docs/docs-links-anchors.test.ts` checks
+  every shipped `docsPath`.
+
 ## Config File Formats
 
 - `postcss.config.js` — **must be CommonJS** (`module.exports`) — root `package.json` has no

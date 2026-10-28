@@ -180,6 +180,7 @@ editor:
     sourceCustom: Custom value (this template)
     sourceTraits: Traits
     sourceResources: Resources
+    sourceDocumentName: Document name
     sourceDetails: Character details
     sourceTypeLocked: The type follows the character sheet value.
     listSource: Entries

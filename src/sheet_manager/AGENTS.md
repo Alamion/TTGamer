@@ -258,7 +258,11 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   name before the document exists. A click only selects a row and shows its details (T-116); a
   document opens by double click, `Enter`, or the Open actions (**Open**, **Open in new tab**,
   **Open beside**). On a phone a tap selects and switches to the details tab. A single dragged
-  document row also carries `application/x-ttg-document`, so the layout takes it like a tab.
+  document row also carries `application/x-ttg-document`, so the layout takes it like a tab. When
+  the shown rows mix systems, each document row carries its badge (`documentBadge` in
+  `features/documents/labeler.ts`): a user setting's own `badge` (≤ 6 characters, else its name's
+  initials, named "Setting · System"), else `SystemPlugin.badge` (the label when absent), the full
+  name spoken. Rows are badged when their badges' full names differ.
 
 - **Creating documents (spec 039).** Every create path calls `createFromChoice`
   (`features/documents/createFromChoice.ts`): the page the library chose (`newDocumentPage`, a user
@@ -278,9 +282,12 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   `{ recent (≤ 5), toggled }`: headings turned from their default (rulesets open, the settings
   inside them folded); unreadable values and recent kinds that are gone are dropped and reported
   (`create-preferences-invalid`, `create-recent-missing`). `onCreated(id, { named, parentId })` lets
-  the documents window skip its rename in place for a named document. Docs buttons
-  (`CreateCharacterButton`) use the same path and report a missing kind or example as
-  `create-kind-unavailable` with an error message.
+  the documents window skip its rename in place for a named document. A kind with no `syncsTitle`
+  field binding (own types) gets the shared `field:document-name` binding from
+  `listDocumentBindings` (`title: true`: reads and writes `metadata.title`, through the same rename
+  path, so links are kept); rolls are named by `BoundDocument.rollName` / `rollNameOf` (the name,
+  else the kind's label). Docs buttons (`CreateCharacterButton`) use the same path and report a
+  missing kind or example as `create-kind-unavailable` with an error message.
 
 Following a link (T-057): a page's `openDocument` (reference chips, "Member of") goes through
 `DocumentLinkContext` (`features/sheet/declarative/documentLinks.ts`), which `SheetWorkspace`
@@ -321,6 +328,12 @@ suffix, then the most shared leading folders with the link's document, then the 
   (`PreviewDepthContext`). Embeds (`DocumentEmbed.tsx`) reuse its content with the whole text or one
   section, two levels deep, a document already on the path as a link; a stored picture or a missing
   picture name is never a document.
+- **Stored pictures** (F-010, spec 045): a document read from storage (`openDocument`,
+  `loadIntoCache`) drops markdown picture entries its text no longer names (`pictures-pruned`), and
+  the copy that replaces it is written, releasing the files. `sweepPictures`
+  (`store/documentBoot.ts`) runs at idle at most once a week per device: it reads every live and
+  pending-purge record and deletes stored pictures none names, sparing those stored in the last day;
+  one unreadable record stops it before any deletion (`pictures-swept`).
 - **Keeping links** (`linkKeeper.ts`): `planLinkEdits(before, after)` rewrites a link only when the
   change would send it to another document and its target still exists (to the new name, or the full
   folder path); deleting changes no text. Tree changes plan inside `runTreeChange` and keep the

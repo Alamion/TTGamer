@@ -6,6 +6,7 @@ import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
 
 import { highlightSegments } from '../../features/documents/highlight';
+import { documentBadge } from '../../features/documents/labeler';
 import type { DocumentsNode } from '../../features/documents/rows';
 import { InlineName } from './InlineName';
 
@@ -42,6 +43,19 @@ export interface DocumentsTreeProps {
 
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
 
+/** The game a document belongs to, short; its full name is the tooltip and what readers hear. */
+function SystemBadge({ badge, name }: { badge: string; name: string }) {
+    return (
+        <span
+            title={name}
+            className="shrink-0 rounded-sm border border-border px-1 py-0.5 text-[10px] font-medium text-textSecondary"
+        >
+            <span aria-hidden="true">{badge}</span>
+            <span className="sr-only">{name}</span>
+        </span>
+    );
+}
+
 /** The documents tree: the shared tree over folders and documents (spec 032, FR-023). */
 export function DocumentsTree({
     rows,
@@ -65,6 +79,15 @@ export function DocumentsTree({
     scrollRef,
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
+    // A badge every shown row shares says nothing (one game, or a system filter on).
+    const badges = new Map(
+        rows.flatMap(({ key, node }) =>
+            node.type === 'document'
+                ? [[key, documentBadge(node.entry.systemId, node.entry.kind)] as const]
+                : []
+        )
+    );
+    const badged = new Set([...badges.values()].map(({ name }) => name)).size > 1;
     return (
         <TreeView
             label={translate(labels.treeLabel)}
@@ -126,12 +149,16 @@ export function DocumentsTree({
                           icon: <FileText className={iconClass} aria-hidden="true" />,
                           drag,
                           nameSlot,
-                          badges:
-                              node.entry.id === currentDocumentId ? (
-                                  <span className="shrink-0 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                                      {translate(labels.current)}
-                                  </span>
-                              ) : undefined,
+                          badges: (
+                              <>
+                                  {badged && <SystemBadge {...badges.get(item.key)!} />}
+                                  {node.entry.id === currentDocumentId && (
+                                      <span className="shrink-0 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                          {translate(labels.current)}
+                                      </span>
+                                  )}
+                              </>
+                          ),
                       };
             }}
             labels={{

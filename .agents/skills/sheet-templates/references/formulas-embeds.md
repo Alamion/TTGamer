@@ -14,7 +14,13 @@ Reference for the `sheet-templates` skill: the formula language and sheet embeds
 - One coordinate space: bag values (texts and choices read as text, toggles as 1/0) plus system
   traits, pools, rating-mode values by bare name, and text fields (`readBoundNumber` and the text
   branch of `resolveBase` in `hooks.ts`). `rating()` reads a template list by value key or a game's
-  list by data key (`listRating.ts`: any catalog name, the highest when named twice).
+  list by data key (`listRating.ts`: any catalog name, the highest when named twice). A tracker
+  reads by its key as a number (`trackerReading` in `trackerModel.ts`, spec 045): its first marks
+  column on the reading layer, the deepest marked level's value (`totalReads: 'deepest'`; empty is
+  0, a word is NaN) or the marked count (`'count'`), the copy marked deepest or most of several, 0
+  with nothing marked. A built-in track reads by its `trackId` unless another binding owns the name
+  (`readTrackNumber`): the deepest marked level's penalty, or the marked count without penalties
+  (V5), the worst member of a group. Trackers have no formulas, so they never join a cycle.
 - `formulaState.evaluate(source, { row })` runs any formula on the page: display conditions
   (`visibleWhen: { formula }`, shown while non-zero / non-empty; an empty field hides quietly, other
   errors report `formula-error`), buttons, and From catalog conditions. The editor checks them all

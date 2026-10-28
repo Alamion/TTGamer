@@ -82,7 +82,7 @@ function ScopedButton({
             },
         [gameDice, source]
     );
-    const { rollImmediately } = useSheetDiceActions({ characterName: bound?.name, rollSource });
+    const { rollImmediately } = useSheetDiceActions({ characterName: bound?.rollName, rollSource });
     const [busy, setBusy] = useState(false);
 
     const evaluate = (formula: string): FormulaRun =>

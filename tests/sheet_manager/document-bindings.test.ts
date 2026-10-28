@@ -197,7 +197,8 @@ describe('document binding registry (feature 005, T007)', () => {
         expect(byCoordinate.get('force-points.max')).toBeDefined();
         // Non-numeric bindings stay out of the formula space.
         expect(byCoordinate.has('custom-skills')).toBe(false);
-        expect(byCoordinate.has('health')).toBe(false);
+        // Tracks read their wound penalty (spec 045, US4).
+        expect(byCoordinate.has('health')).toBe(true);
         // Foreign systems enumerate nothing.
         expect(listNumericCoordinates('other-system', 'character')).toHaveLength(0);
     });

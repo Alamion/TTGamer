@@ -1,7 +1,10 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import clsx from 'clsx';
 import type { FormEvent } from 'react';
 import { useId, useState } from 'react';
+
+import { initialsOf } from '../../../features/documents/labeler';
 
 const labels = uiMessages.sheet.library;
 
@@ -11,6 +14,8 @@ const input =
 export interface CreateFormValues {
     name: string;
     description: string;
+    /** A setting's short mark for document rows; empty uses its initials. */
+    badge?: string;
     /** "New page": `blank` or the id of the page to copy. */
     start?: string;
 }
@@ -18,7 +23,9 @@ export interface CreateFormValues {
 export interface CreateFormProps {
     title: string;
     submitLabel: string;
-    initial?: { name: string; description?: string };
+    initial?: { name: string; description?: string; badge?: string };
+    /** Ask for a setting's badge. */
+    withBadge?: boolean;
     /** "New page" start options; the first is selected. */
     startOptions?: readonly { value: string; label: string }[];
     note?: string;
@@ -35,6 +42,7 @@ export function CreateForm({
     submitLabel,
     initial,
     startOptions,
+    withBadge,
     note,
     onSubmit,
     onCancel,
@@ -42,6 +50,7 @@ export function CreateForm({
     const id = useId();
     const [name, setName] = useState(initial?.name ?? '');
     const [description, setDescription] = useState(initial?.description ?? '');
+    const [badge, setBadge] = useState(initial?.badge ?? '');
     const [start, setStart] = useState(startOptions?.[0]?.value);
     const [error, setError] = useState(false);
 
@@ -51,7 +60,12 @@ export function CreateForm({
             setError(true);
             return;
         }
-        onSubmit({ name: name.trim(), description: description.trim(), start });
+        onSubmit({
+            name: name.trim(),
+            description: description.trim(),
+            ...(withBadge ? { badge: badge.trim() } : {}),
+            start,
+        });
     };
 
     return (
@@ -94,6 +108,22 @@ export function CreateForm({
                     className={input}
                 />
             </label>
+            {withBadge && (
+                <label className="block space-y-1 text-xs text-textSecondary">
+                    <span>{translate(labels.create.badge)}</span>
+                    <input
+                        value={badge}
+                        maxLength={6}
+                        placeholder={initialsOf(name)}
+                        aria-describedby={`${id}-badge-hint`}
+                        onChange={(event) => setBadge(event.target.value)}
+                        className={clsx(input, 'max-w-[8rem]')}
+                    />
+                    <span id={`${id}-badge-hint`} className="block">
+                        {translate(labels.create.badgeHint)}
+                    </span>
+                </label>
+            )}
             {startOptions && startOptions.length > 0 && (
                 <label className="block space-y-1 text-xs text-textSecondary">
                     <span>{translate(labels.create.start)}</span>

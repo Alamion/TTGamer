@@ -70,6 +70,8 @@ export const UserSettingSchema = z.object({
     id: userSettingIdSchema,
     name: z.string().trim().min(1).max(80),
     description: z.string().max(500).optional(),
+    /** A short mark for document rows (spec 045); the name's initials when absent. */
+    badge: z.string().trim().min(1).max(6).optional(),
     systemId: SystemIdSchema,
     pages: z.record(z.string(), z.string()).default({}),
     createdAt: z.string().min(1),

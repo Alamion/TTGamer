@@ -247,6 +247,7 @@ docsCreate:
     failed: 'Could not create "{name}": this kind of document is not available.'
 systems:
     starWarsWod: Star Wars (World of Darkness 2e)
+    starWarsWodBadge: SW
 types:
     character: Character
     droid: Droid

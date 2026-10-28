@@ -17,7 +17,7 @@ Every field keeps its value under a key. Fields with the same key share one valu
 - **Custom value (this template)** — the field keeps its own value in the document;
 - a value the game already keeps for the document — **Traits**, **Resources**, **Character details**. The field then shows and changes that value, so the dice, other pages, and the rest of the sheet see the same number. Its type follows the game's value.
 
-A page names its document through one field: set a text field to **Character details → Name**. Without such a field the document list shows only the type, and dice rolls carry no name; the editor reminds you under the page while none is set. A text field that is merely called "Name" keeps its own custom value and names nothing.
+A page names its document through one field: set a text field to **Character details → Name**. Without such a field the document list shows only the type, and dice rolls carry no name; the editor reminds you under the page while none is set. A text field that is merely called "Name" keeps its own custom value and names nothing. A page of your own type has no character details: set its text field to **Document name** instead. Typing in it renames the document, links to it keep working, and a rename in the documents window shows in the field. A document without a name rolls under its type's name.
 
 Changing where the value lives keeps the field's place and look: its width in columns, when it shows, its label settings, and its help text. Settings the new kind of value cannot have are set aside and named for screen readers; switch back before closing the editor and they return.
 
@@ -43,7 +43,7 @@ max(0, reputation - 2)
 willpower.max
 ```
 
-For values with a current and a maximum, `.current` and `.max` pick one. Text fields and choices read as text, toggles as 1 or 0.
+For values with a current and a maximum, `.current` and `.max` pick one. Text fields and choices read as text, toggles as 1 or 0. A [tracker](./elements.mdx#trackers) reads as a number: the value of its deepest marked level, or the count of marked boxes when its total counts; 0 while nothing is marked; a level value that is a word ("Out") is not a number. Of several copies, the one marked deepest counts. A game's own track reads by its name (`health`): its wound penalty, or the marked boxes of a track without penalties (V5 health and willpower). So `{max(1, dexterity + wounds)}d10` shrinks a pool as wounds are marked.
 
 | Write                          | What it does                                                                                                                                    |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

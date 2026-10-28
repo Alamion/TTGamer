@@ -617,7 +617,7 @@ function PrimitiveTraitBody({
                             disabled={readOnly}
                             size="sm"
                             statLabel={label}
-                            characterName={bound.name}
+                            characterName={bound.rollName}
                         />
                     ) : undefined
                 }
@@ -659,7 +659,7 @@ function PrimitiveTraitBody({
                 experienced={trait.experienced ?? false}
                 practiced={trait.practiced ?? false}
                 onDiceRoll={traitDiceRoll}
-                characterName={bound.name}
+                characterName={bound.rollName}
             />
         );
     }
@@ -692,7 +692,7 @@ function PrimitiveTraitBody({
             experienced={trait.experienced ?? false}
             practiced={trait.practiced ?? false}
             onDiceRoll={traitDiceRoll}
-            characterName={bound.name}
+            characterName={bound.rollName}
         />
     );
 }
@@ -920,7 +920,7 @@ function PrimitiveFieldBody({
     }
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    const raw = readFieldBinding(descriptor, bound.data);
+    const raw = descriptor.title ? (bound.name ?? '') : readFieldBinding(descriptor, bound.data);
     if (descriptor.valueType === 'boolean') {
         return (
             <label className="flex items-center gap-2 text-sm text-textPrimary">
@@ -940,6 +940,10 @@ function PrimitiveFieldBody({
     }
     const value = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
     const write = (next: string) => {
+        if (descriptor.title) {
+            bound.setTitle(next);
+            return;
+        }
         bound.update(
             fieldBindingUpdate(
                 descriptor,

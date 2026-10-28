@@ -247,6 +247,7 @@ docsCreate:
     failed: 'Не удалось создать «{name}»: этот вид документа недоступен.'
 systems:
     starWarsWod: Звёздные Войны (Мир Тьмы 2e)
+    starWarsWodBadge: SW
 types:
     character: Персонаж
     droid: Дроид

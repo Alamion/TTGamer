@@ -1,3 +1,5 @@
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import { systemRegistry } from './index';
 
 /**
@@ -216,6 +218,8 @@ export interface FieldBinding extends BindingBase {
     numeric?: (raw: unknown) => number | undefined;
     /** Writing this field also renames the document (entities without a metadata name). */
     syncsTitle?: boolean;
+    /** The value is the document's name itself, stored nowhere else ("Document name", spec 045). */
+    title?: true;
     /**
      * Custom mapping for values not stored at a single path (e.g. a portrait split across
      * `imageUrl` / `portraitId`): `read` yields the field value, `update` the top-level update.
@@ -350,12 +354,41 @@ export interface NumericCoordinate {
     label: string;
 }
 
+/** The coordinate of the shared "Document name" source (spec 045, D6). */
+export const DOCUMENT_NAME_COORDINATE = 'document-name';
+
+const documentNameBindings = new Map<string, FieldBinding>();
+
+/** The shared name source of a kind that has no name field of its own (own types, D6). */
+function documentNameBinding(documentKind: string): FieldBinding {
+    let binding = documentNameBindings.get(documentKind);
+    if (!binding) {
+        binding = {
+            key: `field:${DOCUMENT_NAME_COORDINATE}`,
+            kind: 'field',
+            label: uiMessages.sheet.templates.editor.sourceDocumentName.message,
+            documentKinds: new Set([documentKind]),
+            path: [],
+            valueType: 'string',
+            coordinate: DOCUMENT_NAME_COORDINATE,
+            title: true,
+        };
+        documentNameBindings.set(documentKind, binding);
+    }
+    return binding;
+}
+
 export function listDocumentBindings(
     systemId: string,
     documentKind: string
 ): readonly DocumentBindingDescriptor[] {
-    const bindings = systemRegistry.getSystem(systemId)?.templateBindings ?? [];
-    return bindings.filter((binding) => binding.documentKinds.has(documentKind));
+    const system = systemRegistry.getSystem(systemId);
+    if (!system) return [];
+    const bindings = (system.templateBindings ?? []).filter((binding) =>
+        binding.documentKinds.has(documentKind)
+    );
+    const named = bindings.some((binding) => binding.kind === 'field' && binding.syncsTitle);
+    return named ? bindings : [...bindings, documentNameBinding(documentKind)];
 }
 
 export function resolveDocumentBinding(
@@ -419,7 +452,64 @@ export function listNumericCoordinates(
             });
         }
     }
+    // Built-in tracks read by their id unless another value already has that name (spec 045).
+    for (const binding of listDocumentBindings(systemId, documentKind)) {
+        if (binding.kind !== 'track') continue;
+        if (coordinates.some(({ coordinate }) => coordinate === binding.trackId)) continue;
+        coordinates.push({ coordinate: binding.trackId, label: binding.label });
+    }
     return coordinates;
+}
+
+/** The track a formula names by its id, unless another binding owns that name. */
+function trackOf(systemId: string, documentKind: string, path: string): TrackBinding | undefined {
+    const bindings = listDocumentBindings(systemId, documentKind);
+    const owned = bindings.some(
+        (binding) =>
+            (binding.kind === 'trait' || binding.kind === 'field' || binding.kind === 'resource') &&
+            binding.coordinate === path
+    );
+    if (owned) return undefined;
+    return bindings.find(
+        (binding): binding is TrackBinding => binding.kind === 'track' && binding.trackId === path
+    );
+}
+
+/**
+ * What formulas read from a built-in track (spec 045, D9): the penalty of the deepest marked level
+ * when its levels carry penalties, else the count of marked boxes (V5 Health, Willpower); of
+ * several members, the one marked deepest (or most).
+ */
+export function readTrackNumber(
+    binding: TrackBinding,
+    data: Readonly<Record<string, unknown>>
+): number {
+    const record = data[binding.dataKey];
+    const members = binding.members;
+    const tracks = members
+        ? (Array.isArray(record) ? record : []).map(
+              (member) => (member as Record<string, unknown> | null)?.[members.trackKey]
+          )
+        : [record];
+    const length = binding.variants ? readDataPath(data, binding.variants.lengthPath) : undefined;
+    const levels =
+        (typeof length === 'number' ? binding.variants?.levelsByLength[length] : undefined) ??
+        binding.levels;
+    const penalties = !binding.length && levels.some(({ penalty }) => penalty !== null);
+    let deepest = -1;
+    let most = 0;
+    for (const track of tracks) {
+        const marks = (track as { levels?: unknown } | null | undefined)?.levels;
+        if (!Array.isArray(marks)) continue;
+        const marked = marks.flatMap((mark, index) =>
+            typeof mark === 'string' && mark !== 'empty' ? [index] : []
+        );
+        most = Math.max(most, marked.length);
+        const last = marked.filter((index) => index < levels.length).at(-1);
+        if (last !== undefined) deepest = Math.max(deepest, last);
+    }
+    if (!penalties) return most;
+    return deepest < 0 ? 0 : (levels[deepest]?.penalty ?? 0);
 }
 
 export type BoundNumber = { bound: false } | { bound: true; value: number | undefined };
@@ -464,7 +554,8 @@ export function readBoundNumber(
             return { bound: true, value: part === 'max' ? pool?.max : pool?.current };
         }
     }
-    return { bound: false };
+    const track = trackOf(systemId, documentKind, path);
+    return track ? { bound: true, value: readTrackNumber(track, data) } : { bound: false };
 }
 
 /** Bindings a coordinate write (e.g. a catalog fill) can target in document data. */

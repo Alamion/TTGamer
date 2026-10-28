@@ -50,7 +50,16 @@ describe('the page has a field that stores the document name', () => {
         ]);
     });
 
-    it('stays quiet where the game has no name to store', () => {
-        expect(collectDraftNotices(draft(ENGINE, 'no-such-kind', section()))).toEqual([]);
+    it('covers an own type through the shared Document name source (spec 045)', () => {
+        const kind = 'user-faction1';
+        expect(collectDraftNotices(draft(ENGINE, kind, section()))).toEqual(['noName']);
+        const named = listDocumentBindings(ENGINE, kind).find(
+            (binding) => binding.key === 'field:document-name'
+        )!;
+        const field = fieldFromSource(
+            { id: 'f-1', type: 'text', label: 'x', required: false, compact: false } as never,
+            named as never
+        );
+        expect(collectDraftNotices(draft(ENGINE, kind, section(field)))).toEqual([]);
     });
 });

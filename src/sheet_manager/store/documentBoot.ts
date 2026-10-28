@@ -1,6 +1,6 @@
 import { describeError, reportSheetIssue } from '../diagnostics';
 import { repairFolders } from '../features/documents/operations';
-import { deletePortrait } from '../persistence/portraitStorage';
+import { deletePortrait, listStoredPictures } from '../persistence/portraitStorage';
 import {
     countCleanLaunch,
     deviceImageIdsOf,
@@ -118,6 +118,7 @@ export async function bootDocuments(api: BootApi): Promise<void> {
             () => api.getState().entries.map(({ id }) => id),
             (id) => readEnvelope(id, undefined)
         );
+        schedulePictureSweep(api);
         if (opened) await countCleanLaunch();
     } catch (error) {
         reportSheetIssue({
@@ -126,4 +127,90 @@ export async function bootDocuments(api: BootApi): Promise<void> {
             details: { error: describeError(error) },
         });
     }
+}
+
+/** The picture sweep runs at most this often on a device (it reads every document record). */
+const SWEEP_EVERY_MS = 7 * 24 * 60 * 60 * 1000;
+/** A picture stored this recently may belong to a document not saved yet (this or another tab). */
+const SWEEP_SPARES_MS = 24 * 60 * 60 * 1000;
+const SWEEP_AT_KEY = 'ttgamer.pictures.sweptAt';
+const SWEEP_CHUNK = 50;
+
+let sweepScheduled: (() => void) | undefined;
+let sweepGeneration = 0;
+
+function sweptAt(): number {
+    try {
+        return Number(localStorage.getItem(SWEEP_AT_KEY) ?? 0) || 0;
+    } catch {
+        return 0;
+    }
+}
+
+/**
+ * Deletes stored pictures no document names (F-010, spec 045): portraits, image fields, and note
+ * pictures of live documents and of deleted ones waiting for their purge are kept, and so is any
+ * picture stored in the last day. One unreadable record stops the sweep before anything is deleted.
+ * Returns how many pictures went, or nothing when the sweep did not run to the end.
+ */
+export async function sweepPictures(api: BootApi, now = Date.now()): Promise<number | undefined> {
+    const started = sweepGeneration;
+    const { entries, pendingPurge } = api.getState();
+    const ids = [...new Set([...entries.map(({ id }) => id), ...pendingPurge])];
+    const named = new Set<string>();
+    for (let index = 0; index < ids.length; index += SWEEP_CHUNK) {
+        const records = await Promise.all(ids.slice(index, index + SWEEP_CHUNK).map(readRecord));
+        if (started !== sweepGeneration) return undefined;
+        if (records.some((record) => record === null || record === undefined)) return undefined;
+        for (const record of records) for (const id of deviceImageIdsOf(record)) named.add(id);
+    }
+    const stored = await listStoredPictures();
+    if (started !== sweepGeneration) return undefined;
+    const orphans = stored.filter(
+        ({ id, createdAt }) => !named.has(id) && now - createdAt > SWEEP_SPARES_MS
+    );
+    await Promise.all(orphans.map(({ id }) => deletePortrait(id)));
+    try {
+        localStorage.setItem(SWEEP_AT_KEY, String(now));
+    } catch {
+        // Without storage the sweep runs again next start; it is idempotent.
+    }
+    if (orphans.length > 0) {
+        reportSheetIssue({
+            code: 'pictures-swept',
+            message: 'Stored pictures no document names were deleted',
+            details: { pictures: orphans.length },
+        });
+    }
+    return orphans.length;
+}
+
+/** Runs the sweep at idle when the last one is a week old. */
+export function schedulePictureSweep(api: BootApi): void {
+    sweepScheduled?.();
+    if (Date.now() - sweptAt() < SWEEP_EVERY_MS) return;
+    const run = () => {
+        sweepScheduled = undefined;
+        void sweepPictures(api).catch((error: unknown) =>
+            reportSheetIssue({
+                code: 'document-boot-failed',
+                message: 'The picture sweep stopped',
+                details: { error: describeError(error) },
+            })
+        );
+    };
+    if (typeof requestIdleCallback === 'function') {
+        const handle = requestIdleCallback(run, { timeout: 10_000 });
+        sweepScheduled = () => cancelIdleCallback(handle);
+    } else {
+        const handle = setTimeout(run, 2000);
+        sweepScheduled = () => clearTimeout(handle);
+    }
+}
+
+/** Stops a pending or running sweep (tests). */
+export function cancelPictureSweep(): void {
+    sweepScheduled?.();
+    sweepScheduled = undefined;
+    sweepGeneration += 1;
 }

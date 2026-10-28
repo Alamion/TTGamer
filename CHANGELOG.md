@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.36.0
+
+### Minor feat
+
+- **Rules in place (spec 045, T-059)**: the "?" beside a sheet section or card shows that part of the rules in a card next to it, in your language, with **Open the page**. Ctrl-click or a middle click still opens the page in a new tab
+- **Which game a document is for (spec 045, T-102)**: when the documents window lists documents of several games, each shows a short badge — SW, V5, WoD 2e, General; hover it for the full name. Documents of your own setting show the setting's badge: up to 6 characters set in the library, or the initials of its name
+- **Names for your own document types (spec 045, T-111)**: a text field set to the new **Document name** source renames the document as you type, and links to it follow. A document with no name rolls under its type's name
+- **Trackers in formulas (spec 045, T-083)**: a formula reads a tracker by its key — the value of the deepest marked level, or how many boxes are filled; with several copies, the one marked deepest. Built-in tracks read by name, so `health` is the Star Wars wound penalty and V5 Health and Willpower count filled boxes
+
+### Fix
+
+- **Removed pictures free their space (spec 045, F-010)**: a picture you deleted from a note's text is dropped when the note opens, and once a week, while the page is idle, pictures no document uses are deleted from the device
+
 ## v3.35.0
 
 ### Minor feat

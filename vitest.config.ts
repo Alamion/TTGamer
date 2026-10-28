@@ -11,6 +11,12 @@ export default defineConfig({
                 __dirname,
                 'tests/stubs/docusaurusContext.ts'
             ),
+            '@generated/registry': path.resolve(__dirname, 'tests/stubs/generatedRegistry.ts'),
+            '@generated/routesChunkNames': path.resolve(
+                __dirname,
+                'tests/stubs/generatedRoutesChunkNames.ts'
+            ),
+            '@theme/MDXContent': path.resolve(__dirname, 'tests/stubs/themeMdxContent.tsx'),
         },
     },
     test: {

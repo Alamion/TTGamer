@@ -97,7 +97,7 @@ export function listTemplateNumericCoordinates(
                     label: node.label,
                 }),
             });
-        } else if (node.type === 'formula') {
+        } else if (node.type === 'formula' || node.type === 'tracker') {
             options.push({ coordinate: fieldValueKey(node), label: node.label });
         }
     });

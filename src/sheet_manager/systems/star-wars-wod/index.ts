@@ -186,6 +186,7 @@ export const starWarsFodderDefinition: DocumentDefinition = {
 export const starWarsWodSystem: SystemPlugin = {
     id: STAR_WARS_WOD_SYSTEM_ID,
     label: uiMessages.sheet.documents.systems.starWarsWod,
+    badge: uiMessages.sheet.documents.systems.starWarsWodBadge,
     // A setting on the classic WoD 2e engine: the library lists it under that ruleset.
     ruleset: SystemIdSchema.parse('wod-2e'),
     documents: [

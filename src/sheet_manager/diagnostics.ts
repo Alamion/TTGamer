@@ -83,7 +83,11 @@ export type SheetIssueCode =
     /** A preview card or embed could not show its document (missing, unreadable). */
     | 'link-preview-missing'
     /** More documents mention this one than "Mentioned in" reads. */
-    | 'mentions-truncated';
+    | 'mentions-truncated'
+    /** A loaded note dropped pictures its text no longer names (spec 045, F-010). */
+    | 'pictures-pruned'
+    /** Stored pictures no document names were deleted after start-up (spec 045, F-010). */
+    | 'pictures-swept';
 
 export interface SheetIssue {
     code: SheetIssueCode;

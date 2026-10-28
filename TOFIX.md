@@ -30,10 +30,10 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 ## 🟢 Medium
 
-### F-010 — A note's deleted picture can stay stored when the page closes mid-edit
+### F-011 — A section's "?" sits inside its header button
 
-**Area:** markdown notes, device pictures (`src/sheet_manager/features/sheet/declarative/MarkdownFieldControl.tsx`, `src/sheet_manager/store/documentStore.ts`)
+**Area:** sheet sections (`src/sheet_manager/components/sections/CollapsibleBlock.tsx`)
 
-**Evidence:** A picture whose `![[name]]` line is deleted keeps its entry in the value until the text is left (blur, Done/Esc, unmount), so undo can bring it back; the stored blob is deleted only when a version without the entry is written. Closing the tab or browser while the cursor is still in the text can skip that last write, so the entry and its blob stay until the note is opened and left again. No background sweep finds blobs no reference names.
+**Evidence:** The section header is one toggle `<button>` holding the title and, inside the heading, the docs "?" link (`DocsPreviewLink`). A link inside a button is invalid nesting: assistive technology does not expose it as a link (Playwright's `getByRole('link')` does not find it; `tests-e2e/smoke/docs-fragment.spec.ts` finds it by its label), and keyboard focus behavior inside a button is undefined. Cards (`SectionCard`) are not affected. Found in spec 045.
 
-**Recommendation:** On document load (or at boot, next to `purgeDeleted`), drop picture entries that the text no longer names and let `releaseImages` free their blobs; optionally a boot sweep of stored portrait ids that no document references.
+**Recommendation:** Make the header a row: the toggle button holding the accent and title, the "?" beside it outside the button, then the chevron inside a second hit area of the same toggle, keeping one tab stop for the toggle and one for the link; check the brief layout heights the browser tests pin.

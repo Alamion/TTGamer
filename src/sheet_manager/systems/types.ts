@@ -101,6 +101,8 @@ export interface SystemPlugin {
     id: SystemId;
     /** Translated system name (create dialog headings, template library groups). */
     label: DocumentViewLabel;
+    /** A short name for badges (documents window rows, spec 045); the label when absent. */
+    badge?: DocumentViewLabel;
     /** Publisher policies of the system's ruleset/setting material (constitution VIII). */
     policies?: readonly PolicyId[];
     /** Catalogs the system's templates may suggest and copy from. */

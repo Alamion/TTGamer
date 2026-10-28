@@ -114,6 +114,8 @@ create:
     name: Name
     nameRequired: Enter a name.
     descriptionField: Description (optional)
+    badge: Badge (optional)
+    badgeHint: Up to 6 characters, shown on its documents in the documents window; left empty, the initials of the name.
     start: Start from
     blank: Blank page
     copyOf: Copy of "{name}"

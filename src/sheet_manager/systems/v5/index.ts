@@ -45,6 +45,7 @@ export const V5_SYSTEM_ID = SystemIdSchema.parse('wod-v5');
 export const v5System: SystemPlugin = {
     id: V5_SYSTEM_ID,
     label: uiMessages.sheet.v5.system,
+    badge: uiMessages.sheet.v5.badge,
     policies: ['dark-pack'],
     documents: [
         hunterDefinition,

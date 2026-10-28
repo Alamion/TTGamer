@@ -789,3 +789,38 @@ export function countHiddenExtraValues(
     }
     return hidden;
 }
+
+/** A level value as a number: empty reads as 0, a word ("Out") as not a number. */
+function levelNumber(value: string | undefined): number {
+    const text = (value ?? '').trim();
+    if (text === '') return 0;
+    return /^[+-]?\d+(?:\.\d+)?$/.test(text) ? Number(text) : Number.NaN;
+}
+
+/**
+ * What formulas read from an own tracker (spec 045, D8), on its first marks column and reading
+ * layer: the value of the deepest marked level, or the count of marked boxes, as its total reads;
+ * of several copies, the one marked deepest (or most). Nothing marked reads 0; a tracker with no
+ * marks column, or a level value that is a word, is not a number.
+ */
+export function trackerReading(field: TrackerField, value: TrackerValue | undefined): number {
+    const column = field.columns.find(({ kind }) => kind === 'marks');
+    if (!column) return Number.NaN;
+    const covered = coveredLevelIds(column, shownLevels(field, value));
+    const reading = readingLayer(field.marks);
+    const kinds = kindsOfLayer(field.marks, reading);
+    const copies = copiesOf(column, value).map((copy) => layerMarks(field.marks, copy, reading));
+    if (field.totalReads === 'count') {
+        return Math.max(
+            0,
+            ...copies.map((marks) => covered.filter((id) => marks[id] !== undefined).length)
+        );
+    }
+    let deepest = -1;
+    for (const marks of copies) {
+        const levelId = deepestMarked(kinds, covered, marks);
+        if (levelId !== undefined) deepest = Math.max(deepest, covered.indexOf(levelId));
+    }
+    if (deepest < 0) return 0;
+    return levelNumber(field.levels.find(({ id }) => id === covered[deepest])?.value);
+}

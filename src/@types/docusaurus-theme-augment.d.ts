@@ -20,3 +20,12 @@ declare module '@theme/Heading' {
     };
     export default function Heading(props: Props): ReactNode;
 }
+
+declare module '@theme/MDXContent' {
+    import type { ReactNode } from 'react';
+
+    export interface Props {
+        readonly children: ReactNode;
+    }
+    export default function MDXContent(props: Props): ReactNode;
+}

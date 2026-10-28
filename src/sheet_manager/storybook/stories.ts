@@ -98,7 +98,7 @@ const containers = story(
         {
             id: 'section-site-link',
             type: 'section',
-            title: 'Section with a site docs link',
+            title: 'Section with a site docs link (a click shows its part in a card)',
             docsPath: '/docs/guide/template-editor/elements#sections',
             columns: 2,
             children: [text('two-col-a', 'Column 1'), text('two-col-b', 'Column 2')],

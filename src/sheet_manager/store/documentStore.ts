@@ -13,6 +13,7 @@ import {
     applyTemplateValueWrites,
     collectTableBlocks,
 } from '../features/sheet/data/templateValueWrites';
+import { withoutUnusedImages } from '../features/sheet/declarative/markdownImages';
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
 import {
@@ -454,6 +455,36 @@ export async function rewriteDocumentMarkdown(
     return true;
 }
 
+/**
+ * Drops the pictures a just-loaded document's markdown no longer names (F-010): a page closed
+ * while its text was still being edited skips the prune on leaving. The pruned copy replaces the
+ * loaded one, so it is written, and the pictures' files are deleted with it.
+ */
+function pruneUnnamedPictures(document: UnknownDocumentEnvelope): void {
+    const values: TemplatePageValues = { ...document.templateValues };
+    let dropped = 0;
+    for (const [key, value] of Object.entries(values)) {
+        const markdown = TemplateMarkdownValueSchema.safeParse(value);
+        if (!markdown.success) continue;
+        const kept = withoutUnusedImages(markdown.data);
+        if (!kept) continue;
+        dropped +=
+            Object.keys(markdown.data.images ?? {}).length - Object.keys(kept.images ?? {}).length;
+        values[key] = kept;
+    }
+    if (dropped === 0) return;
+    const pruned = { ...document, templateValues: values };
+    useDocumentStore.setState(({ documents }) => ({
+        documents: documents.map((candidate) => (candidate === document ? pruned : candidate)),
+    }));
+    releaseImages(document, pruned);
+    reportSheetIssue({
+        code: 'pictures-pruned',
+        message: 'A loaded document named pictures its text no longer used; they were dropped',
+        details: { documentId: document.id, pictures: dropped },
+    });
+}
+
 /** The ids a read must not evict: the one being shown, the current one, and the panes' documents. */
 function keepIds(
     state: Pick<DocumentStoreState, 'currentDocumentId' | 'pinnedIds'>,
@@ -522,6 +553,9 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             }
             return next === state.documents ? state : { documents: next };
         });
+        for (const document of read) {
+            if (document && get().documents.includes(document)) pruneUnnamedPictures(document);
+        }
     },
 
     setCurrentDocument: (id) => {
@@ -558,6 +592,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             currentDocumentId: id,
             opening: null,
         }));
+        pruneUnnamedPictures(document);
         return true;
     },
 

@@ -33,6 +33,7 @@ import {
     presetListEntry,
     type TemplateListEntry,
     type TemplatePageValues,
+    TrackerValueSchema,
 } from '../../../types/templateValues';
 import {
     type CatalogFillableDetail,
@@ -40,6 +41,7 @@ import {
     readDetailValue,
 } from '../data/catalogBindings';
 import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
+import { trackerReading } from '../data/trackerModel';
 import { useBoundDocument } from './boundDocument';
 import { DocumentLinkContext } from './documentLinks';
 import type { CatalogOption, DocumentOption } from './fieldControls';
@@ -269,6 +271,7 @@ export function useTemplatePage(
     const setCurrentDocument = useDocumentStore((state) => state.setCurrentDocument);
     const locale = useDocusaurusContext().i18n.currentLocale;
     const currentDocumentId = document?.id;
+    const documentTitle = document?.metadata.title;
     const templateId = template?.id;
     // Values live in one document-global bag keyed by valueKey (clarification D1).
     const values = useMemo<TemplatePageValues>(
@@ -283,6 +286,16 @@ export function useTemplatePage(
     );
 
     const documentData = document?.data as Record<string, unknown> | undefined;
+
+    // Trackers formulas read by their key (spec 045, US4).
+    const trackers = useMemo(() => {
+        const found = new Map<string, Extract<TemplateField, { type: 'tracker' }>>();
+        if (!template) return found;
+        walkTemplateNodes(template.children, (node) => {
+            if (node.type === 'tracker') found.set(fieldValueKey(node), node);
+        });
+        return found;
+    }, [template]);
 
     const setValue = useCallback(
         (fieldOrKey: string, value: unknown) => {
@@ -423,7 +436,9 @@ export function useTemplatePage(
                 const binding = bound
                     ? resolveWritableBinding(template.systemId, template.documentKind, coordinate)
                     : undefined;
-                if (binding) {
+                if (binding?.kind === 'field' && binding.title) {
+                    title = typeof value === 'string' ? value : String(value ?? '');
+                } else if (binding) {
                     const update = boundWriteUpdate(binding, data, value);
                     Object.assign(data, update);
                     Object.keys(update).forEach((key) => dataKeys.add(key));
@@ -436,8 +451,8 @@ export function useTemplatePage(
             }
             if (bound && dataKeys.size > 0) {
                 bound.update(Object.fromEntries([...dataKeys].map((key) => [key, data[key]])));
-                if (title !== undefined) bound.setTitle(title);
             }
+            if (bound && title !== undefined) bound.setTitle(title);
             if (bagEntries.length > 0) {
                 updateTemplateValues(currentDocumentId, template, (page) => ({
                     ...page,
@@ -477,6 +492,12 @@ export function useTemplatePage(
         const resolveBase = (path: string): FormulaValue | undefined => {
             const bagNumber = (key: string, part?: 'current' | 'max'): FormulaValue | undefined => {
                 const stored = values[key];
+                const tracker = trackers.get(key);
+                if (tracker) {
+                    if (part) return undefined;
+                    const parsed = TrackerValueSchema.safeParse(stored);
+                    return trackerReading(tracker, parsed.success ? parsed.data : undefined);
+                }
                 if (typeof stored === 'number') return part === 'max' ? undefined : stored;
                 // Texts and choices compare as text (spec 038); toggles read as 1 or 0.
                 if (typeof stored === 'string') return part ? undefined : stored;
@@ -505,9 +526,11 @@ export function useTemplatePage(
                     text?.kind === 'field' &&
                     (text.valueType === 'string' || text.valueType === 'enum')
                 ) {
-                    const stored = text.adapter
-                        ? text.adapter.read(documentData)
-                        : readDataPath(documentData, text.path);
+                    const stored = text.title
+                        ? documentTitle
+                        : text.adapter
+                          ? text.adapter.read(documentData)
+                          : readDataPath(documentData, text.path);
                     return typeof stored === 'string' ? stored : '';
                 }
             }
@@ -682,7 +705,7 @@ export function useTemplatePage(
         };
 
         return { results, maxima, minima, maxMinima, evaluate };
-    }, [template, values, documentData]);
+    }, [template, values, documentData, documentTitle, trackers]);
 
     const isVisible = useCallback(
         (condition: VisibleWhen, nodeId: string) => {
@@ -714,7 +737,9 @@ export function useTemplatePage(
                 condition.coordinate
             );
             let value: unknown;
-            if (binding?.kind === 'field') {
+            if (binding?.kind === 'field' && binding.title) {
+                value = documentTitle ?? '';
+            } else if (binding?.kind === 'field') {
                 // Fields stored across several data paths read through their adapter.
                 value = binding.adapter
                     ? binding.adapter.read(documentData)
@@ -742,7 +767,7 @@ export function useTemplatePage(
             const matches = value === condition.equals;
             return condition.not ? !matches : matches;
         },
-        [documentData, fieldCoords, formulaState, template, values]
+        [documentData, documentTitle, fieldCoords, formulaState, template, values]
     );
 
     const resolveSystemList = useCallback(

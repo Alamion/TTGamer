@@ -156,18 +156,33 @@ function withDescription<T extends { description?: string }>(item: T, descriptio
     return (trimmed ? { ...rest, description: trimmed } : rest) as T;
 }
 
-export function createSetting(rulesetId: string, name: string, description = ''): UserSetting {
+function withBadge(setting: UserSetting, badge: string | undefined): UserSetting {
+    const { badge: _old, ...rest } = setting;
+    void _old;
+    const trimmed = badge?.trim();
+    return trimmed ? { ...rest, badge: trimmed } : rest;
+}
+
+export function createSetting(
+    rulesetId: string,
+    name: string,
+    description = '',
+    badge?: string
+): UserSetting {
     const stamp = now();
-    return withDescription<UserSetting>(
-        {
-            id: newUserSettingId(),
-            name: name.trim(),
-            systemId: SystemIdSchema.parse(rulesetId),
-            pages: {},
-            createdAt: stamp,
-            updatedAt: stamp,
-        },
-        description
+    return withBadge(
+        withDescription<UserSetting>(
+            {
+                id: newUserSettingId(),
+                name: name.trim(),
+                systemId: SystemIdSchema.parse(rulesetId),
+                pages: {},
+                createdAt: stamp,
+                updatedAt: stamp,
+            },
+            description
+        ),
+        badge
     );
 }
 
@@ -243,12 +258,13 @@ export function createType(
     );
 }
 
-/** Renames and re-describes a user setting, type, or page. */
+/** Renames and re-describes a user setting, type, or page; a setting also takes its badge. */
 export function renameItem(
     node: LibraryNode,
     name: string,
     description: string,
-    state: LibraryState
+    state: LibraryState,
+    badge?: string
 ): LibraryWrites {
     const trimmed = name.trim();
     if (!trimmed || node.ownership !== 'user') return {};
@@ -258,7 +274,10 @@ export function renameItem(
         if (!setting) return {};
         return {
             saveSettings: [
-                withDescription({ ...setting, name: trimmed, updatedAt: stamp }, description),
+                withBadge(
+                    withDescription({ ...setting, name: trimmed, updatedAt: stamp }, description),
+                    badge
+                ),
             ],
         };
     }

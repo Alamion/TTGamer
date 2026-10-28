@@ -110,3 +110,12 @@ export function listTemplateTargetGroups(): TemplateTargetGroup[] {
     }
     return groups;
 }
+
+/** What a roll is named after: the document's name, else its kind (as the list shows it). */
+export function rollNameOf(document: {
+    systemId: string;
+    kind: string;
+    metadata: { title?: string };
+}): string {
+    return document.metadata.title || kindLabel(document.systemId, document.kind);
+}
