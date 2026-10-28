@@ -8,6 +8,7 @@ import {
     type MarkdownWikilink,
 } from '@site/src/shared/components/markdown/MarkdownView';
 import { linkName } from '@site/src/shared/markdown/links';
+import { modalRoot } from '@site/src/shared/utils/modalRoot';
 import { type ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { reportSheetIssue } from '../../diagnostics';
@@ -301,7 +302,7 @@ export function DocumentPreviewTrigger({
                     {children}
                 </span>
             </Popover.Anchor>
-            <Popover.Portal>
+            <Popover.Portal container={modalRoot()}>
                 <Popover.Content
                     data-preview-card=""
                     aria-label={translate(messages.label, { name })}
@@ -314,7 +315,7 @@ export function DocumentPreviewTrigger({
                     onCloseAutoFocus={(event) => event.preventDefault()}
                     onPointerEnter={cancel}
                     onPointerLeave={() => later(false, CLOSE_DELAY_MS)}
-                    className="z-50 max-h-[480px] w-[360px] max-w-[calc(100vw-1rem)] overflow-auto rounded-md border border-border bg-bgSurface p-3 shadow-lg"
+                    className="z-[1000] max-h-[480px] w-[360px] max-w-[calc(100vw-1rem)] overflow-auto rounded-md border border-border bg-bgSurface p-3 shadow-lg"
                 >
                     <DocumentPreviewContent documentId={documentId} />
                 </Popover.Content>

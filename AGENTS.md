@@ -84,6 +84,11 @@ check fo it existence before killing processes or creating new one.
 - **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 4`
 - **ESLint:** React hooks + a11y focused, strict ESM (no `require()`)
 - **Styling:** Tailwind + `clsx` for conditional classes
+- **Portals:** Tailwind utilities exist only under `.tailwind-root`, so every portal (Radix
+  `*.Portal`, `createPortal`) passes `container={modalRoot()}` (`shared/utils/modalRoot.ts`,
+  `#modal-root` carries the class); in `document.body` it renders unstyled. Above floating windows
+  (`z-[900]`) a popover needs `z-[1000]` or more. `tests/shared/portal-container.test.ts` fails on a
+  portal without a container.
 - **Icons:** Lucide-react
 - **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
 - **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups

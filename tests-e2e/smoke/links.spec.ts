@@ -41,6 +41,8 @@ test('writes a link with suggestions, previews and follows it, and keeps it on a
     await link.hover();
     const card = page.getByRole('dialog', { name: 'Preview of Ines Ruiz' });
     await expect(card).toContainText('Fixer at the docks.');
+    // Styled: drawn under .tailwind-root, not unstyled in the page body.
+    await expect(card).toHaveCSS('width', '360px');
     await page.mouse.move(0, 0);
     await expect(card).toBeHidden();
 
