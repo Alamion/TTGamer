@@ -1,4 +1,4 @@
-import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
+import { DocsPreviewLink } from '@site/src/shared/components/DocsFragmentCard';
 import { useExpandedState } from '@site/src/shared/hooks/useLocalStorageState';
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
@@ -43,7 +43,11 @@ export function CollapsibleBlock({
                     <span className={`w-1 h-6 ${accentColorClasses[accentColor]} rounded-full`} />
                     {title}
                     {docsPath && (
-                        <DocsHelpLink docsPath={docsPath} label={documentationFor(title)} />
+                        <DocsPreviewLink
+                            docsPath={docsPath}
+                            label={documentationFor(title)}
+                            title={title}
+                        />
                     )}
                 </h2>
                 <ChevronDown

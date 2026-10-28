@@ -10,41 +10,41 @@ stories share no new code.
 **Check**: on a Star Wars sheet, "?" on Attributes shows the Attributes text in a card; Ctrl-click
 opens the page in a new tab.
 
-- [ ] T001 [US1] Write `tests/shared/docs-fragment.test.tsx` first: `fragmentOf(toc, anchor)` keeps
+- [x] T001 [US1] Write `tests/shared/docs-fragment.test.tsx` first: `fragmentOf(toc, anchor)` keeps
       the anchored heading up to the next heading of the same or higher level, no anchor keeps the
       text before the first heading, a missing anchor gives the first section and a "not found"
       flag; the card opens on a plain click, not on Ctrl/⌘/Shift or a middle click; an external link
       renders a plain link; an unavailable page shows the message and reports once; a page module
       loads only when a card opens and once per page (FR-001–FR-004)
-- [ ] T002 [US1] `src/shared/components/docsFragments.ts`: find a site path's route in
+- [x] T002 [US1] `src/shared/components/docsFragments.ts`: find a site path's route in
       `@generated/routesChunkNames` (locale `baseUrl` applied as `useSitePath` does), load its
       `content` module through `@generated/registry` once per page (cached promise), and
       `fragmentOf` from the module's `toc` (design D1, D2); report `docs-fragment-missing` /
       `docs-fragment-unavailable` once per link through the shared logging
-- [ ] T003 [US1] `src/shared/components/DocsFragmentCard.tsx`: Radix Popover in
+- [x] T003 [US1] `src/shared/components/DocsFragmentCard.tsx`: Radix Popover in
       `container={modalRoot()}`, `z-[1000]`, height within
       `--radix-popover-content-available-height` and scrolling, labelled; renders the module's MDX
       through `@theme/MDXContent` with a `wrapper` that keeps only the fragment's top-level
       children; loading, "section not found", and unavailable states; "Open the page" link
-- [ ] T004 [US1] `src/shared/components/DocsHelpLink.tsx`: a `preview` option; with it, a plain
+- [x] T004 [US1] `src/shared/components/DocsHelpLink.tsx`: a `preview` option; with it, a plain
       click on a site link opens `DocsFragmentCard` and other clicks keep the default (design D4);
       `SectionCard.tsx` and `CollapsibleBlock.tsx` pass `preview`
-- [ ] T005 [US1] Card strings in `translations/source/{en,ru}/ui/shared` (open the page, loading,
+- [x] T005 [US1] Card strings in `translations/source/{en,ru}/ui/shared` (open the page, loading,
       section not found, unavailable), then `yarn build:translations`
-- [ ] T006 [US1] Write `tests/docs/docs-links-anchors.test.ts`: every shipped `docsPath` (collected
+- [x] T006 [US1] Write `tests/docs/docs-links-anchors.test.ts`: every shipped `docsPath` (collected
       by walking every system's shipped templates, V5 and wod2e parts included) names an existing
       route, and its anchor is the same explicit `{#id}` heading in the English and the Russian page
       (design D3)
-- [ ] T007 [US1] Add the same explicit `{#english-id}` to the English (`docs/**`) and Russian
+- [x] T007 [US1] Add the same explicit `{#english-id}` to the English (`docs/**`) and Russian
       (`i18n/ru/docusaurus-plugin-content-docs/current/**`) headings the shipped links target until
       T006 passes; `yarn validate:i18n`
-- [ ] T008 [US1] E2E `tests-e2e/smoke/docs-fragment.spec.ts`: "?" on a Star Wars section shows the
+- [x] T008 [US1] E2E `tests-e2e/smoke/docs-fragment.spec.ts`: "?" on a Star Wars section shows the
       fragment, styled (a known width), and Ctrl-click opens a new page; browser timing
       `tests-e2e/timings/docs-fragment.spec.ts`: first-open and repeat-open times against SC-001's 1
       s and 500 ms
-- [ ] T008a [US1] Storybook: a section with a docs link (card on click) in
+- [x] T008a [US1] Storybook: a section with a docs link (card on click) in
       `src/sheet_manager/features/storybook/stories.ts` (constitution VI)
-- [ ] T009 [US1] Measure the main and `/universal_sheet` chunks before and after (constitution VII,
+- [x] T009 [US1] Measure the main and `/universal_sheet` chunks before and after (constitution VII,
       a new shared component) and record them in design.md; run `yarn verify:full` and commit the
       story
 

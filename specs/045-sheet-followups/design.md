@@ -134,3 +134,26 @@ Five independent stories, each its own commit, smallest risk first after the P1:
 7. Star Wars character: a button using the health penalty → mark wounds → pool shrinks.
 8. Note with a picture → delete its line and close the tab at once → reopen → picture gone from
    storage (Application tab).
+
+## Implementation notes
+
+- **Bundle baseline (T009)**, production build before any change: main 1,083.5 KB (290.1 KB gzip),
+  `common` 1,478.1 KB (380.0 KB gzip), all JS 1,486.7 KB gzip in 134 files.
+- **US1 bundle**: main 290.4 KB gzip (+0.3, strings), `common` 387.5 KB gzip (+7.5: the card and
+  Radix Popover), all JS 1,488.0 KB gzip (+1.3). A first cut put the card in `DocsHelpLink`, which
+  the navbar's dice settings use, and grew main by 18 KB gzip; the card is now `DocsPreviewLink`
+  (`DocsFragmentCard.tsx`), used only by sections and cards, and `DocsHelpLink` takes an
+  `onPlainClick` instead of a `preview` flag.
+- **MDX v3 wrapper (D2)**: MDX hands its `wrapper` one element that draws the page, not the blocks;
+  the wrapper draws that element itself to cut the blocks. The test stub page has the same shape,
+  since the first stub (blocks passed straight to the wrapper) hid the difference.
+- **Anchors (D3, T007)**: the docs write explicit anchors escaped (`\{#id}`, 160 of them), so the 24
+  added ones are too. The test also found `#tools-gear` broken before this spec: "Tools & Gear"
+  slugs to `tools--gear`, so the inventory's "?" opened the page top; an explicit `{#tools-gear}`
+  fixes it in both languages.
+- **The "?" inside a section header** sits inside the header's toggle button, so it is not exposed
+  as a link to assistive technology (an older nested-interactive problem, not changed here); the
+  browser test finds it by its label. Worth a backlog entry.
+- **Ctrl-click in the browser test** checks the link's target and that no card opens; waiting for
+  the new tab to load was flaky under load. The unit test checks the click is not prevented.
+- **Browser timing (SC-001)**: first open 172–313 ms, later opens 115–178 ms.

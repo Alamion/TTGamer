@@ -1,0 +1,6 @@
+card:
+    label: 'Documentation: {title}'
+    openPage: Open the page
+    loading: Loading…
+    notFound: This part is not on the page; here is its beginning.
+    unavailable: This page could not be loaded.

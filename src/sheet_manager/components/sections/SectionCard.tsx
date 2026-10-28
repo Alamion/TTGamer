@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
+import { DocsPreviewLink } from '@site/src/shared/components/DocsFragmentCard';
 import { useLocalStorageState } from '@site/src/shared/hooks/useLocalStorageState';
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
@@ -35,7 +35,11 @@ export function SectionCard({
 
     const renderDocsIcon = () =>
         docsPath ? (
-            <DocsHelpLink docsPath={docsPath} label={documentationFor(title ?? '')} />
+            <DocsPreviewLink
+                docsPath={docsPath}
+                label={documentationFor(title ?? '')}
+                title={title ?? ''}
+            />
         ) : null;
 
     const storageHeader = (
