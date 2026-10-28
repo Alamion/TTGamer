@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.35.0
+
+### Minor feat
+
+- **Links between documents (spec 044, T-128)**: `[[Name]]` in a note or markdown text opens that document, with Back to return; Ctrl-click or a middle click opens it in a new tab, and `[[Name#Section]]` scrolls to the section. When several documents share a name, the link means the one nearest by folders, then the earliest made. A link to a name nobody has yet offers to create a note beside this one
+- **Suggestions while typing (spec 044)**: `[[` suggests documents, nearest first; `#` after a name suggests its headings or sheet sections. A folder path is written only when the name alone would mean another document
+- **Preview card (spec 044, T-051)**: point at a link, focus it, or press and hold it on a phone to see the document's brief or a note's first lines. On a phone the card replaces the browser's link menu and has **Open** and **Open in new tab**. Reference fields — a vehicle's crew, a group's members, **Member of** — show the same card
+- **Links survive renames and moves (spec 044)**: renaming or moving a document, or adding one with the same name nearer, rewrites the links that meant it; a toast says how many. Undo puts back only those links and keeps anything typed since
+- **Mentioned in (spec 044)**: a new field lists the documents that link to this one, each with the line around its link. It sits at the bottom of every note and is in the template editor's **+** menu
+- **Embeds (spec 044)**: `![[Name]]` shows a whole note or a brief inside a note, `![[Name#Section]]` one part of it, two levels deep
+
+### Fix
+
+- **A new note opens ready to type**: after reading another note in the same pane, a new empty note no longer opens as a page to read
+
 ## v3.34.0
 
 ### Minor feat
