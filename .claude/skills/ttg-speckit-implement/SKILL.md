@@ -22,6 +22,9 @@ The input may name a story or task range to do; otherwise do all open tasks in o
    - Write the tests first where the change has logic, then the code.
    - Follow the repository conventions (`AGENTS.md` §4–§5; the `typescript` skill before any
      `.ts`/`.tsx` edit).
+   - Before adding UI plumbing (a toast or notice, a portal, popover, dialog, floating window,
+     tree, or splitter), use the one the project has (`AGENTS.md` §4 and §8). A new one needs a
+     decision in `design.md`; "none existed" is checked with a search, not assumed.
    - Mark each finished task `[x]` in `tasks.md` as you go.
    - Run the checks for the change size (`AGENTS.md` §11). Failing checks stop the story; fix
      them, never skip or weaken a test to pass (flaky-test policy in §11).

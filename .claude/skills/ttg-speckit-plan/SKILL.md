@@ -22,7 +22,8 @@ Consider the input before proceeding (it may name constraints or choices).
    the references it points to for this area).
 3. **Investigate** the code the feature changes: confirm file names, existing patterns, and
    measurements (run commands or tests when a decision depends on a number). Prefer extending
-   an existing module or element over a new one (UI rules in `src/sheet_manager/AGENTS.md`).
+   an existing module or element over a new one (UI rules in `src/sheet_manager/AGENTS.md`);
+   name the existing toast, portal, dialog, or window the feature reuses (`AGENTS.md` §4, §8).
 4. **Write `design.md`** in the feature folder from `.specify/templates/design-template.md`, at
    most ~150 lines:
    - Approach and delivery order.

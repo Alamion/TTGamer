@@ -89,6 +89,9 @@ check fo it existence before killing processes or creating new one.
   `#modal-root` carries the class); in `document.body` it renders unstyled. Above floating windows
   (`z-[900]`) a popover needs `z-[1000]` or more. `tests/shared/portal-container.test.ts` fails on a
   portal without a container.
+- **Toasts:** every passing notice (saved, kept, opened as a tab, a failure to report) is `toast()`
+  from `react-hot-toast`; its one `<Toaster>` lives in `theme/Root.tsx`. Never a custom status line
+  or a second notice store.
 - **Icons:** Lucide-react
 - **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
 - **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups

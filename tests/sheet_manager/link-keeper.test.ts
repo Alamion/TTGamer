@@ -3,7 +3,6 @@ import { OperationHistory } from '@site/src/sheet_manager/features/documents/his
 import {
     RENAME_SETTLE_MS,
     startLinkKeeper,
-    useLinksKeptMessage,
 } from '@site/src/sheet_manager/features/documents/linkKeeperRuntime';
 import {
     documentsHistory,
@@ -18,6 +17,12 @@ import { noteEnvelope } from '@site/src/sheet_manager/systems/general/note';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+
+const { toast } = vi.hoisted(() => ({ toast: vi.fn() }));
+vi.mock('react-hot-toast', () => ({ default: toast }));
+
+/** The last message about kept links. */
+const lastToast = () => toast.mock.calls.at(-1)?.[0] as string | undefined;
 
 /** Links keep their targets when documents are renamed or moved (spec 044, US4). */
 
@@ -71,7 +76,7 @@ const settled = () => new Promise((resolve) => setTimeout(resolve, 0));
 let stop: (() => void) | undefined;
 
 beforeEach(() => {
-    useLinksKeptMessage.setState({ message: null });
+    toast.mockClear();
 });
 
 afterEach(() => {
@@ -93,11 +98,7 @@ describe('renaming and moving in the documents window', () => {
             expect(textOf('n1')).toBe('[[Ines Ruiz]] met [[Ines Ruiz|her]] at ![[Ines Ruiz#Bio]]')
         );
         expect(textOf('n2')).toBe('Far: [[Ines]]');
-        await vi.waitFor(() =>
-            expect(useLinksKeptMessage.getState().message).toBe(
-                'Links kept: 3 in 1 other documents.'
-            )
-        );
+        await vi.waitFor(() => expect(lastToast()).toBe('Links kept: 3 in 1 other documents.'));
         expect(takeSheetIssues().map(({ code }) => code)).toContain('links-kept');
     });
 
@@ -182,9 +183,7 @@ describe('undo and redo', () => {
         expect(useDocumentStore.getState().entries.find(({ id }) => id === 'ines')?.name).toBe(
             'Ines'
         );
-        await vi.waitFor(() =>
-            expect(useLinksKeptMessage.getState().message).toContain('stay as they are')
-        );
+        await vi.waitFor(() => expect(lastToast()).toContain('stay as they are'));
         redoTreeChange();
         await vi.waitFor(() =>
             expect(textOf('n1')).toBe('[[Ines Ruiz]] and [[Ines Ruiz|her]]\nNew line')

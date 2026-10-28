@@ -207,8 +207,8 @@ proposal, guide, guidance).
   the workspace is open: a new, copied, or imported document is kept at once, a name once quiet for
   1.5 s, on `focusout`, or on `pagehide`; tree changes run inside `withoutKeeper`, so a rename from
   the documents window (which also writes the title) is taken once. A typed rename joins the
-  documents history only when it rewrote links. A short status line (`LinksKeptStatus`) says how
-  many links were kept or put back: the app had no message line to reuse.
+  documents history only when it rewrote links. A toast (`react-hot-toast`, as elsewhere) says how
+  many links were kept or put back; a first custom status line was replaced in review.
 - **`maxShown`, not `rows` (T037)**: the editor's settings registry names a property once with one
   label, and `rows` is the markdown field's "Starting height (lines)"; the mentions field's limit is
   `maxShown` ("Entries shown before “Show all”"), 1–50, default 8.

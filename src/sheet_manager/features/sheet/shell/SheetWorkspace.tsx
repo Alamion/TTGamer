@@ -22,7 +22,6 @@ import {
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { DocumentRenderContext } from '../../documents/documentRender';
 import { startLinkKeeper } from '../../documents/linkKeeperRuntime';
-import { LinksKeptStatus } from '../../documents/LinksKeptStatus';
 import { documentsHistory } from '../../documents/treeActions';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
 import { DocumentLinkContext } from '../declarative/documentLinks';
@@ -247,7 +246,6 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     return (
         <DocumentLinkContext.Provider value={followLink}>
             <DocumentRenderContext.Provider value={renderDocument}>
-                <LinksKeptStatus />
                 <div className="bg-bgSurface p-4">
                     <SheetToolbar
                         hasDocument={Boolean(currentDocument)}

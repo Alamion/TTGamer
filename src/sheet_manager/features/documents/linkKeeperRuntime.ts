@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { create } from 'zustand';
+import toast from 'react-hot-toast';
 
 import type { DocumentStoreState } from '../../store/documentStore';
 import { useDocumentStore } from '../../store/documentStore';
@@ -21,12 +21,6 @@ const messages = uiMessages.sheet.links.kept;
 /** A typed name is taken after this much quiet. */
 export const RENAME_SETTLE_MS = 1500;
 
-/** The last message about kept links, shown for a moment by `LinksKeptStatus`. */
-export const useLinksKeptMessage = create<{ message: string | null; at: number }>(() => ({
-    message: null,
-    at: 0,
-}));
-
 /** Says how many links a change kept or put back. */
 export function announceLinksKept(result: LinkEditResult, reverse = false): void {
     if (result.links === 0 && result.skipped === 0) return;
@@ -35,7 +29,7 @@ export function announceLinksKept(result: LinkEditResult, reverse = false): void
         translate(reverse ? messages.restored : messages.status, values),
         ...(result.skipped > 0 ? [translate(messages.skipped, values)] : []),
     ].join(' ');
-    useLinksKeptMessage.setState({ message, at: Date.now() });
+    toast(message, { id: 'links-kept' });
 }
 
 const shapeOf = (state: Pick<DocumentStoreState, 'entries' | 'folders'>): TreeShape => ({

@@ -324,7 +324,7 @@ suffix, then the most shared leading folders with the link's document, then the 
   edits on the history step (undo reverses only those links, a link edited by hand meanwhile is left
   and counted); `linkKeeperRuntime.ts`, started by `SheetWorkspace`, takes other changes: new or
   imported documents at once, a name typed on a sheet after 1.5 s, on `focusout`, or on `pagehide`,
-  pushed as one rename step when it rewrote links. `LinksKeptStatus` says how many.
+  pushed as one rename step when it rewrote links. A toast says how many.
 - **"Mentioned in"** is the `mentions` field type (`MentionsFieldControl.tsx`): reads the map, keeps
   the links that resolve here, at most 200 sources (`mentions-truncated`), `maxShown` before "Show
   all". It stores nothing; it is at the bottom of `general-note` and in the + menu.
