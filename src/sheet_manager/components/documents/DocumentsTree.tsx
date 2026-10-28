@@ -6,7 +6,7 @@ import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
 
 import { highlightSegments } from '../../features/documents/highlight';
-import { systemBadge } from '../../features/documents/labeler';
+import { documentBadge } from '../../features/documents/labeler';
 import type { DocumentsNode } from '../../features/documents/rows';
 import { InlineName } from './InlineName';
 
@@ -44,8 +44,7 @@ export interface DocumentsTreeProps {
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
 
 /** The game a document belongs to, short; its full name is the tooltip and what readers hear. */
-function SystemBadge({ systemId }: { systemId: string }) {
-    const { badge, name } = systemBadge(systemId);
+function SystemBadge({ badge, name }: { badge: string; name: string }) {
     return (
         <span
             title={name}
@@ -81,10 +80,14 @@ export function DocumentsTree({
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
     // A badge every shown row shares says nothing (one game, or a system filter on).
-    const systems = new Set(
-        rows.flatMap(({ node }) => (node.type === 'document' ? [node.entry.systemId] : []))
+    const badges = new Map(
+        rows.flatMap(({ key, node }) =>
+            node.type === 'document'
+                ? [[key, documentBadge(node.entry.systemId, node.entry.kind)] as const]
+                : []
+        )
     );
-    const badged = systems.size > 1;
+    const badged = new Set([...badges.values()].map(({ name }) => name)).size > 1;
     return (
         <TreeView
             label={translate(labels.treeLabel)}
@@ -148,7 +151,7 @@ export function DocumentsTree({
                           nameSlot,
                           badges: (
                               <>
-                                  {badged && <SystemBadge systemId={node.entry.systemId} />}
+                                  {badged && <SystemBadge {...badges.get(item.key)!} />}
                                   {node.entry.id === currentDocumentId && (
                                       <span className="shrink-0 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                                           {translate(labels.current)}

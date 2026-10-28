@@ -414,7 +414,12 @@ export function LibraryPanel() {
         const node = findNode(tree, current.key)?.node;
         if (!node) return;
         if (current.kind === 'create-setting' && node.level === 'ruleset') {
-            const setting = createSetting(node.systemId, values.name, values.description);
+            const setting = createSetting(
+                node.systemId,
+                values.name,
+                values.description,
+                values.badge
+            );
             applyLibraryWrites({ saveSettings: [setting] });
             const key = settingNodeKey({ kind: 'user', settingId: setting.id });
             reveal(key, [node.key, key]);
@@ -443,7 +448,9 @@ export function LibraryPanel() {
             reveal(catalogNodeKey({ kind: 'user', catalogId: catalog.id }), pathKeys(node.key));
             toast.success(translate(labels.toasts.created, { name: catalog.name }));
         } else if (current.kind === 'edit') {
-            applyLibraryWrites(renameItem(node, values.name, values.description, state()));
+            applyLibraryWrites(
+                renameItem(node, values.name, values.description, state(), values.badge)
+            );
             toast.success(translate(labels.toasts.saved, { name: values.name }));
         }
         setPanel(undefined);
@@ -554,6 +561,10 @@ export function LibraryPanel() {
                       })),
                   ]
                 : undefined;
+        const editedSetting =
+            panel.kind === 'edit' && node.level === 'setting' && node.ref.kind === 'user'
+                ? state().settings[node.ref.settingId]
+                : undefined;
         return (
             <CreateForm
                 key={`${panel.kind}:${node.key}`}
@@ -563,10 +574,15 @@ export function LibraryPanel() {
                 )}
                 initial={
                     panel.kind === 'edit'
-                        ? { name: node.name, description: node.description }
+                        ? {
+                              name: node.name,
+                              description: node.description,
+                              badge: editedSetting?.badge,
+                          }
                         : undefined
                 }
                 startOptions={startOptions}
+                withBadge={panel.kind === 'create-setting' || editedSetting !== undefined}
                 note={
                     panel.kind === 'create-setting' || panel.kind === 'create-type'
                         ? translate(labels.create.noPageNote)

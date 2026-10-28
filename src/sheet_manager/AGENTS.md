@@ -259,8 +259,10 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   document opens by double click, `Enter`, or the Open actions (**Open**, **Open in new tab**,
   **Open beside**). On a phone a tap selects and switches to the details tab. A single dragged
   document row also carries `application/x-ttg-document`, so the layout takes it like a tab. When
-  the shown rows mix systems, each document row carries its system badge (`SystemPlugin.badge`, the
-  label when absent; `systemBadge` in `features/documents/labeler.ts`), the full name spoken.
+  the shown rows mix systems, each document row carries its badge (`documentBadge` in
+  `features/documents/labeler.ts`): a user setting's own `badge` (≤ 6 characters, else its name's
+  initials, named "Setting · System"), else `SystemPlugin.badge` (the label when absent), the full
+  name spoken. Rows are badged when their badges' full names differ.
 
 - **Creating documents (spec 039).** Every create path calls `createFromChoice`
   (`features/documents/createFromChoice.ts`): the page the library chose (`newDocumentPage`, a user

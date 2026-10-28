@@ -195,6 +195,12 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   beside" 221 ms and "move a tab to the next group" 233 ms stay over their 200 ms budgets, as on
   `master` before this spec (229–257 ms there).
 
+- Review (maintainer): documents of a user setting showed their ruleset's badge, so two settings on
+  V5 looked alike. `UserSetting.badge` (optional, ≤ 6 characters, set in the library's create and
+  edit form) now marks them, falling back to the name's initials; the tooltip and spoken name are
+  "Setting · System". Optional field: no migration; library items are opaque on the wire, so no
+  contract change. Picture badges (T-129) and a review of every help link (T-130) are queued.
+
 ## Walk results
 
 The dev server on port 3000 runs `master`, so the walk ran through the browser and unit tests:
