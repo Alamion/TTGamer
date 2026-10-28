@@ -418,7 +418,8 @@ export function validateTemplateValue(field: TemplateField, value: unknown): Val
         case 'markdown':
             return validateMarkdownValue(value);
         case 'formula':
-            // Formula results are computed, never stored (spec A4).
+        case 'mentions':
+            // Formula results and mentions are computed, never stored (spec A4, spec 044).
             return { ok: false, reason: 'type' };
         case 'tracker':
             return validateTrackerValue(field.columns, value);

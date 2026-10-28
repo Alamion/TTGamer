@@ -147,3 +147,82 @@ test('opening, scrolling, and searching 3,000 documents in nested folders', asyn
         unit: 'fps',
     });
 });
+
+/** Ten links per document, and every thirtieth document links to the opened note (spec 044). */
+function linkRecords(): Array<[string, unknown]> {
+    return Array.from({ length: DOCUMENTS }, (_, index) => {
+        const links = Array.from({ length: 10 }, (_, link) => {
+            const target = index % 30 === 0 && link === 0 ? 1 : (index * 7 + link) % DOCUMENTS;
+            const reference = `Doc ${String(target).padStart(4, '0')}`;
+            return {
+                reference,
+                embed: false,
+                key: 'body',
+                line: link,
+                context: `[[${reference}]]`,
+            };
+        });
+        return [`d${index}`, { v: 1, links }];
+    });
+}
+
+test('"Mentioned in" over 3,000 documents with 10 links each', async ({ page }) => {
+    const { value } = slimState();
+    const state = JSON.parse(value) as { state: { currentDocumentId: string | null } };
+    state.state.currentDocumentId = 'd1';
+    const note = {
+        id: 'd1',
+        kind: 'note',
+        systemId: 'general',
+        definitionId: 'note',
+        schemaVersion: 1,
+        metadata: { title: 'Doc 0001', tags: [] },
+        templateValues: { body: { text: 'The opened note.' } },
+        data: { name: 'Doc 0001' },
+    };
+    await page.goto('/universal_sheet');
+    await page.waitForLoadState('networkidle');
+    await page.evaluate(
+        async ({ stored, record, links }) => {
+            const put = (name: string, store: string, rows: Array<[string, unknown]>) =>
+                new Promise<void>((resolve, reject) => {
+                    const open = indexedDB.open(name);
+                    open.onupgradeneeded = () => open.result.createObjectStore(store);
+                    open.onerror = () => reject(open.error);
+                    open.onsuccess = () => {
+                        const database = open.result;
+                        const transaction = database.transaction(store, 'readwrite');
+                        for (const [key, row] of rows) transaction.objectStore(store).put(row, key);
+                        transaction.oncomplete = () => {
+                            database.close();
+                            resolve();
+                        };
+                        transaction.onerror = () => reject(transaction.error);
+                    };
+                });
+            await put('localforage', 'keyvaluepairs', [
+                ['universal-character-storage', stored],
+                ['doc:d1', record],
+            ]);
+            await put('ttgamer-links', 'links', links);
+        },
+        { stored: JSON.stringify(state), record: JSON.stringify(note), links: linkRecords() }
+    );
+
+    const shown: number[] = [];
+    for (let run = 0; run <= RUNS; run++) {
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        const name = page.getByRole('textbox', { name: 'Name' });
+        await expect(name).toHaveValue('Doc 0001');
+        const drawn = Date.now();
+        const list = page.getByRole('list', { name: 'Mentioned in' });
+        await expect(list.getByRole('listitem').first()).toBeVisible({ timeout: 15_000 });
+        if (run > 0) shown.push(Date.now() - drawn);
+    }
+    recordTiming({
+        name: '"Mentioned in": list after the note is drawn (3,000 × 10 links)',
+        value: best(shown),
+        unit: 'ms',
+        budget: 500,
+    });
+});

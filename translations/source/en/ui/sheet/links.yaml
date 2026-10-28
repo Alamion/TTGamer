@@ -1,0 +1,30 @@
+link:
+    openInNewTab: '{name} (Ctrl+click: in a new tab)'
+    unresolved: 'No document is named {name} yet: click to create a note'
+createPrompt:
+    title: 'Create “{name}”?'
+    body: 'No document is named {name}. Create a note with this name next to this one and open it?'
+    confirm: Create note
+    cancel: Cancel
+suggestions:
+    documents: Documents to link
+    sections: 'Sections of {name}'
+preview:
+    label: 'Preview of {name}'
+    loading: Loading…
+    missing: This document is not available.
+    empty: Nothing written yet.
+    open: Open
+    openInNewTab: Open in new tab
+kept:
+    status: 'Links kept: {links} in {documents} other documents.'
+    restored: 'Links put back: {links} in {documents} documents.'
+    skipped: '{skipped} were edited since and stay as they are.'
+    rename: 'Rename to {name}'
+mentions:
+    empty: No document links here yet.
+    loading: Looking for links…
+    showAll: 'Show all ({count})'
+    showFewer: Show fewer
+    open: 'Open {name} at this line'
+    truncated: 'More documents link here than are listed ({count} shown).'

@@ -94,7 +94,8 @@ naming the `@tailwindcss/postcss` plugin:
   (`--text-sm--line-height: 1.25rem`); v4's unitless ratios shrink inherited line height when a
   child sets its own font size.
 - **Scope**: utilities are emitted inside `.tailwind-root { @tailwind utilities … }` (unlayered,
-  with `@source` for `src` and `docs`). Do not use Tailwind's global `important`.
+  with `@source` for `src` and `docs`). Do not use Tailwind's global `important`. Portals draw into
+  `modalRoot()` (root `AGENTS.md` §4, "Portals").
 - **Reset**: `src/css/set_tailwind_styles.css` holds the reset in `@layer base`. It must stay
   layered: v4's `space-*` and `divide-*` utilities have zero specificity, and an unlayered reset
   (`margin: 0` on every element) cancels them. Unlayered rules in that file (focus border, default

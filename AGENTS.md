@@ -84,6 +84,14 @@ check fo it existence before killing processes or creating new one.
 - **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 4`
 - **ESLint:** React hooks + a11y focused, strict ESM (no `require()`)
 - **Styling:** Tailwind + `clsx` for conditional classes
+- **Portals:** Tailwind utilities exist only under `.tailwind-root`, so every portal (Radix
+  `*.Portal`, `createPortal`) passes `container={modalRoot()}` (`shared/utils/modalRoot.ts`,
+  `#modal-root` carries the class); in `document.body` it renders unstyled. Above floating windows
+  (`z-[900]`) a popover needs `z-[1000]` or more. `tests/shared/portal-container.test.ts` fails on a
+  portal without a container.
+- **Toasts:** every passing notice (saved, kept, opened as a tab, a failure to report) is `toast()`
+  from `react-hot-toast`; its one `<Toaster>` lives in `theme/Root.tsx`. Never a custom status line
+  or a second notice store.
 - **Icons:** Lucide-react
 - **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
 - **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups
@@ -178,7 +186,9 @@ check fo it existence before killing processes or creating new one.
   an option to these instead of copying them; their contract tests in `tests/shared/` run against
   every user. Markdown anywhere renders through `shared/components/markdown/MarkdownView` (spec
   043): the parser builds nodes, never HTML, and callers fill its slots (code spans, embeds, task
-  ticks, issues) instead of post-processing its output.
+  ticks, issues) instead of post-processing its output. Links between documents resolve through
+  `features/documents/linkResolve.ts` and show one preview card for markdown links and reference
+  fields (spec 044); a document's links live in the link index beside its record.
 - The document collection is the index: generic code reads `entries` (or `DocumentRef`s) and loads
   one document by id when it needs its data; it never scans the loaded `documents`
   (`src/sheet_manager/AGENTS.md`, "Documents: Storage, Tree, and Window").

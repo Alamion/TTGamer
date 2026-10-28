@@ -12426,6 +12426,14 @@
      "valueKey": "body",
      "type": "markdown",
      "rows": 20
+    },
+    {
+     "id": "note-mentions",
+     "label": "Mentioned in",
+     "labelMessage": "ttgamer.ui.sheet.general.note.mentions",
+     "required": false,
+     "type": "mentions",
+     "maxShown": 8
     }
    ]
   }

@@ -2,7 +2,7 @@
 sidebar_position: 2.5
 title: Notes
 sidebar_label: Notes
-description: How to keep notes for any game — creating a note, reading and editing it, the markdown it understands, folding callouts, rolls, pictures, and markdown files for Obsidian.
+description: How to keep notes for any game — creating a note, reading and editing it, the markdown it understands, folding callouts, rolls, pictures, links between documents, and markdown files for Obsidian.
 ---
 
 import { MarkdownView } from '@site/src/shared/components/markdown/MarkdownView';
@@ -11,7 +11,7 @@ import { LiveDemo } from '@site/src/shared/components/LiveDemo';
 # Notes \{#notes}
 
 :::tip[In short]
-**New** → **Note** (under **General**) makes a note for any game. Write in markdown: every line is its own paragraph, and the result shows beside the text. **Done** or `Esc` turns it into a page to read; **Edit** or `Ctrl+E` brings the text back. Callouts that start folded keep a long note tidy, and `` `dice: 2d10` `` becomes a roll.
+**New** → **Note** (under **General**) makes a note for any game. Write in markdown: every line is its own paragraph, and the result shows beside the text. **Done** or `Esc` turns it into a page to read; **Edit** or `Ctrl+E` brings the text back. Callouts that start folded keep a long note tidy, `` `dice: 2d10` `` becomes a roll, and `[[Name]]` links to another document.
 :::
 
 ## Creating a note \{#creating}
@@ -125,7 +125,26 @@ Delete the line and leave the text, and the stored picture is freed; undo before
 
 ## Links between documents \{#links}
 
-`[[Ines Ruiz]]` is kept as written and looks like a link, but it does not open anything yet: links between documents, with previews, are the next step for notes. Text written with them now will work then without changes.
+`[[Name]]` links to the document of that name: a note, a character, a group — any document on this device. Type `[[` while editing and the documents whose names hold what you type are suggested, the nearest first; arrows choose, `Enter` or `Tab` writes the link. After a name, `#` suggests its sections: a note's headings, or the parts and fields of a sheet.
+
+```markdown
+Meet [[Ines Ruiz]] at [[Docks#History|the old docks]].
+```
+
+- **Following.** A click opens the document, and **Back** returns to the note; `Ctrl`+click (or the middle button) opens it in a new tab. A link with `#` scrolls to that section.
+- **Preview.** Point at a link, keep the keyboard focus on it for a moment, or press and hold it on a touch screen: a card shows the document's brief, or a note's first lines. On a touch screen the card takes the place of the browser's link menu: it scrolls, stays until you tap outside it, and has **Open** and **Open in new tab**. Reference fields — a vehicle's crew, a group's members, **Member of** — show the same card.
+- **Same names.** When several documents share a name, a link means the one nearest to the note in your folders, then the oldest. A suggestion adds the folder path (`[[World 2/Items/Sword]]`) when the name alone would mean another one.
+- **Missing names.** A link to a name no document has is dashed; a click offers to create a note of that name next to this one.
+- **Renaming and moving.** Rename or move a document, or make another of the same name nearer to a link, and the links that meant it are rewritten to keep meaning it; a short message says how many. **Undo** in the documents window puts back the name and only those links, and leaves your later edits alone. Deleting a document changes no text.
+
+`![[Name]]` shows the document inside the note: a note's whole text, or a sheet's brief. `![[Name#Section]]` shows one section. An embedded document can embed one more; deeper ones, and a note that would show itself again, stay links. A picture stored in the note wins over a document of the same name.
+
+```markdown
+![[Bruno Kessel]]
+![[Docks#History]]
+```
+
+**Mentioned in**, at the bottom of every note, lists the documents that link to it, each with the line around the link; a click opens that line. You can put it on your own pages from the template editor's **+** menu.
 
 ## Markdown files \{#files}
 

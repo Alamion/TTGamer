@@ -1,0 +1,30 @@
+link:
+    openInNewTab: '{name} (Ctrl+клик — в новой вкладке)'
+    unresolved: 'Документа {name} пока нет: нажмите, чтобы создать заметку'
+createPrompt:
+    title: 'Создать «{name}»?'
+    body: 'Документа с именем {name} нет. Создать рядом с этой заметку с таким именем и открыть её?'
+    confirm: Создать заметку
+    cancel: Отмена
+suggestions:
+    documents: Документы для ссылки
+    sections: 'Разделы: {name}'
+preview:
+    label: 'Предпросмотр: {name}'
+    loading: Загрузка…
+    missing: Этот документ недоступен.
+    empty: Пока ничего не написано.
+    open: Открыть
+    openInNewTab: Открыть в новой вкладке
+kept:
+    status: 'Ссылки сохранены: {links} в других документах ({documents}).'
+    restored: 'Ссылки возвращены: {links} в документах ({documents}).'
+    skipped: 'Изменённые с тех пор ({skipped}) остались как есть.'
+    rename: 'Переименовать в {name}'
+mentions:
+    empty: Сюда пока не ссылается ни один документ.
+    loading: Ищем ссылки…
+    showAll: 'Показать все ({count})'
+    showFewer: Показать меньше
+    open: 'Открыть {name} на этой строке'
+    truncated: 'Сюда ссылается больше документов, чем показано (показано {count}).'

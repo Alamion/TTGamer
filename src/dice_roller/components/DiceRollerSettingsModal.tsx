@@ -5,15 +5,11 @@ import { SHARING_SERVICES, sharingServiceOf } from '@site/src/integrations/roll-
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { SecretField } from '@site/src/shared/components/SecretField';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { modalRoot } from '@site/src/shared/utils/modalRoot';
 import { Settings as SettingsIcon, X } from 'lucide-react';
 import { useId } from 'react';
 
 import { useDiceRollerStore } from '../store/diceRollerStore';
-
-const modalRoot = () =>
-    typeof document === 'undefined'
-        ? undefined
-        : (document.getElementById('modal-root') ?? undefined);
 
 export default function DiceRollerSettingsModal() {
     const settings = useDiceRollerStore((s) => s.settings);

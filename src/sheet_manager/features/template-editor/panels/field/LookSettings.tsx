@@ -74,6 +74,26 @@ export function lookSettings({ field, prefix, several, key, isTraitSource, updat
                     onChange={(checked) => update({ multiline: checked })}
                 />
             )}
+            {field.type === 'mentions' && (
+                <SettingField label={settingLabel('maxShown')} setting={key('maxShown')}>
+                    {(control) => (
+                        <input
+                            {...control}
+                            type="number"
+                            min={1}
+                            max={50}
+                            value={field.maxShown}
+                            onChange={(event) => {
+                                const maxShown = Number(event.target.value);
+                                if (Number.isInteger(maxShown) && maxShown >= 1 && maxShown <= 50) {
+                                    update({ maxShown });
+                                }
+                            }}
+                            className={`${inputClasses} w-24`}
+                        />
+                    )}
+                </SettingField>
+            )}
             {field.type === 'markdown' && (
                 <SettingField label={settingLabel('rows')} setting={key('rows')}>
                     {(control) => (

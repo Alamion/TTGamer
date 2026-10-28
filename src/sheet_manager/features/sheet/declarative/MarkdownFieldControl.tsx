@@ -2,8 +2,10 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useNoteRollCode } from '@site/src/integrations/sheet-dice/noteRolls';
 import {
+    type MarkdownEmbed,
     type MarkdownIssue,
     MarkdownView,
+    type MarkdownWikilink,
 } from '@site/src/shared/components/markdown/MarkdownView';
 import { toggleTaskLine } from '@site/src/shared/markdown/parse';
 import { clsx } from 'clsx';
@@ -42,9 +44,12 @@ import {
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_VALUES_LIMITS, type TemplateMarkdownValue } from '../../../types/templateValues';
+import { DocumentEmbed } from '../../documents/DocumentEmbed';
+import { DocumentLink } from '../../documents/DocumentLink';
 import { claimNewDocumentFocus } from '../../documents/newDocumentFocus';
 import { useBriefPage } from './areaLayout';
 import type { TemplateFieldControlProps } from './fieldControls';
+import { useLinkSuggestions } from './LinkSuggestions';
 import {
     applyEdit,
     insertCallout,
@@ -56,6 +61,9 @@ import {
 import { withImage, withoutUnusedImages } from './markdownImages';
 
 const messages = uiMessages.shared.markdown.editor;
+
+/** `[[links]]` between documents (spec 044): followed, or offered for creation. */
+const renderWikilink = (node: MarkdownWikilink) => <DocumentLink node={node} />;
 type MarkdownField = Extract<TemplateField, { type: 'markdown' }>;
 
 /** Wide enough for source and result side by side (design D7). */
@@ -157,12 +165,14 @@ function BriefMarkdown({
     text,
     renderCode,
     resolveEmbed,
+    renderEmbed,
     onToggleTask,
 }: {
     label: string;
     text: string;
     renderCode: (code: string) => ReactNode;
     resolveEmbed: (name: string) => string | undefined;
+    renderEmbed: (node: MarkdownEmbed) => ReactNode;
     onToggleTask?: (line: number) => void;
 }) {
     const [open, setOpen] = useState(false);
@@ -192,6 +202,8 @@ function BriefMarkdown({
                             source={text}
                             renderCode={renderCode}
                             resolveEmbed={resolveEmbed}
+                            renderWikilink={renderWikilink}
+                            renderEmbed={renderEmbed}
                             onToggleTask={onToggleTask}
                             onIssue={reportIssue}
                             headingOffset={2}
@@ -216,9 +228,25 @@ export function MarkdownFieldControl({
     // A brief only shows the text, folded (spec 043, US5): it is edited on the full page.
     const brief = useBriefPage();
     const readOnly = disabled || brief;
-    const [mode, setMode] = useState<'read' | 'edit'>(() =>
-        text === '' && !readOnly ? 'edit' : 'read'
-    );
+    const documentId = useDocumentSource().document?.id;
+    // The page stays mounted when another document of its kind is shown (a link, a new note):
+    // the mode and whether the text started empty belong to the document they were taken for.
+    const [opened, setOpened] = useState(() => ({
+        documentId,
+        mode: (text === '' && !readOnly ? 'edit' : 'read') as 'read' | 'edit',
+        startedEmpty: text === '',
+    }));
+    const openedNow =
+        opened.documentId === documentId
+            ? opened
+            : {
+                  documentId,
+                  mode: (text === '' && !readOnly ? 'edit' : 'read') as 'read' | 'edit',
+                  startedEmpty: text === '',
+              };
+    if (openedNow !== opened) setOpened(openedNow);
+    const mode = openedNow.mode;
+    const setMode = (next: 'read' | 'edit') => setOpened({ ...openedNow, mode: next });
     const [narrowView, setNarrowView] = useState<'source' | 'result'>('source');
     const [sourceWidth, setSourceWidth] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -228,9 +256,8 @@ export function MarkdownFieldControl({
     const deferredText = useDeferredValue(text);
     const renderCode = useNoteRollCode();
     const editing = mode === 'edit' && !readOnly;
-    const documentId = useDocumentSource().document?.id;
     // An empty text starts in edit mode; a document just created gives it the cursor (T015).
-    const [startedEmpty] = useState(text === '');
+    const startedEmpty = openedNow.startedEmpty;
     useEffect(() => {
         if (!startedEmpty || readOnly || !documentId) return;
         return claimNewDocumentFocus(documentId, () => textareaRef.current?.focus());
@@ -250,6 +277,12 @@ export function MarkdownFieldControl({
     });
     const imageUrls = useImageUrls(current.images);
     const resolveEmbed = useCallback((name: string) => imageUrls[name], [imageUrls]);
+    // A stored picture is never a document, even while its address is still loading (spec 044).
+    const images = current.images;
+    const renderEmbed = useCallback(
+        (node: MarkdownEmbed) => (images?.[node.name] ? undefined : <DocumentEmbed node={node} />),
+        [images]
+    );
     const [imageStatus, setImageStatus] = useState<string | undefined>();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -314,6 +347,19 @@ export function MarkdownFieldControl({
         if (!insertUndoably(edit.insert)) writeText(applyEdit(textarea.value, edit));
         requestAnimationFrame(() => textarea.setSelectionRange(edit.selectFrom, edit.selectTo));
     };
+
+    const replaceRange = (from: number, to: number, insert: string) => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+        textarea.focus();
+        textarea.setSelectionRange(from, to);
+        if (!insertUndoably(insert)) {
+            writeText(applyEdit(textarea.value, { from, to, insert, selectFrom: 0, selectTo: 0 }));
+        }
+        const end = from + insert.length;
+        requestAnimationFrame(() => textarea.setSelectionRange(end, end));
+    };
+    const links = useLinkSuggestions({ textareaRef, text, replace: replaceRange });
 
     const setReading = () => {
         // The text field goes away without a blur event: free unused pictures here too.
@@ -398,31 +444,40 @@ export function MarkdownFieldControl({
             source={editing ? deferredText : text}
             renderCode={renderCode}
             resolveEmbed={resolveEmbed}
+            renderWikilink={renderWikilink}
+            renderEmbed={renderEmbed}
             onToggleTask={disabled ? undefined : toggleTask}
             onIssue={reportIssue}
         />
     );
 
     const source = (
-        <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(event) => writeText(event.target.value)}
-            onBlur={pruneImages}
-            onPaste={(event) => {
-                const files = [...event.clipboardData.files].filter(({ type }) =>
-                    type.startsWith('image/')
-                );
-                if (files.length === 0) return;
-                event.preventDefault();
-                void addImages(files);
-            }}
-            maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
-            rows={own.rows}
-            aria-label={own.label}
-            spellCheck
-            className="w-full resize-y rounded-sm border border-border bg-bgSurface p-2 font-mono text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary"
-        />
+        <div className="relative">
+            <textarea
+                ref={textareaRef}
+                value={text}
+                {...links.textareaProps}
+                onChange={(event) => writeText(event.target.value)}
+                onBlur={() => {
+                    links.textareaProps.onBlur();
+                    pruneImages();
+                }}
+                onPaste={(event) => {
+                    const files = [...event.clipboardData.files].filter(({ type }) =>
+                        type.startsWith('image/')
+                    );
+                    if (files.length === 0) return;
+                    event.preventDefault();
+                    void addImages(files);
+                }}
+                maxLength={TEMPLATE_VALUES_LIMITS.markdownMaxLength}
+                rows={own.rows}
+                aria-label={own.label}
+                spellCheck
+                className="w-full resize-y rounded-sm border border-border bg-bgSurface p-2 font-mono text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary"
+            />
+            {links.list}
+        </div>
     );
 
     const splitWidth = Math.min(
@@ -437,6 +492,7 @@ export function MarkdownFieldControl({
                 text={text}
                 renderCode={renderCode}
                 resolveEmbed={resolveEmbed}
+                renderEmbed={renderEmbed}
                 onToggleTask={disabled ? undefined : toggleTask}
             />
         );

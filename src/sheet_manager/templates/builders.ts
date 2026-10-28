@@ -106,6 +106,21 @@ export function markdown(
     };
 }
 
+/** "Mentioned in" (spec 044): the documents linking here; it stores no value. */
+export function mentions(
+    id: string,
+    label: string,
+    options: FieldOptions & { maxShown?: number } = {}
+): TemplateField {
+    return {
+        id,
+        type: 'mentions',
+        label,
+        maxShown: options.maxShown ?? 8,
+        ...fieldCommon(options),
+    };
+}
+
 export function number(
     id: string,
     label: string,

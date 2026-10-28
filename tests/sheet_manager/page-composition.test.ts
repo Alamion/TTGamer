@@ -42,13 +42,15 @@ function weight(node: TemplateNode): number {
 
 /**
  * A document page, not a sheet (spec 043): one markdown text with at most a one-line name field
- * beside it. The rule groups a sheet's fields; such a page has none to group.
+ * beside it and a "Mentioned in" list below it (spec 044). The rule groups a sheet's fields; such a page has none to group.
  */
 function isDocumentPage(children: readonly TemplateNode[]): boolean {
     const markdown = children.filter((node) => node.type === 'markdown');
-    const rest = children.filter((node) => node.type !== 'markdown');
+    const mentions = children.filter((node) => node.type === 'mentions');
+    const rest = children.filter((node) => node.type !== 'markdown' && node.type !== 'mentions');
     return (
         markdown.length === 1 &&
+        mentions.length <= 1 &&
         rest.length <= 1 &&
         rest.every((node) => node.type === 'text' && !node.multiline)
     );

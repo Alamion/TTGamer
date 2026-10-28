@@ -31,7 +31,8 @@ export function mapFieldItems(
                 const next = map(item);
                 return next.type === 'formula' ||
                     next.type === 'tracker' ||
-                    next.type === 'markdown'
+                    next.type === 'markdown' ||
+                    next.type === 'mentions'
                     ? node
                     : { ...node, item: next };
             }

@@ -95,3 +95,24 @@ describe('slots', () => {
         });
     });
 });
+
+describe('links between documents (spec 044)', () => {
+    it('hands links and non-picture embeds to their slots, pictures first', () => {
+        render(
+            <MarkdownView
+                source={'[[Ines|her]] ![[map.png]] ![[Docks#History]]'}
+                resolveEmbed={(name) => (name === 'map.png' ? 'blob:map' : undefined)}
+                renderWikilink={(node) => <b>link:{node.target}</b>}
+                renderEmbed={(node) => <i>embed:{node.name}</i>}
+            />
+        );
+        expect(screen.getByText('link:Ines')).toBeTruthy();
+        expect(screen.getByRole('img').getAttribute('src')).toBe('blob:map');
+        expect(screen.getByText('embed:Docks#History')).toBeTruthy();
+    });
+
+    it('names each heading by its text for section links', () => {
+        const { container } = render(<MarkdownView source={'## The **old** docks'} />);
+        expect(container.querySelector('h3')?.dataset.section).toBe('The old docks');
+    });
+});
