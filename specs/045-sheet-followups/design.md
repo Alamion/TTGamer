@@ -169,3 +169,11 @@ Five independent stories, each its own commit, smallest risk first after the P1:
   `BoundDocument.rollName` (`rollNameOf`: the name, else the kind's label) in buttons, trait dots,
   rating dots, and note rolls. Two older tests expected own types to offer no document source and
   the "no name" hint to stay quiet for kinds without a name field; both now expect the new source.
+- **US4**: `trackerReading` lives in `trackerModel.ts` (not `tracker.ts`), next to the helpers it
+  shares with the drawn total (shown levels, copies). A tracker has no formula settings of its own,
+  so it never reads another value and cannot close a cycle: `collectFormulaDependencies` is
+  unchanged. An empty level value reads 0 ("no penalty", like the built-in tables). Built-in tracks
+  read by their track id unless another binding owns that name; V5 tracks have a computed length and
+  no penalties, so they count marked boxes. The on-page test reads a formula field
+  (`max(1, 3 + wounds)`), which shares the evaluator a button's dice notation uses. One older test
+  kept `health` out of the formula space; it now expects it in.

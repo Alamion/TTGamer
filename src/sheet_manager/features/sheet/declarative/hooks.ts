@@ -33,6 +33,7 @@ import {
     presetListEntry,
     type TemplateListEntry,
     type TemplatePageValues,
+    TrackerValueSchema,
 } from '../../../types/templateValues';
 import {
     type CatalogFillableDetail,
@@ -40,6 +41,7 @@ import {
     readDetailValue,
 } from '../data/catalogBindings';
 import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
+import { trackerReading } from '../data/trackerModel';
 import { useBoundDocument } from './boundDocument';
 import { DocumentLinkContext } from './documentLinks';
 import type { CatalogOption, DocumentOption } from './fieldControls';
@@ -285,6 +287,16 @@ export function useTemplatePage(
 
     const documentData = document?.data as Record<string, unknown> | undefined;
 
+    // Trackers formulas read by their key (spec 045, US4).
+    const trackers = useMemo(() => {
+        const found = new Map<string, Extract<TemplateField, { type: 'tracker' }>>();
+        if (!template) return found;
+        walkTemplateNodes(template.children, (node) => {
+            if (node.type === 'tracker') found.set(fieldValueKey(node), node);
+        });
+        return found;
+    }, [template]);
+
     const setValue = useCallback(
         (fieldOrKey: string, value: unknown) => {
             if (!currentDocumentId || !template || readOnly) return;
@@ -480,6 +492,12 @@ export function useTemplatePage(
         const resolveBase = (path: string): FormulaValue | undefined => {
             const bagNumber = (key: string, part?: 'current' | 'max'): FormulaValue | undefined => {
                 const stored = values[key];
+                const tracker = trackers.get(key);
+                if (tracker) {
+                    if (part) return undefined;
+                    const parsed = TrackerValueSchema.safeParse(stored);
+                    return trackerReading(tracker, parsed.success ? parsed.data : undefined);
+                }
                 if (typeof stored === 'number') return part === 'max' ? undefined : stored;
                 // Texts and choices compare as text (spec 038); toggles read as 1 or 0.
                 if (typeof stored === 'string') return part ? undefined : stored;
@@ -687,7 +705,7 @@ export function useTemplatePage(
         };
 
         return { results, maxima, minima, maxMinima, evaluate };
-    }, [template, values, documentData, documentTitle]);
+    }, [template, values, documentData, documentTitle, trackers]);
 
     const isVisible = useCallback(
         (condition: VisibleWhen, nodeId: string) => {

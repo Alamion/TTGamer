@@ -452,7 +452,64 @@ export function listNumericCoordinates(
             });
         }
     }
+    // Built-in tracks read by their id unless another value already has that name (spec 045).
+    for (const binding of listDocumentBindings(systemId, documentKind)) {
+        if (binding.kind !== 'track') continue;
+        if (coordinates.some(({ coordinate }) => coordinate === binding.trackId)) continue;
+        coordinates.push({ coordinate: binding.trackId, label: binding.label });
+    }
     return coordinates;
+}
+
+/** The track a formula names by its id, unless another binding owns that name. */
+function trackOf(systemId: string, documentKind: string, path: string): TrackBinding | undefined {
+    const bindings = listDocumentBindings(systemId, documentKind);
+    const owned = bindings.some(
+        (binding) =>
+            (binding.kind === 'trait' || binding.kind === 'field' || binding.kind === 'resource') &&
+            binding.coordinate === path
+    );
+    if (owned) return undefined;
+    return bindings.find(
+        (binding): binding is TrackBinding => binding.kind === 'track' && binding.trackId === path
+    );
+}
+
+/**
+ * What formulas read from a built-in track (spec 045, D9): the penalty of the deepest marked level
+ * when its levels carry penalties, else the count of marked boxes (V5 Health, Willpower); of
+ * several members, the one marked deepest (or most).
+ */
+export function readTrackNumber(
+    binding: TrackBinding,
+    data: Readonly<Record<string, unknown>>
+): number {
+    const record = data[binding.dataKey];
+    const members = binding.members;
+    const tracks = members
+        ? (Array.isArray(record) ? record : []).map(
+              (member) => (member as Record<string, unknown> | null)?.[members.trackKey]
+          )
+        : [record];
+    const length = binding.variants ? readDataPath(data, binding.variants.lengthPath) : undefined;
+    const levels =
+        (typeof length === 'number' ? binding.variants?.levelsByLength[length] : undefined) ??
+        binding.levels;
+    const penalties = !binding.length && levels.some(({ penalty }) => penalty !== null);
+    let deepest = -1;
+    let most = 0;
+    for (const track of tracks) {
+        const marks = (track as { levels?: unknown } | null | undefined)?.levels;
+        if (!Array.isArray(marks)) continue;
+        const marked = marks.flatMap((mark, index) =>
+            typeof mark === 'string' && mark !== 'empty' ? [index] : []
+        );
+        most = Math.max(most, marked.length);
+        const last = marked.filter((index) => index < levels.length).at(-1);
+        if (last !== undefined) deepest = Math.max(deepest, last);
+    }
+    if (!penalties) return most;
+    return deepest < 0 ? 0 : (levels[deepest]?.penalty ?? 0);
 }
 
 export type BoundNumber = { bound: false } | { bound: true; value: number | undefined };
@@ -497,7 +554,8 @@ export function readBoundNumber(
             return { bound: true, value: part === 'max' ? pool?.max : pool?.current };
         }
     }
-    return { bound: false };
+    const track = trackOf(systemId, documentKind, path);
+    return track ? { bound: true, value: readTrackNumber(track, data) } : { bound: false };
 }
 
 /** Bindings a coordinate write (e.g. a catalog fill) can target in document data. */

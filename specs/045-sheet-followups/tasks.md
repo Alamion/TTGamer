@@ -89,22 +89,22 @@ list, `[[` suggestions, and a roll show it.
 **Check**: an own template's button `{max(1, 3 + wounds)}d10`: marking the tracker changes the
 rolled notation; the Star Wars health penalty reads the same way.
 
-- [ ] T019 [US4] Write `tests/sheet_manager/tracker-formulas.test.ts` first: `deepest` gives the
+- [x] T019 [US4] Write `tests/sheet_manager/tracker-formulas.test.ts` first: `deepest` gives the
       deepest marked level's value, `count` the filled count, nothing marked 0, a text value "not a
       number", several copies the one marked deepest (with bonus values too) or most filled; the
       tracker key is in the numeric coordinates and the formula suggestions; a tracker named in its
       own lengths formula is a cycle; Star Wars wounds give the penalty, V5 Health and Willpower the
       filled count, members the worst one; a button's rolled notation changes after a box is marked
       (FR-010–FR-012, SC-004)
-- [ ] T020 [US4] `src/sheet_manager/features/sheet/data/tracker.ts`:
+- [x] T020 [US4] `src/sheet_manager/features/sheet/data/tracker.ts`:
       `trackerReading(field,     value)` (design D8)
-- [ ] T021 [US4] `features/sheet/declarative/hooks.ts` `resolveBase`: a tracker value reads through
+- [x] T021 [US4] `features/sheet/declarative/hooks.ts` `resolveBase`: a tracker value reads through
       `trackerReading`; `features/sheet/data/templateReferences.ts`
       `listTemplateNumericCoordinates`: tracker keys; `types/template.ts`
       `collectFormulaDependencies`: trackers' formulas
-- [ ] T022 [US4] `src/sheet_manager/systems/templateBindings.ts`: `track` bindings in
+- [x] T022 [US4] `src/sheet_manager/systems/templateBindings.ts`: `track` bindings in
       `listNumericCoordinates`, and `readBoundNumber` for them (design D9)
-- [ ] T023 [US4] Run `yarn verify` (formula and binding change) and commit the story
+- [x] T023 [US4] Run `yarn verify` (formula and binding change) and commit the story
 
 ## User Story 5 - Removed pictures free their space (P3)
 
