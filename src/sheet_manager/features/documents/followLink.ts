@@ -21,6 +21,36 @@ const SECTION_WAIT_MS = 2000;
 const anchorTarget = (anchor: Element): Element =>
     anchor.classList.contains('contents') ? (anchor.firstElementChild ?? anchor) : anchor;
 
+/** The nearest box the reader can scroll themselves; the page when none is. */
+function scrollerOf(element: Element): Element | undefined {
+    for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+        const { overflowY } = getComputedStyle(parent);
+        if (
+            (overflowY === 'auto' || overflowY === 'scroll') &&
+            parent.scrollHeight > parent.clientHeight
+        )
+            return parent;
+    }
+    return undefined;
+}
+
+/**
+ * Scrolls one box to show an element. `scrollIntoView` would also scroll clipped boxes, such as a
+ * pane group's frame, moving its tab strip out of reach.
+ */
+function reveal(element: Element, block: 'start' | 'center'): void {
+    const box = element.getBoundingClientRect();
+    const scroller = scrollerOf(element);
+    // The page scrolls under the sticky navbar.
+    const top = scroller
+        ? scroller.getBoundingClientRect().top
+        : (document.querySelector('.navbar')?.getBoundingClientRect().bottom ?? 0);
+    const height = (scroller ? scroller.clientHeight : window.innerHeight) - (scroller ? 0 : top);
+    const offset = box.top - top - (block === 'center' ? (height - box.height) / 2 : 0);
+    if (scroller) scroller.scrollTop += offset;
+    else window.scrollBy(0, offset);
+}
+
 /** The drawn page of a document, outside preview cards. */
 function documentRoot(documentId: string): Element | undefined {
     const selector = `[data-document-id="${CSS.escape(documentId)}"]`;
@@ -47,7 +77,7 @@ export function scrollToSection(documentId: string, section: string): void {
         const root = documentRoot(documentId);
         const found = root && findSection(root, section);
         if (found) {
-            found.scrollIntoView({ block: 'start' });
+            reveal(found, 'start');
             return;
         }
         if (Date.now() - started < SECTION_WAIT_MS) {
@@ -74,7 +104,7 @@ export function scrollToLine(documentId: string, line: number): void {
             return from <= line && (!best || from >= Number(best.dataset.line)) ? block : best;
         }, undefined);
         if (at) {
-            anchorTarget(at).scrollIntoView({ block: 'center' });
+            reveal(anchorTarget(at), 'center');
             return;
         }
         if (Date.now() - started < SECTION_WAIT_MS) requestAnimationFrame(look);

@@ -69,3 +69,29 @@ test('writes a link with suggestions, previews and follows it, and keeps it on a
     const markdown = readFileSync(await (await downloading).path(), 'utf8');
     expect(markdown).toContain('Meet [[Ines Ruiz-Vega]] tonight.');
 });
+
+test('a section link scrolls the document, never the frame that holds its tabs', async ({
+    page,
+}) => {
+    await page.goto('/universal_sheet');
+    await page.getByRole('button', { name: 'New', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Create document' });
+    await page.keyboard.type('vampire');
+    await page.keyboard.press('Enter');
+    await dialog.getByRole('textbox', { name: 'Name' }).fill('Vamp');
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeHidden();
+    await createNote(page, 'Session');
+    await page.keyboard.type('See [[Vamp#Disciplines|her powers]]');
+    await page.keyboard.press('Escape');
+
+    // The documents window docks beside, so the note sits in a framed group with a tab strip.
+    await page.getByRole('button', { name: 'Manage', exact: true }).click();
+    const strip = page.getByRole('tablist', { name: 'Tabs of group 2' });
+    const before = (await strip.boundingBox())!.y;
+    await page.getByRole('link', { name: 'her powers' }).click();
+    await expect(strip.getByRole('tab', { name: /Vamp/ })).toBeVisible();
+    const pane = page.locator('section[data-pane]').last();
+    await expect.poll(() => pane.evaluate((section) => section.scrollTop)).toBeGreaterThan(0);
+    expect((await strip.boundingBox())!.y).toBe(before);
+});

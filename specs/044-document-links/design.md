@@ -239,6 +239,13 @@ proposal, guide, guidance).
   (0.2.0 proposed, 0.1.0 implemented); the report test now checks "not newer than the contract", and
   the validator test no longer names the version.
 
+- **Review fixes**: the preview card was portalled into `document.body`, outside `.tailwind-root`,
+  and drew unstyled; every portal now names `modalRoot()`, and a test checks it. Following a section
+  used `scrollIntoView`, which also scrolled a framed pane group (`overflow-hidden`) and hid its tab
+  strip out of reach; it now scrolls only the nearest box the reader can scroll, below the sticky
+  navbar. A notes smoke test typed before the text field took focus and lost a line; it now waits
+  for the focus.
+
 ## Walk results
 
 `yarn verify:full` passed: 3,298 unit tests, 20 perf tests, 69 browser tests. The maintainer's dev

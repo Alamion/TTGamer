@@ -73,6 +73,7 @@ test('exports a note as markdown and imports it back as a new note', async ({ pa
     await page.keyboard.press('Enter');
     await dialog.getByRole('textbox', { name: 'Name' }).fill('Docks plan');
     await page.keyboard.press('Enter');
+    await expect(page.getByRole('textbox', { name: 'Text' })).toBeFocused();
     await page.keyboard.type('# Docks\n- [ ] bribe the guard');
     await page.keyboard.press('Escape');
     await expect.poll(() => stored(page, 'bribe the guard')).toBe(true);
