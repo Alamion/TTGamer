@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.36.1
+
+### Minor feat
+
+- **Badges name the setting**: in the documents window a hunter shows **HtR** and a vampire **VtM**, so they are told apart; a document of the rules alone shows **WoD5e** or **WoD2e** (the line, then its edition), Star Wars **SW**, and a note **General**
+
+### Fix
+
+- **Your own setting's badge**: a character created in one of your settings shows the setting's badge instead of its rules' and is listed under the setting by the **Setting** filter; a setting without its own badge shows the initials of its name as written ("Super testing Setting" → **StS**)
+
 ## v3.36.0
 
 ### Minor feat
