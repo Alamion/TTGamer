@@ -33,7 +33,13 @@ export const hunterDefinition: DocumentDefinition = {
     views: [HUNTER_SHEET_VIEW, HUNTER_BRIEF_VIEW],
     // Schema version 1 is the first; later versions add steps here.
     migrate: (data) => data,
-    module: { id: 'hunter', label: uiMessages.sheet.v5Hunter.module, policies: ['dark-pack'] },
+    module: {
+        id: 'hunter',
+        label: uiMessages.sheet.v5Hunter.module,
+        badge: uiMessages.sheet.v5Hunter.badge,
+        badgeMark: '/img/settings/hunter.svg',
+        policies: ['dark-pack'],
+    },
     examples: [
         {
             id: LENA_VARGA_DOCUMENT.id,

@@ -46,6 +46,13 @@ export interface DocumentModule {
     label: DocumentViewLabel;
     /** Policies the module's own material relies on, in addition to its system's. */
     policies?: readonly PolicyId[];
+    /**
+     * The module's letters in the documents window (spec 046), naming the game line, not only its
+     * edition ("VtM", never "5e").
+     */
+    badge?: DocumentViewLabel;
+    /** Site path of the module's one-colour mark (`/img/settings/…svg`), shown instead of letters. */
+    badgeMark?: string;
 }
 
 /** A shipped sample document (docs previews, the template editor's preview data). */
@@ -101,8 +108,13 @@ export interface SystemPlugin {
     id: SystemId;
     /** Translated system name (create dialog headings, template library groups). */
     label: DocumentViewLabel;
-    /** A short name for badges (documents window rows, spec 045); the label when absent. */
+    /**
+     * A short name for badges (documents window rows, spec 045); the label when absent. It names the
+     * game line, not only its edition: a D&D ruleset is "D&D 5e", never "5e".
+     */
     badge?: DocumentViewLabel;
+    /** Site path of a setting system's one-colour mark (spec 046); rulesets keep their letters. */
+    badgeMark?: string;
     /** Publisher policies of the system's ruleset/setting material (constitution VIII). */
     policies?: readonly PolicyId[];
     /** Catalogs the system's templates may suggest and copy from. */

@@ -135,3 +135,11 @@ marks are approved by the maintainer before tasks (spec clarification).
 5. **Remove picture**, save → its documents show the letters again.
 6. Export the setting, delete it, import the file → the picture is back.
 7. A phone width (375 px) → badge stays one line, the form fits.
+
+## Implementation notes
+
+- US1: the documents window timing (3,000 documents, every other a hunter, the rest notes, so marks
+  and letters both draw) opens in 36 ms (budget 500; 31–57 ms before). Main chunk 290.7 KB gzip
+  (290.4 KB after spec 045's US1; the stories since included), under SC-004's 2 KB. Badges are
+  computed once per distinct (system, kind, setting) in a render, not per row. A user type owned by
+  a V5 module (`owner.moduleId`) shows that module's badge.

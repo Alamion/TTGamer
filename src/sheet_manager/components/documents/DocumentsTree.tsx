@@ -2,11 +2,12 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type { SelectExtend, TreeRowDrag } from '@site/src/shared/components/tree/TreeRowShell';
 import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/TreeView';
+import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
 
 import { highlightSegments } from '../../features/documents/highlight';
-import { documentBadge } from '../../features/documents/labeler';
+import { type DocumentBadge, documentBadge } from '../../features/documents/labeler';
 import type { DocumentsNode } from '../../features/documents/rows';
 import { InlineName } from './InlineName';
 
@@ -43,14 +44,28 @@ export interface DocumentsTreeProps {
 
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
 
-/** The game a document belongs to, short; its full name is the tooltip and what readers hear. */
-function SystemBadge({ badge, name }: { badge: string; name: string }) {
+/**
+ * The setting a document belongs to: its mark, else its letters; the full name is the tooltip and
+ * what readers hear. A mark is a one-colour file masking the text colour, so it follows the theme.
+ */
+function SystemBadge({ badge, name, mark }: DocumentBadge) {
+    const sitePath = useSitePath();
+    const maskImage = mark ? `url("${sitePath(mark)}")` : undefined;
     return (
         <span
             title={name}
-            className="shrink-0 rounded-sm border border-border px-1 py-0.5 text-[10px] font-medium text-textSecondary"
+            className="inline-flex shrink-0 items-center rounded-sm border border-border px-1 py-0.5 text-[10px] font-medium text-textSecondary"
         >
-            <span aria-hidden="true">{badge}</span>
+            {maskImage ? (
+                <span
+                    aria-hidden="true"
+                    data-badge-mark={mark}
+                    className="block h-3 w-3 bg-current [mask-position:center] [mask-repeat:no-repeat] [mask-size:contain]"
+                    style={{ maskImage, WebkitMaskImage: maskImage }}
+                />
+            ) : (
+                <span aria-hidden="true">{badge}</span>
+            )}
             <span className="sr-only">{name}</span>
         </span>
     );
@@ -80,13 +95,23 @@ export function DocumentsTree({
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
     // A badge every shown row shares says nothing (one game, or a system filter on).
+    const byTarget = new Map<string, DocumentBadge>();
+    const badgeFor = (systemId: string, kind: string, settingId?: string) => {
+        const target = `${systemId}\u0000${kind}\u0000${settingId ?? ''}`;
+        let badge = byTarget.get(target);
+        if (!badge) {
+            badge = documentBadge(systemId, kind, settingId);
+            byTarget.set(target, badge);
+        }
+        return badge;
+    };
     const badges = new Map(
         rows.flatMap(({ key, node }) =>
             node.type === 'document'
                 ? [
                       [
                           key,
-                          documentBadge(node.entry.systemId, node.entry.kind, node.entry.settingId),
+                          badgeFor(node.entry.systemId, node.entry.kind, node.entry.settingId),
                       ] as const,
                   ]
                 : []

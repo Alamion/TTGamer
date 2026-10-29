@@ -43,18 +43,50 @@ function seed(documents: ReturnType<typeof libraryDocument>[]) {
 const badgeOf = (name: string) =>
     screen.getByRole('treeitem', { name: new RegExp(`^${name}`) }).querySelector('[title]');
 
+const markOf = (name: string) =>
+    badgeOf(name)?.querySelector<HTMLElement>('[data-badge-mark]')?.dataset.badgeMark;
+const lettersOf = (name: string) => badgeOf(name)?.querySelector('[aria-hidden]')?.textContent;
+
 describe('system badges', () => {
-    it('show each document row its system, the full name as tooltip and spoken name', () => {
+    it("show a shipped setting's mark instead of letters, named after the setting", () => {
         seed([
             libraryDocument('Kyla', { systemId: 'star-wars-wod', definitionId: 'character' }),
             libraryDocument('Cell', { systemId: 'wod-v5', definitionId: 'hunter' }),
+            libraryDocument('Mirela', { systemId: 'wod-v5', definitionId: 'vampire' }),
+        ]);
+        openWindow();
+        expect(markOf('Kyla')).toBe('/img/settings/star-wars.svg');
+        expect(markOf('Cell')).toBe('/img/settings/hunter.svg');
+        expect(markOf('Mirela')).toBe('/img/settings/vampire.svg');
+        expect(badgeOf('Kyla')?.getAttribute('title')).toBe('Star Wars (World of Darkness 2e)');
+        expect(badgeOf('Cell')?.getAttribute('title')).toBe('Hunter: the Reckoning 5e');
+        expect(badgeOf('Mirela')?.textContent).toBe('Vampire: the Masquerade 5e');
+        expect(
+            badgeOf('Mirela')?.querySelector('[data-badge-mark]')?.getAttribute('aria-hidden')
+        ).toBe('true');
+    });
+
+    it("show letters for a ruleset's own documents and notes", () => {
+        seed([
+            libraryDocument('Elder', { systemId: 'wod-v5', definitionId: 'v5-storyteller' }),
+            libraryDocument('Old', { systemId: 'wod-2e', definitionId: 'wod2e-character' }),
             noteEnvelope('plan', 'Plan', ''),
         ]);
         openWindow();
-        expect(badgeOf('Kyla')?.textContent).toBe('SWStar Wars (World of Darkness 2e)');
-        expect(badgeOf('Kyla')?.getAttribute('title')).toBe('Star Wars (World of Darkness 2e)');
-        expect(badgeOf('Cell')?.textContent).toContain('V5');
-        expect(badgeOf('Plan')?.textContent).toContain('General');
+        expect(lettersOf('Elder')).toBe('V5');
+        expect(lettersOf('Old')).toBe('WoD 2e');
+        expect(lettersOf('Plan')).toBe('General');
+        expect(markOf('Elder')).toBeUndefined();
+    });
+
+    it('tell a hunter from a vampire, though both play by V5', () => {
+        seed([
+            libraryDocument('Cell', { systemId: 'wod-v5', definitionId: 'hunter' }),
+            libraryDocument('Mirela', { systemId: 'wod-v5', definitionId: 'vampire' }),
+        ]);
+        openWindow();
+        expect(markOf('Cell')).toBe('/img/settings/hunter.svg');
+        expect(markOf('Mirela')).toBe('/img/settings/vampire.svg');
     });
 
     it("show an own type's documents the system its type belongs to", () => {
@@ -103,12 +135,12 @@ describe('user setting badges', () => {
 
     it("show a setting's own badge, named after the setting and its system", () => {
         seedSetting('ASH');
-        const system = badgeOf('Cell')?.getAttribute('title');
+        const system = 'World of Darkness 5th Edition';
         expect(badgeOf('Coven')?.querySelector('[aria-hidden]')?.textContent).toBe('ASH');
         expect(badgeOf('Coven')?.getAttribute('title')).toBe(`Ashen Realms · ${system}`);
         expect(badgeOf('Mara')?.querySelector('[aria-hidden]')?.textContent).toBe('ASH');
         expect(badgeOf('Mara')?.getAttribute('title')).toBe(`Ashen Realms · ${system}`);
-        expect(badgeOf('Cell')?.textContent).toContain('V5');
+        expect(markOf('Cell')).toBe('/img/settings/hunter.svg');
     });
 
     it("fall back to the setting name's initials", () => {

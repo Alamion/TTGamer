@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 
+import { createDocument } from '../brief';
 import { expect, test } from '../fixtures';
 import { documentsTool } from '../tools';
 
@@ -81,3 +82,29 @@ for (const { name, viewport } of sizes) {
         });
     });
 }
+
+test("each document shows its setting's mark when the list mixes settings (spec 046)", async ({
+    page,
+}) => {
+    const marks: string[] = [];
+    page.on('response', (response) => {
+        if (response.url().includes('/img/settings/') && response.ok()) marks.push(response.url());
+    });
+    await createDocument(page, 'star-wars-wod/character');
+    await page.getByRole('button', { name: 'New', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: 'Create document' });
+    const folded = dialog.locator('button[aria-expanded="false"]');
+    while ((await folded.count()) > 0) await folded.first().click();
+    await dialog.locator('[data-kind="wod-v5/hunter"]').click();
+    await dialog.getByRole('button', { name: 'Create', exact: true }).click();
+
+    const window = await openWindow(page);
+    const tree = window.getByRole('tree', { name: 'Documents' });
+    const starWars = tree.locator('[title="Star Wars (World of Darkness 2e)"]');
+    const hunter = tree.locator('[title="Hunter: the Reckoning 5e"]');
+    await expect(starWars.locator('[data-badge-mark]')).toBeVisible();
+    await expect(hunter.locator('[data-badge-mark]')).toBeVisible();
+    // Drawn, not lettered: the mark is the theme colour through its file.
+    await expect(starWars).not.toContainText('SW');
+    await expect.poll(() => marks.length).toBeGreaterThanOrEqual(2);
+});

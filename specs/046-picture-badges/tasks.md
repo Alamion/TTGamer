@@ -11,33 +11,33 @@ this branch.
 **Check**: a Star Wars character, a hunter, and a vampire show their marks with no letters; a V5
 Storyteller character and a note show V5 and General; full names on hover and to screen readers.
 
-- [ ] T001 [US1] Extend `tests/sheet_manager/documents-badges.test.tsx` first: Star Wars, hunter,
+- [x] T001 [US1] Extend `tests/sheet_manager/documents-badges.test.tsx` first: Star Wars, hunter,
       and vampire rows draw a mask-image `span` (`aria-hidden`) with their mark's site path and no
       letters, named after the setting (Star Wars, Vampire: the Masquerade, Hunter: the Reckoning);
       a V5 Storyteller character shows "V5", a plain WoD 2e character "WoD 2e", a note "General"; a
       hunter beside a vampire is badged (their full names differ); one setting alone is not (FR-001,
       FR-002, FR-009, FR-010, FR-012)
-- [ ] T002 [US1] `src/sheet_manager/systems/types.ts`: `badgeMark?: string` on `SystemPlugin` and
+- [x] T002 [US1] `src/sheet_manager/systems/types.ts`: `badgeMark?: string` on `SystemPlugin` and
       `DocumentModule`, `badge?: DocumentViewLabel` on `DocumentModule`; both `badge` doc comments
       say letters name the game line, not only its edition (a D&D ruleset is "D&D 5e")
-- [ ] T003 [US1] Set `badgeMark: '/img/settings/star-wars.svg'` in `systems/star-wars-wod/index.ts`;
+- [x] T003 [US1] Set `badgeMark: '/img/settings/star-wars.svg'` in `systems/star-wars-wod/index.ts`;
       on the V5 modules in `systems/v5/modules/vampire/definition.ts` and
       `systems/v5/modules/hunter/definition.ts` set `badgeMark` (`vampire.svg`, `hunter.svg`) and
       `badge` from new YAML keys `sheet.v5Vampire.badge` (VtM) and `sheet.v5Hunter.badge` (HtR) in
       `translations/source/{en,ru}/ui/sheet/`; add the letters to
       `translations/i18n-exceptions.yaml`; `yarn build:translations`
-- [ ] T004 [US1] `src/sheet_manager/features/documents/labeler.ts`: `documentBadge` returns
+- [x] T004 [US1] `src/sheet_manager/features/documents/labeler.ts`: `documentBadge` returns
       `{ badge, name, mark?, picture? }`, resolving the user setting, else the module of the kind's
       first definition (its `badge`, label as full name, `badgeMark`), else the system (design D8)
-- [ ] T005 [US1] `src/sheet_manager/components/documents/DocumentsTree.tsx` `SystemBadge`: with a
+- [x] T005 [US1] `src/sheet_manager/components/documents/DocumentsTree.tsx` `SystemBadge`: with a
       `mark`, a 12 px `span` masked by the file (`useSitePath` for the absolute URL, set on the
       element, background `currentColor`) instead of the letters; the `title` and `sr-only` full
       name stay (design D1)
-- [ ] T006 [US1] E2E: in `tests-e2e/smoke/documents.spec.ts`, documents of Star Wars and a V5 module
+- [x] T006 [US1] E2E: in `tests-e2e/smoke/documents.spec.ts`, documents of Star Wars and a V5 module
       show their marks (the smoke run fails on a failed mark request); rerun the documents window
       timing with 3,000 documents against its last value (SC-002) and measure the main chunk
       (SC-004), recorded in design.md
-- [ ] T007 [US1] Run `yarn verify` and commit the story with the four mark files
+- [x] T007 [US1] Run `yarn verify` and commit the story with the four mark files
 
 ## User Story 2 - Upload my setting's own picture (P1)
 
