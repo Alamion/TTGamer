@@ -1,4 +1,5 @@
 module: 'Охотник: Воздаяние, 5-я редакция'
+badge: HtR
 newHunter: Новый охотник
 views:
     sheet: Полный лист

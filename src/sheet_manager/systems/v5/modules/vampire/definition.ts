@@ -37,6 +37,7 @@ export const vampireDefinition: DocumentDefinition = {
     module: {
         id: 'vampire',
         label: uiMessages.sheet.v5Vampire.module,
+        badge: uiMessages.sheet.v5Vampire.badge,
         policies: ['dark-pack'],
     },
     examples: [
