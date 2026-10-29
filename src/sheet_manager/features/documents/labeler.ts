@@ -36,6 +36,8 @@ export interface DocumentBadge {
     name: string;
     /** Site path of a shipped setting's mark (spec 046). */
     mark?: string;
+    /** A user setting's own cleaned SVG picture, with the setting's id to report it by. */
+    picture?: { svg: string; settingId: string };
 }
 
 /** A system's short badge and its full name (documents window rows, spec 045). */
@@ -72,6 +74,9 @@ export function documentBadge(systemId: string, kind: string, settingId?: string
         return {
             badge: setting.badge ?? initialsOf(setting.name),
             name: `${setting.name} · ${system.name}`,
+            ...(setting.picture
+                ? { picture: { svg: setting.picture, settingId: setting.id } }
+                : {}),
         };
     }
     const module = moduleOf(systemId, kind);

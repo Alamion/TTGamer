@@ -2,6 +2,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { z } from 'zod';
 
 import { compactId } from '../../shared/utils/random';
+import { cleanSvgPicture, SVG_PICTURE_LIMITS } from '../../shared/utils/svgPicture';
 import {
     type DocumentDefinitionId,
     DocumentDefinitionIdSchema,
@@ -72,6 +73,18 @@ export const UserSettingSchema = z.object({
     description: z.string().max(500).optional(),
     /** A short mark for document rows (spec 045); the name's initials when absent. */
     badge: z.string().trim().min(1).max(6).optional(),
+    /**
+     * Its own SVG picture, shown instead of the badge (spec 046). Cleaned on every way in, so a
+     * stored, imported, or synced setting never carries what the upload form would refuse.
+     */
+    picture: z
+        .string()
+        .max(SVG_PICTURE_LIMITS.inputBytes)
+        .transform((picture) => {
+            const cleaned = cleanSvgPicture(picture);
+            return cleaned.ok ? cleaned.svg : undefined;
+        })
+        .optional(),
     systemId: SystemIdSchema,
     pages: z.record(z.string(), z.string()).default({}),
     createdAt: z.string().min(1),

@@ -87,7 +87,9 @@ export type SheetIssueCode =
     /** A loaded note dropped pictures its text no longer names (spec 045, F-010). */
     | 'pictures-pruned'
     /** Stored pictures no document names were deleted after start-up (spec 045, F-010). */
-    | 'pictures-swept';
+    | 'pictures-swept'
+    /** A user setting's own picture could not be drawn; its letters show instead (spec 046). */
+    | 'setting-picture-failed';
 
 export interface SheetIssue {
     code: SheetIssueCode;

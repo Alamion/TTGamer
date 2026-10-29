@@ -7,9 +7,10 @@ import {
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { noteEnvelope } from '@site/src/sheet_manager/systems/general/note';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
 import { openWindow, resetDocuments } from './helpers/documentsWindow';
 import {
     ASHEN_ID,
@@ -170,5 +171,34 @@ describe('user setting badges', () => {
         expect(renameItem(node, 'Ashen', '', state, '').saveSettings?.[0]).not.toHaveProperty(
             'badge'
         );
+    });
+
+    it('draw its own picture as an image, and fall back to letters when it cannot draw', () => {
+        const picture =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg>';
+        const setting = userSetting({ picture });
+        useDocumentTypeStore.setState({
+            settings: { [setting.id]: setting },
+            types: { [CULT_ID]: userType() },
+        });
+        seed([
+            libraryDocument('Coven', { systemId: 'wod-v5', definitionId: 'hunter', kind: CULT_ID }),
+            libraryDocument('Cell', { systemId: 'wod-v5', definitionId: 'hunter' }),
+        ]);
+        openWindow();
+        const image = badgeOf('Coven')?.querySelector('img');
+        expect(image?.getAttribute('alt')).toBe('');
+        expect(image?.getAttribute('src')).toBe(
+            `data:image/svg+xml;charset=utf-8,${encodeURIComponent(picture)}`
+        );
+        expect(lettersOf('Coven')).toBeUndefined();
+        expect(badgeOf('Coven')?.getAttribute('title')).toBe(
+            'Ashen Realms · World of Darkness 5th Edition'
+        );
+
+        fireEvent.error(image!);
+        expect(badgeOf('Coven')?.querySelector('img')).toBeNull();
+        expect(lettersOf('Coven')).toBe('AR');
+        expect(takeSheetIssues().map(({ code }) => code)).toEqual(['setting-picture-failed']);
     });
 });

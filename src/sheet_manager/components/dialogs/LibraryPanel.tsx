@@ -418,7 +418,8 @@ export function LibraryPanel() {
                 node.systemId,
                 values.name,
                 values.description,
-                values.badge
+                values.badge,
+                values.picture
             );
             applyLibraryWrites({ saveSettings: [setting] });
             const key = settingNodeKey({ kind: 'user', settingId: setting.id });
@@ -449,7 +450,14 @@ export function LibraryPanel() {
             toast.success(translate(labels.toasts.created, { name: catalog.name }));
         } else if (current.kind === 'edit') {
             applyLibraryWrites(
-                renameItem(node, values.name, values.description, state(), values.badge)
+                renameItem(
+                    node,
+                    values.name,
+                    values.description,
+                    state(),
+                    values.badge,
+                    values.picture
+                )
             );
             toast.success(translate(labels.toasts.saved, { name: values.name }));
         }
@@ -578,6 +586,7 @@ export function LibraryPanel() {
                               name: node.name,
                               description: node.description,
                               badge: editedSetting?.badge,
+                              picture: editedSetting?.picture,
                           }
                         : undefined
                 }

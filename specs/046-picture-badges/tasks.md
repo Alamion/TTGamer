@@ -45,33 +45,33 @@ Storyteller character and a note show V5 and General; full names on hover and to
 and the form says what was removed; a PNG and an oversized file are refused; removing it brings the
 letters back; export and import keep it.
 
-- [ ] T008 [US2] Write `tests/shared/svg-picture.test.ts` first: keeps shapes, groups, gradients,
+- [x] T008 [US2] Write `tests/shared/svg-picture.test.ts` first: keeps shapes, groups, gradients,
       `url(#id)` fills, and safe `style` properties; removes `<script>`, `on*`, `<foreignObject>`,
       `<image>`, `<use>`, `href`/`xlink:href`, external `url(...)`, and `<style>`, counting each
       kind; refuses non-SVG, nothing left to draw, over 8,192 bytes or 200 elements after cleaning,
       and input over 256 KB; cleaning its own output changes nothing (FR-005, FR-011, SC-003)
-- [ ] T009 [US2] `src/shared/utils/svgPicture.ts`: `cleanSvgPicture(text)` with the allowlist of
+- [x] T009 [US2] `src/shared/utils/svgPicture.ts`: `cleanSvgPicture(text)` with the allowlist of
       design D4, returning `{ ok: true, svg, removed }` or `{ ok: false, reason }`
-- [ ] T010 [US2] `src/sheet_manager/systems/userTypes.ts`: `UserSetting.picture?: string`, cleaned
+- [x] T010 [US2] `src/sheet_manager/systems/userTypes.ts`: `UserSetting.picture?: string`, cleaned
       by a schema transform that drops a picture failing the cleaner (design D3); a test in
       `tests/sheet_manager/library-file.test.ts` and `type-file.test.ts`: a file whose setting
       carries a script-laden picture imports with the cleaned picture, and export keeps it (FR-005,
       SC-003)
-- [ ] T011 [US2] Write `tests/sheet_manager/setting-picture.test.tsx` first: the setting form
+- [x] T011 [US2] Write `tests/sheet_manager/setting-picture.test.tsx` first: the setting form
       uploads an SVG, previews it, shows the removed-parts note; refuses a PNG and an oversized file
       with `role="alert"`, keeping the previous picture; **Remove picture** clears it; saving stores
       the cleaned string through `createSetting` / `renameItem` (FR-004, FR-007, FR-008)
-- [ ] T012 [US2] `components/dialogs/library/CreateForm.tsx`: the picture row (upload button over a
+- [x] T012 [US2] `components/dialogs/library/CreateForm.tsx`: the picture row (upload button over a
       hidden file input as in `ImportPreview.tsx`, 32 px preview as `<img>`, remove button, inline
       note); `LibraryPanel.tsx` passes the setting's picture in and out;
       `features/sheet/data/libraryActions.ts`: `createSetting` and `renameItem` take `picture`;
       strings in `translations/source/{en,ru}/ui/sheet/library.yaml` (design D6)
-- [ ] T013 [US2] `labeler.ts`: a setting's `picture` wins over its letters; `SystemBadge` draws it
+- [x] T013 [US2] `labeler.ts`: a setting's `picture` wins over its letters; `SystemBadge` draws it
       as `<img alt="" src="data:image/svg+xml;charset=utf-8,…">`, falls back to the letters on
       `onError` and reports `setting-picture-failed` once per setting (new code in
       `src/sheet_manager/diagnostics.ts`); extend `documents-badges.test.tsx` for both (FR-006,
       FR-010, design D5)
-- [ ] T014 [US2] Run `yarn verify` (schema and persisted shape change) and commit the story
+- [x] T014 [US2] Run `yarn verify` (schema and persisted shape change) and commit the story
 
 ## Finish
 

@@ -116,6 +116,19 @@ create:
     descriptionField: Description (optional)
     badge: Badge (optional)
     badgeHint: Up to 6 characters, shown on its documents in the documents window; left empty, the initials of the name.
+    picture: 'Picture (optional)'
+    pictureHint: 'An SVG file of up to 8 KB, shown instead of the badge. Scripts, links, and outside files are removed from it.'
+    pictureUpload: 'Upload picture'
+    pictureRemove: 'Remove picture'
+    pictureRemoved: 'Removed from the picture: {parts}.'
+    removedScripts: 'scripts and event handlers'
+    removedExternal: 'links and outside files'
+    removedStyles: 'styles'
+    removedOther: 'parts that are not drawing'
+    pictureNotSvg: 'This is not an SVG picture.'
+    pictureEmpty: 'The picture has nothing left to draw.'
+    pictureTooLarge: 'The picture is larger than 8 KB.'
+    pictureTooComplex: 'The picture has more than 200 elements.'
     start: Start from
     blank: Blank page
     copyOf: Copy of "{name}"

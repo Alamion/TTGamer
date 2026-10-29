@@ -5,11 +5,14 @@ import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/Tre
 import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
+import { useState } from 'react';
 
+import { reportSheetIssue } from '../../diagnostics';
 import { highlightSegments } from '../../features/documents/highlight';
 import { type DocumentBadge, documentBadge } from '../../features/documents/labeler';
 import type { DocumentsNode } from '../../features/documents/rows';
 import { InlineName } from './InlineName';
+import { svgDataUrl } from './settingPicture';
 
 const labels = uiMessages.sheet.documents.manager;
 
@@ -44,19 +47,44 @@ export interface DocumentsTreeProps {
 
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
 
+const failedPictures = new Set<string>();
+
+/** Once per setting and page load: every row of the setting fails the same way. */
+function reportPictureFailure(settingId: string) {
+    if (failedPictures.has(settingId)) return;
+    failedPictures.add(settingId);
+    reportSheetIssue({
+        code: 'setting-picture-failed',
+        message: "A setting's picture could not be drawn; its letters show instead",
+        details: { settingId },
+    });
+}
+
 /**
- * The setting a document belongs to: its mark, else its letters; the full name is the tooltip and
+ * The setting a document belongs to: its own picture, its mark, else its letters; the full name is the tooltip and
  * what readers hear. A mark is a one-colour file masking the text colour, so it follows the theme.
  */
-function SystemBadge({ badge, name, mark }: DocumentBadge) {
+function SystemBadge({ badge, name, mark, picture }: DocumentBadge) {
     const sitePath = useSitePath();
+    const [failed, setFailed] = useState<string>();
     const maskImage = mark ? `url("${sitePath(mark)}")` : undefined;
+    const shownPicture = picture && failed !== picture.svg ? picture : undefined;
     return (
         <span
             title={name}
             className="inline-flex shrink-0 items-center rounded-sm border border-border px-1 py-0.5 text-[10px] font-medium text-textSecondary"
         >
-            {maskImage ? (
+            {shownPicture ? (
+                <img
+                    alt=""
+                    src={svgDataUrl(shownPicture.svg)}
+                    onError={() => {
+                        setFailed(shownPicture.svg);
+                        reportPictureFailure(shownPicture.settingId);
+                    }}
+                    className="block h-3 w-3 object-contain"
+                />
+            ) : maskImage ? (
                 <span
                     aria-hidden="true"
                     data-badge-mark={mark}

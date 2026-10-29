@@ -156,18 +156,24 @@ function withDescription<T extends { description?: string }>(item: T, descriptio
     return (trimmed ? { ...rest, description: trimmed } : rest) as T;
 }
 
-function withBadge(setting: UserSetting, badge: string | undefined): UserSetting {
-    const { badge: _old, ...rest } = setting;
-    void _old;
+function withBadge(
+    setting: UserSetting,
+    badge: string | undefined,
+    picture: string | undefined
+): UserSetting {
+    const { badge: _badge, picture: _picture, ...rest } = setting;
+    void _badge;
+    void _picture;
     const trimmed = badge?.trim();
-    return trimmed ? { ...rest, badge: trimmed } : rest;
+    return { ...rest, ...(trimmed ? { badge: trimmed } : {}), ...(picture ? { picture } : {}) };
 }
 
 export function createSetting(
     rulesetId: string,
     name: string,
     description = '',
-    badge?: string
+    badge?: string,
+    picture?: string
 ): UserSetting {
     const stamp = now();
     return withBadge(
@@ -182,7 +188,8 @@ export function createSetting(
             },
             description
         ),
-        badge
+        badge,
+        picture
     );
 }
 
@@ -258,13 +265,17 @@ export function createType(
     );
 }
 
-/** Renames and re-describes a user setting, type, or page; a setting also takes its badge. */
+/**
+ * Renames and re-describes a user setting, type, or page; a setting also takes its badge and
+ * picture (absent removes them).
+ */
 export function renameItem(
     node: LibraryNode,
     name: string,
     description: string,
     state: LibraryState,
-    badge?: string
+    badge?: string,
+    picture?: string
 ): LibraryWrites {
     const trimmed = name.trim();
     if (!trimmed || node.ownership !== 'user') return {};
@@ -276,7 +287,8 @@ export function renameItem(
             saveSettings: [
                 withBadge(
                     withDescription({ ...setting, name: trimmed, updatedAt: stamp }, description),
-                    badge
+                    badge,
+                    picture
                 ),
             ],
         };
