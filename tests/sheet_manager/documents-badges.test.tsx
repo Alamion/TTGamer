@@ -68,8 +68,8 @@ describe('system badges', () => {
             noteEnvelope('plan', 'Plan', ''),
         ]);
         openWindow();
-        expect(lettersOf('Elder')).toBe('WoD V5');
-        expect(lettersOf('Old')).toBe('WoD 2e');
+        expect(lettersOf('Elder')).toBe('WoD5e');
+        expect(lettersOf('Old')).toBe('WoD2e');
         expect(lettersOf('Plan')).toBe('General');
     });
 
@@ -94,7 +94,7 @@ describe('system badges', () => {
             ),
         }));
         openWindow();
-        expect(badgeOf('Faction')?.textContent).toContain('WoD V5');
+        expect(badgeOf('Faction')?.textContent).toContain('WoD5e');
     });
 
     it('are left out when every shown document has the same system', () => {

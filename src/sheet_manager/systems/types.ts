@@ -48,7 +48,7 @@ export interface DocumentModule {
     policies?: readonly PolicyId[];
     /**
      * The module's letters in the documents window, naming the game line, not only its
-     * edition ("VtM", never "5e").
+     * edition ("VtM", never "5e"); the format is in `SystemPlugin.badge`.
      */
     badge?: DocumentViewLabel;
 }
@@ -108,7 +108,8 @@ export interface SystemPlugin {
     label: DocumentViewLabel;
     /**
      * A short name for badges (documents window rows, spec 045); the label when absent. It names the
-     * game line, not only its edition: a D&D ruleset is "D&D 5e", never "5e".
+     * game line, not only its edition. An edition is written after the line, no spaces, with "e":
+     * "WoD5e", "WoD2e", a future "D&D5e"; never a bare "5e" or "V5".
      */
     badge?: DocumentViewLabel;
     /** Publisher policies of the system's ruleset/setting material (constitution VIII). */

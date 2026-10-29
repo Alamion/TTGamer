@@ -264,10 +264,11 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   ruleset character in a setting) or its type belongs to (`userSettingOf`) shows its own `badge` (≤
   6 characters, else its name's initials as written, "StS"; named "Setting · System"), else the
   kind's module (`DocumentModule.badge`: VtM, HtR, named by the module), else `SystemPlugin.badge`
-  (the label when absent), the full name spoken. Letters name the game line, not only its edition (a
-  D&D ruleset would be "D&D 5e", never "5e"). Rows are badged when their badges' full names differ;
-  badges are computed once per (system, kind, setting) in a render. Pictures instead of letters were
-  tried and rejected (spec 046).
+  (the label when absent), the full name spoken. Letters name the game line, not only its edition,
+  and a versioned ruleset writes its edition after the line with no spaces and an "e": "WoD5e",
+  "WoD2e", a future "D&D5e" (never a bare "5e" or "V5"). Rows are badged when their badges' full
+  names differ; badges are computed once per (system, kind, setting) in a render. Pictures instead
+  of letters were tried and rejected (spec 046).
 
 - **Creating documents (spec 039).** Every create path calls `createFromChoice`
   (`features/documents/createFromChoice.ts`): the page the library chose (`newDocumentPage`, a user
