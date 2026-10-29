@@ -143,3 +143,24 @@ marks are approved by the maintainer before tasks (spec clarification).
   (290.4 KB after spec 045's US1; the stories since included), under SC-004's 2 KB. Badges are
   computed once per distinct (system, kind, setting) in a render, not per row. A user type owned by
   a V5 module (`owner.moduleId`) shows that module's badge.
+- US2: the cleaner rebuilds the picture as text from the allowlist (no DOM serializer), so the
+  output is the same in happy-dom and Chromium and cleaning twice changes nothing. The schema field
+  is `string → cleaned | undefined`; without `DOMParser` (a non-browser test) a picture is dropped,
+  never kept uncleaned. A file over 256 KB is refused as "larger than 8 KB" (one message for size).
+- Finish: `verify:full` passed (3,352 unit, 20 perf, 73 browser tests). The documents window timing:
+  44 ms (budget 500). Panes "open beside" 221 ms over its 200 ms budget, as on master.
+
+## Walk results
+
+Run on the dev server (branch checked out) with Playwright, 2026-10-29:
+
+1. Star Wars character, hunter, vampire, Storyteller character, and note → lightsaber, crosshair,
+   drop, "V5", "General"; the same in the dark theme; no console or request errors. ✓
+2. Library → V5 → New setting "Night Court": a PNG is refused ("This is not an SVG picture."), a 400
+   KB SVG is refused ("larger than 8 KB"), an SVG with `onload`, `<script>`, and an external
+   `<image>` is kept with only its path, and the form says "Removed from the picture: scripts and
+   event handlers, links and outside files". ✓
+3. A Mortal of Night Court beside a plain hunter → the red triangle picture, titled "Night Court ·
+   World of Darkness 5th Edition"; the hunter shows the crosshair. ✓
+4. Export and import keep the cleaned picture: checked by `setting-picture.test.tsx` (schema and
+   type file), not by hand.

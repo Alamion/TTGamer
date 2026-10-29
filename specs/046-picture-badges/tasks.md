@@ -75,12 +75,12 @@ letters back; export and import keep it.
 
 ## Finish
 
-- [ ] T015 Update `src/sheet_manager/AGENTS.md` (badges: marks, module letters, setting pictures,
+- [x] T015 Update `src/sheet_manager/AGENTS.md` (badges: marks, module letters, setting pictures,
       the cleaner at every way in), the `tailwind-theming` or `sheet-manager` skill only if a rule
       moves there, the guide en + ru (`guide/documents/index.mdx` badges,
       `guide/template-editor/     types-and-settings.mdx` setting picture); `TODO.md` T-129 closed
       with a note (Werewolf mark deferred to its module)
-- [ ] T016 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server;
+- [x] T016 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server;
       record results in design.md
 
 ## Coverage

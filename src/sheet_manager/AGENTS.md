@@ -259,12 +259,18 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   document opens by double click, `Enter`, or the Open actions (**Open**, **Open in new tab**,
   **Open beside**). On a phone a tap selects and switches to the details tab. A single dragged
   document row also carries `application/x-ttg-document`, so the layout takes it like a tab. When
-  the shown rows mix systems, each document row carries its badge (`documentBadge` in
-  `features/documents/labeler.ts`): the user setting it was created in (the entry's `settingId`, a
-  ruleset character in a setting) or its type belongs to (`userSettingOf`) shows its own `badge` (≤
-  6 characters, else its name's initials as written, "StS"; named "Setting · System"), else
-  `SystemPlugin.badge` (the label when absent), the full name spoken. Rows are badged when their
-  badges' full names differ.
+  the shown rows mix settings, each document row carries its badge (`documentBadge` in
+  `features/documents/labeler.ts`, specs 045–046), from its setting: the user setting it was created
+  in (the entry's `settingId`) or its type belongs to (`userSettingOf`) shows its own `picture`,
+  else its `badge` (≤ 6 characters, else its name's initials as written, "StS"; named "Setting ·
+  System"); else the kind's module (`DocumentModule.badge`/`badgeMark`: VtM, HtR); else the system
+  (`SystemPlugin.badge`/`badgeMark`: SW has a mark, rulesets and General letters). Letters name the
+  game line, not only its edition. A mark is a one-colour file in `static/img/settings/` drawn as a
+  CSS mask of the text colour; a setting's picture is an `<img>` of a `data:` URL that falls back to
+  the letters (`setting-picture-failed`). The picture is SVG text cleaned by
+  `shared/utils/svgPicture.ts` (an allowlist of drawing elements and attributes, ≤ 8 KB and 200
+  elements) at upload and in `UserSettingSchema` on every parse. Rows are badged when their badges'
+  full names differ; badges are computed once per (system, kind, setting) in a render.
 
 - **Creating documents (spec 039).** Every create path calls `createFromChoice`
   (`features/documents/createFromChoice.ts`): the page the library chose (`newDocumentPage`, a user
