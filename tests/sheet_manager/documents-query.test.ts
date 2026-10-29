@@ -122,6 +122,24 @@ describe('filtering (FR-014)', () => {
         expect(ids(run({ system: 'star-wars-wod', kind: 'character' }))).toEqual([]);
     });
 
+    it("takes a ruleset character created in a user setting as that setting's", () => {
+        const settingLabeler: DocumentLabeler = {
+            ...labeler,
+            setting: (system, kind, settingId) =>
+                settingId === 'user-setting-ash00001' ? 'Ashen' : labeler.setting(system, kind),
+        };
+        const local = buildQueryIndex(
+            [
+                doc('m', 'Mara', { systemId: 'wod-v5', settingId: 'user-setting-ash00001' }),
+                doc('h', 'Hal', { systemId: 'wod-v5' }),
+            ],
+            settingLabeler
+        );
+        expect(local.labels.get('m')?.setting).toBe('Ashen');
+        expect(local.labels.get('h')?.setting).toBe('Hunter');
+        expect(local.settings.map(({ label }) => label)).toEqual(['Ashen', 'Hunter']);
+    });
+
     it('filters by created and changed presets, with unknown kept apart', () => {
         expect(ids(run({ created: 'day' }))).toEqual(['a']);
         expect(ids(run({ created: 'week' }))).toEqual(['b']);

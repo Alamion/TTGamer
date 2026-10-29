@@ -12,6 +12,7 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { openWindow, resetDocuments } from './helpers/documentsWindow';
 import {
+    ASHEN_ID,
     CULT_ID,
     libraryDocument,
     resetLibraryStores,
@@ -89,6 +90,12 @@ describe('user setting badges', () => {
         });
         seed([
             libraryDocument('Coven', { systemId: 'wod-v5', definitionId: 'hunter', kind: CULT_ID }),
+            // A ruleset character created in the setting: marked by the document, not its kind.
+            libraryDocument(
+                'Mara',
+                { systemId: 'wod-v5', definitionId: 'hunter' },
+                { settingId: ASHEN_ID }
+            ),
             libraryDocument('Cell', { systemId: 'wod-v5', definitionId: 'hunter' }),
         ]);
         openWindow();
@@ -99,18 +106,22 @@ describe('user setting badges', () => {
         const system = badgeOf('Cell')?.getAttribute('title');
         expect(badgeOf('Coven')?.querySelector('[aria-hidden]')?.textContent).toBe('ASH');
         expect(badgeOf('Coven')?.getAttribute('title')).toBe(`Ashen Realms · ${system}`);
+        expect(badgeOf('Mara')?.querySelector('[aria-hidden]')?.textContent).toBe('ASH');
+        expect(badgeOf('Mara')?.getAttribute('title')).toBe(`Ashen Realms · ${system}`);
         expect(badgeOf('Cell')?.textContent).toContain('V5');
     });
 
     it("fall back to the setting name's initials", () => {
         seedSetting();
         expect(badgeOf('Coven')?.querySelector('[aria-hidden]')?.textContent).toBe('AR');
+        expect(badgeOf('Mara')?.querySelector('[aria-hidden]')?.textContent).toBe('AR');
     });
 
     it('take initials from up to three words, or the first three letters of one', () => {
         expect(initialsOf('Night City Blues Again')).toBe('NCB');
-        expect(initialsOf('мой сеттинг')).toBe('МС');
-        expect(initialsOf('Ashen')).toBe('ASH');
+        expect(initialsOf('Super testing Setting')).toBe('StS');
+        expect(initialsOf('мой Сеттинг')).toBe('мС');
+        expect(initialsOf('Ashen')).toBe('Ash');
     });
 
     it('are kept by creating and editing a setting, and cleared when emptied', () => {

@@ -83,7 +83,12 @@ export function DocumentsTree({
     const badges = new Map(
         rows.flatMap(({ key, node }) =>
             node.type === 'document'
-                ? [[key, documentBadge(node.entry.systemId, node.entry.kind)] as const]
+                ? [
+                      [
+                          key,
+                          documentBadge(node.entry.systemId, node.entry.kind, node.entry.settingId),
+                      ] as const,
+                  ]
                 : []
         )
     );
