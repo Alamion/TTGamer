@@ -166,8 +166,8 @@ the setting, import it into an empty library, and check the picture is there.
   kept for later), but their shapes are our own, not copies or traces, so the site needs no CC BY
   credit. The maintainer approved the final drawings. A Werewolf mark (a wolf's head) is deferred to
   that module. Each mark is one file a later file can replace.
-- Letters name the game line, not only its edition (SW, VtM, HtR, V5, WoD 2e): a future D&D ruleset
-  is "D&D 5e", never "5e", so it cannot be confused with a World of Darkness one.
+- Letters name the game line, not only its edition (SW, VtM, HtR, WoD V5, WoD 2e): a future D&D
+  ruleset is "D&D 5e", never "5e", so it cannot be confused with a World of Darkness one.
 - Only the documents window shows badges; other places (library tree, create dialog) are out of
   scope and may adopt the marks later.
 - Raster pictures (PNG, WebP) are out of scope: SVG stays small and sharp at any size.

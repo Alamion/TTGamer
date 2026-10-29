@@ -43,7 +43,7 @@
   match: /^(VtM|H:tR) 5e$/
   reason: game-line abbreviations (VtM 5e, H:tR 5e) are the same in every locale
 - rule: identical
-  match: /^(SW|WoD 2e|VtM|HtR)$/
+  match: /^(SW|WoD 2e|WoD V5|VtM|HtR)$/
   reason: system badges in the documents window (spec 045) are abbreviations, the same in every
       locale like V5
 - rule: docs-terms
