@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 
 import { documentSettingLabel, systemRegistry } from '../../../systems';
+import type { UserSetting } from '../../../systems/userTypes';
 
 function definitionsOfKind(systemId: string, kind: string) {
     return systemRegistry
@@ -14,11 +15,20 @@ export function kindLabel(systemId: string, kind: string): string {
     return entry ? translate(entry.definition.label) : kind;
 }
 
-/** The setting a kind belongs to (a user setting, a V5 line's module, else the system). */
-export function kindSettingLabel(systemId: string, kind: string): string {
+/**
+ * The user setting a document belongs to: the one it was created in (a ruleset's character in a
+ * setting), else its own type's.
+ */
+export function userSettingOf(kind: string, settingId?: string): UserSetting | undefined {
     const { types, settings } = systemRegistry.getUserDocumentTypes();
+    if (settingId && settings[settingId]) return settings[settingId];
     const owner = types[kind]?.owner;
-    const userSetting = owner && 'settingId' in owner ? settings[owner.settingId] : undefined;
+    return owner && 'settingId' in owner ? settings[owner.settingId] : undefined;
+}
+
+/** The setting a kind belongs to (a user setting, a V5 line's module, else the system). */
+export function kindSettingLabel(systemId: string, kind: string, settingId?: string): string {
+    const userSetting = userSettingOf(kind, settingId);
     if (userSetting) return userSetting.name;
     const [entry] = definitionsOfKind(systemId, kind);
     if (entry) return translate(documentSettingLabel(entry.system, entry.definition));

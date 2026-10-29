@@ -75,7 +75,7 @@ export const isNarrowing = (query: DocumentsQuery): boolean =>
 export interface DocumentLabeler {
     kind: (systemId: string, kind: string) => string;
     system: (systemId: string) => string;
-    setting: (systemId: string, kind: string) => string;
+    setting: (systemId: string, kind: string, settingId?: string) => string;
     /** The name the lists show for a document with none of its own. */
     title: (entry: DocumentIndexEntry) => string;
 }
@@ -115,13 +115,13 @@ export function buildQueryIndex(
     const settings = new Map<string, string>();
     const pairs = new Map<string, Pick<Labels, 'kind' | 'system' | 'setting'>>();
     for (const entry of entries) {
-        const pairKey = `${entry.systemId}\u0000${entry.kind}`;
+        const pairKey = `${entry.systemId}\u0000${entry.kind}\u0000${entry.settingId ?? ''}`;
         let pair = pairs.get(pairKey);
         if (!pair) {
             pair = {
                 kind: labeler.kind(entry.systemId, entry.kind),
                 system: labeler.system(entry.systemId),
-                setting: labeler.setting(entry.systemId, entry.kind),
+                setting: labeler.setting(entry.systemId, entry.kind, entry.settingId),
             };
             pairs.set(pairKey, pair);
         }
