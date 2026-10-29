@@ -1,4 +1,5 @@
 module: 'Hunter: the Reckoning 5e'
+badge: HtR
 newHunter: New Hunter
 views:
     sheet: Full sheet

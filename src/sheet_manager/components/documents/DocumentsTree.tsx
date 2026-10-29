@@ -6,7 +6,7 @@ import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
 
 import { highlightSegments } from '../../features/documents/highlight';
-import { documentBadge } from '../../features/documents/labeler';
+import { type DocumentBadge, documentBadge } from '../../features/documents/labeler';
 import type { DocumentsNode } from '../../features/documents/rows';
 import { InlineName } from './InlineName';
 
@@ -43,8 +43,8 @@ export interface DocumentsTreeProps {
 
 const iconClass = 'h-4 w-4 shrink-0 text-textSecondary';
 
-/** The game a document belongs to, short; its full name is the tooltip and what readers hear. */
-function SystemBadge({ badge, name }: { badge: string; name: string }) {
+/** The setting a document belongs to, short; its full name is the tooltip and what readers hear. */
+function SystemBadge({ badge, name }: DocumentBadge) {
     return (
         <span
             title={name}
@@ -80,10 +80,25 @@ export function DocumentsTree({
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
     // A badge every shown row shares says nothing (one game, or a system filter on).
+    const byTarget = new Map<string, DocumentBadge>();
+    const badgeFor = (systemId: string, kind: string, settingId?: string) => {
+        const target = `${systemId}\u0000${kind}\u0000${settingId ?? ''}`;
+        let badge = byTarget.get(target);
+        if (!badge) {
+            badge = documentBadge(systemId, kind, settingId);
+            byTarget.set(target, badge);
+        }
+        return badge;
+    };
     const badges = new Map(
         rows.flatMap(({ key, node }) =>
             node.type === 'document'
-                ? [[key, documentBadge(node.entry.systemId, node.entry.kind)] as const]
+                ? [
+                      [
+                          key,
+                          badgeFor(node.entry.systemId, node.entry.kind, node.entry.settingId),
+                      ] as const,
+                  ]
                 : []
         )
     );

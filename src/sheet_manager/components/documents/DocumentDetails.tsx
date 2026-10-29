@@ -230,7 +230,7 @@ export function DocumentDetails({
                 />
                 <Field
                     name={translate(labels.details.setting)}
-                    value={kindSettingLabel(entry.systemId, entry.kind)}
+                    value={kindSettingLabel(entry.systemId, entry.kind, entry.settingId)}
                 />
                 <Field name={translate(labels.details.place)} value={place} />
                 <Field

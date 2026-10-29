@@ -1,4 +1,5 @@
 module: 'Vampire: the Masquerade 5e'
+badge: VtM
 views:
     sheet: Full sheet
     brief: Brief
