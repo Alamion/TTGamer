@@ -151,10 +151,12 @@ section, outside the fold button; folding still works by click and keyboard.
   sits on is.
 - **FR-003**: A section and a group inside it MUST NOT both link the same docs part.
 - **FR-004**: Element types the review marks as needing help MUST show a "?" beside the label of
-  every such element on every page, shipped or the user's, leading to the site guide (not rules
-  pages); a field's "Hide help" setting in the editor removes it for that field.
-- **FR-011**: A field MAY carry its own "?" to a rules or guide part, set in the template like a
-  section's and editable in the template editor; the review decides which shipped fields get one.
+  every such element on every full page, shipped or the user's, leading to the site guide (not rules
+  pages); a field's "Hide help" setting in the editor removes it for that field. Briefs show only a
+  field's own explicit docs link, never element help.
+- **FR-011**: A field, and a document-bound element (a primitive such as Hunger or Desperation), MAY
+  carry its own "?" to a rules or guide part, set in the template like a section's and editable in
+  the template editor; the review decides which shipped ones get one.
 - **FR-005**: Rules help MUST lead to rules pages of the page's own system; how-to-use help MUST
   lead to the site guide.
 - **FR-006**: Every link target MUST exist in English and Russian with the same anchor (as spec 045
@@ -163,12 +165,13 @@ section, outside the fold button; folding still works by click and keyboard.
   site's own words.
 - **FR-008**: A section's "?" MUST be a link outside its fold button, named "Documentation for
   <section>", reachable by keyboard; folding keeps working.
-- **FR-009**: The review MUST be a table of every shipped section, group, and element type —
-  document, page, where, what the reader sees, the link today, the link it should have, and whether
-  its target must be written — kept in `review.md` beside this spec and agreed with the maintainer
-  row by row (through a published page built from it) before pages change.
-- **FR-010**: A check MUST fail when a shipped section and a group inside it link the same place, or
-  when a shipped link's target lacks either language.
+- **FR-009**: The review MUST be a table of every shipped section, group, and element type, and of
+  every field or bound element a newcomer would not understand (not all ~1,000) — document, page,
+  where, what the reader sees, the link today, the link it should have, the first sentence of its
+  target, and whether its target must be written — kept in `review.md` beside this spec and agreed
+  with the maintainer row by row (through a published page built from it) before pages change.
+- **FR-010**: A check MUST fail when a shipped section and a group or field inside it link the same
+  place.
 
 ### Key Entities
 
@@ -184,8 +187,8 @@ section, outside the fold button; folding still works by click and keyboard.
 - **SC-003**: Every "?" card's first paragraph names the thing it sits on (checked row by row in the
   manual walk).
 - **SC-004**: A screen reader finds each section's "?" as a link outside the fold button.
-- **SC-005**: Opening a page is no slower than before (the sheet timing within noise), since help
-  for elements adds links to every page.
+- **SC-005**: Opening a sheet takes at most 10 % longer than on `master`, both measured on the same
+  machine in one run, and the main chunk grows by no more than 2 KB compressed.
 
 ## Assumptions
 

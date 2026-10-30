@@ -10,11 +10,13 @@ the review is approved (T005).
 
 - [ ] T001 Dump the inventory of every shipped template (system, template, page kind, node, type,
       label, today's `docsPath`) and the docs tree (pages and anchors, en and ru) into the
-      scratchpad, as the input of the review
+      git-ignored `context/047/` (a script that can regenerate it), as the input of the review
 - [ ] T002 Draft the review by system with subagents (design D1): Star Wars (5 documents), WoD 2e,
       V5 core/Storyteller/group, Hunter and Vampire, General note and the field types; each row: id,
       document, page, where, what a newcomer sees, link today, link it should have (rules page or
-      guide, with anchor), target exists / must be written, and a one-line reason
+      guide, with anchor), the first sentence of that target (quoted from our docs), target exists /
+      must be written, and a one-line reason; rows cover sections, groups, element types, and only
+      the fields and bound elements (primitives) a newcomer would not understand
 - [ ] T003 Merge the drafts into `specs/047-sheet-help-links/review.md` (grouped by document and
       page), check each proposed target against the docs, remove duplicates, and list the targets to
       write
@@ -40,21 +42,25 @@ markdown field show a "?" beside their labels; "Hide help" removes the element's
       mark; an element type in `ELEMENT_HELP` shows its mark; `hideHelp` removes only the element
       help; every control of `declarativeFieldRegistry` draws the mark beside its label (FR-004,
       FR-011)
-- [ ] T009 [US4] `types/template.ts`: `docsPath` and `hideHelp` on field nodes and their schemas;
-      `features/sheet/declarative/elementHelp.ts`: `ELEMENT_HELP` (empty but for `markdown`),
-      `FieldHelpContext`, `FieldHelpMark` (design D4, D5)
+- [ ] T009 [US4] `types/template.ts`: `docsPath` and `hideHelp` on field nodes (`fieldBaseShape`)
+      and on `PrimitiveNodeSchema`; `features/sheet/declarative/elementHelp.ts`: `ELEMENT_HELP`
+      (empty but for `markdown`), `elementHelpFor(node)` (by field type or the control a primitive
+      draws as; full pages only), `FieldHelpContext`, `FieldHelpMark` named "Documentation for
+      <label>", placed after `TermLabel` (design D4, D5)
 - [ ] T010 [US4] Resolve help in the field cell (`DeclarativeSheetView.tsx` / `primitives.tsx`) and
       draw `FieldHelpMark` beside the label in each control (`fieldControls.tsx`,
       `MarkdownFieldControl.tsx`, `MentionsFieldControl.tsx`, `TrackerFieldControl.tsx`) and the
       labelled primitives
-- [ ] T011 [US4] Editor: `docsPath` for fields and `hideHelp` (shown for types with element help) in
-      `features/template-editor/settings/registry.ts`, labels in
-      `translations/source/{en,ru}/ui/     sheet/templates.yaml`; `shipped-parity.test.tsx` passes
+- [ ] T011 [US4] Editor: `docsPath` for fields and primitives and `hideHelp` (shown for types with
+      element help) in `features/template-editor/settings/registry.ts`, labels in
+      `translations/source/{en,ru}/ui/sheet/templates.yaml`; `shipped-parity.test.tsx` passes
       (design D6)
 - [ ] T012 [US4] Widen `tests/docs/docs-links-anchors.test.ts` to field `docsPath` and
       `ELEMENT_HELP` targets; storybook: a field with a docs link and a markdown field with its help
       (constitution VI)
-- [ ] T013 [US4] Run `yarn verify` (schema change) and the sheet timing (SC-005); commit the story
+- [ ] T013 [US4] Run `yarn verify:full` (shared component, constitution VII); measure the main and
+      sheet chunks and the sheet timing against `master` in one run (SC-005), record in design.md;
+      commit the story
 
 ## User Story 3 - The docs the links need exist (P2)
 
@@ -77,9 +83,10 @@ and opens with a definition.
 
 - [ ] T018 [US1] Write `tests/docs/help-links-review.test.ts` first: no shipped section with a group
       or field inside linking the same place; every shipped section, group, and field link equals
-      its `review.md` row (FR-001, FR-003, FR-010, SC-001, SC-002)
+      its `review.md` row; a rules "?" of a shipped page leads to its own system's docs root or
+      `/docs/guide/`; every target has en and ru (FR-001, FR-003, FR-005, FR-010, SC-001, SC-002)
 - [ ] T019 [US1] Apply the agreed links to the Star Wars templates
-      (`systems/star-wars-wod/     templates/*.ts`) and the WoD 2e parts
+      (`systems/star-wars-wod/templates/*.ts`) and the WoD 2e parts
       (`systems/wod2e/ruleset/templateParts.ts`), including the "Experience and notes" duplicate
 - [ ] T020 [US1] Apply them to V5: `systems/v5/ruleset/templateParts.ts` (`V5_DOCS`), `core/`,
       `modules/hunter/templates/sheet.ts` (`HUNTER_DOCS`), `modules/vampire/templates/`
@@ -93,7 +100,8 @@ and opens with a definition.
       in `ELEMENT_HELP`, a user template's field of that type shows it (FR-004, FR-005)
 - [ ] T023 [US2] Fill `ELEMENT_HELP` from `review.md`; E2E in `docs-fragment.spec.ts`: a note's
       markdown "?" opens the notes guide card
-- [ ] T024 [US2] Run `yarn verify` and the sheet timing; commit the story
+- [ ] T024 [US2] Run `yarn verify:full`, the sheet timing against `master`, and the chunk sizes
+      (SC-005); commit the story
 
 ## Finish
 
@@ -101,13 +109,16 @@ and opens with a definition.
       `docsPath`, `hideHelp`, `ELEMENT_HELP` as the one owner), the `sheet-templates` skill (field
       help settings), the template editor guide en + ru (`docs/guide/template-editor/elements.mdx`:
       a field's docs link, Hide help); `TODO.md` T-130 closed with a note; backlog entries for
-      findings of the review that are not one-line fixes
+      findings of the review that are not one-line fixes; `AGENTS.md` §6 says app help leads to the
+      guide and a rules term's "?" on a sheet to its own system's rules; a historical banner on spec
+      045 (the "?" no longer sits in the fold button) and the `docusaurus-integration` skill's "Docs
+      Fragments in the App" updated
 - [ ] T026 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
       design.md
 
 ## Coverage
 
 FR-001 T018 T019 T020 · FR-002 T014–T016, manual walk · FR-003 T018 T019 · FR-004 T008 T010 T022
-T023 · FR-005 T022 (guide only), D5 · FR-006 T012 · FR-007 T014–T016 · FR-008 T006 T007 · FR-009
+T023 · FR-005 T018 T022, D5 · FR-006 T012 T018 · FR-007 T014–T016 · FR-008 T006 T007 · FR-009
 T001–T005 · FR-010 T018 · FR-011 T008–T011 · SC-001 T018 · SC-002 T018 · SC-003 manual walk · SC-004
 T006 T007 · SC-005 T013 T024

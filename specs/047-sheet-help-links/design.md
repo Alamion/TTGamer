@@ -45,18 +45,25 @@ templates changes before it.
   `stopPropagation` inside the button (the cause of F-011: interactive content inside a button is
   hidden from the accessibility tree).
 - **D4 — A field's help is one mark beside its label**: `docsPath?: string` and `hideHelp?: true` on
-  every field node (`TemplateFieldBase` in `types/template.ts` and its schema). The field's cell
-  (where `templateFieldControl` is chosen) resolves the field's help: its own `docsPath`, else its
-  type's help (D5) unless `hideHelp`. It passes the help to the control through `FieldHelpContext`,
-  and a shared `FieldHelpMark` (a `DocsPreviewLink` named after the field's label) is drawn by each
-  control beside its label. Every control and the bound primitives with a label gain the mark.
-  _Why_: one resolution point; controls only draw. _Rejected_: a wrapper drawing "?" outside the
-  control (it cannot sit beside a label that the control lays out); a per-control resolution (twelve
-  copies).
-- **D5 — Element help is a map from field type to a guide part**: `ELEMENT_HELP` in
+  every field node (`fieldBaseShape` in `types/template.ts`) **and on `PrimitiveNodeSchema`**: the
+  rules terms (Hunger, Desperation, Blood Potency, Humanity, Danger) are document-bound primitives,
+  not fields. The mark goes after the existing term hint (`TermLabel`, spec 009), which keeps
+  working. Its accessible name is "Documentation for <label>", or the binding key's name when the
+  label is hidden (`hideLabel`). The field's cell (where `templateFieldControl` is chosen) resolves
+  the field's help: its own `docsPath`, else its type's help (D5) unless `hideHelp`. It passes the
+  help to the control through `FieldHelpContext`, and a shared `FieldHelpMark` (a `DocsPreviewLink`
+  named after the field's label) is drawn by each control beside its label. Every control and the
+  bound primitives with a label gain the mark. _Why_: one resolution point; controls only draw.
+  _Rejected_: a wrapper drawing "?" outside the control (it cannot sit beside a label that the
+  control lays out); a per-control resolution (twelve copies).
+- **D5 — Element help is a map from how an element draws to a guide part**: `ELEMENT_HELP` in
   `features/sheet/declarative/elementHelp.ts` (`markdown → /docs/guide/notes#syntax`, and the rest
-  as the review decides). Code, not template data: the user's pages get it with no stored change
-  (spec assumption), and the map is the one owner. The help never leads to a rules page (FR-005).
+  as the review decides), read through `elementHelpFor(node)`, which looks at the field type and,
+  for a bound primitive, at the control it draws as (shipped trackers are primitives drawn as
+  trackers; no shipped field has type `tracker`). Element help shows on full pages only; a brief
+  shows a node's own `docsPath` and nothing else. Code, not template data: the user's pages get it
+  with no stored change (spec assumption), and the map is the one owner. The help never leads to a
+  rules page (FR-005).
 - **D6 — Editor settings**: `docsPath` widens from containers to fields in the settings registry
   (`features/template-editor/settings/registry.ts`), and `hideHelp` is a new toggle shown for field
   types that have element help. `tests/sheet_manager/shipped-parity.test.tsx` keeps both honest.
@@ -91,7 +98,9 @@ templates changes before it.
   the same component with the same name pattern.
 - VII (performance): element help adds a mark to many fields. `DocsPreviewLink` mounts a Popover
   root and a trigger only; the content loads on open. The sheet timing
-  (`tests-e2e/timings/ sheet.spec.ts`) is rerun against its last value (SC-005).
+  (`tests-e2e/timings/sheet.spec.ts`) is rerun against `master` in the same run, and the main and
+  sheet chunks are measured before and after (SC-005; spec 045 once pulled a card into the main
+  chunk). Constitution VII requires `yarn verify:full` for a shared component.
 - VIII (third-party material): rules parts are paraphrased; no tables or passages copied.
 - II (contracts): new template fields are optional and validated; the editor shows a setting for
   each (shipped parity).
@@ -114,8 +123,9 @@ templates changes before it.
 
 ## Manual walk
 
-1. Hunter sheet: every section and field the review marked has "?"; each card starts by saying what
-   the thing is → as in `review.md`.
+1. One full page per system (Star Wars character, WoD 2e, V5 core, Hunter, Vampire): every section,
+   field, and bound element the review marked has "?"; each card starts by saying what the thing is
+   → as in the review's "first sentence" column.
 2. Star Wars "Experience and notes": one "?" only.
 3. A note: the markdown field's "?" opens "What a note understands".
 4. Screen reader (or the accessibility tree): each "?" is a link outside the fold button; folding by
