@@ -105,7 +105,7 @@ and opens with a definition.
 
 ## Finish
 
-- [ ] T025 Update `src/sheet_manager/AGENTS.md` (help marks: sections outside the button, field
+- [x] T025 Update `src/sheet_manager/AGENTS.md` (help marks: sections outside the button, field
       `docsPath`, `hideHelp`, `ELEMENT_HELP` as the one owner), the `sheet-templates` skill (field
       help settings), the template editor guide en + ru (`docs/guide/template-editor/elements.mdx`:
       a field's docs link, Hide help); `TODO.md` T-130 closed with a note; backlog entries for

@@ -15,6 +15,16 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
 | A save warning  | a `SaveCheck` in `session/saveChecks.ts` (title, `lines`)                                              | `save-checks.test.ts`                                        |
 | A page edit     | a pure function in `model/`; an `Operation` in `operations/` when it selects, announces, or is refused | unit tests without rendering                                 |
 
+## Help settings
+
+Under **Visibility and help**, `settings/registry.ts` exposes **Documentation link** (`docsPath`)
+for containers, fields, and primitives. **Hide help** (`hideHelp`) is offered for fields and
+primitives when `elementHelpFor(node)` returns a default. Both settings carry across supported
+kind/source switches and participate in shared editing. Resolution and precedence are owned by
+`references/node-tree.md`, "Help links"; `tests/sheet_manager/shipped-parity.test.tsx` guards editor
+coverage. The reader-facing explanation lives in
+`docs/guide/template-editor/elements.mdx#documentation-link` and its Russian mirror.
+
 ## Layout
 
 - **Session** (`session/store.ts`): one Zustand store per dialog (`createEditorSession`, never

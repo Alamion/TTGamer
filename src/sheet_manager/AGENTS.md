@@ -501,6 +501,13 @@ duplicate template facts here. Invariants that must never be broken:
 - `TraitRowWithInput` is controlled by `specializationText`; parent/store changes must appear
   immediately.
 - Icon-only actions require accessible labels.
+- Sheet help marks use `DocsPreviewLink`, named "Documentation for <title or label>". In
+  `SectionCard` (including dense brief blocks) and `CollapsibleBlock`, the mark is a sibling of the
+  fold button; opening help never folds the section. Field marks follow the book-term hint beside
+  the label. Template help settings (`docsPath`, `hideHelp`) and their resolution have one owner:
+  the `sheet-templates` skill's `references/node-tree.md`, "Help links"; `ELEMENT_HELP` is the sole
+  map of automatic element-help destinations. Fragment loading belongs to the
+  `docusaurus-integration` skill, "Docs Fragments in the App".
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.
 - Character pages (every shipped character and Storyteller character, not the V5 group's emblem)
