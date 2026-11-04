@@ -187,3 +187,13 @@ English production JavaScript sizes, compressed with gzip level 9 and `mtime=0`:
 
 Main-chunk growth is **119 bytes**, below 2 KB; the three measured chunks together grew by 1,518
 gzip bytes. Both SC-005 limits pass.
+
+**SC-005 re-measured at HEAD (US1 and US2 included):** the raw JS and CSS the sheet downloads grew
+3,700,950 → 4,059,210 bytes, but only because the larger docs tree (191 pages against 171) moved
+Docusaurus's `common` chunk threshold, so modules shuffled between `common` and the sheet-route
+chunk; no help-link code moved into the first load. The gzip level 9 total of the chunks loaded on
+open is 826,278 (master) → 820,355 bytes, and the main chunk grew 288,644 → 289,985 (+1,341, below 2
+KB). Sheet opening, best of five interleaved paired runs: master 107–113 ms, HEAD 112–127 ms (median
+111 → 116 ms, +4.5 %), within the 10 % limit. The sheet now draws about 74 help marks (DOM nodes
+1,777 → 2,251); `DocsPreviewLink` mounts its popover only while open instead of one Radix popover
+root per mark.

@@ -9,8 +9,10 @@ import {
     createElement,
     isValidElement,
     type ReactNode,
+    type RefObject,
     useContext,
     useEffect,
+    useRef,
     useState,
 } from 'react';
 
@@ -141,22 +143,47 @@ export function DocsPreviewLink({
     size?: 'sm' | 'md';
 }) {
     const [href, setHref] = useState<string>();
+    const anchor = useRef<HTMLSpanElement>(null);
     const open = href !== undefined;
-    const link = (
-        <DocsHelpLink
-            docsPath={docsPath}
-            label={label}
-            size={size}
-            expanded={open}
-            onPlainClick={(next) => setHref(open ? undefined : next)}
-        />
-    );
-    const [path = '', anchor] = (href ?? '').split('#');
     return (
-        <Popover.Root open={open} onOpenChange={(next) => !next && setHref(undefined)}>
-            <Popover.Anchor asChild>
-                <span className="inline-flex shrink-0 align-middle">{link}</span>
-            </Popover.Anchor>
+        <>
+            <span ref={anchor} className="inline-flex shrink-0 align-middle">
+                <DocsHelpLink
+                    docsPath={docsPath}
+                    label={label}
+                    size={size}
+                    expanded={open}
+                    onPlainClick={(next) => setHref(open ? undefined : next)}
+                />
+            </span>
+            {open && (
+                <FragmentPopover
+                    anchor={anchor}
+                    href={href}
+                    title={title}
+                    onClose={() => setHref(undefined)}
+                />
+            )}
+        </>
+    );
+}
+
+/** Mounted only while open: a sheet holds hundreds of marks, and each popover root costs a render. */
+function FragmentPopover({
+    anchor,
+    href,
+    title,
+    onClose,
+}: {
+    anchor: RefObject<HTMLSpanElement | null>;
+    href: string;
+    title: string;
+    onClose: () => void;
+}) {
+    const [path = '', fragment] = href.split('#');
+    return (
+        <Popover.Root open onOpenChange={(next) => !next && onClose()}>
+            <Popover.Anchor virtualRef={anchor} />
             <Popover.Portal container={modalRoot()}>
                 <Popover.Content
                     data-docs-card=""
@@ -169,7 +196,7 @@ export function DocsPreviewLink({
                     className="z-[1000] flex max-h-[min(480px,var(--radix-popover-content-available-height))] w-[420px] max-w-[calc(100vw-1rem)] flex-col rounded-md border border-border bg-bgSurface shadow-lg"
                 >
                     <div className="min-h-0 flex-1 overflow-auto overscroll-contain p-3">
-                        {open && <FragmentContent path={path} anchor={anchor || undefined} />}
+                        <FragmentContent path={path} anchor={fragment || undefined} />
                     </div>
                     <div className="flex justify-end border-t border-border p-2">
                         <a
