@@ -13,7 +13,6 @@
      "type": "section",
      "title": "Base",
      "labelMessage": "ttgamer.ui.sheet.base.title",
-     "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
      "columns": 2,
      "columnWidths": [
       1,
@@ -66,6 +65,7 @@
          "id": "field-concept",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#concept",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -75,6 +75,7 @@
          "id": "field-species",
          "label": "Species",
          "labelMessage": "ttgamer.ui.sheet.base.fields.species.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/species",
          "required": false,
          "valueKey": "species",
          "type": "text",
@@ -93,6 +94,7 @@
          "id": "field-nature",
          "label": "Nature",
          "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#nature--demeanor",
          "required": false,
          "valueKey": "nature",
          "type": "text",
@@ -120,6 +122,7 @@
          "id": "field-demeanor",
          "label": "Demeanor",
          "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#demeanor",
          "required": false,
          "valueKey": "demeanor",
          "type": "text",
@@ -239,7 +242,6 @@
      "type": "section",
      "title": "Condition",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
-     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
      "columns": 2,
      "children": [
       {
@@ -248,7 +250,6 @@
        "title": "Health and Willpower",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.healthAndWillpower",
        "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
        "collapsible": false,
        "children": [
         {
@@ -257,6 +258,7 @@
          "bindingKey": "track:health",
          "label": "Health",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+         "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
          "tracker": {
           "total": true
          }
@@ -265,6 +267,7 @@
          "id": "derived-initiative",
          "label": "Initiative (Std)",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
+         "docsPath": "/docs/star-wars-wod-2e/combat/combat-flow#1-initiative",
          "required": false,
          "type": "formula",
          "formula": "wits + alertness"
@@ -275,6 +278,7 @@
          "bindingKey": "resource:willpower",
          "label": "Willpower",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
          "minFrom": "min(passion + self-control, 10)"
         },
         {
@@ -283,6 +287,7 @@
          "bindingKey": "resource:force-points",
          "label": "Force Points",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
          "poolTracker": {
           "display": "row",
           "legend": false,
@@ -296,6 +301,7 @@
          "bindingKey": "resource:dark-side-resistance",
          "label": "Dark Side Resistance",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
+         "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance",
          "minFrom": "max(0, min(5 + conscience - passion, 10))"
         }
        ]
@@ -495,6 +501,7 @@
        "type": "group",
        "title": "Talents",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.talents",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#talents",
        "collapsible": false,
        "children": [
         {
@@ -622,6 +629,7 @@
        "type": "group",
        "title": "Skills",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#skills",
        "collapsible": false,
        "children": [
         {
@@ -749,6 +757,7 @@
        "type": "group",
        "title": "Knowledges",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#knowledges",
        "collapsible": false,
        "children": [
         {
@@ -972,7 +981,7 @@
        "title": "Force-derived stats",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.forceDerivedStats",
        "column": 3,
-       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
+       "docsPath": "/docs/star-wars-wod-2e/character/force#force-derived-stats",
        "collapsible": false,
        "children": [
         {
@@ -1010,7 +1019,6 @@
      "type": "section",
      "title": "Advantages",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages",
-     "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
      "columns": 3,
      "children": [
       {
@@ -1018,6 +1026,7 @@
        "type": "group",
        "title": "Backgrounds",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
+       "docsPath": "/docs/star-wars-wod-2e/character/backgrounds",
        "collapsible": false,
        "children": [
         {
@@ -1035,6 +1044,7 @@
        "type": "group",
        "title": "Merits",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#merits",
        "collapsible": false,
        "children": [
         {
@@ -1052,6 +1062,7 @@
        "type": "group",
        "title": "Flaws",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#flaws",
        "collapsible": false,
        "children": [
         {
@@ -1071,7 +1082,6 @@
      "type": "section",
      "title": "Equipment",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment",
-     "docsPath": "/docs/star-wars-wod-2e/equipment",
      "columns": 2,
      "children": [
       {
@@ -1112,7 +1122,6 @@
        "title": "Inventory",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
        "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
        "collapsible": true,
        "children": [
         {
@@ -1145,7 +1154,6 @@
      "type": "section",
      "title": "Experience and Notes",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes",
-     "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
      "columns": 2,
      "children": [
       {
@@ -1224,7 +1232,6 @@
      "type": "section",
      "title": "Base",
      "labelMessage": "ttgamer.ui.sheet.base.title",
-     "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
      "columns": 2,
      "columnWidths": [
       1,
@@ -1277,6 +1284,7 @@
          "id": "field-concept",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#concept",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -1286,6 +1294,7 @@
          "id": "field-species",
          "label": "Species",
          "labelMessage": "ttgamer.ui.sheet.base.fields.species.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#droid-characters",
          "required": false,
          "valueKey": "species",
          "type": "text",
@@ -1304,6 +1313,7 @@
          "id": "field-nature",
          "label": "Nature",
          "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#nature--demeanor",
          "required": false,
          "valueKey": "nature",
          "type": "text",
@@ -1331,6 +1341,7 @@
          "id": "field-demeanor",
          "label": "Demeanor",
          "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#demeanor",
          "required": false,
          "valueKey": "demeanor",
          "type": "text",
@@ -1450,7 +1461,6 @@
      "type": "section",
      "title": "Condition",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
-     "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
      "columns": 2,
      "children": [
       {
@@ -1459,7 +1469,6 @@
        "title": "Damage and Willpower",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.damageAndWillpower",
        "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
        "collapsible": false,
        "children": [
         {
@@ -1468,6 +1477,7 @@
          "bindingKey": "track:droid-damage",
          "label": "Damage",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
+         "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#droid-damage--recovery",
          "tracker": {
           "total": true
          }
@@ -1478,6 +1488,7 @@
          "bindingKey": "resource:willpower",
          "label": "Willpower",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
          "minFrom": "min(passion + self-control, 10)"
         }
        ]
@@ -1677,6 +1688,7 @@
        "type": "group",
        "title": "Talents",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.talents",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#talents",
        "collapsible": false,
        "children": [
         {
@@ -1801,6 +1813,7 @@
          "id": "droid-free-talents",
          "label": "Free points",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints",
+         "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#free-ability-points",
          "required": false,
          "valueKey": "droid-free-talents",
          "type": "number",
@@ -1813,6 +1826,7 @@
        "type": "group",
        "title": "Skills",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#skills",
        "collapsible": false,
        "children": [
         {
@@ -1937,6 +1951,7 @@
          "id": "droid-free-skills",
          "label": "Free points",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints",
+         "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#free-ability-points",
          "required": false,
          "valueKey": "droid-free-skills",
          "type": "number",
@@ -1949,6 +1964,7 @@
        "type": "group",
        "title": "Knowledges",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#knowledges",
        "collapsible": false,
        "children": [
         {
@@ -2073,6 +2089,7 @@
          "id": "droid-free-knowledges",
          "label": "Free points",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints",
+         "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#free-ability-points",
          "required": false,
          "valueKey": "droid-free-knowledges",
          "type": "number",
@@ -2087,7 +2104,6 @@
      "type": "section",
      "title": "Advantages",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages",
-     "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
      "columns": 3,
      "children": [
       {
@@ -2095,6 +2111,7 @@
        "type": "group",
        "title": "Backgrounds",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
+       "docsPath": "/docs/star-wars-wod-2e/character/backgrounds#backgrounds",
        "collapsible": false,
        "children": [
         {
@@ -2112,6 +2129,7 @@
        "type": "group",
        "title": "Merits",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#merits",
        "collapsible": false,
        "children": [
         {
@@ -2129,6 +2147,7 @@
        "type": "group",
        "title": "Flaws",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#flaws",
        "collapsible": false,
        "children": [
         {
@@ -2148,7 +2167,6 @@
      "type": "section",
      "title": "Equipment",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.equipment",
-     "docsPath": "/docs/star-wars-wod-2e/equipment",
      "columns": 2,
      "children": [
       {
@@ -2189,7 +2207,7 @@
        "title": "Built-in equipment",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment",
        "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+       "docsPath": "/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment",
        "collapsible": true,
        "children": [
         {
@@ -2222,7 +2240,6 @@
      "type": "section",
      "title": "Experience and Notes",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAndNotes",
-     "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
      "columns": 2,
      "children": [
       {
@@ -2231,7 +2248,7 @@
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience",
        "column": 1,
-       "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+       "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement#rewards--advancement",
        "collapsible": false,
        "children": [
         {
@@ -2319,6 +2336,7 @@
        "id": "field-concept",
        "label": "Concept",
        "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label",
+       "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#concept",
        "required": false,
        "valueKey": "concept",
        "type": "text",
@@ -2328,6 +2346,7 @@
        "id": "field-species",
        "label": "Species",
        "labelMessage": "ttgamer.ui.sheet.base.fields.species.label",
+       "docsPath": "/docs/star-wars-wod-2e/character/species",
        "required": false,
        "valueKey": "species",
        "type": "text",
@@ -2340,6 +2359,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
+     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -2458,6 +2478,7 @@
      "type": "brief",
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -2834,6 +2855,7 @@
        "id": "trait-conscience",
        "label": "Conscience",
        "labelMessage": "catalog:virtues/conscience",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#conscience",
        "required": false,
        "valueKey": "conscience",
        "type": "rating",
@@ -2845,6 +2867,7 @@
        "id": "trait-passion",
        "label": "Passion",
        "labelMessage": "catalog:virtues/passion",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#passion",
        "required": false,
        "valueKey": "passion",
        "type": "rating",
@@ -2856,6 +2879,7 @@
        "id": "trait-self-control",
        "label": "Self Control",
        "labelMessage": "catalog:virtues/self-control",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#self-control",
        "required": false,
        "valueKey": "self-control",
        "type": "rating",
@@ -2869,6 +2893,7 @@
        "bindingKey": "resource:willpower",
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
        "fullLabel": true
       },
       {
@@ -2877,6 +2902,7 @@
        "bindingKey": "resource:force-points",
        "label": "Force Points",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
        "fullLabel": true
       },
       {
@@ -2884,12 +2910,14 @@
        "type": "primitive",
        "bindingKey": "resource:dark-side-resistance",
        "label": "Dark Side Resistance",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
+       "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance"
       },
       {
        "id": "derived-initiative",
        "label": "Initiative (Std)",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
+       "docsPath": "/docs/star-wars-wod-2e/combat/combat-flow#1-initiative",
        "required": false,
        "type": "formula",
        "formula": "wits + alertness"
@@ -2898,6 +2926,7 @@
        "id": "derived-initiative-saber",
        "label": "Initiative (Saber)",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber",
+       "docsPath": "/docs/star-wars-wod-2e/character/force#force-derived-stats",
        "required": false,
        "type": "formula",
        "formula": "wits + alertness + control"
@@ -2917,7 +2946,8 @@
        "type": "primitive",
        "bindingKey": "track:health",
        "label": "Health",
-       "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+       "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track"
       }
      ]
     },
@@ -2926,6 +2956,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+     "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -2992,6 +3023,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
+     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -3110,6 +3142,7 @@
      "type": "brief",
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -3555,6 +3588,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+     "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -3582,7 +3616,6 @@
      "type": "section",
      "title": "Identity",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.identity",
-     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-1-species-type-scale-size",
      "children": [
       {
        "id": "creature-identity",
@@ -3705,7 +3738,8 @@
          "type": "primitive",
          "bindingKey": "field:scale",
          "label": "Scale",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.scale"
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.scale",
+         "docsPath": "/docs/star-wars-wod-2e/combat/combat-scales#combat-scales"
         },
         {
          "id": "field-size",
@@ -3729,6 +3763,7 @@
          "id": "threat-tier",
          "label": "Threat tier",
          "labelMessage": "ttgamer.ui.sheet.templates.entities.threatTier",
+         "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
          "required": false,
          "valueKey": "threat-tier",
          "type": "select",
@@ -3764,7 +3799,6 @@
      "type": "section",
      "title": "Condition",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
-     "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
      "children": [
       {
        "id": "creature-resolve",
@@ -3779,6 +3813,7 @@
          "bindingKey": "track:members-health",
          "label": "Health",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+         "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
          "cohort": {
           "maxMembers": 24
          }
@@ -3788,7 +3823,8 @@
          "type": "primitive",
          "bindingKey": "resource:willpower",
          "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower"
         },
         {
          "id": "soak-all",
@@ -3799,6 +3835,7 @@
           "equals": "fodder",
           "not": true
          },
+         "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#step-2-soak",
          "required": false,
          "type": "formula",
          "formula": "stamina + armor-armor-rating"
@@ -3811,6 +3848,7 @@
           "coordinate": "threat-tier",
           "equals": "fodder"
          },
+         "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#step-2-soak",
          "required": false,
          "type": "formula",
          "formula": "stamina + armor-armor-rating"
@@ -3918,7 +3956,6 @@
      "type": "section",
      "title": "Abilities, Merits & Flaws",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.abilitiesMeritsFlaws",
-     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-5-abilities",
      "columns": 3,
      "children": [
       {
@@ -3944,7 +3981,7 @@
        "type": "group",
        "title": "Merits",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
-       "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-7-merits--flaws",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#merits",
        "collapsible": false,
        "children": [
         {
@@ -3962,6 +3999,7 @@
        "type": "group",
        "title": "Flaws",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+       "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws#flaws",
        "collapsible": false,
        "children": [
         {
@@ -3981,7 +4019,6 @@
      "type": "section",
      "title": "Combat",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.combat",
-     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#step-6-combat",
      "columns": 2,
      "children": [
       {
@@ -3990,6 +4027,7 @@
        "title": "Armor",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.armor",
        "column": 1,
+       "docsPath": "/docs/star-wars-wod-2e/equipment#armor",
        "collapsible": false,
        "columns": 3,
        "children": [
@@ -4028,7 +4066,7 @@
        "title": "Attacks",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.attacks",
        "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/combat/combat-scales",
+       "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#natural-attacks",
        "collapsible": false,
        "children": [
         {
@@ -4048,7 +4086,6 @@
      "type": "section",
      "title": "Details",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
-     "docsPath": "/docs/star-wars-wod-2e/creatures/bestiary",
      "defaultCollapsed": true,
      "children": [
       {
@@ -4283,6 +4320,7 @@
      "type": "brief",
      "title": "Attacks",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attacks",
+     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#natural-attacks",
      "collapsible": false,
      "children": [
       {
@@ -4331,7 +4369,6 @@
      "type": "section",
      "title": "Identification",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.identification",
-     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#vehicle-sheet",
      "children": [
       {
        "id": "vehicle-identity",
@@ -4463,7 +4500,8 @@
          "type": "primitive",
          "bindingKey": "field:scale",
          "label": "Scale",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.scale"
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.scale",
+         "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#scale"
         }
        ]
       }
@@ -4474,7 +4512,7 @@
      "type": "section",
      "title": "Crew & capacity",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.crewCapacity",
-     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#vehicle-sheet",
+     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#crew-and-capacity",
      "children": [
       {
        "id": "vehicle-capacity",
@@ -4603,6 +4641,7 @@
          "id": "field-durability-reroll",
          "label": "Reroll 10s on Durability",
          "labelMessage": "ttgamer.ui.sheet.templates.entities.durabilityReroll",
+         "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#durability-rerolls",
          "required": false,
          "valueKey": "durability-reroll",
          "type": "toggle"
@@ -4662,7 +4701,7 @@
        "title": "System slots",
        "labelMessage": "ttgamer.ui.sheet.templates.entities.systemSlots",
        "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair#vehicle-damage-track",
+       "docsPath": "/docs/guide/sheet#system-slots",
        "collapsible": false,
        "children": [
         {
@@ -4697,6 +4736,7 @@
        "title": "Configuration",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.configuration",
        "column": 2,
+       "docsPath": "/docs/guide/sheet#vehicle-configuration",
        "collapsible": true,
        "defaultCollapsed": true,
        "children": [
@@ -4761,7 +4801,6 @@
      "type": "section",
      "title": "Combat",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.combat",
-     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#weapon-systems",
      "columns": 2,
      "children": [
       {
@@ -4904,7 +4943,6 @@
      "type": "section",
      "title": "Details",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.details",
-     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/vehicles-list",
      "defaultCollapsed": true,
      "children": [
       {
@@ -4992,6 +5030,7 @@
      "type": "brief",
      "title": "Systems",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.systems",
+     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#vehicle-attributes",
      "collapsible": false,
      "columns": 2,
      "children": [
@@ -5049,6 +5088,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems#weapon-systems",
      "collapsible": false,
      "children": [
       {
@@ -5065,6 +5105,7 @@
      "type": "brief",
      "title": "Crew stations",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.crewStations",
+     "docsPath": "/docs/star-wars-wod-2e/vehicles-mechanisms/space-combat#dice-pool-by-crew-role",
      "collapsible": true,
      "columns": 2,
      "children": [
@@ -5146,6 +5187,7 @@
          "id": "field-concept",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.concept",
+         "docsPath": "/docs/star-wars-wod-2e/character/creation-steps/step-1-concept-species#concept",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -5182,7 +5224,7 @@
      "type": "section",
      "title": "Members",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
-     "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+     "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#fodder-members",
      "children": [
       {
        "id": "fodder-members",
@@ -5210,12 +5252,14 @@
          "type": "primitive",
          "bindingKey": "resource:willpower",
          "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower"
         },
         {
          "id": "field-quick-pool-specialty",
          "label": "Specialty pool",
          "labelMessage": "ttgamer.ui.sheet.templates.entities.specialtyPool",
+         "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#quick-npc-rolls",
          "required": false,
          "valueKey": "quick-pool-specialty",
          "type": "number",
@@ -5226,6 +5270,7 @@
          "id": "field-quick-pool-secondary",
          "label": "Secondary pool",
          "labelMessage": "ttgamer.ui.sheet.templates.entities.secondaryPool",
+         "docsPath": "/docs/star-wars-wod-2e/creatures/mechanics#quick-npc-rolls",
          "required": false,
          "valueKey": "quick-pool-secondary",
          "type": "number",
@@ -5376,7 +5421,7 @@
        "title": "Abilities",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
        "span": 3,
-       "docsPath": "/docs/star-wars-wod-2e/gm/building-encounters#npc-tiers",
+       "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
        "collapsible": false,
        "children": [
         {
@@ -5472,6 +5517,7 @@
          "id": "soak-bashing",
          "label": "Soak (bashing only)",
          "labelMessage": "ttgamer.ui.sheet.templates.entities.soakBashingOnly",
+         "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#step-2-soak",
          "required": false,
          "type": "formula",
          "formula": "stamina + armor-armor-rating"
@@ -5685,6 +5731,7 @@
      "type": "brief",
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -5703,6 +5750,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+     "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
      "collapsible": false,
      "children": [
       {
@@ -5751,6 +5799,7 @@
      "type": "section",
      "title": "Base",
      "labelMessage": "ttgamer.ui.sheet.base.title",
+     "docsPath": "/docs/wod-2e/character#identity",
      "columns": 2,
      "columnWidths": [
       1,
@@ -5803,6 +5852,7 @@
          "id": "field-concept",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label",
+         "docsPath": "/docs/wod-2e/character#concept",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -5821,6 +5871,7 @@
          "id": "field-nature",
          "label": "Nature",
          "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label",
+         "docsPath": "/docs/wod-2e/character#nature",
          "required": false,
          "valueKey": "nature",
          "type": "text",
@@ -5830,6 +5881,7 @@
          "id": "field-chronicle",
          "label": "Chronicle",
          "labelMessage": "ttgamer.ui.sheet.wod2e.identity.chronicle",
+         "docsPath": "/docs/wod-2e/character#chronicle",
          "required": false,
          "valueKey": "chronicle",
          "type": "text",
@@ -5839,6 +5891,7 @@
          "id": "field-demeanor",
          "label": "Demeanor",
          "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label",
+         "docsPath": "/docs/wod-2e/character#demeanor",
          "required": false,
          "valueKey": "demeanor",
          "type": "text",
@@ -5958,6 +6011,7 @@
      "type": "section",
      "title": "Condition",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
+     "docsPath": "/docs/wod-2e/character#condition",
      "columns": 2,
      "children": [
       {
@@ -5973,7 +6027,8 @@
          "type": "primitive",
          "bindingKey": "track:health",
          "label": "Health",
-         "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
+         "docsPath": "/docs/wod-2e/rules/condition#health"
         },
         {
          "id": "resource-willpower",
@@ -5981,6 +6036,7 @@
          "bindingKey": "resource:willpower",
          "label": "Willpower",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+         "docsPath": "/docs/wod-2e/rules/condition#willpower",
          "poolTracker": {
           "display": "row",
           "legend": false,
@@ -5991,6 +6047,7 @@
          "id": "derived-initiative",
          "label": "Initiative",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard",
+         "docsPath": "/docs/wod-2e/rules/condition#initiative",
          "required": false,
          "type": "formula",
          "formula": "wits + alertness"
@@ -6003,12 +6060,14 @@
        "title": "Virtues",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues",
        "column": 2,
+       "docsPath": "/docs/wod-2e/rules/condition#virtues",
        "collapsible": false,
        "children": [
         {
          "id": "trait-conscience",
          "label": "Conscience",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.conscience",
+         "docsPath": "/docs/wod-2e/rules/condition#conscience",
          "required": false,
          "valueKey": "conscience",
          "type": "rating",
@@ -6020,6 +6079,7 @@
          "id": "trait-self-control",
          "label": "Self-Control",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.selfControl",
+         "docsPath": "/docs/wod-2e/rules/condition#self-control",
          "required": false,
          "valueKey": "self-control",
          "type": "rating",
@@ -6031,6 +6091,7 @@
          "id": "trait-courage",
          "label": "Courage",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.courage",
+         "docsPath": "/docs/wod-2e/rules/condition#courage",
          "required": false,
          "valueKey": "courage",
          "type": "rating",
@@ -6047,6 +6108,7 @@
      "type": "section",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
+     "docsPath": "/docs/wod-2e/rules/traits#attributes",
      "columns": 3,
      "children": [
       {
@@ -6124,6 +6186,7 @@
          "id": "trait-appearance",
          "label": "Appearance",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.appearance",
+         "docsPath": "/docs/wod-2e/rules/traits#appearance",
          "required": false,
          "valueKey": "appearance",
          "type": "rating",
@@ -6182,6 +6245,7 @@
      "type": "section",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+     "docsPath": "/docs/wod-2e/rules/traits#abilities",
      "columns": 3,
      "children": [
       {
@@ -6189,6 +6253,7 @@
        "type": "group",
        "title": "Talents",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.talents",
+       "docsPath": "/docs/wod-2e/rules/traits#talents",
        "collapsible": false,
        "children": [
         {
@@ -6250,6 +6315,7 @@
          "id": "trait-expression",
          "label": "Expression",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.expression",
+         "docsPath": "/docs/wod-2e/rules/traits#expression",
          "required": false,
          "valueKey": "expression",
          "type": "rating",
@@ -6316,12 +6382,14 @@
        "type": "group",
        "title": "Skills",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+       "docsPath": "/docs/wod-2e/rules/traits#skills",
        "collapsible": false,
        "children": [
         {
          "id": "trait-animal-ken",
          "label": "Animal Ken",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.animalKen",
+         "docsPath": "/docs/wod-2e/rules/traits#animal-ken",
          "required": false,
          "valueKey": "animal-ken",
          "type": "rating",
@@ -6344,6 +6412,7 @@
          "id": "trait-drive",
          "label": "Drive",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.drive",
+         "docsPath": "/docs/wod-2e/rules/traits#drive",
          "required": false,
          "valueKey": "drive",
          "type": "rating",
@@ -6377,6 +6446,7 @@
          "id": "trait-melee",
          "label": "Melee",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.melee",
+         "docsPath": "/docs/wod-2e/rules/traits#melee",
          "required": false,
          "valueKey": "melee",
          "type": "rating",
@@ -6399,6 +6469,7 @@
          "id": "trait-security",
          "label": "Security",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.security",
+         "docsPath": "/docs/wod-2e/rules/traits#security",
          "required": false,
          "valueKey": "security",
          "type": "rating",
@@ -6443,6 +6514,7 @@
        "type": "group",
        "title": "Knowledges",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges",
+       "docsPath": "/docs/wod-2e/rules/traits#knowledges",
        "collapsible": false,
        "children": [
         {
@@ -6526,6 +6598,7 @@
          "id": "trait-occult",
          "label": "Occult",
          "labelMessage": "ttgamer.ui.sheet.wod2e.traits.occult",
+         "docsPath": "/docs/wod-2e/rules/traits#occult",
          "required": false,
          "valueKey": "occult",
          "type": "rating",
@@ -6572,6 +6645,7 @@
      "type": "section",
      "title": "Advantages",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages",
+     "docsPath": "/docs/wod-2e/character/advantages#advantages",
      "columns": 3,
      "children": [
       {
@@ -6579,6 +6653,7 @@
        "type": "group",
        "title": "Backgrounds",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds",
+       "docsPath": "/docs/wod-2e/character/advantages#backgrounds",
        "collapsible": false,
        "children": [
         {
@@ -6596,6 +6671,7 @@
        "type": "group",
        "title": "Merits",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits",
+       "docsPath": "/docs/wod-2e/character/advantages#merits",
        "collapsible": false,
        "children": [
         {
@@ -6613,6 +6689,7 @@
        "type": "group",
        "title": "Flaws",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws",
+       "docsPath": "/docs/wod-2e/character/advantages#flaws",
        "collapsible": false,
        "children": [
         {
@@ -6640,6 +6717,7 @@
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
        "column": 1,
+       "docsPath": "/docs/wod-2e/rules/equipment#weapons",
        "collapsible": true,
        "children": [
         {
@@ -6655,6 +6733,7 @@
        "title": "Armor",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.armor",
        "column": 1,
+       "docsPath": "/docs/wod-2e/rules/equipment#armor",
        "collapsible": true,
        "children": [
         {
@@ -6694,6 +6773,7 @@
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience",
        "column": 1,
+       "docsPath": "/docs/wod-2e/character/advancement#experience",
        "collapsible": false,
        "children": [
         {
@@ -6793,6 +6873,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
+     "docsPath": "/docs/wod-2e/rules/traits#attributes",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -6911,6 +6992,7 @@
      "type": "brief",
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+     "docsPath": "/docs/wod-2e/rules/traits#abilities",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -7281,6 +7363,7 @@
      "type": "brief",
      "title": "Resolve",
      "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+     "docsPath": "/docs/wod-2e/character#resolve",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -7362,6 +7445,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+     "docsPath": "/docs/wod-2e/rules/equipment#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -7389,6 +7473,7 @@
      "type": "section",
      "title": "Hunter",
      "labelMessage": "ttgamer.ui.sheet.v5Hunter.sections.hunter",
+     "docsPath": "/docs/wod-v5/hunter#hunter-the-reckoning-5e",
      "columns": 2,
      "columnWidths": [
       1,
@@ -7425,7 +7510,6 @@
        "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
        "column": 2,
        "hideTitle": true,
-       "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
        "collapsible": false,
        "columns": 2,
        "children": [
@@ -7442,6 +7526,7 @@
          "id": "concept-field",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.concept",
+         "docsPath": "/docs/wod-v5/hunter/first-hunter/concept-ambition-desire",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -7451,6 +7536,7 @@
          "id": "creed-field",
          "label": "Creed",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.creed",
+         "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
          "required": false,
          "valueKey": "creed",
          "type": "text",
@@ -7460,6 +7546,7 @@
          "id": "drive-field",
          "label": "Drive",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.drive",
+         "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
          "required": false,
          "valueKey": "drive",
          "type": "text",
@@ -7470,7 +7557,8 @@
          "type": "primitive",
          "bindingKey": "field:track-resources",
          "label": "Track Willpower",
-         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources"
+         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+         "docsPath": "/docs/guide/sheet#resource-tracking"
         },
         {
          "id": "member-of-field",
@@ -7573,7 +7661,7 @@
        "title": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
        "column": 1,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health",
        "collapsible": false,
        "children": [
         {
@@ -7596,7 +7684,7 @@
         "coordinate": "track-resources",
         "equals": true
        },
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower",
        "collapsible": false,
        "children": [
         {
@@ -7615,13 +7703,14 @@
        "title": "Cell",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.sections.cell",
        "column": 3,
-       "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair",
+       "docsPath": "/docs/wod-v5/hunter/first-hunter/what-is-a-hunter#the-cell",
        "collapsible": false,
        "children": [
         {
          "id": "despair-field",
          "label": "Despair",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.despair",
+         "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#despair--when-the-drive-breaks",
          "required": false,
          "valueKey": "despair",
          "type": "toggle"
@@ -7631,14 +7720,16 @@
          "type": "primitive",
          "bindingKey": "resource:desperation",
          "label": "Desperation",
-         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.desperation"
+         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.desperation",
+         "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#desperation--how-far-the-cell-will-go"
         },
         {
          "id": "danger",
          "type": "primitive",
          "bindingKey": "resource:danger",
          "label": "Danger",
-         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.danger"
+         "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.danger",
+         "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#danger--how-much-the-monsters-know"
         }
        ]
       }
@@ -7752,7 +7843,7 @@
      "type": "section",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
-     "docsPath": "/docs/wod-v5/rules/attributes-skills#specialties",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "columns": 3,
      "children": [
       {
@@ -8080,6 +8171,7 @@
          "id": "creed-fields-field",
          "label": "Creed Fields",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.creedFields",
+         "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive#creed-fields",
          "required": false,
          "valueKey": "creed-fields",
          "type": "text",
@@ -8112,6 +8204,7 @@
        "title": "Chronicle Tenets",
        "labelMessage": "ttgamer.ui.sheet.v5.fields.chronicleTenets",
        "column": 2,
+       "docsPath": "/docs/wod-v5/hunter/first-hunter/touchstones#chronicle-tenets",
        "collapsible": true,
        "children": [
         {
@@ -8177,7 +8270,6 @@
      "type": "section",
      "title": "Equipment",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.equipment",
-     "docsPath": "/docs/wod-v5/hunter/reference/weapons-gear",
      "columns": 2,
      "children": [
       {
@@ -8186,6 +8278,7 @@
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
        "column": 1,
+       "docsPath": "/docs/wod-v5/hunter/reference/weapons-gear#weapons",
        "collapsible": true,
        "children": [
         {
@@ -8229,6 +8322,7 @@
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.experience",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/experience#experience",
        "collapsible": false,
        "children": [
         {
@@ -8300,7 +8394,6 @@
      "title": "Identity",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.identity",
      "hideTitle": true,
-     "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
      "collapsible": false,
      "columns": 4,
      "children": [
@@ -8317,6 +8410,7 @@
        "id": "concept-field",
        "label": "Concept",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.concept",
+       "docsPath": "/docs/wod-v5/hunter/first-hunter/concept-ambition-desire",
        "required": false,
        "valueKey": "concept",
        "type": "text",
@@ -8326,6 +8420,7 @@
        "id": "creed-field",
        "label": "Creed",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.creed",
+       "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
        "required": false,
        "valueKey": "creed",
        "type": "text",
@@ -8335,6 +8430,7 @@
        "id": "drive-field",
        "label": "Drive",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.drive",
+       "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
        "required": false,
        "valueKey": "drive",
        "type": "text",
@@ -8345,7 +8441,8 @@
        "type": "primitive",
        "bindingKey": "field:track-resources",
        "label": "Track Willpower",
-       "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources"
+       "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.trackResources",
+       "docsPath": "/docs/guide/sheet#resource-tracking"
       }
      ]
     },
@@ -8363,7 +8460,8 @@
        "bindingKey": "track:health",
        "label": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
-       "column": 1
+       "column": 1,
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health"
       },
       {
        "id": "willpower-track",
@@ -8375,13 +8473,15 @@
        "visibleWhen": {
         "coordinate": "track-resources",
         "equals": true
-       }
+       },
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower"
       },
       {
        "id": "despair-field",
        "label": "Despair",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.despair",
        "column": 2,
+       "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#despair--when-the-drive-breaks",
        "required": false,
        "valueKey": "despair",
        "type": "toggle"
@@ -8393,6 +8493,7 @@
        "label": "Desperation",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.desperation",
        "column": 2,
+       "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#desperation--how-far-the-cell-will-go",
        "fullLabel": true
       },
       {
@@ -8402,6 +8503,7 @@
        "label": "Danger",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.danger",
        "column": 2,
+       "docsPath": "/docs/wod-v5/hunter/reference/desperation-danger-despair#danger--how-much-the-monsters-know",
        "fullLabel": true
       }
      ]
@@ -8411,6 +8513,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -8493,6 +8596,7 @@
      "type": "brief",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -8719,6 +8823,7 @@
      "type": "brief",
      "title": "Edges and Perks",
      "labelMessage": "ttgamer.ui.sheet.v5Hunter.sections.edges",
+     "docsPath": "/docs/wod-v5/hunter/first-hunter/edges-perks",
      "collapsible": true,
      "columns": 2,
      "children": [
@@ -8745,6 +8850,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
+     "docsPath": "/docs/wod-v5/hunter/reference/weapons-gear#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -8760,6 +8866,7 @@
      "type": "brief",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "docsPath": "/docs/guide/template-editor/elements#references",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -8796,6 +8903,7 @@
      "type": "section",
      "title": "Vampire",
      "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.vampire",
+     "docsPath": "/docs/wod-v5/vampire/first-vampire/what-is-a-vampire",
      "columns": 2,
      "columnWidths": [
       1,
@@ -8848,6 +8956,7 @@
          "id": "concept-field",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.concept",
+         "docsPath": "/docs/wod-v5/vampire/first-vampire/concept-sire",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -8857,6 +8966,7 @@
          "id": "clan-field",
          "label": "Clan",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.clan",
+         "docsPath": "/docs/wod-v5/vampire/reference/clans",
          "required": false,
          "valueKey": "clan",
          "type": "text",
@@ -8867,12 +8977,14 @@
          "type": "primitive",
          "bindingKey": "field:generation",
          "label": "Generation",
-         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation"
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation",
+         "docsPath": "/docs/wod-v5/vampire/reference/blood-potency#generation"
         },
         {
          "id": "predator-type-field",
          "label": "Predator type",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorType",
+         "docsPath": "/docs/wod-v5/vampire/reference/predator-types",
          "required": false,
          "valueKey": "predator-type",
          "type": "text",
@@ -8899,12 +9011,14 @@
          "type": "primitive",
          "bindingKey": "field:track-resources",
          "label": "Track Hunger and Willpower",
-         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources"
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+         "docsPath": "/docs/guide/sheet#resource-tracking"
         },
         {
          "id": "sire-field",
          "label": "Sire",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.sire",
+         "docsPath": "/docs/wod-v5/vampire/first-vampire/concept-sire",
          "required": false,
          "valueKey": "sire",
          "type": "text",
@@ -8914,6 +9028,7 @@
          "id": "chronicle-field",
          "label": "Chronicle",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.chronicle",
+         "docsPath": "/docs/wod-v5/vampire/first-vampire/concept-sire#chronicle",
          "required": false,
          "valueKey": "chronicle",
          "type": "text",
@@ -9020,7 +9135,7 @@
        "title": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
        "column": 1,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health",
        "collapsible": false,
        "children": [
         {
@@ -9043,7 +9158,7 @@
         "coordinate": "track-resources",
         "equals": true
        },
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower",
        "collapsible": false,
        "children": [
         {
@@ -9073,14 +9188,16 @@
          "visibleWhen": {
           "coordinate": "track-resources",
           "equals": true
-         }
+         },
+         "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse"
         },
         {
          "id": "blood-potency",
          "type": "primitive",
          "bindingKey": "resource:blood-potency",
          "label": "Blood Potency",
-         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency"
+         "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
+         "docsPath": "/docs/wod-v5/vampire/reference/blood-potency"
         },
         {
          "id": "humanity",
@@ -9088,6 +9205,7 @@
          "bindingKey": "resource:humanity",
          "label": "Humanity",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
+         "docsPath": "/docs/wod-v5/vampire/reference/humanity-stains",
          "poolTracker": {
           "display": "row",
           "legend": false,
@@ -9162,6 +9280,7 @@
        "title": "Blood Potency",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.bloodPotency",
        "column": 3,
+       "docsPath": "/docs/wod-v5/vampire/reference/blood-potency#what-it-changes",
        "collapsible": true,
        "columns": 2,
        "children": [
@@ -9360,7 +9479,7 @@
      "type": "section",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
-     "docsPath": "/docs/wod-v5/rules/attributes-skills#specialties",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "columns": 3,
      "children": [
       {
@@ -9589,6 +9708,7 @@
      "type": "section",
      "title": "Disciplines",
      "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplines",
+     "docsPath": "/docs/wod-v5/vampire/reference/disciplines-powers",
      "columns": 2,
      "columnWidths": [
       1,
@@ -9618,6 +9738,7 @@
        "title": "Powers",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.powers",
        "column": 2,
+       "docsPath": "/docs/wod-v5/vampire/reference/disciplines-powers#powers",
        "collapsible": false,
        "children": [
         {
@@ -9669,6 +9790,7 @@
        "visibleWhen": {
         "formula": "rating(disciplines, \"Blood Sorcery\") + rating(disciplines, \"Oblivion\") + rating(disciplines, \"Thin-Blood Alchemy\") > 0"
        },
+       "docsPath": "/docs/wod-v5/vampire/reference/disciplines-powers#rituals-ceremonies-and-formulas",
        "collapsible": false,
        "children": [
         {
@@ -9701,6 +9823,7 @@
        "title": "Aims",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.aims",
        "column": 1,
+       "docsPath": "/docs/wod-v5/vampire/first-vampire/concept-sire",
        "collapsible": false,
        "children": [
         {
@@ -9729,6 +9852,7 @@
        "title": "Clan bane",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.bane",
        "column": 1,
+       "docsPath": "/docs/wod-v5/vampire/reference/clans#reading-the-bane",
        "collapsible": true,
        "children": [
         {
@@ -9761,6 +9885,7 @@
          "id": "compulsion-field",
          "label": "Compulsion",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.compulsion",
+         "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse#bestial-failure-and-compulsions",
          "required": false,
          "valueKey": "compulsion",
          "type": "text",
@@ -9780,6 +9905,7 @@
        "title": "Touchstones and Convictions",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.touchstones",
        "column": 2,
+       "docsPath": "/docs/wod-v5/vampire/first-vampire/convictions-touchstones",
        "collapsible": false,
        "children": [
         {
@@ -9798,6 +9924,7 @@
        "title": "Chronicle Tenets",
        "labelMessage": "ttgamer.ui.sheet.v5.fields.chronicleTenets",
        "column": 2,
+       "docsPath": "/docs/wod-v5/vampire/first-vampire/convictions-touchstones#chronicle-tenets",
        "collapsible": true,
        "children": [
         {
@@ -9819,6 +9946,7 @@
      "type": "section",
      "title": "Advantages and Flaws",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.advantagesFlaws",
+     "docsPath": "/docs/wod-v5/vampire/first-vampire/advantages-flaws",
      "columns": 2,
      "children": [
       {
@@ -9870,6 +9998,7 @@
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
        "column": 1,
+       "docsPath": "/docs/wod-v5/vampire/reference/weapons-gear#weapons",
        "collapsible": true,
        "children": [
         {
@@ -9913,6 +10042,7 @@
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.experience",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/experience#experience",
        "collapsible": false,
        "children": [
         {
@@ -10000,6 +10130,7 @@
        "id": "concept-field",
        "label": "Concept",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.concept",
+       "docsPath": "/docs/wod-v5/vampire/first-vampire/concept-sire",
        "required": false,
        "valueKey": "concept",
        "type": "text",
@@ -10009,6 +10140,7 @@
        "id": "clan-field",
        "label": "Clan",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.clan",
+       "docsPath": "/docs/wod-v5/vampire/reference/clans",
        "required": false,
        "valueKey": "clan",
        "type": "text",
@@ -10019,12 +10151,14 @@
        "type": "primitive",
        "bindingKey": "field:generation",
        "label": "Generation",
-       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation"
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.generation",
+       "docsPath": "/docs/wod-v5/vampire/reference/blood-potency#generation"
       },
       {
        "id": "predator-type-field",
        "label": "Predator type",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.predatorType",
+       "docsPath": "/docs/wod-v5/vampire/reference/predator-types",
        "required": false,
        "valueKey": "predator-type",
        "type": "text",
@@ -10035,7 +10169,8 @@
        "type": "primitive",
        "bindingKey": "field:track-resources",
        "label": "Track Hunger and Willpower",
-       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources"
+       "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.trackResources",
+       "docsPath": "/docs/guide/sheet#resource-tracking"
       }
      ]
     },
@@ -10053,7 +10188,8 @@
        "bindingKey": "track:health",
        "label": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
-       "column": 1
+       "column": 1,
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health"
       },
       {
        "id": "willpower-track",
@@ -10065,7 +10201,8 @@
        "visibleWhen": {
         "coordinate": "track-resources",
         "equals": true
-       }
+       },
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower"
       },
       {
        "id": "hunger",
@@ -10078,6 +10215,7 @@
         "coordinate": "track-resources",
         "equals": true
        },
+       "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse",
        "fullLabel": true
       },
       {
@@ -10087,6 +10225,7 @@
        "label": "Blood Potency",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.bloodPotency",
        "column": 2,
+       "docsPath": "/docs/wod-v5/vampire/reference/blood-potency",
        "fullLabel": true
       },
       {
@@ -10096,6 +10235,7 @@
        "label": "Humanity",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.fields.humanity",
        "column": 2,
+       "docsPath": "/docs/wod-v5/vampire/reference/humanity-stains",
        "poolTracker": {
         "display": "strip",
         "legend": false,
@@ -10171,6 +10311,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -10253,6 +10394,7 @@
      "type": "brief",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -10479,6 +10621,7 @@
      "type": "brief",
      "title": "Disciplines",
      "labelMessage": "ttgamer.ui.sheet.v5Vampire.sections.disciplines",
+     "docsPath": "/docs/wod-v5/vampire/reference/disciplines-powers",
      "collapsible": true,
      "children": [
       {
@@ -10495,6 +10638,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
+     "docsPath": "/docs/wod-v5/vampire/reference/weapons-gear#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -10510,6 +10654,7 @@
      "type": "brief",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "docsPath": "/docs/guide/template-editor/elements#references",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -10546,6 +10691,7 @@
      "type": "section",
      "title": "Mortal",
      "labelMessage": "ttgamer.ui.sheet.v5.core.section",
+     "docsPath": "/docs/wod-v5/rules/mortals#mortal",
      "columns": 2,
      "columnWidths": [
       1,
@@ -10693,7 +10839,7 @@
        "title": "Health",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
        "column": 1,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health",
        "collapsible": false,
        "children": [
         {
@@ -10712,7 +10858,7 @@
        "title": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
        "column": 2,
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower",
        "collapsible": false,
        "children": [
         {
@@ -10835,7 +10981,7 @@
      "type": "section",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
-     "docsPath": "/docs/wod-v5/rules/attributes-skills#specialties",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "columns": 3,
      "children": [
       {
@@ -11072,6 +11218,7 @@
        "title": "Touchstones and Convictions",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.touchstones",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/convictions-touchstones#touchstones-and-convictions",
        "collapsible": false,
        "children": [
         {
@@ -11090,6 +11237,7 @@
        "title": "Chronicle Tenets",
        "labelMessage": "ttgamer.ui.sheet.v5.fields.chronicleTenets",
        "column": 2,
+       "docsPath": "/docs/wod-v5/rules/convictions-touchstones#chronicle-tenets",
        "collapsible": true,
        "children": [
         {
@@ -11119,6 +11267,7 @@
        "title": "Advantages",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.advantages",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/advantages-flaws#advantages",
        "collapsible": false,
        "children": [
         {
@@ -11136,6 +11285,7 @@
        "title": "Flaws",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.flaws",
        "column": 2,
+       "docsPath": "/docs/wod-v5/rules/advantages-flaws#flaws",
        "collapsible": false,
        "children": [
         {
@@ -11162,6 +11312,7 @@
        "title": "Weapons",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/weapons-gear#weapons",
        "collapsible": true,
        "children": [
         {
@@ -11205,6 +11356,7 @@
        "title": "Experience",
        "labelMessage": "ttgamer.ui.sheet.v5.sections.experience",
        "column": 1,
+       "docsPath": "/docs/wod-v5/rules/experience#experience",
        "collapsible": false,
        "children": [
         {
@@ -11320,6 +11472,7 @@
      "type": "brief",
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills",
      "collapsible": false,
      "columns": 3,
      "children": [
@@ -11402,6 +11555,7 @@
      "type": "brief",
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
+     "docsPath": "/docs/wod-v5/rules/attributes-skills#skills",
      "collapsible": true,
      "columns": 3,
      "children": [
@@ -11628,6 +11782,7 @@
      "type": "brief",
      "title": "Weapons",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.weapons",
+     "docsPath": "/docs/wod-v5/rules/weapons-gear#weapons",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -11643,6 +11798,7 @@
      "type": "brief",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "docsPath": "/docs/guide/template-editor/elements#references",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -11733,13 +11889,15 @@
          "type": "primitive",
          "bindingKey": "field:storyteller-type",
          "label": "Type",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind"
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
+         "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#types"
         },
         {
          "id": "concept-field",
          "label": "Concept",
          "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
          "span": 2,
+         "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#concept",
          "required": false,
          "valueKey": "concept",
          "type": "text",
@@ -11750,7 +11908,8 @@
          "type": "primitive",
          "bindingKey": "field:difficulty",
          "label": "Difficulty",
-         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty"
+         "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.difficulty",
+         "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#simple-foes"
         },
         {
          "id": "simple-foe-roll",
@@ -11805,7 +11964,7 @@
        "type": "group",
        "title": "Standard dice pools",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.pools",
-       "docsPath": "/docs/wod-v5/rules/damage-willpower",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#what-the-sheet-holds",
        "collapsible": false,
        "children": [
         {
@@ -11834,14 +11993,16 @@
          "type": "primitive",
          "bindingKey": "track:health",
          "label": "Health",
-         "labelMessage": "ttgamer.ui.sheet.v5.sections.health"
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+         "docsPath": "/docs/wod-v5/rules/damage-willpower#health"
         },
         {
          "id": "willpower-track",
          "type": "primitive",
          "bindingKey": "track:willpower",
          "label": "Willpower",
-         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower"
+         "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+         "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower"
         }
        ]
       },
@@ -11850,6 +12011,7 @@
        "type": "group",
        "title": "Exceptional dice pools",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#exceptional-pools",
        "collapsible": true,
        "children": [
         {
@@ -11866,6 +12028,7 @@
        "type": "group",
        "title": "Disciplines and powers",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#powers",
        "collapsible": true,
        "children": [
         {
@@ -11934,7 +12097,8 @@
        "type": "primitive",
        "bindingKey": "field:storyteller-type",
        "label": "Type",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind"
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.kind",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#types"
       }
      ]
     },
@@ -11950,6 +12114,7 @@
        "id": "concept-field",
        "label": "Concept",
        "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.concept",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#concept",
        "required": false,
        "valueKey": "concept",
        "type": "text",
@@ -11970,21 +12135,24 @@
        "type": "primitive",
        "bindingKey": "trait:pools:physical",
        "label": "Physical",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical"
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.physical",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#standard-pools"
       },
       {
        "id": "pool-social",
        "type": "primitive",
        "bindingKey": "trait:pools:social",
        "label": "Social",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social"
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.social",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#standard-pools"
       },
       {
        "id": "pool-mental",
        "type": "primitive",
        "bindingKey": "trait:pools:mental",
        "label": "Mental",
-       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental"
+       "labelMessage": "ttgamer.ui.sheet.v5.storyteller.fields.mental",
+       "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#standard-pools"
       }
      ]
     },
@@ -12001,14 +12169,16 @@
        "type": "primitive",
        "bindingKey": "track:health",
        "label": "Health",
-       "labelMessage": "ttgamer.ui.sheet.v5.sections.health"
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.health",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#health"
       },
       {
        "id": "willpower-track",
        "type": "primitive",
        "bindingKey": "track:willpower",
        "label": "Willpower",
-       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower"
+       "labelMessage": "ttgamer.ui.sheet.v5.sections.willpower",
+       "docsPath": "/docs/wod-v5/rules/damage-willpower#willpower"
       }
      ]
     },
@@ -12017,6 +12187,7 @@
      "type": "brief",
      "title": "Exceptional dice pools",
      "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.exceptional",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#exceptional-pools",
      "collapsible": false,
      "children": [
       {
@@ -12033,6 +12204,7 @@
      "type": "brief",
      "title": "Simple foe",
      "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.simpleFoe",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#simple-foes",
      "collapsible": false,
      "children": [
       {
@@ -12065,6 +12237,7 @@
      "type": "brief",
      "title": "Disciplines and powers",
      "labelMessage": "ttgamer.ui.sheet.v5.storyteller.sections.powers",
+     "docsPath": "/docs/wod-v5/storyteller/storyteller-characters#powers",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -12102,6 +12275,7 @@
      "type": "brief",
      "title": "Member of",
      "labelMessage": "ttgamer.ui.sheet.v5.group.memberOf",
+     "docsPath": "/docs/guide/template-editor/elements#references",
      "collapsible": true,
      "defaultCollapsed": true,
      "children": [
@@ -12138,6 +12312,7 @@
      "type": "section",
      "title": "Group",
      "labelMessage": "ttgamer.ui.sheet.v5.group.section",
+     "docsPath": "/docs/wod-v5/storyteller/groups",
      "columns": 2,
      "columnWidths": [
       1,
@@ -12192,6 +12367,7 @@
          "id": "threat-field",
          "label": "Threat",
          "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+         "docsPath": "/docs/wod-v5/storyteller/groups#threat",
          "required": false,
          "valueKey": "threat",
          "type": "rating",
@@ -12320,6 +12496,7 @@
        "id": "threat-field",
        "label": "Threat",
        "labelMessage": "ttgamer.ui.sheet.v5.group.fields.threat",
+       "docsPath": "/docs/wod-v5/storyteller/groups#threat",
        "required": false,
        "valueKey": "threat",
        "fullLabel": true,
@@ -12335,6 +12512,7 @@
      "type": "brief",
      "title": "Members",
      "labelMessage": "ttgamer.ui.sheet.v5.group.fields.members",
+     "docsPath": "/docs/guide/template-editor/elements#references",
      "collapsible": false,
      "children": [
       {

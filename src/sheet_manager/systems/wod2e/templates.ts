@@ -41,31 +41,82 @@ const IDENTITY_FIELDS: ReadonlyArray<[valueKey: string, label: string]> = [
 
 const ABILITY_GROUPS = abilityGroups(WOD2E_ABILITIES);
 
+const DOCS = {
+    identity: '/docs/wod-2e/character#identity',
+    concept: '/docs/wod-2e/character#concept',
+    nature: '/docs/wod-2e/character#nature',
+    chronicle: '/docs/wod-2e/character#chronicle',
+    demeanor: '/docs/wod-2e/character#demeanor',
+    condition: '/docs/wod-2e/character#condition',
+    health: '/docs/wod-2e/rules/condition#health',
+    willpower: '/docs/wod-2e/rules/condition#willpower',
+    initiative: '/docs/wod-2e/rules/condition#initiative',
+    virtues: '/docs/wod-2e/rules/condition#virtues',
+    conscience: '/docs/wod-2e/rules/condition#conscience',
+    selfControl: '/docs/wod-2e/rules/condition#self-control',
+    courage: '/docs/wod-2e/rules/condition#courage',
+    attributes: '/docs/wod-2e/rules/traits#attributes',
+    appearance: '/docs/wod-2e/rules/traits#appearance',
+    abilities: '/docs/wod-2e/rules/traits#abilities',
+    talents: '/docs/wod-2e/rules/traits#talents',
+    expression: '/docs/wod-2e/rules/traits#expression',
+    skills: '/docs/wod-2e/rules/traits#skills',
+    animalKen: '/docs/wod-2e/rules/traits#animal-ken',
+    drive: '/docs/wod-2e/rules/traits#drive',
+    melee: '/docs/wod-2e/rules/traits#melee',
+    security: '/docs/wod-2e/rules/traits#security',
+    knowledges: '/docs/wod-2e/rules/traits#knowledges',
+    occult: '/docs/wod-2e/rules/traits#occult',
+    advantages: '/docs/wod-2e/character/advantages#advantages',
+    backgrounds: '/docs/wod-2e/character/advantages#backgrounds',
+    merits: '/docs/wod-2e/character/advantages#merits',
+    flaws: '/docs/wod-2e/character/advantages#flaws',
+    weapons: '/docs/wod-2e/rules/equipment#weapons',
+    armor: '/docs/wod-2e/rules/equipment#armor',
+    experience: '/docs/wod-2e/character/advancement#experience',
+    resolve: '/docs/wod-2e/character#resolve',
+} as const;
+
 /** Health, Willpower, and Initiative beside the virtues (spec 042). */
 function condition(): TemplateNode {
     return conditionSection(
         [
-            primitive('track-health', 'track:health', { label: 'Health' }),
+            {
+                ...primitive('track-health', 'track:health', { label: 'Health' }),
+                docsPath: DOCS.health,
+            },
             // One tracker: the rating framed, the current points filled (spec 020).
-            resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                poolTracker: { display: 'row', legend: false, total: true },
-            }),
-            formula('derived-initiative', 'Initiative', STANDARD_INITIATIVE),
+            {
+                ...resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                    poolTracker: { display: 'row', legend: false, total: true },
+                }),
+                docsPath: DOCS.willpower,
+            },
+            {
+                ...formula('derived-initiative', 'Initiative', STANDARD_INITIATIVE),
+                docsPath: DOCS.initiative,
+            },
         ],
-        virtuesGroup(WOD2E_VIRTUE_KEYS, 2, undefined)
+        virtuesGroup(WOD2E_VIRTUE_KEYS, 2, DOCS.virtues, {
+            Conscience: DOCS.conscience,
+            'Self-Control': DOCS.selfControl,
+            Courage: DOCS.courage,
+        }),
+        { docsPath: DOCS.condition }
     );
 }
 
 function equipment(): TemplateNode {
-    const gear = (id: string, title: string, bindingKey: string) =>
+    const gear = (id: string, title: string, bindingKey: string, docsPath?: string) =>
         group(`body-${id}`, title, [primitive(`equipment-${id}`, bindingKey)], {
             collapsible: true,
+            docsPath,
         });
     return equipmentSection(
         {
             first: [
-                gear('weapons', 'Weapons', 'equipment:weapons'),
-                gear('armor', 'Armor', 'equipment:armor'),
+                gear('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
+                gear('armor', 'Armor', 'equipment:armor', DOCS.armor),
             ],
             second: [gear('inventory', 'Inventory', 'equipment:inventory')],
         },
@@ -104,7 +155,7 @@ function briefChildren(): TemplateNode[] {
             ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3 }
+            { columns: 3, docsPath: DOCS.attributes }
         ),
         group(
             'brief-abilities',
@@ -112,7 +163,7 @@ function briefChildren(): TemplateNode[] {
             ABILITY_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3, collapsible: true }
+            { columns: 3, collapsible: true, docsPath: DOCS.abilities }
         ),
         group(
             'brief-resolve',
@@ -132,7 +183,7 @@ function briefChildren(): TemplateNode[] {
                     3
                 ),
             ],
-            { columns: 3 }
+            { columns: 3, docsPath: DOCS.resolve }
         ),
         group(
             'brief-health',
@@ -142,6 +193,7 @@ function briefChildren(): TemplateNode[] {
         ),
         group('brief-weapons', 'Weapons', [primitive('equipment-weapons', 'equipment:weapons')], {
             collapsible: true,
+            docsPath: DOCS.weapons,
         }),
     ];
 }
@@ -236,13 +288,36 @@ function translatable(page: CustomTemplate): CustomTemplate {
 export const wod2eTemplates: readonly CustomTemplate[] = [
     translatable(
         template('wod2e-sheet', 'Full sheet', [
-            baseSection(undefined, IDENTITY_FIELDS),
+            baseSection(DOCS.identity, IDENTITY_FIELDS, {
+                concept: DOCS.concept,
+                nature: DOCS.nature,
+                chronicle: DOCS.chronicle,
+                demeanor: DOCS.demeanor,
+            }),
             condition(),
-            attributesSection(undefined),
-            skillsSection(ABILITY_GROUPS, undefined),
-            advantagesSection(undefined),
+            attributesSection(DOCS.attributes, { Appearance: DOCS.appearance }),
+            skillsSection(ABILITY_GROUPS, DOCS.abilities, undefined, {
+                groups: {
+                    'abilities-talents': DOCS.talents,
+                    'abilities-skills': DOCS.skills,
+                    'abilities-knowledges': DOCS.knowledges,
+                },
+                traits: {
+                    Expression: DOCS.expression,
+                    'Animal Ken': DOCS.animalKen,
+                    Drive: DOCS.drive,
+                    Melee: DOCS.melee,
+                    Security: DOCS.security,
+                    Occult: DOCS.occult,
+                },
+            }),
+            advantagesSection(DOCS.advantages, {
+                'advantages-backgrounds': DOCS.backgrounds,
+                'advantages-merits': DOCS.merits,
+                'advantages-flaws': DOCS.flaws,
+            }),
             equipment(),
-            experienceNotesSection(undefined),
+            experienceNotesSection(DOCS.experience),
         ])
     ),
     translatable(denseBrief(template('wod2e-brief', 'Brief', briefChildren()), ['brief-weapons'])),

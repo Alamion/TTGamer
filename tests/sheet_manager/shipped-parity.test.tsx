@@ -171,7 +171,7 @@ describe('shipped templates use only what the editor can set (spec 038, SC-003)'
     });
 });
 
-it('fields and primitives expose documentation, and markdown exposes Hide help', () => {
+it('fields and primitives expose documentation, and element help exposes Hide help', () => {
     resetEditorStores();
     const template = {
         id: 'help-parity',
@@ -213,7 +213,7 @@ it('fields and primitives expose documentation, and markdown exposes Hide help',
         openSettingsGroups();
         const shown = shownSettings(id);
         expect(shown.has('docsPath')).toBe(true);
-        expect(shown.has('hideHelp')).toBe(id === 'help-markdown');
+        expect(shown.has('hideHelp')).toBe(id !== 'help-field');
     }
     cleanup();
     takeSheetIssues();

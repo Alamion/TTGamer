@@ -81,26 +81,26 @@ and opens with a definition.
 
 **Check**: every row of `review.md` for sections, groups, and fields matches the shipped pages.
 
-- [ ] T018 [US1] Write `tests/docs/help-links-review.test.ts` first: no shipped section with a group
+- [x] T018 [US1] Write `tests/docs/help-links-review.test.ts` first: no shipped section with a group
       or field inside linking the same place; every shipped section, group, and field link equals
       its `review.md` row; a rules "?" of a shipped page leads to its own system's docs root or
       `/docs/guide/`; every target has en and ru (FR-001, FR-003, FR-005, FR-010, SC-001, SC-002)
-- [ ] T019 [US1] Apply the agreed links to the Star Wars templates
+- [x] T019 [US1] Apply the agreed links to the Star Wars templates
       (`systems/star-wars-wod/templates/*.ts`) and the WoD 2e parts
       (`systems/wod2e/ruleset/templateParts.ts`), including the "Experience and notes" duplicate
-- [ ] T020 [US1] Apply them to V5: `systems/v5/ruleset/templateParts.ts` (`V5_DOCS`), `core/`,
+- [x] T020 [US1] Apply them to V5: `systems/v5/ruleset/templateParts.ts` (`V5_DOCS`), `core/`,
       `modules/hunter/templates/sheet.ts` (`HUNTER_DOCS`), `modules/vampire/templates/`
-- [ ] T021 [US1] Run `yarn verify:full`; commit the story
+- [x] T021 [US1] Run `yarn verify:full`; commit the story
 
 ## User Story 2 - Elements say how they work (P1)
 
 **Check**: each element type the review marks has a "?" on every page, shipped and the user's.
 
-- [ ] T022 [US2] Extend `field-help.test.tsx`: each type in the approved list has its guide target
+- [x] T022 [US2] Extend `field-help.test.tsx`: each type in the approved list has its guide target
       in `ELEMENT_HELP`, a user template's field of that type shows it (FR-004, FR-005)
-- [ ] T023 [US2] Fill `ELEMENT_HELP` from `review.md`; E2E in `docs-fragment.spec.ts`: a note's
+- [x] T023 [US2] Fill `ELEMENT_HELP` from `review.md`; E2E in `docs-fragment.spec.ts`: a note's
       markdown "?" opens the notes guide card
-- [ ] T024 [US2] Run `yarn verify:full`, the sheet timing against `master`, and the chunk sizes
+- [x] T024 [US2] Run `yarn verify:full`, the sheet timing against `master`, and the chunk sizes
       (SC-005); commit the story
 
 ## Finish

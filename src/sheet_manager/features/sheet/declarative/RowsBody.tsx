@@ -17,7 +17,7 @@ import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBriefPage } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
-import { FieldHelpMark, useFieldHelpMark } from './FieldHelp';
+import { FieldHelpLayout, FieldHelpMark } from './FieldHelp';
 import { moveItem } from './rowOrder';
 import {
     parentName,
@@ -129,7 +129,6 @@ function columnLabel(column: RowsColumn): string {
 
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
-    const help = useFieldHelpMark();
     const bound = useBoundDocument();
     const brief = useBriefPage();
     const locale = useDocusaurusContext().i18n.currentLocale;
@@ -178,11 +177,11 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
         write(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, ...updates } : row)));
     };
 
-    return (
+    const body = (
         <div className="grid gap-2 overflow-x-auto">
-            {((!node.hideLabel && !brief) || help) && (
+            {!node.hideLabel && !brief && (
                 <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                    <span className={node.hideLabel || brief ? 'sr-only' : undefined}>{label}</span>
+                    {label}
                     <FieldHelpMark />
                 </span>
             )}
@@ -392,4 +391,5 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
             )}
         </div>
     );
+    return node.hideLabel || brief ? <FieldHelpLayout>{body}</FieldHelpLayout> : body;
 }

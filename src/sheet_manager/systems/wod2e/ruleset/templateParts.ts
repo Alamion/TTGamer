@@ -122,8 +122,15 @@ export const APPEARANCE_FIELDS: ReadonlyArray<[valueKey: string, label: string]>
     ['features', 'Features'],
 ];
 
-export const textFields = (fields: ReadonlyArray<[string, string]>, compact = false) =>
-    fields.map(([key, label]) => text(`field-${key}`, label, key, { compact }));
+export const textFields = (
+    fields: ReadonlyArray<[string, string]>,
+    compact = false,
+    docsPaths: Readonly<Record<string, string>> = {}
+) =>
+    fields.map(([key, label]) => ({
+        ...text(`field-${key}`, label, key, { compact }),
+        ...(docsPaths[key] ? { docsPath: docsPaths[key] } : {}),
+    }));
 
 /**
  * Portrait, identity (three columns), appearance, and biography. The portrait shows while the
@@ -131,7 +138,8 @@ export const textFields = (fields: ReadonlyArray<[string, string]>, compact = fa
  */
 export function baseSection(
     docsPath: string | undefined,
-    identityFields: ReadonlyArray<[string, string]>
+    identityFields: ReadonlyArray<[string, string]>,
+    fieldDocsPaths: Readonly<Record<string, string>> = {}
 ): SectionNode {
     return wodSection(
         'base',
@@ -143,11 +151,16 @@ export function baseSection(
                 collapsible: true,
                 visibleWhen: PORTRAIT_SHOWN,
             }),
-            group('identity-fields', 'Identity', textFields(identityFields), {
-                column: 2,
-                columns: 3,
-                hideTitle: true,
-            }),
+            group(
+                'identity-fields',
+                'Identity',
+                textFields(identityFields, false, fieldDocsPaths),
+                {
+                    column: 2,
+                    columns: 3,
+                    hideTitle: true,
+                }
+            ),
             group(
                 'base-appearance',
                 'Appearance',
@@ -177,7 +190,10 @@ export function baseSection(
     );
 }
 
-export function attributesSection(docsPath: string | undefined): SectionNode {
+export function attributesSection(
+    docsPath: string | undefined,
+    traitDocsPaths: Readonly<Record<string, string>> = {}
+): SectionNode {
     return wodSection(
         'attributes',
         'Attributes',
@@ -186,7 +202,10 @@ export function attributesSection(docsPath: string | undefined): SectionNode {
             group(
                 id,
                 title,
-                keys.map((key) => trait(key))
+                keys.map((key) => ({
+                    ...trait(key),
+                    ...(traitDocsPaths[key] ? { docsPath: traitDocsPaths[key] } : {}),
+                }))
             )
         ),
         3
@@ -197,36 +216,59 @@ export function attributesSection(docsPath: string | undefined): SectionNode {
 export function skillsSection(
     groups: readonly AbilityGroup[],
     docsPath: string | undefined,
-    extras: (list: string) => TemplateNode[] = () => []
+    extras: (list: string) => TemplateNode[] = () => [],
+    help: {
+        groups?: Readonly<Record<string, string>>;
+        traits?: Readonly<Record<string, string>>;
+    } = {}
 ): SectionNode {
     return wodSection(
         'skills',
         'Skills',
         docsPath,
         groups.map(({ id, title, list, bindingKey, listTitle, keys }) =>
-            group(id, title, [
-                ...keys.map((key) => trait(key)),
-                systemList(list, bindingKey, listTitle),
-                ...extras(list),
-            ])
+            group(
+                id,
+                title,
+                [
+                    ...keys.map((key) => ({
+                        ...trait(key),
+                        ...(help.traits?.[key] ? { docsPath: help.traits[key] } : {}),
+                    })),
+                    systemList(list, bindingKey, listTitle),
+                    ...extras(list),
+                ],
+                { docsPath: help.groups?.[id] }
+            )
         ),
         3
     );
 }
 
-export function advantagesSection(docsPath: string | undefined): SectionNode {
+export function advantagesSection(
+    docsPath: string | undefined,
+    groupDocsPaths: Readonly<Record<string, string>> = {}
+): SectionNode {
     return wodSection(
         'advantages',
         'Advantages',
         docsPath,
         [
-            group('advantages-backgrounds', 'Backgrounds', [
-                systemList('list-backgrounds', 'list:backgrounds', 'Backgrounds'),
-            ]),
-            group('advantages-merits', 'Merits', [
-                systemList('list-merits', 'list:merits', 'Merits'),
-            ]),
-            group('advantages-flaws', 'Flaws', [systemList('list-flaws', 'list:flaws', 'Flaws')]),
+            group(
+                'advantages-backgrounds',
+                'Backgrounds',
+                [systemList('list-backgrounds', 'list:backgrounds', 'Backgrounds')],
+                { docsPath: groupDocsPaths['advantages-backgrounds'] }
+            ),
+            group(
+                'advantages-merits',
+                'Merits',
+                [systemList('list-merits', 'list:merits', 'Merits')],
+                { docsPath: groupDocsPaths['advantages-merits'] }
+            ),
+            group('advantages-flaws', 'Flaws', [systemList('list-flaws', 'list:flaws', 'Flaws')], {
+                docsPath: groupDocsPaths['advantages-flaws'],
+            }),
         ],
         3
     );
@@ -235,12 +277,16 @@ export function advantagesSection(docsPath: string | undefined): SectionNode {
 export function virtuesGroup(
     keys: readonly string[],
     column: number,
-    docsPath: string | undefined
+    docsPath: string | undefined,
+    traitDocsPaths: Readonly<Record<string, string>> = {}
 ): GroupNode {
     return group(
         'force-virtues',
         'Virtues',
-        keys.map((key) => trait(key)),
+        keys.map((key) => ({
+            ...trait(key),
+            ...(traitDocsPaths[key] ? { docsPath: traitDocsPaths[key] } : {}),
+        })),
         { column, docsPath }
     );
 }
@@ -321,7 +367,7 @@ export function experienceNotesSection(docsPath: string | undefined): SectionNod
     return wodSection(
         'other',
         'Experience and Notes',
-        docsPath,
+        undefined,
         [
             { ...experienceGroup(docsPath), column: 1 },
             { ...notesGroup(), column: 2 },

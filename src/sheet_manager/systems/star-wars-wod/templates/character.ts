@@ -103,35 +103,68 @@ const IDENTITY_FIELDS: ReadonlyArray<[valueKey: string, label: string]> = [
 
 function skills(variant: SheetVariant): SectionNode {
     // Droids may bank ability points they have not spread yet (per group).
-    return skillsSection(ABILITY_GROUPS, DOCS.skills, (list) =>
-        variant === 'droid'
-            ? [number(`droid-free-${list.slice(5)}`, 'Free points', `droid-free-${list.slice(5)}`)]
-            : []
+    return skillsSection(
+        ABILITY_GROUPS,
+        DOCS.skills,
+        (list) =>
+            variant === 'droid'
+                ? [
+                      {
+                          ...number(
+                              `droid-free-${list.slice(5)}`,
+                              'Free points',
+                              `droid-free-${list.slice(5)}`
+                          ),
+                          docsPath: DOCS.droidFreePoints,
+                      },
+                  ]
+                : [],
+        {
+            groups: {
+                'abilities-talents': DOCS.talents,
+                'abilities-skills': DOCS.trainedSkills,
+                'abilities-knowledges': DOCS.knowledges,
+            },
+        }
     );
 }
 
 /** Willpower, and for a sentient its Force Points and Dark Side Resistance. */
 function resources(variant: SheetVariant): TemplateNode[] {
     return [
-        resource('resource-willpower', 'resource:willpower', 'Willpower', {
-            minFrom: MINIMUMS.willpower,
-        }),
+        {
+            ...resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                minFrom: MINIMUMS.willpower,
+            }),
+            docsPath: DOCS.willpower,
+        },
         ...(variant === 'droid'
             ? []
             : [
                   // One tracker: the maximum framed, the current points filled (spec 020).
-                  resource('resource-force-points', 'resource:force-points', 'Force Points', {
-                      poolTracker: { display: 'row', legend: false, total: true },
-                      maxMinFrom: MINIMUMS.maxForcePoints,
-                  }),
-                  resource(
-                      'resource-dark-side',
-                      'resource:dark-side-resistance',
-                      'Dark Side Resistance',
-                      {
-                          minFrom: MINIMUMS.darkSide,
-                      }
-                  ),
+                  {
+                      ...resource(
+                          'resource-force-points',
+                          'resource:force-points',
+                          'Force Points',
+                          {
+                              poolTracker: { display: 'row', legend: false, total: true },
+                              maxMinFrom: MINIMUMS.maxForcePoints,
+                          }
+                      ),
+                      docsPath: DOCS.forcePoints,
+                  },
+                  {
+                      ...resource(
+                          'resource-dark-side',
+                          'resource:dark-side-resistance',
+                          'Dark Side Resistance',
+                          {
+                              minFrom: MINIMUMS.darkSide,
+                          }
+                      ),
+                      docsPath: DOCS.darkSide,
+                  },
               ]),
     ];
 }
@@ -150,21 +183,27 @@ function condition(variant: SheetVariant): SectionNode {
     const isDroid = variant === 'droid';
     return conditionSection(
         [
-            primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
-                label: isDroid ? 'Damage' : 'Health',
-                // The penalty of the deepest marked level, under the table (spec 018).
-                tracker: { total: true },
-            }),
+            {
+                ...primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
+                    label: isDroid ? 'Damage' : 'Health',
+                    // The penalty of the deepest marked level, under the table (spec 018).
+                    tracker: { total: true },
+                }),
+                docsPath: isDroid ? DOCS.droidHealth : DOCS.health,
+            },
             ...(isDroid
                 ? []
-                : [formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative)]),
+                : [
+                      {
+                          ...formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative),
+                          docsPath: DOCS.initiative,
+                      },
+                  ]),
             ...resources(variant),
         ],
         virtuesGroup(VIRTUE_KEYS, 2, DOCS.virtues),
         {
             title: isDroid ? 'Damage and Willpower' : 'Health and Willpower',
-            docsPath: DOCS.virtues,
-            vitalsDocsPath: DOCS.health,
         }
     );
 }
@@ -212,7 +251,7 @@ function forceSection(): SectionNode {
 }
 
 function equipment(variant: SheetVariant): SectionNode {
-    const gear = (id: string, title: string, bindingKey: string, docsPath: string) =>
+    const gear = (id: string, title: string, bindingKey: string, docsPath: string | undefined) =>
         group(`body-${id}`, title, [primitive(`equipment-${id}`, bindingKey)], {
             collapsible: true,
             docsPath,
@@ -228,12 +267,12 @@ function equipment(variant: SheetVariant): SectionNode {
                     'inventory',
                     variant === 'droid' ? 'Built-in equipment' : 'Inventory',
                     'equipment:inventory',
-                    DOCS.inventory
+                    variant === 'droid' ? DOCS.droidInventory : undefined
                 ),
                 gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
             ],
         },
-        DOCS.equipment
+        undefined
     );
 }
 
@@ -246,14 +285,24 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
         documentKind: DocumentKindSchema.parse('character'),
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children: [
-            baseSection(DOCS.base, IDENTITY_FIELDS),
+            baseSection(undefined, IDENTITY_FIELDS, {
+                concept: DOCS.concept,
+                species: variant === 'droid' ? DOCS.droidIdentity : DOCS.species,
+                nature: DOCS.nature,
+                demeanor: DOCS.demeanor,
+            }),
             condition(variant),
             attributesSection(DOCS.attributes),
             skills(variant),
             ...(variant === 'droid' ? [] : [forceSection()]),
-            advantagesSection(DOCS.meritsFlaws),
+            advantagesSection(undefined, {
+                'advantages-backgrounds':
+                    variant === 'droid' ? DOCS.droidBackgrounds : DOCS.backgrounds,
+                'advantages-merits': DOCS.merits,
+                'advantages-flaws': DOCS.flaws,
+            }),
             equipment(variant),
-            experienceNotesSection(DOCS.experience),
+            experienceNotesSection(variant === 'droid' ? DOCS.droidExperience : DOCS.experience),
         ],
     };
 }
@@ -280,7 +329,8 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 'Identity',
                 textFields(
                     IDENTITY_FIELDS.filter(([key]) => ['name', 'concept', 'species'].includes(key)),
-                    true
+                    true,
+                    isDroid ? {} : { concept: DOCS.concept, species: DOCS.species }
                 ),
                 { columns: 3, hideTitle: true }
             ),
@@ -290,7 +340,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3 }
+                { columns: 3, docsPath: DOCS.attributes }
             ),
             group(
                 'brief-abilities',
@@ -298,51 +348,78 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ABILITY_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3, collapsible: true }
+                { columns: 3, collapsible: true, docsPath: DOCS.skills }
             ),
             group('brief-resolve', 'Resolve', [
-                ...compactTraits(VIRTUE_KEYS),
-                resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                    compact: true,
-                }),
+                ...compactTraits(VIRTUE_KEYS).map((field, index) => ({
+                    ...field,
+                    ...(!isDroid
+                        ? { docsPath: [DOCS.conscience, DOCS.passion, DOCS.selfControl][index] }
+                        : {}),
+                })),
+                {
+                    ...resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                        compact: true,
+                    }),
+                    ...(!isDroid ? { docsPath: DOCS.willpower } : {}),
+                },
                 ...(isDroid
                     ? []
                     : [
-                          resource(
-                              'resource-force-points',
-                              'resource:force-points',
-                              'Force Points',
-                              { compact: true }
-                          ),
-                          resource(
-                              'resource-dark-side',
-                              'resource:dark-side-resistance',
-                              'Dark Side Resistance',
-                              { compact: true, shortForm: true }
-                          ),
+                          {
+                              ...resource(
+                                  'resource-force-points',
+                                  'resource:force-points',
+                                  'Force Points',
+                                  { compact: true }
+                              ),
+                              docsPath: DOCS.forcePoints,
+                          },
+                          {
+                              ...resource(
+                                  'resource-dark-side',
+                                  'resource:dark-side-resistance',
+                                  'Dark Side Resistance',
+                                  { compact: true, shortForm: true }
+                              ),
+                              docsPath: DOCS.darkSide,
+                          },
                       ]),
-                formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
-                    compact: true,
-                }),
+                {
+                    ...formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
+                        compact: true,
+                    }),
+                    ...(!isDroid ? { docsPath: DOCS.initiative } : {}),
+                },
                 ...(isDroid
                     ? []
                     : [
-                          formula(
-                              'derived-initiative-saber',
-                              'Initiative (Saber)',
-                              DERIVED.initiativeSaber,
-                              { compact: true }
-                          ),
+                          {
+                              ...formula(
+                                  'derived-initiative-saber',
+                                  'Initiative (Saber)',
+                                  DERIVED.initiativeSaber,
+                                  { compact: true }
+                              ),
+                              docsPath: DOCS.derived,
+                          },
                       ]),
             ]),
             group(
                 'brief-health',
                 isDroid ? 'Damage' : 'Health',
                 [
-                    primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
-                        compact: true,
-                        label: isDroid ? 'Damage' : 'Health',
-                    }),
+                    {
+                        ...primitive(
+                            'track-health',
+                            isDroid ? 'track:droid-damage' : 'track:health',
+                            {
+                                compact: true,
+                                label: isDroid ? 'Damage' : 'Health',
+                            }
+                        ),
+                        ...(!isDroid ? { docsPath: DOCS.health } : {}),
+                    },
                 ],
                 { hideTitle: true }
             ),
@@ -350,7 +427,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 'brief-weapons',
                 'Weapons',
                 [primitive('equipment-weapons', 'equipment:weapons')],
-                { collapsible: true, defaultCollapsed: true }
+                { collapsible: true, defaultCollapsed: true, docsPath: DOCS.weapons }
             ),
         ],
     };

@@ -85,30 +85,39 @@ function speciesCatalog(): TemplateField {
 }
 
 function threatTier(compact = false): TemplateField {
-    return select(
-        'threat-tier',
-        'Threat tier',
-        'threat-tier',
-        [
-            { id: 'named', label: 'Named', labelMessage: entities.tierNamed },
-            { id: 'fodder', label: 'Fodder', labelMessage: entities.tierFodder },
-        ],
-        { labelMessage: entities.threatTier, compact }
-    );
+    return {
+        ...select(
+            'threat-tier',
+            'Threat tier',
+            'threat-tier',
+            [
+                { id: 'named', label: 'Named', labelMessage: entities.tierNamed },
+                { id: 'fodder', label: 'Fodder', labelMessage: entities.tierFodder },
+            ],
+            { labelMessage: entities.threatTier, compact }
+        ),
+        ...(!compact ? { docsPath: DOCS.encounterTiers } : {}),
+    };
 }
 
 function soakRows(compact = false): TemplateField[] {
     return [
-        formula('soak-all', 'Soak (lethal and bashing)', SOAK, {
-            labelMessage: entities.soakAll,
-            visibleWhen: NOT_FODDER,
-            compact,
-        }),
-        formula('soak-bashing', 'Soak (bashing only)', SOAK, {
-            labelMessage: entities.soakBashingOnly,
-            visibleWhen: FODDER,
-            compact,
-        }),
+        {
+            ...formula('soak-all', 'Soak (lethal and bashing)', SOAK, {
+                labelMessage: entities.soakAll,
+                visibleWhen: NOT_FODDER,
+                compact,
+            }),
+            ...(!compact ? { docsPath: DOCS.soak } : {}),
+        },
+        {
+            ...formula('soak-bashing', 'Soak (bashing only)', SOAK, {
+                labelMessage: entities.soakBashingOnly,
+                visibleWhen: FODDER,
+                compact,
+            }),
+            ...(!compact ? { docsPath: DOCS.soak } : {}),
+        },
     ];
 }
 
@@ -123,7 +132,7 @@ function creatureSheet(): CustomTemplate {
             section(
                 'identity',
                 'Identity',
-                DOCS.creatureIdentity,
+                undefined,
                 [
                     group(
                         'creature-identity',
@@ -137,10 +146,13 @@ function creatureSheet(): CustomTemplate {
                             text('field-type', 'Type', 'creature-type', {
                                 labelMessage: fields.type,
                             }),
-                            primitive('field-scale', 'field:scale', {
-                                label: 'Scale',
-                                labelMessage: fields.scale,
-                            }),
+                            {
+                                ...primitive('field-scale', 'field:scale', {
+                                    label: 'Scale',
+                                    labelMessage: fields.scale,
+                                }),
+                                docsPath: DOCS.combatScales,
+                            },
                             text('field-size', 'Size', 'size', { labelMessage: fields.size }),
                             text('field-movement', 'Movement', 'movement', {
                                 labelMessage: entities.movement,
@@ -156,21 +168,27 @@ function creatureSheet(): CustomTemplate {
             section(
                 'condition',
                 'Condition',
-                DOCS.health,
+                undefined,
                 [
                     group(
                         'creature-resolve',
                         'Health and Resolve',
                         [
-                            primitive('damage-track', 'track:members-health', {
-                                label: 'Health',
-                                labelMessage: fields.health,
-                                maxMembers: 24,
-                            }),
-                            primitive('resource-willpower', 'resource:willpower', {
-                                label: 'Willpower',
-                                labelMessage: fields.willpower,
-                            }),
+                            {
+                                ...primitive('damage-track', 'track:members-health', {
+                                    label: 'Health',
+                                    labelMessage: fields.health,
+                                    maxMembers: 24,
+                                }),
+                                docsPath: DOCS.health,
+                            },
+                            {
+                                ...primitive('resource-willpower', 'resource:willpower', {
+                                    label: 'Willpower',
+                                    labelMessage: fields.willpower,
+                                }),
+                                docsPath: DOCS.willpower,
+                            },
                             ...soakRows(),
                         ],
                         { labelMessage: defaults.healthAndResolve }
@@ -201,7 +219,7 @@ function creatureSheet(): CustomTemplate {
             section(
                 'advantages',
                 'Abilities, Merits & Flaws',
-                DOCS.creatureAbilities,
+                undefined,
                 [
                     group(
                         'creature-abilities',
@@ -222,7 +240,7 @@ function creatureSheet(): CustomTemplate {
                                 labelMessage: fields.merits,
                             }),
                         ],
-                        { labelMessage: fields.merits, docsPath: DOCS.creatureMerits }
+                        { labelMessage: fields.merits, docsPath: DOCS.merits }
                     ),
                     group(
                         'creature-flaws-group',
@@ -232,7 +250,7 @@ function creatureSheet(): CustomTemplate {
                                 labelMessage: fields.flaws,
                             }),
                         ],
-                        { labelMessage: fields.flaws }
+                        { labelMessage: fields.flaws, docsPath: DOCS.flaws }
                     ),
                 ],
                 { columns: 3, labelMessage: defaults.abilitiesMeritsFlaws }
@@ -240,7 +258,7 @@ function creatureSheet(): CustomTemplate {
             section(
                 'combat',
                 'Combat',
-                DOCS.creatureCombat,
+                undefined,
                 [
                     group(
                         'creature-armor',
@@ -259,7 +277,7 @@ function creatureSheet(): CustomTemplate {
                                 { labelMessage: fields.dexterityModifier }
                             ),
                         ],
-                        { column: 1, columns: 3, labelMessage: fields.armor }
+                        { column: 1, columns: 3, labelMessage: fields.armor, docsPath: DOCS.armor }
                     ),
                     group(
                         'creature-attacks',
@@ -271,7 +289,7 @@ function creatureSheet(): CustomTemplate {
                                 labelMessage: fields.attacks,
                             }),
                         ],
-                        { column: 2, labelMessage: fields.attacks, docsPath: DOCS.combatScales }
+                        { column: 2, labelMessage: fields.attacks, docsPath: DOCS.creatureAttacks }
                     ),
                 ],
                 { columns: 2, labelMessage: fields.combat }
@@ -279,7 +297,7 @@ function creatureSheet(): CustomTemplate {
             section(
                 'details',
                 'Details',
-                DOCS.bestiary,
+                undefined,
                 [
                     group(
                         'creature-details',
@@ -362,7 +380,7 @@ function creatureBrief(): CustomTemplate {
                         labelMessage: fields.attacks,
                     }),
                 ],
-                { labelMessage: fields.attacks }
+                { labelMessage: fields.attacks, docsPath: DOCS.creatureAttacks }
             ),
             group(
                 'brief-health',

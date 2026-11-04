@@ -61,7 +61,7 @@ import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { BriefGroupContext, useBriefPage } from './areaLayout';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
-import { FieldHelpMark, FieldHelpProvider } from './FieldHelp';
+import { FieldHelpLayout, FieldHelpMark, FieldHelpProvider, useFieldHelpMark } from './FieldHelp';
 import { PageScopeContext } from './PageScope';
 import { PoolTracker, ScoreTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
@@ -241,7 +241,17 @@ function TraitListBindingView({
 }
 
 /** System-bound list rendered with the same molecules the built-in page uses. */
-function SystemListBody({
+function SystemListBody(props: Parameters<typeof SystemListContent>[0] & { hideLabel?: boolean }) {
+    const help = useFieldHelpMark();
+    if (!help) return <SystemListContent {...props} />;
+    return (
+        <FieldHelpLayout label={props.showTitle && !props.hideLabel ? props.title : undefined}>
+            <SystemListContent {...props} showTitle={false} docsPath={undefined} />
+        </FieldHelpLayout>
+    );
+}
+
+function SystemListContent({
     binding,
     disabled,
     title,
@@ -384,14 +394,16 @@ export function SystemListView({
         );
     }
     return (
-        <SystemListBody
-            binding={descriptor}
-            disabled={disabled}
-            title={list.title ?? descriptor.label}
-            columns={list.columns as 1 | 2 | 3 | 4}
-            showTitle={list.showTitle}
-            framed={list.framed}
-        />
+        <FieldHelpProvider node={list} label={list.title ?? descriptor.label} binding={descriptor}>
+            <SystemListBody
+                binding={descriptor}
+                disabled={disabled}
+                title={list.title ?? descriptor.label}
+                columns={list.columns as 1 | 2 | 3 | 4}
+                showTitle={list.showTitle}
+                framed={list.framed}
+            />
+        </FieldHelpProvider>
     );
 }
 
@@ -552,10 +564,11 @@ function EquipmentView({
     node: PrimitiveNode;
     descriptor: DocumentBindingDescriptor;
 }) {
+    const help = useFieldHelpMark();
     if (descriptor.kind !== 'equipment') {
         return <DegradedBinding bindingKey={node.bindingKey} reason="wrong-binding-kind" />;
     }
-    return descriptor.dataKey ? (
+    const body = descriptor.dataKey ? (
         <BoundEquipmentBody
             sectionId={descriptor.sectionId}
             dataKey={descriptor.dataKey}
@@ -563,6 +576,11 @@ function EquipmentView({
         />
     ) : (
         <CharacterEquipmentBody sectionId={descriptor.sectionId} />
+    );
+    return (
+        <FieldHelpLayout label={help && !node.hideLabel ? node.label : undefined}>
+            {body}
+        </FieldHelpLayout>
     );
 }
 
@@ -936,6 +954,7 @@ function PrimitiveFieldBody({
             <label className="flex items-center gap-2 text-sm text-textPrimary">
                 <input
                     type="checkbox"
+                    aria-label={label}
                     checked={raw === true}
                     disabled={readOnly}
                     onChange={(event) =>
@@ -1047,6 +1066,8 @@ function PrimitiveNodeBody({
                 <SystemListBody
                     binding={descriptor}
                     disabled={readOnly}
+                    hideLabel={node.hideLabel}
+                    showTitle={node.label !== undefined}
                     title={
                         node.label ??
                         (descriptor.translation

@@ -132,11 +132,13 @@ export function DocsPreviewLink({
     docsPath,
     label,
     title,
+    size = 'md',
 }: {
     docsPath: string;
     label: string;
     /** What the link is about, named in the card's label. */
     title: string;
+    size?: 'sm' | 'md';
 }) {
     const [href, setHref] = useState<string>();
     const open = href !== undefined;
@@ -144,6 +146,7 @@ export function DocsPreviewLink({
         <DocsHelpLink
             docsPath={docsPath}
             label={label}
+            size={size}
             expanded={open}
             onPlainClick={(next) => setHref(open ? undefined : next)}
         />
@@ -152,7 +155,7 @@ export function DocsPreviewLink({
     return (
         <Popover.Root open={open} onOpenChange={(next) => !next && setHref(undefined)}>
             <Popover.Anchor asChild>
-                <span className="inline-flex">{link}</span>
+                <span className="inline-flex shrink-0 align-middle">{link}</span>
             </Popover.Anchor>
             <Popover.Portal container={modalRoot()}>
                 <Popover.Content

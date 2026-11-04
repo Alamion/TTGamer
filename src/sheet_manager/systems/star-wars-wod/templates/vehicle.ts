@@ -140,7 +140,7 @@ function vehicleSheet(): CustomTemplate {
             section(
                 'identity',
                 'Identification',
-                DOCS.vehicleSheet,
+                undefined,
                 [
                     group(
                         'vehicle-identity',
@@ -153,10 +153,13 @@ function vehicleSheet(): CustomTemplate {
                                 labelMessage: entities.category,
                             }),
                             textAt('owner', 'Owner', fields.owner),
-                            primitive('field-scale', 'field:scale', {
-                                label: 'Scale',
-                                labelMessage: fields.scale,
-                            }),
+                            {
+                                ...primitive('field-scale', 'field:scale', {
+                                    label: 'Scale',
+                                    labelMessage: fields.scale,
+                                }),
+                                docsPath: DOCS.vehicleScale,
+                            },
                         ],
                         { columns: 3, hideTitle: true, labelMessage: entities.identification }
                     ),
@@ -166,7 +169,7 @@ function vehicleSheet(): CustomTemplate {
             section(
                 'capacity',
                 'Crew & capacity',
-                DOCS.vehicleSheet,
+                DOCS.vehicleCapacity,
                 [
                     group(
                         'vehicle-capacity',
@@ -195,14 +198,17 @@ function vehicleSheet(): CustomTemplate {
                             ...SYSTEM_RATINGS.map(([coordinate, label, message]) =>
                                 rating(coordinate, label, message)
                             ),
-                            toggle(
-                                'field-durability-reroll',
-                                'Reroll 10s on Durability',
-                                'durability-reroll',
-                                {
-                                    labelMessage: entities.durabilityReroll,
-                                }
-                            ),
+                            {
+                                ...toggle(
+                                    'field-durability-reroll',
+                                    'Reroll 10s on Durability',
+                                    'durability-reroll',
+                                    {
+                                        labelMessage: entities.durabilityReroll,
+                                    }
+                                ),
+                                docsPath: DOCS.durabilityRerolls,
+                            },
                         ],
                         { column: 1, labelMessage: fields.systems }
                     ),
@@ -247,7 +253,7 @@ function vehicleSheet(): CustomTemplate {
                         {
                             column: 2,
                             labelMessage: entities.systemSlots,
-                            docsPath: DOCS.vehicleDamage,
+                            docsPath: DOCS.systemSlots,
                         }
                     ),
                     group(
@@ -260,7 +266,12 @@ function vehicleSheet(): CustomTemplate {
                                 labelMessage: fields.configuration,
                             }),
                         ],
-                        { column: 2, defaultCollapsed: true, labelMessage: fields.configuration }
+                        {
+                            column: 2,
+                            defaultCollapsed: true,
+                            labelMessage: fields.configuration,
+                            docsPath: DOCS.vehicleConfiguration,
+                        }
                     ),
                     group(
                         'vehicle-modifications-group',
@@ -318,7 +329,7 @@ function vehicleSheet(): CustomTemplate {
             section(
                 'combat',
                 'Combat',
-                DOCS.vehicleWeapons,
+                undefined,
                 [
                     group(
                         'vehicle-weapons',
@@ -356,7 +367,7 @@ function vehicleSheet(): CustomTemplate {
             section(
                 'details',
                 'Details',
-                DOCS.vehicleCatalog,
+                undefined,
                 [
                     group(
                         'vehicle-details',
@@ -416,7 +427,7 @@ function vehicleBrief(): CustomTemplate {
                     { ...textAt('speed', 'Speed', fields.speed, true), column: 2 },
                     { ...textAt('altitude', 'Altitude', fields.altitude, true), column: 2 },
                 ],
-                { columns: 2, labelMessage: fields.systems }
+                { columns: 2, labelMessage: fields.systems, docsPath: DOCS.vehicleAttributes }
             ),
             group(
                 'brief-weapons',
@@ -428,7 +439,7 @@ function vehicleBrief(): CustomTemplate {
                         labelMessage: fields.weapons,
                     }),
                 ],
-                { labelMessage: fields.weapons }
+                { labelMessage: fields.weapons, docsPath: DOCS.vehicleWeapons }
             ),
             group(
                 'brief-crew',
@@ -436,7 +447,12 @@ function vehicleBrief(): CustomTemplate {
                 crewStations().filter(
                     (node) => node.id === 'crew-pilot' || node.id === 'crew-gunners'
                 ),
-                { columns: 2, collapsible: true, labelMessage: entities.crewStations }
+                {
+                    columns: 2,
+                    collapsible: true,
+                    labelMessage: entities.crewStations,
+                    docsPath: DOCS.crewRoles,
+                }
             ),
             group('brief-damage', 'Damage', [damageTrack(true)], {
                 hideTitle: true,

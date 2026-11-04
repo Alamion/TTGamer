@@ -5,6 +5,7 @@ import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 
 import { leafContracts } from './helpers/leafContracts';
+import { withoutHelpMetadata } from './helpers/withoutHelpMetadata';
 
 /**
  * Spec 042: the shipped full sheets change their layout only. Every field keeps what it binds,
@@ -28,7 +29,9 @@ const sectionTitles = (id: string) =>
 describe('the layout of the shipped full sheets (spec 042)', () => {
     for (const id of Object.keys(before)) {
         it(`${id} keeps every field's binding, formula, and roll`, () => {
-            expect(leafContracts(shipped(id))).toEqual(before[id]);
+            expect(withoutHelpMetadata(leafContracts(shipped(id)))).toEqual(
+                withoutHelpMetadata(before[id])
+            );
         });
     }
 

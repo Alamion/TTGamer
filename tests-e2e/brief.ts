@@ -1,8 +1,12 @@
 import type { Page } from '@playwright/test';
 
 /** Creates a document of one kind (its `data-kind` in the create dialog) and leaves it open. */
-export async function createDocument(page: Page, definition: string): Promise<void> {
-    await page.goto('/universal_sheet');
+export async function createDocument(
+    page: Page,
+    definition: string,
+    { navigate = true }: { navigate?: boolean } = {}
+): Promise<void> {
+    if (navigate) await page.goto('/universal_sheet');
     await page.getByRole('button', { name: 'New', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Create document' });
     // The settings inside a ruleset start folded.

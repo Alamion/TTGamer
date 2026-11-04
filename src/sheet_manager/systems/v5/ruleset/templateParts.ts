@@ -33,19 +33,37 @@ const defaults = uiMessages.sheet.templates.defaults;
 
 type Message = { id: string; message: string };
 
-/** Rules pages linked from section and group headers. */
+/** Shared help targets for V5 page nodes. */
 export const V5_DOCS = {
     attributes: '/docs/wod-v5/rules/attributes-skills',
-    skills: '/docs/wod-v5/rules/attributes-skills#specialties',
-    damage: '/docs/wod-v5/rules/damage-willpower',
+    skills: '/docs/wod-v5/rules/attributes-skills#skills',
+    health: '/docs/wod-v5/rules/damage-willpower#health',
+    willpower: '/docs/wod-v5/rules/damage-willpower#willpower',
+    advantages: '/docs/wod-v5/rules/advantages-flaws#advantages',
+    flaws: '/docs/wod-v5/rules/advantages-flaws#flaws',
+    touchstones: '/docs/wod-v5/rules/convictions-touchstones#touchstones-and-convictions',
+    chronicle: '/docs/wod-v5/rules/convictions-touchstones#chronicle-tenets',
+    weapons: '/docs/wod-v5/rules/weapons-gear#weapons',
+    experience: '/docs/wod-v5/rules/experience#experience',
+    references: '/docs/guide/template-editor/elements#references',
+    resourceTracking: '/docs/guide/sheet#resource-tracking',
 } as const;
 
 export const v5Text = (
     id: string,
     coordinate: string,
     label: Message,
-    options: { multiline?: boolean; compact?: boolean; hideLabel?: boolean; column?: number } = {}
-) => text(`${id}-field`, label.message, coordinate, { labelMessage: label, ...options });
+    options: {
+        multiline?: boolean;
+        compact?: boolean;
+        hideLabel?: boolean;
+        column?: number;
+        docsPath?: string;
+    } = {}
+) => ({
+    ...text(`${id}-field`, label.message, coordinate, { labelMessage: label, ...options }),
+    ...(options.docsPath ? { docsPath: options.docsPath } : {}),
+});
 
 function traitGroupNodes(
     groups: readonly V5TraitGroup[],
@@ -110,6 +128,7 @@ export function compactTraitsGroup(
             {
                 columns: 3,
                 labelMessage: label,
+                docsPath: V5_DOCS[id],
                 collapsible: options.collapsible ?? false,
             }
         )
@@ -178,7 +197,7 @@ export function biographyGroup(column: number): GroupNode {
 /** A Health or Willpower group: the track as a line of boxes under the group title. */
 export function trackGroup(
     id: 'health' | 'willpower',
-    options: { compact?: boolean; column?: number } = {}
+    options: { compact?: boolean; column?: number; help?: boolean } = {}
 ): GroupNode {
     const label = v5.sections[id];
     const compact = options.compact ?? false;
@@ -186,34 +205,37 @@ export function trackGroup(
         id,
         label.message,
         [
-            primitive(`${id}-track`, `track:${id}`, {
-                label: label.message,
-                labelMessage: label,
-                hideLabel: !compact,
-                compact,
-            }),
+            {
+                ...primitive(`${id}-track`, `track:${id}`, {
+                    label: label.message,
+                    labelMessage: label,
+                    hideLabel: !compact,
+                    compact,
+                }),
+                ...(compact && options.help !== false ? { docsPath: V5_DOCS[id] } : {}),
+            },
         ],
         {
             ...(options.column ? { column: options.column } : {}),
             hideTitle: compact,
-            docsPath: V5_DOCS.damage,
+            docsPath: !compact && options.help !== false ? V5_DOCS[id] : undefined,
             labelMessage: label,
         }
     );
 }
 
-export function advantagesSection(): SectionNode {
+export function advantagesSection(docsPath?: string): SectionNode {
     const meritList = (id: 'advantages' | 'flaws', column: number) =>
         group(
             `${id}-group`,
             v5.sections[id].message,
             [list(`${id}-list`, { bindingKey: `list:${id}` }, v5.sections[id].message)],
-            { column, labelMessage: v5.sections[id] }
+            { column, labelMessage: v5.sections[id], docsPath: docsPath ? undefined : V5_DOCS[id] }
         );
     return section(
         'advantages',
         v5.sections.advantagesFlaws.message,
-        undefined,
+        docsPath,
         [meritList('advantages', 1), meritList('flaws', 2)],
         { columns: 2, labelMessage: v5.sections.advantagesFlaws }
     );
@@ -230,7 +252,7 @@ export function touchstonesGroup(column: number): GroupNode {
                 hideLabel: true,
             }),
         ],
-        { column, labelMessage: v5.sections.touchstones }
+        { column, labelMessage: v5.sections.touchstones, docsPath: V5_DOCS.touchstones }
     );
 }
 
@@ -244,28 +266,37 @@ export function chronicleGroup(column: number): GroupNode {
                 hideLabel: true,
             }),
         ],
-        { column, collapsible: true, labelMessage: v5.fields.chronicleTenets }
+        {
+            column,
+            collapsible: true,
+            labelMessage: v5.fields.chronicleTenets,
+            docsPath: V5_DOCS.chronicle,
+        }
     );
 }
 
 /** One equipment group (the Star Wars item cards over the character's own item list). */
 export function equipmentGroup(
     id: 'weapons' | 'inventory',
-    options: { column?: number; collapsible?: boolean } = {}
+    options: { column?: number; collapsible?: boolean; docsPath?: string } = {}
 ): GroupNode {
     return group(id, v5.sections[id].message, [primitive(`${id}-items`, `equipment:${id}`)], {
         ...(options.column ? { column: options.column } : {}),
         collapsible: options.collapsible ?? true,
         labelMessage: v5.sections[id],
+        docsPath: options.docsPath ?? (id === 'weapons' ? V5_DOCS.weapons : undefined),
     });
 }
 
-export function equipmentSection(): SectionNode {
+export function equipmentSection(weaponsDocsPath: string = V5_DOCS.weapons): SectionNode {
     return section(
         'equipment',
         v5.sections.equipment.message,
         undefined,
-        [equipmentGroup('weapons', { column: 1 }), equipmentGroup('inventory', { column: 2 })],
+        [
+            equipmentGroup('weapons', { column: 1, docsPath: weaponsDocsPath }),
+            equipmentGroup('inventory', { column: 2 }),
+        ],
         { columns: 2, labelMessage: v5.sections.equipment }
     );
 }
@@ -300,7 +331,7 @@ export function otherSection(): SectionNode {
                         { labelMessage: v5.fields.experienceLeft }
                     ),
                 ],
-                { column: 1, labelMessage: v5.sections.experience }
+                { column: 1, labelMessage: v5.sections.experience, docsPath: V5_DOCS.experience }
             ),
             group(
                 'notes',
@@ -325,9 +356,12 @@ export const tracked = <T extends TemplateNode>(node: T): T => ({ ...node, visib
 
 /** The switch an antagonist's sheet turns off to stop tracking Hunger and Willpower. */
 export function trackResourcesToggle(label: Message, compact = false) {
-    return primitive('track-resources', 'field:track-resources', {
-        label: label.message,
-        labelMessage: label,
-        compact,
-    });
+    return {
+        ...primitive('track-resources', 'field:track-resources', {
+            label: label.message,
+            labelMessage: label,
+            compact,
+        }),
+        docsPath: V5_DOCS.resourceTracking,
+    };
 }

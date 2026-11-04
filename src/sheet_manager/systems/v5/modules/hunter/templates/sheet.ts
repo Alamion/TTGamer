@@ -37,10 +37,18 @@ const hunter = uiMessages.sheet.v5Hunter;
 
 export const HUNTER_DOCS = {
     creedDrive: '/docs/wod-v5/hunter/first-hunter/creed-drive',
-    cell: '/docs/wod-v5/hunter/reference/desperation-danger-despair',
+    hunter: '/docs/wod-v5/hunter#hunter-the-reckoning-5e',
+    cell: '/docs/wod-v5/hunter/first-hunter/what-is-a-hunter#the-cell',
+    despair:
+        '/docs/wod-v5/hunter/reference/desperation-danger-despair#despair--when-the-drive-breaks',
+    desperation:
+        '/docs/wod-v5/hunter/reference/desperation-danger-despair#desperation--how-far-the-cell-will-go',
+    danger: '/docs/wod-v5/hunter/reference/desperation-danger-despair#danger--how-much-the-monsters-know',
+    creedFields: '/docs/wod-v5/hunter/first-hunter/creed-drive#creed-fields',
+    chronicle: '/docs/wod-v5/hunter/first-hunter/touchstones#chronicle-tenets',
     edges: '/docs/wod-v5/hunter/first-hunter/edges-perks',
     advantages: '/docs/wod-v5/hunter/reference/advantages-flaws',
-    equipment: '/docs/wod-v5/hunter/reference/weapons-gear',
+    weapons: '/docs/wod-v5/hunter/reference/weapons-gear#weapons',
     aims: '/docs/wod-v5/hunter/first-hunter/concept-ambition-desire',
     touchstones: '/docs/wod-v5/hunter/first-hunter/touchstones',
 } as const;
@@ -53,9 +61,18 @@ export function hunterIdentityGroup(options: { compact?: boolean; column?: numbe
         v5.sections.identity.message,
         [
             v5Text('name', 'name', v5.fields.name, { compact }),
-            v5Text('concept', 'concept', hunter.fields.concept, { compact }),
-            v5Text('creed', 'creed', hunter.fields.creed, { compact }),
-            v5Text('drive', 'drive', hunter.fields.drive, { compact }),
+            v5Text('concept', 'concept', hunter.fields.concept, {
+                compact,
+                docsPath: HUNTER_DOCS.aims,
+            }),
+            v5Text('creed', 'creed', hunter.fields.creed, {
+                compact,
+                docsPath: HUNTER_DOCS.creedDrive,
+            }),
+            v5Text('drive', 'drive', hunter.fields.drive, {
+                compact,
+                docsPath: HUNTER_DOCS.creedDrive,
+            }),
             trackResourcesToggle(hunter.fields.trackResources, compact),
             ...(compact ? [] : [{ ...memberOfField(), span: 2 }]),
         ],
@@ -63,7 +80,6 @@ export function hunterIdentityGroup(options: { compact?: boolean; column?: numbe
             ...(options.column ? { column: options.column } : {}),
             columns: compact ? 4 : 2,
             hideTitle: true,
-            docsPath: HUNTER_DOCS.creedDrive,
             labelMessage: v5.sections.identity,
         }
     );
@@ -76,20 +92,29 @@ export function hunterCellGroup(options: { compact?: boolean; column?: number } 
         'cell',
         hunter.sections.cell.message,
         [
-            toggle('despair-field', hunter.fields.despair.message, 'despair', {
-                labelMessage: hunter.fields.despair,
-                compact,
-            }),
-            primitive('desperation', 'resource:desperation', {
-                label: hunter.fields.desperation.message,
-                labelMessage: hunter.fields.desperation,
-                compact,
-            }),
-            primitive('danger', 'resource:danger', {
-                label: hunter.fields.danger.message,
-                labelMessage: hunter.fields.danger,
-                compact,
-            }),
+            {
+                ...toggle('despair-field', hunter.fields.despair.message, 'despair', {
+                    labelMessage: hunter.fields.despair,
+                    compact,
+                }),
+                docsPath: HUNTER_DOCS.despair,
+            },
+            {
+                ...primitive('desperation', 'resource:desperation', {
+                    label: hunter.fields.desperation.message,
+                    labelMessage: hunter.fields.desperation,
+                    compact,
+                }),
+                docsPath: HUNTER_DOCS.desperation,
+            },
+            {
+                ...primitive('danger', 'resource:danger', {
+                    label: hunter.fields.danger.message,
+                    labelMessage: hunter.fields.danger,
+                    compact,
+                }),
+                docsPath: HUNTER_DOCS.danger,
+            },
         ],
         {
             ...(options.column ? { column: options.column } : {}),
@@ -104,7 +129,7 @@ function hunterSection(): SectionNode {
     return section(
         'hunter',
         hunter.sections.hunter.message,
-        undefined,
+        HUNTER_DOCS.hunter,
         [portraitGroup(1, PORTRAIT_SHOWN), hunterIdentityGroup({ column: 2 }), biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: hunter.sections.hunter }
     );
@@ -178,7 +203,12 @@ export function hunterEdgesGroup(): GroupNode {
                 column: 2,
             }),
         ],
-        { columns: 2, collapsible: true, labelMessage: hunter.sections.edges }
+        {
+            columns: 2,
+            collapsible: true,
+            labelMessage: hunter.sections.edges,
+            docsPath: HUNTER_DOCS.edges,
+        }
     );
 }
 
@@ -207,6 +237,7 @@ function hunterPurposeSection(): SectionNode {
                     }),
                     v5Text('creed-fields', 'creed-fields', hunter.fields.creedFields, {
                         multiline: true,
+                        docsPath: HUNTER_DOCS.creedFields,
                     }),
                 ],
                 {
@@ -216,7 +247,7 @@ function hunterPurposeSection(): SectionNode {
                 }
             ),
             { ...touchstonesGroup(2), docsPath: HUNTER_DOCS.touchstones },
-            chronicleGroup(2),
+            { ...chronicleGroup(2), docsPath: HUNTER_DOCS.chronicle },
         ],
         { columns: 2, labelMessage: hunter.sections.purpose }
     );
@@ -236,8 +267,8 @@ export const hunterSheetTemplate: CustomTemplate = {
         skillsSection(),
         hunterEdgesSection(),
         hunterPurposeSection(),
-        { ...advantagesSection(), docsPath: HUNTER_DOCS.advantages },
-        { ...equipmentSection(), docsPath: HUNTER_DOCS.equipment },
+        advantagesSection(HUNTER_DOCS.advantages),
+        equipmentSection(HUNTER_DOCS.weapons),
         otherSection(),
     ],
 };

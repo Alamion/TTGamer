@@ -6,6 +6,7 @@ import {
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { HANDWRITTEN_STORIES } from '@site/src/sheet_manager/storybook/stories';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
+import type { DocumentBindingDescriptor } from '@site/src/sheet_manager/systems/templateBindings';
 import { listDocumentBindings } from '@site/src/sheet_manager/systems/templateBindings';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import {
@@ -87,14 +88,7 @@ describe('field help resolution', () => {
     });
     it('classifies primitives by the control they draw', () => {
         const node = { id: 'p', type: 'primitive', bindingKey: 'track:health' } as const;
-        const previous = ELEMENT_HELP.tracker;
-        ELEMENT_HELP.tracker = '/docs/guide/notes#syntax';
-        try {
-            expect(elementHelpFor(node)).toBe(ELEMENT_HELP.tracker);
-        } finally {
-            if (previous === undefined) delete ELEMENT_HELP.tracker;
-            else ELEMENT_HELP.tracker = previous;
-        }
+        expect(elementHelpFor(node)).toBe('/docs/guide/template-editor/elements#trackers');
     });
 });
 
@@ -174,3 +168,194 @@ it.each(['trait', 'resource', 'track', 'field', 'rows'] as const)(
         expect(link.parentElement?.parentElement?.textContent).toContain(descriptor.label);
     }
 );
+
+const approvedTargets = {
+    rating: '/docs/guide/template-editor/elements#rating',
+    'pool-resource': '/docs/guide/sheet#resources',
+    'pool-tracker': '/docs/guide/sheet#resources',
+    tracker: '/docs/guide/template-editor/elements#trackers',
+    formula: '/docs/guide/template-editor/values#formulas',
+    reference: '/docs/guide/template-editor/elements#references',
+    'catalog-choice': '/docs/guide/template-editor/values#catalogs',
+    table: '/docs/guide/template-editor/elements#tables',
+    'built-in-rows': '/docs/guide/template-editor/elements#tables',
+    'trait-list': '/docs/guide/template-editor/elements#lists',
+    'named-trait-list': '/docs/guide/template-editor/elements#lists',
+    'merit-flaw-list': '/docs/guide/template-editor/elements#lists',
+    equipment: '/docs/guide/sheet#equipment',
+    'trait-dots': '/docs/guide/template-editor/elements#rating',
+    'trait-dots-specialty': '/docs/guide/template-editor/elements#rating',
+    'trait-number': '/docs/guide/template-editor/elements#rating',
+    'equipment-weapons': '/docs/guide/sheet#equipment',
+    'equipment-inventory': '/docs/guide/sheet#equipment',
+    markdown: '/docs/guide/template-editor/elements#markdown',
+    mentions: '/docs/guide/template-editor/elements#mentions',
+    image: '/docs/guide/template-editor/elements#images',
+    list: '/docs/guide/template-editor/elements#lists',
+    resource: '/docs/guide/sheet#resources',
+} as const;
+type ApprovedType = keyof typeof approvedTargets;
+
+const bindingSamples = systemRegistry.getSystems().flatMap((system) =>
+    system.documents.flatMap((definition) =>
+        listDocumentBindings(system.id, definition.kind).map((binding) => ({
+            systemId: system.id,
+            definition,
+            binding,
+        }))
+    )
+);
+
+function matchesControl(type: ApprovedType, binding: DocumentBindingDescriptor): boolean {
+    switch (type) {
+        case 'pool-resource':
+        case 'pool-tracker':
+            return binding.kind === 'resource' && binding.mode === 'pool';
+        case 'tracker':
+            return binding.kind === 'track';
+        case 'built-in-rows':
+            return binding.kind === 'rows';
+        case 'trait-list':
+            return binding.kind === 'list' && binding.entryShape === 'trait';
+        case 'named-trait-list':
+            return binding.kind === 'list' && binding.entryShape === 'named-trait';
+        case 'merit-flaw-list':
+            return binding.kind === 'list' && binding.entryShape === 'merit-flaw';
+        case 'equipment':
+            return binding.kind === 'equipment' && binding.sectionId === 'armor';
+        case 'equipment-weapons':
+            return binding.kind === 'equipment' && binding.sectionId === 'weapons';
+        case 'equipment-inventory':
+            return binding.kind === 'equipment' && binding.sectionId === 'inventory';
+        case 'trait-dots':
+            return (
+                binding.kind === 'trait' &&
+                binding.presentation !== 'number' &&
+                binding.row?.specialization === false
+            );
+        case 'trait-dots-specialty':
+            return (
+                binding.kind === 'trait' &&
+                binding.presentation !== 'number' &&
+                binding.row?.specialization !== false
+            );
+        case 'trait-number':
+            return binding.kind === 'trait' && binding.presentation === 'number';
+        default:
+            return false;
+    }
+}
+
+/** Every control is placed in a new user template, with real bindings for system-owned controls. */
+function mountApproved(type: ApprovedType, extra: Record<string, unknown> = {}, brief = false) {
+    const source = bindingSamples.find(({ binding }) => matchesControl(type, binding));
+    let node: Record<string, unknown>;
+    if (source) {
+        const { systemId, definition, binding } = source;
+        useDocumentStore.setState({
+            documents: [
+                {
+                    id: 'help-document',
+                    kind: definition.kind,
+                    systemId,
+                    definitionId: definition.id,
+                    schemaVersion: definition.schemaVersion,
+                    metadata: { title: 'Help test', tags: [] },
+                    data: definition.createDefault(),
+                } as never,
+            ],
+            currentDocumentId: 'help-document',
+        });
+        node = {
+            type: 'primitive',
+            bindingKey: binding.key,
+            ...(type === 'pool-tracker' ? { poolTracker: { display: 'row' } } : {}),
+        };
+    } else {
+        expect([
+            'rating',
+            'formula',
+            'reference',
+            'catalog-choice',
+            'table',
+            'markdown',
+            'mentions',
+            'image',
+            'list',
+            'resource',
+        ]).toContain(type);
+        const sample = samples.get(type === 'catalog-choice' ? 'select' : type);
+        expect(sample).toBeDefined();
+        node = { ...sample, docsPath: undefined, hideHelp: undefined };
+        if (type === 'table')
+            node = { type: 'table', columns: [{ id: 'name', type: 'text', label: 'Name' }] };
+        if (type === 'list') node = { type: 'list', showTitle: true };
+        if (type === 'catalog-choice') {
+            node.binding = { catalogId: 'melee-weapons', fills: {} };
+            node.options = [{ id: 'placeholder', label: 'Placeholder' }];
+        }
+    }
+    return mountSheet(
+        CustomTemplateSchema.parse({
+            id: 'user-help-page',
+            name: 'User page',
+            schemaVersion: 4,
+            systemId: source?.systemId ?? (type === 'catalog-choice' ? 'star-wars-wod' : 'general'),
+            documentKind:
+                source?.definition.kind ?? (type === 'catalog-choice' ? 'character' : 'note'),
+            ...(brief ? { pageKind: 'brief' } : {}),
+            children: [
+                {
+                    ...node,
+                    id: 'own-field',
+                    valueKey: 'own-field',
+                    label: 'Journal',
+                    title: 'Journal',
+                    ...extra,
+                },
+            ],
+        })
+    );
+}
+
+describe('approved element defaults', () => {
+    it('contains exactly the reviewed control targets', () => {
+        expect(ELEMENT_HELP).toEqual(approvedTargets);
+    });
+    it.each(Object.keys(approvedTargets) as ApprovedType[])(
+        '%s gives user pages one default mark and briefs none',
+        (type) => {
+            mountApproved(type);
+            expect(screen.getAllByRole('link', { name: 'Documentation for Journal' })).toHaveLength(
+                1
+            );
+            expect(help()?.getAttribute('href')).toBe(approvedTargets[type]);
+            expect(help()?.parentElement?.parentElement?.textContent).toContain('Journal');
+            cleanup();
+            mountApproved(type, {}, true);
+            expect(help()).toBeNull();
+        }
+    );
+    it.each(
+        (Object.keys(approvedTargets) as ApprovedType[]).filter(
+            (type) => type !== 'list' && type !== 'table'
+        )
+    )('%s hides only its default and preserves explicit help on full and brief pages', (type) => {
+        mountApproved(type, { hideHelp: true });
+        expect(help()).toBeNull();
+        for (const brief of [false, true]) {
+            cleanup();
+            mountApproved(type, { hideHelp: true, docsPath: ownPath }, brief);
+            expect(screen.getAllByRole('link', { name: 'Documentation for Journal' })).toHaveLength(
+                1
+            );
+            expect(help()?.getAttribute('href')).toBe(ownPath);
+        }
+    });
+    it.each(['text', 'number', 'toggle', 'select'] as const)(
+        '%s has no default for an ordinary input',
+        (type) => {
+            expect(elementHelpFor({ ...samples.get(type), type } as never)).toBeUndefined();
+        }
+    );
+});

@@ -67,7 +67,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
-import { FieldHelpMark, FieldHelpProvider } from './FieldHelp';
+import { FieldHelpMark, FieldHelpProvider, useFieldHelpMark } from './FieldHelp';
 import { formulaErrorMessage } from './formulaMessages';
 import { useFromCatalogText } from './fromCatalog';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
@@ -495,6 +495,16 @@ function BoundFieldCell({
     );
 }
 
+function TableHelpHeading({ node }: { node: Extract<TemplateNode, { type: 'table' }> }) {
+    const help = useFieldHelpMark();
+    return node.title ? (
+        <h3 className="mb-2 text-sm font-semibold text-textPrimary">
+            {node.title}
+            {help}
+        </h3>
+    ) : null;
+}
+
 function TableBlock({
     node,
     pageApi,
@@ -575,9 +585,9 @@ function TableBlock({
 
     return (
         <div className="overflow-x-auto">
-            {node.title && (
-                <h3 className="mb-2 text-sm font-semibold text-textPrimary">{node.title}</h3>
-            )}
+            <FieldHelpProvider node={node} label={node.title ?? node.id}>
+                <TableHelpHeading node={node} />
+            </FieldHelpProvider>
             <table className="w-full text-sm">
                 <thead>
                     <tr>
@@ -613,7 +623,13 @@ function TableBlock({
                             scope="col"
                             aria-label={translate(editor.remove)}
                             className="w-8 border-b border-border px-1 py-2"
-                        />
+                        >
+                            {!node.title && (
+                                <FieldHelpProvider node={node} label={node.id}>
+                                    <FieldHelpMark />
+                                </FieldHelpProvider>
+                            )}
+                        </th>
                     </tr>
                 </thead>
                 <tbody data-reorder-list="">

@@ -50,6 +50,28 @@ const vampire = uiMessages.sheet.v5Vampire;
 
 export const VAMPIRE_KIND = DocumentKindSchema.parse('vampire');
 
+export const VAMPIRE_DOCS = {
+    vampire: '/docs/wod-v5/vampire/first-vampire/what-is-a-vampire',
+    concept: '/docs/wod-v5/vampire/first-vampire/concept-sire',
+    clan: '/docs/wod-v5/vampire/reference/clans',
+    generation: '/docs/wod-v5/vampire/reference/blood-potency#generation',
+    predatorType: '/docs/wod-v5/vampire/reference/predator-types',
+    chronicle: '/docs/wod-v5/vampire/first-vampire/concept-sire#chronicle',
+    hunger: '/docs/wod-v5/vampire/reference/hunger-rouse',
+    bloodPotency: '/docs/wod-v5/vampire/reference/blood-potency',
+    humanity: '/docs/wod-v5/vampire/reference/humanity-stains',
+    bloodPotencyEffects: '/docs/wod-v5/vampire/reference/blood-potency#what-it-changes',
+    disciplines: '/docs/wod-v5/vampire/reference/disciplines-powers',
+    powers: '/docs/wod-v5/vampire/reference/disciplines-powers#powers',
+    rituals: '/docs/wod-v5/vampire/reference/disciplines-powers#rituals-ceremonies-and-formulas',
+    bane: '/docs/wod-v5/vampire/reference/clans#reading-the-bane',
+    compulsion: '/docs/wod-v5/vampire/reference/hunger-rouse#bestial-failure-and-compulsions',
+    touchstones: '/docs/wod-v5/vampire/first-vampire/convictions-touchstones',
+    tenets: '/docs/wod-v5/vampire/first-vampire/convictions-touchstones#chronicle-tenets',
+    advantages: '/docs/wod-v5/vampire/first-vampire/advantages-flaws',
+    weapons: '/docs/wod-v5/vampire/reference/weapons-gear#weapons',
+} as const;
+
 /** Name, Concept, Clan, Generation, Sire, Predator type, Chronicle. */
 export function vampireIdentityGroup(options: { compact?: boolean; column?: number } = {}) {
     const compact = options.compact ?? false;
@@ -58,22 +80,35 @@ export function vampireIdentityGroup(options: { compact?: boolean; column?: numb
         v5.sections.identity.message,
         [
             v5Text('name', 'name', v5.fields.name, { compact }),
-            v5Text('concept', 'concept', vampire.fields.concept, { compact }),
-            v5Text('clan', 'clan', vampire.fields.clan, { compact }),
-            primitive('generation', 'field:generation', {
-                label: vampire.fields.generation.message,
-                labelMessage: vampire.fields.generation,
+            v5Text('concept', 'concept', vampire.fields.concept, {
                 compact,
+                docsPath: VAMPIRE_DOCS.concept,
             }),
-            v5Text('predator-type', 'predator-type', vampire.fields.predatorType, { compact }),
+            v5Text('clan', 'clan', vampire.fields.clan, { compact, docsPath: VAMPIRE_DOCS.clan }),
+            {
+                ...primitive('generation', 'field:generation', {
+                    label: vampire.fields.generation.message,
+                    labelMessage: vampire.fields.generation,
+                    compact,
+                }),
+                docsPath: VAMPIRE_DOCS.generation,
+            },
+            v5Text('predator-type', 'predator-type', vampire.fields.predatorType, {
+                compact,
+                docsPath: VAMPIRE_DOCS.predatorType,
+            }),
             // What the type gives, under it, labelled (spec 042: no one-field card of its own).
             ...(compact ? [] : [{ ...predatorGrants(), span: 2 }]),
             trackResourcesToggle(vampire.fields.trackResources, compact),
             ...(compact
                 ? []
                 : [
-                      v5Text('sire', 'sire', vampire.fields.sire),
-                      v5Text('chronicle', 'chronicle', vampire.fields.chronicle),
+                      v5Text('sire', 'sire', vampire.fields.sire, {
+                          docsPath: VAMPIRE_DOCS.concept,
+                      }),
+                      v5Text('chronicle', 'chronicle', vampire.fields.chronicle, {
+                          docsPath: VAMPIRE_DOCS.chronicle,
+                      }),
                       { ...memberOfField(), span: 2 },
                   ]),
         ],
@@ -96,7 +131,7 @@ function vampireSection(): SectionNode {
     return section(
         'vampire',
         vampire.sections.vampire.message,
-        undefined,
+        VAMPIRE_DOCS.vampire,
         [portraitGroup(1, PORTRAIT_SHOWN), vampireIdentityGroup({ column: 2 }), biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.vampire }
     );
@@ -109,24 +144,31 @@ export function vampireBloodGroup(options: { compact?: boolean; column?: number 
         'blood',
         vampire.sections.blood.message,
         [
-            tracked(
-                primitive('hunger', 'resource:hunger', {
+            tracked({
+                ...primitive('hunger', 'resource:hunger', {
                     label: vampire.fields.hunger.message,
                     labelMessage: vampire.fields.hunger,
                     compact,
-                })
-            ),
-            primitive('blood-potency', 'resource:blood-potency', {
-                label: vampire.fields.bloodPotency.message,
-                labelMessage: vampire.fields.bloodPotency,
-                compact,
+                }),
+                docsPath: VAMPIRE_DOCS.hunger,
             }),
-            primitive('humanity', 'resource:humanity', {
-                label: vampire.fields.humanity.message,
-                labelMessage: vampire.fields.humanity,
-                compact,
-                poolTracker: humanityTracker(compact),
-            }),
+            {
+                ...primitive('blood-potency', 'resource:blood-potency', {
+                    label: vampire.fields.bloodPotency.message,
+                    labelMessage: vampire.fields.bloodPotency,
+                    compact,
+                }),
+                docsPath: VAMPIRE_DOCS.bloodPotency,
+            },
+            {
+                ...primitive('humanity', 'resource:humanity', {
+                    label: vampire.fields.humanity.message,
+                    labelMessage: vampire.fields.humanity,
+                    compact,
+                    poolTracker: humanityTracker(compact),
+                }),
+                docsPath: VAMPIRE_DOCS.humanity,
+            },
             tracked(rouseButton()),
             remorseButton(),
         ],
@@ -149,6 +191,7 @@ function bloodPotencyGroup(column: number): GroupNode {
             columns: 2,
             collapsible: true,
             labelMessage: vampire.sections.bloodPotency,
+            docsPath: VAMPIRE_DOCS.bloodPotencyEffects,
         }
     );
 }
@@ -180,9 +223,14 @@ function baneGroup(column: number): GroupNode {
                 labelMessage: vampire.fields.baneVariant,
             }),
             baneField(),
-            compulsionField(),
+            { ...compulsionField(), docsPath: VAMPIRE_DOCS.compulsion },
         ],
-        { column, collapsible: true, labelMessage: vampire.sections.bane }
+        {
+            column,
+            collapsible: true,
+            labelMessage: vampire.sections.bane,
+            docsPath: VAMPIRE_DOCS.bane,
+        }
     );
 }
 
@@ -218,7 +266,7 @@ export function vampireDisciplinesSection(): SectionNode {
     return section(
         'disciplines',
         vampire.sections.disciplines.message,
-        undefined,
+        VAMPIRE_DOCS.disciplines,
         [
             group(
                 'discipline-list',
@@ -232,11 +280,17 @@ export function vampireDisciplinesSection(): SectionNode {
                 ],
                 { column: 1, labelMessage: vampire.sections.disciplineList }
             ),
-            rowsGroup('power-list', 'rows:powers', vampire.sections.powers, 2, {}, [
-                powerRouseButton(),
-            ]),
+            rowsGroup(
+                'power-list',
+                'rows:powers',
+                vampire.sections.powers,
+                2,
+                { docsPath: VAMPIRE_DOCS.powers },
+                [powerRouseButton()]
+            ),
             rowsGroup('ritual-list', 'rows:rituals', vampire.sections.rituals, 2, {
                 visibleWhen: RITUALS_VISIBLE,
+                docsPath: VAMPIRE_DOCS.rituals,
             }),
         ],
         { columns: 2, columnWidths: [1, 2], labelMessage: vampire.sections.disciplines }
@@ -257,11 +311,11 @@ function vampirePurposeSection(): SectionNode {
                     v5Text('ambition', 'ambition', vampire.fields.ambition, { multiline: true }),
                     v5Text('desire', 'desire', vampire.fields.desire, { multiline: true }),
                 ],
-                { column: 1, labelMessage: vampire.sections.aims }
+                { column: 1, labelMessage: vampire.sections.aims, docsPath: VAMPIRE_DOCS.concept }
             ),
             baneGroup(1),
-            touchstonesGroup(2),
-            chronicleGroup(2),
+            { ...touchstonesGroup(2), docsPath: VAMPIRE_DOCS.touchstones },
+            { ...chronicleGroup(2), docsPath: VAMPIRE_DOCS.tenets },
         ],
         { columns: 2, labelMessage: vampire.sections.purpose }
     );
@@ -281,8 +335,8 @@ export const vampireSheetTemplate: CustomTemplate = {
         skillsSection(),
         vampireDisciplinesSection(),
         vampirePurposeSection(),
-        advantagesSection(),
-        equipmentSection(),
+        advantagesSection(VAMPIRE_DOCS.advantages),
+        equipmentSection(VAMPIRE_DOCS.weapons),
         otherSection(),
     ],
 };

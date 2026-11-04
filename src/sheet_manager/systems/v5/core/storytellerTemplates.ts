@@ -48,21 +48,35 @@ const bound = (
     id: string,
     bindingKey: string,
     label: { id: string; message: string },
-    options: { compact?: boolean; column?: number; hideLabel?: boolean; shortForm?: boolean } = {}
-) =>
-    primitive(id, bindingKey, {
+    options: {
+        compact?: boolean;
+        column?: number;
+        hideLabel?: boolean;
+        shortForm?: boolean;
+        docsPath?: string;
+    } = {}
+) => ({
+    ...primitive(id, bindingKey, {
         label: label.message,
         labelMessage: label,
         ...options,
-    });
+    }),
+    ...(options.docsPath ? { docsPath: options.docsPath } : {}),
+});
 
 const nameAndType = (compact = false) => [
     v5Text('name', 'name', v5.fields.name, { compact }),
-    bound('storyteller-type', 'field:storyteller-type', storyteller.fields.kind, { compact }),
+    bound('storyteller-type', 'field:storyteller-type', storyteller.fields.kind, {
+        compact,
+        docsPath: `${STORYTELLER_DOCS}#types`,
+    }),
 ];
 
 const concept = (compact = false) =>
-    v5Text('concept', 'concept', storyteller.fields.concept, { compact });
+    v5Text('concept', 'concept', storyteller.fields.concept, {
+        compact,
+        docsPath: `${STORYTELLER_DOCS}#concept`,
+    });
 
 /** The brief's identity: name and type share a row, the concept takes the next one whole. */
 const briefIdentity = () => [
@@ -91,7 +105,10 @@ const simpleFoe = () =>
             }),
             simpleFoeButton(),
         ],
-        { labelMessage: storyteller.sections.simpleFoe }
+        {
+            labelMessage: storyteller.sections.simpleFoe,
+            docsPath: `${STORYTELLER_DOCS}#simple-foes`,
+        }
     );
 
 /** The brief's Physical, Social, and Mental: short chips with their dice. */
@@ -103,6 +120,7 @@ const briefPools = () =>
             bound(`pool-${key}`, `trait:pools:${key}`, storyteller.fields[key], {
                 compact: true,
                 shortForm: true,
+                docsPath: `${STORYTELLER_DOCS}#standard-pools`,
             })
         ),
         { labelMessage: storyteller.sections.pools, hideTitle: true }
@@ -114,7 +132,11 @@ const traitList = (id: 'exceptional' | 'powers', collapsible = false) =>
         id,
         storyteller.sections[id].message,
         [list(`${id}-list`, { bindingKey: `list:${id}` }, storyteller.sections[id].message)],
-        { labelMessage: storyteller.sections[id], collapsible }
+        {
+            labelMessage: storyteller.sections[id],
+            collapsible,
+            docsPath: `${STORYTELLER_DOCS}#${id === 'exceptional' ? 'exceptional-pools' : 'powers'}`,
+        }
     );
 
 const notes = (options: { collapsible?: boolean } = {}) =>
@@ -132,11 +154,13 @@ const notes = (options: { collapsible?: boolean } = {}) =>
 
 const STORYTELLER_DOCS = '/docs/wod-v5/storyteller/storyteller-characters';
 
-const trackRow = (id: 'health' | 'willpower') =>
-    primitive(`${id}-track`, `track:${id}`, {
+const trackRow = (id: 'health' | 'willpower') => ({
+    ...primitive(`${id}-track`, `track:${id}`, {
         label: v5.sections[id].message,
         labelMessage: v5.sections[id],
-    });
+    }),
+    docsPath: V5_DOCS[id],
+});
 
 /**
  * The full sheet's identity card: name and type, the concept, the simple foe's Difficulty with
@@ -149,7 +173,9 @@ const identityCard = () =>
         [
             ...nameAndType(),
             { ...concept(), span: 2 },
-            bound('difficulty', 'field:difficulty', storyteller.fields.difficulty),
+            bound('difficulty', 'field:difficulty', storyteller.fields.difficulty, {
+                docsPath: `${STORYTELLER_DOCS}#simple-foes`,
+            }),
             simpleFoeButton(),
             { ...memberOfField(), span: 2 },
             showPortraitToggle(),
@@ -169,7 +195,10 @@ const standardCard = () =>
             trackRow('health'),
             trackRow('willpower'),
         ],
-        { labelMessage: storyteller.sections.pools, docsPath: V5_DOCS.damage }
+        {
+            labelMessage: storyteller.sections.pools,
+            docsPath: `${STORYTELLER_DOCS}#what-the-sheet-holds`,
+        }
     );
 
 function page(id: string, name: string, children: TemplateNode[], brief = false): CustomTemplate {

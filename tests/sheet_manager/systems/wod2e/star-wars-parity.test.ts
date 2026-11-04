@@ -3,6 +3,7 @@ import { upgradeTemplate } from '@site/src/sheet_manager/types/templateUpgrade';
 import { readFileSync } from 'fs';
 import { describe, expect, it } from 'vitest';
 
+import { withoutHelpMetadata } from '../../helpers/withoutHelpMetadata';
 import { captureStarWarsParity, type StarWarsParitySnapshot, withStableIds } from './parityInputs';
 
 /**
@@ -22,12 +23,14 @@ describe('Star Wars parity across the WoD 2e ruleset split', () => {
     });
 
     it('ships the same pages (in the schema 4 form, spec 041)', () => {
-        expect(current.templates).toEqual(
-            Object.fromEntries(
-                Object.entries(fixture.templates).map(([id, template]) => [
-                    id,
-                    upgradeTemplate(template).template,
-                ])
+        expect(withoutHelpMetadata(current.templates)).toEqual(
+            withoutHelpMetadata(
+                Object.fromEntries(
+                    Object.entries(fixture.templates).map(([id, template]) => [
+                        id,
+                        upgradeTemplate(template).template,
+                    ])
+                )
             )
         );
     });

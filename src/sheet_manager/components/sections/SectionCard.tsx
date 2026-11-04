@@ -39,6 +39,7 @@ export function SectionCard({
                 docsPath={docsPath}
                 label={documentationFor(title ?? '')}
                 title={title ?? ''}
+                size={dense ? 'sm' : 'md'}
             />
         ) : null;
 

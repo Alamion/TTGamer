@@ -36,7 +36,7 @@ import {
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import type { DocumentOption } from './fieldControls';
 import { listEntryShape } from './fieldControls';
-import { FieldHelpProvider } from './FieldHelp';
+import { FieldHelpLayout, FieldHelpProvider, useFieldHelpMark } from './FieldHelp';
 import { formulaErrorMessage } from './formulaMessages';
 import type { CatalogFieldRuntime, MaxState, UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
@@ -263,13 +263,19 @@ function pickedValue(
  * A custom list (value-bag storage): every entry is one copy of the list's entry template, named
  * by the sheet's user when the list is named (spec 016).
  */
-export function CustomListView({
-    list,
-    pageApi,
-}: {
-    list: ListNode;
-    pageApi: UseTemplatePageResult;
-}) {
+export function CustomListView(props: Parameters<typeof CustomListBody>[0]) {
+    return (
+        <FieldHelpProvider
+            node={props.list}
+            label={props.list.title ?? listItemField(props.list).label}
+        >
+            <CustomListBody {...props} />
+        </FieldHelpProvider>
+    );
+}
+
+function CustomListBody({ list, pageApi }: { list: ListNode; pageApi: UseTemplatePageResult }) {
+    const help = useFieldHelpMark();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const userCatalogs = useDocumentTypeStore((state) => state.catalogs);
     const key = listValueKey(list);
@@ -435,14 +441,17 @@ export function CustomListView({
         </div>
     );
     if (list.framed) {
-        return <SectionCard title={list.showTitle ? title : undefined}>{body}</SectionCard>;
+        return (
+            <SectionCard title={help ? undefined : list.showTitle ? title : undefined}>
+                <FieldHelpLayout label={help && list.showTitle ? title : undefined}>
+                    {body}
+                </FieldHelpLayout>
+            </SectionCard>
+        );
     }
     return (
-        <div className="grid grid-cols-1 gap-1">
-            {list.showTitle && list.title && (
-                <h3 className="text-sm font-semibold text-textPrimary">{list.title}</h3>
-            )}
+        <FieldHelpLayout label={list.showTitle && list.title ? title : undefined}>
             {body}
-        </div>
+        </FieldHelpLayout>
     );
 }
