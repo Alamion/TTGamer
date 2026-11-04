@@ -8,6 +8,7 @@ import type { NodeUpdates } from '../model/types';
 import { useDraftIsBrief } from '../session/context';
 import { FormulaField } from '../settings/FormulaField';
 import type { GroupedSettings } from '../settings/groupedSettings';
+import { HelpSettings } from '../settings/HelpSettings';
 import { inputClasses } from '../settings/inputClasses';
 import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
@@ -291,9 +292,14 @@ export function primitiveSettings({
         </>
     );
 
-    const visibility = hasTermHint(node) ? (
-        <TermHintControl node={node} onChange={(termHint) => update({ termHint })} />
-    ) : null;
+    const visibility = (
+        <>
+            <HelpSettings node={node} update={update} />
+            {hasTermHint(node) && (
+                <TermHintControl node={node} onChange={(termHint) => update({ termHint })} />
+            )}
+        </>
+    );
 
     return { content, value, limits, look, visibility };
 }

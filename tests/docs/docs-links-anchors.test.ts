@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { parseDocsLink } from '@site/src/shared/utils/docsLink';
+import { ELEMENT_HELP } from '@site/src/sheet_manager/features/sheet/declarative/elementHelp';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { walkTemplateNodes } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
@@ -54,6 +55,9 @@ function shippedDocsLinks(): Map<string, string[]> {
                 links.set(docsPath, [...users, `${template.id}/${node.id}`]);
             });
         }
+    }
+    for (const [type, target] of Object.entries(ELEMENT_HELP)) {
+        links.set(target, [...(links.get(target) ?? []), `ELEMENT_HELP.${type}`]);
     }
     return links;
 }

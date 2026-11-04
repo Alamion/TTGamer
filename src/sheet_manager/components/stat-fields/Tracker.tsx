@@ -306,6 +306,7 @@ function MarkBox({
 }
 
 export interface TrackerProps {
+    afterLabel?: ReactNode;
     model: TrackerModel;
     disabled: boolean;
     /** A box press: the legend brush's mark (spec 019) or a layer (spec 020 outline action). */
@@ -360,6 +361,7 @@ const dash = (value: string | undefined) => (value ? value : '—');
  */
 export function Tracker({
     model,
+    afterLabel,
     disabled,
     onMark,
     onText,
@@ -514,10 +516,7 @@ export function Tracker({
         if (!column || !copy) return null;
         return (
             <div className="term-row flex items-center justify-between gap-2 py-1">
-                <StatLabel
-                    label={model.label}
-                    className={model.hideLabel ? 'sr-only' : undefined}
-                />
+                <StatLabel label={model.label} hidden={model.hideLabel} afterLabel={afterLabel} />
                 <span className="flex items-center gap-2">
                     <span
                         role="group"
@@ -721,6 +720,7 @@ export function Tracker({
                             >
                                 {ownName ? model.label : name}
                             </span>
+                            {ownName && afterLabel}
                             <span
                                 className={clsx(
                                     'flex flex-wrap items-center',
@@ -837,14 +837,17 @@ export function Tracker({
 
     return (
         <div ref={root} className="grid gap-2">
-            {(showHeaderLabel || toolbar.length > 0) && (
+            {(showHeaderLabel ||
+                (model.display === 'table' && afterLabel) ||
+                toolbar.length > 0) && (
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     {showHeaderLabel ? (
                         <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
                             {model.label}
+                            {afterLabel}
                         </span>
                     ) : (
-                        <span />
+                        <span>{model.display === 'table' && afterLabel}</span>
                     )}
                     {toolbar.length > 0 && (
                         <span className="flex flex-wrap items-center gap-2">{toolbar}</span>

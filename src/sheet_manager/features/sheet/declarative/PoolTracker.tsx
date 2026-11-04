@@ -16,6 +16,7 @@ import {
     type ScoreState,
     scoreTrackerModel,
 } from '../data/poolTracker';
+import { useFieldHelpMark } from './FieldHelp';
 
 /**
  * A pool resource drawn as one tracker (spec 020 US3): fills are the current value, outlines the
@@ -38,6 +39,7 @@ export function PoolTracker({
     disabled: boolean;
     onChange: (next: PoolPair) => void;
 }) {
+    const help = useFieldHelpMark();
     const model = useMemo(
         () => poolTrackerModel({ label, hideLabel, pair, rules, override }),
         [label, hideLabel, pair, rules, override]
@@ -45,6 +47,7 @@ export function PoolTracker({
     return (
         <Tracker
             model={model}
+            afterLabel={help}
             disabled={disabled}
             onMark={(_columnId, _copyId, levelId, click) => {
                 const index = poolBoxIndex(levelId);
@@ -78,6 +81,7 @@ export function ScoreTracker({
     disabled: boolean;
     onChange: (next: ScoreState) => void;
 }) {
+    const help = useFieldHelpMark();
     const [refused, setRefused] = useState(false);
     const shown = fitScore(state, length);
     // At most 20 boxes: built every render.
@@ -97,6 +101,7 @@ export function ScoreTracker({
             </span>
             <Tracker
                 model={model}
+                afterLabel={help}
                 disabled={disabled}
                 onMark={(_columnId, _copyId, levelId, click) => {
                     const index = poolBoxIndex(levelId);

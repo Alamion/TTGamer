@@ -31,36 +31,36 @@ the review is approved (T005).
 **Check**: the section "?" is a link outside the fold button; a field with a docs link and a
 markdown field show a "?" beside their labels; "Hide help" removes the element's.
 
-- [ ] T006 [US4] Write `tests/sheet_manager/section-help.test.tsx` first: the section and group "?"
+- [x] T006 [US4] Write `tests/sheet_manager/section-help.test.tsx` first: the section and group "?"
       is a link named "Documentation for <title>" outside the fold button; clicking it opens the
       card and does not fold; the header folds by click and Enter (FR-008)
-- [ ] T007 [US4] `components/sections/SectionCard.tsx` and `CollapsibleBlock.tsx`: the header as a
+- [x] T007 [US4] `components/sections/SectionCard.tsx` and `CollapsibleBlock.tsx`: the header as a
       row of the fold button and the sibling `DocsPreviewLink` (design D3), full and dense looks;
       update `tests-e2e/smoke/docs-fragment.spec.ts` to find the link by role; remove F-011 from
       `TOFIX.md`
-- [ ] T008 [US4] Write `tests/sheet_manager/field-help.test.tsx` first: field `docsPath` shows its
+- [x] T008 [US4] Write `tests/sheet_manager/field-help.test.tsx` first: field `docsPath` shows its
       mark; an element type in `ELEMENT_HELP` shows its mark; `hideHelp` removes only the element
       help; every control of `declarativeFieldRegistry` draws the mark beside its label (FR-004,
       FR-011)
-- [ ] T009 [US4] `types/template.ts`: `docsPath` and `hideHelp` on field nodes (`fieldBaseShape`)
+- [x] T009 [US4] `types/template.ts`: `docsPath` and `hideHelp` on field nodes (`fieldBaseShape`)
       and on `PrimitiveNodeSchema`; `features/sheet/declarative/elementHelp.ts`: `ELEMENT_HELP`
       (empty but for `markdown`), `elementHelpFor(node)` (by field type or the control a primitive
       draws as; full pages only), `FieldHelpContext`, `FieldHelpMark` named "Documentation for
       <label>", placed after `TermLabel` (design D4, D5)
-- [ ] T010 [US4] Resolve help in the field cell (`DeclarativeSheetView.tsx` / `primitives.tsx`) and
+- [x] T010 [US4] Resolve help in the field cell (`DeclarativeSheetView.tsx` / `primitives.tsx`) and
       draw `FieldHelpMark` beside the label in each control (`fieldControls.tsx`,
       `MarkdownFieldControl.tsx`, `MentionsFieldControl.tsx`, `TrackerFieldControl.tsx`) and the
       labelled primitives
-- [ ] T011 [US4] Editor: `docsPath` for fields and primitives and `hideHelp` (shown for types with
+- [x] T011 [US4] Editor: `docsPath` for fields and primitives and `hideHelp` (shown for types with
       element help) in `features/template-editor/settings/registry.ts`, labels in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`; `shipped-parity.test.tsx` passes
       (design D6)
-- [ ] T012 [US4] Widen `tests/docs/docs-links-anchors.test.ts` to field `docsPath` and
+- [x] T012 [US4] Widen `tests/docs/docs-links-anchors.test.ts` to field `docsPath` and
       `ELEMENT_HELP` targets; storybook: a field with a docs link and a markdown field with its help
       (constitution VI)
-- [ ] T013 [US4] Run `yarn verify:full` (shared component, constitution VII); measure the main and
-      sheet chunks and the sheet timing against `master` in one run (SC-005), record in design.md;
-      commit the story
+- [x] T013 [US4] Run `yarn verify:full` (shared component, constitution VII); measure the main and
+      sheet chunks and the sheet timing against `master` in one run (SC-005), record in design.md
+    - [ ] Commit the story (left to the maintainer; the US4 brief forbids committing)
 
 ## User Story 3 - The docs the links need exist (P2)
 

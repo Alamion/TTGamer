@@ -28,6 +28,7 @@ import { LINKED_FROM_LIMIT, useLinkedFrom } from '../../documents/linkedFrom';
 import { rollNameOf } from '../data/documentLabels';
 import { useBriefPage } from './areaLayout';
 import { useDocumentTraitDiceRoll } from './boundDocument';
+import { useFieldHelpMark } from './FieldHelp';
 import { PoolTracker } from './PoolTracker';
 import { useShortLabel } from './shortLabels';
 
@@ -470,6 +471,7 @@ function RatingFieldControlRender({
     rollLabel,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'rating'> }) {
+    const help = useFieldHelpMark();
     const traitDiceRoll = useDocumentTraitDiceRoll();
     const shown = useDocumentSource().document;
     const characterName = shown ? rollNameOf(shown) : undefined;
@@ -483,6 +485,7 @@ function RatingFieldControlRender({
     if (shortLabel) {
         return (
             <CompactRating
+                afterLabel={help}
                 label={field.label}
                 term={termLinkOf(field)}
                 shortLabel={shortLabel}
@@ -496,6 +499,7 @@ function RatingFieldControlRender({
 
     return (
         <RatingRow
+            afterLabel={help}
             label={field.label}
             term={termLinkOf(field)}
             hideLabel={field.hideLabel}
@@ -525,7 +529,14 @@ function RatingFieldControlRender({
             flagValues={ratingDetail}
             onFlagsChange={(next) => onDetailChange?.({ ...ratingDetail, ...next })}
             characterName={characterName}
-            labelSlot={nameSlot}
+            labelSlot={
+                nameSlot ? (
+                    <>
+                        {nameSlot}
+                        {help}
+                    </>
+                ) : undefined
+            }
             rollLabel={rollLabel}
             removeSlot={removeSlot}
         >
@@ -1028,6 +1039,7 @@ function FormulaFieldControlRender({
     field,
     formulaResult,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'formula'> }) {
+    const help = useFieldHelpMark();
     // Read-only computed value (FR-13): never stored, always recomputed by the hook layer;
     // failures surface as explicit labeled error states, never a silently wrong number.
     const top = fieldLabelPosition(field) === 'top';
@@ -1046,10 +1058,11 @@ function FormulaFieldControlRender({
             <span
                 className={clsx(
                     top ? 'text-xs font-medium text-textSecondary' : 'text-textSecondary',
-                    field.hideLabel && 'sr-only'
+                    field.hideLabel && !help && 'sr-only'
                 )}
             >
-                {field.label}
+                {field.hideLabel ? <span className="sr-only">{field.label}</span> : field.label}
+                {help}
             </span>
             {formulaResult?.state === 'ok' && typeof formulaResult.value === 'string' ? (
                 <span className="text-textPrimary">{formulaText(field, formulaResult.value)}</span>

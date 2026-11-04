@@ -12,6 +12,7 @@ import type { TermLink } from '../terms/termLink';
 interface CompactFieldProps {
     disabled: boolean;
     label: string;
+    afterLabel?: ReactNode;
 }
 
 interface CompactTextFieldProps extends CompactFieldProps {
@@ -20,10 +21,19 @@ interface CompactTextFieldProps extends CompactFieldProps {
 }
 
 /** A text field in a brief: a small label over an underlined value, sharing a row with its kin. */
-export function CompactTextField({ disabled, label, onChange, value }: CompactTextFieldProps) {
+export function CompactTextField({
+    disabled,
+    label,
+    onChange,
+    value,
+    afterLabel,
+}: CompactTextFieldProps) {
     return (
         <label className="grid min-w-24 flex-1 basis-24 gap-0">
-            <span className={BRIEF.caption}>{label}</span>
+            <span className={BRIEF.caption}>
+                {label}
+                {afterLabel}
+            </span>
             <input
                 value={value}
                 disabled={disabled}
@@ -58,6 +68,7 @@ function ShortRating({
     onChange,
     shortLabel,
     term,
+    afterLabel,
     value,
 }: CompactRatingProps & { shortLabel: string }) {
     const settings = useTermHintSettings();
@@ -87,6 +98,7 @@ function ShortRating({
         >
             <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border/70 @md/brief:px-1 @md/brief:text-[10.5px]">
                 {shortLabel}
+                {afterLabel}
             </span>
             <NumberInput
                 min={0}
@@ -116,12 +128,13 @@ export function CompactRating({ trailing, ...props }: CompactRatingProps) {
 }
 
 function CompactRatingBody(props: Omit<CompactRatingProps, 'trailing'>) {
-    const { disabled, label, max = 5, onChange, shortLabel, term, value } = props;
+    const { disabled, label, max = 5, onChange, shortLabel, term, value, afterLabel } = props;
     if (shortLabel) return <ShortRating {...props} shortLabel={shortLabel} />;
     return (
         <label className="term-row term-row-compact flex min-w-0 items-center gap-1.5 text-xs">
             <span className="min-w-0 flex-1 truncate text-textSecondary" title={label}>
                 <TermLabel text={label} {...term} />
+                {afterLabel}
             </span>
             <NumberInput
                 min={0}
@@ -155,11 +168,15 @@ export function CompactResource({
     limit = 10,
     maximum,
     maximumLabel,
+    afterLabel,
     onChange,
 }: CompactResourceProps) {
     return (
         <div className={clsx('flex items-center text-xs', BRIEF.cellGap)}>
-            <span className="min-w-0 truncate text-textSecondary">{label}</span>
+            <span className="min-w-0 truncate text-textSecondary">
+                {label}
+                {afterLabel}
+            </span>
             <NumberInput
                 min={0}
                 max={maximum}

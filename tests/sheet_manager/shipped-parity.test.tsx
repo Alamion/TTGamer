@@ -170,3 +170,51 @@ describe('shipped templates use only what the editor can set (spec 038, SC-003)'
         expect([...missing].sort()).toEqual([]);
     });
 });
+
+it('fields and primitives expose documentation, and markdown exposes Hide help', () => {
+    resetEditorStores();
+    const template = {
+        id: 'help-parity',
+        name: 'Help parity',
+        systemId: 'star-wars-wod',
+        documentKind: 'character',
+        schemaVersion: 4,
+        children: [
+            {
+                id: 'help-field',
+                type: 'text',
+                label: 'Help field',
+                required: false,
+                docsPath: '/docs/guide/notes#syntax',
+            },
+            {
+                id: 'help-markdown',
+                type: 'markdown',
+                label: 'Help markdown',
+                required: false,
+                rows: 8,
+                hideHelp: true,
+            },
+            {
+                id: 'help-primitive',
+                type: 'primitive',
+                bindingKey: 'resource:willpower',
+                docsPath: '/docs/guide/notes#syntax',
+            },
+        ],
+    } as CustomTemplate;
+    renderEditor(template);
+    for (const id of ['help-field', 'help-markdown', 'help-primitive']) {
+        fireEvent.click(
+            [...outlineRow(id).querySelectorAll('button')].find(
+                (button) => !button.hasAttribute('data-drag-handle')
+            )!
+        );
+        openSettingsGroups();
+        const shown = shownSettings(id);
+        expect(shown.has('docsPath')).toBe(true);
+        expect(shown.has('hideHelp')).toBe(id === 'help-markdown');
+    }
+    cleanup();
+    takeSheetIssues();
+});

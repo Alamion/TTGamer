@@ -3,6 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { TemplateNode } from '../../../types/template';
 import { isContainerNode, isTemplateField } from '../../../types/template';
+import { elementHelpFor } from '../../sheet/declarative/elementHelp';
 import type { SettingsGroupId } from './groupedSettings';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -200,9 +201,21 @@ export const SETTINGS = {
     docsPath: {
         group: 'visibility',
         label: editor.docsLink,
-        appliesTo: container,
+        appliesTo: (node) => container(node) || valueElement(node),
+        fieldPanel: true,
         shared: { control: 'text' },
         carry: true,
+    },
+    hideHelp: {
+        group: 'visibility',
+        label: editor.hideHelp,
+        appliesTo: (node) =>
+            (isTemplateField(node) || node.type === 'primitive') &&
+            elementHelpFor(node) !== undefined,
+        shared: { control: 'toggle' },
+        fieldPanel: true,
+        carry: true,
+        unset: false,
     },
     collapsible: { group: 'visibility', label: editor.groupCollapsible },
     defaultCollapsed: {

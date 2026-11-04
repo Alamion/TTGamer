@@ -67,6 +67,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
+import { FieldHelpMark, FieldHelpProvider } from './FieldHelp';
 import { formulaErrorMessage } from './formulaMessages';
 import { useFromCatalogText } from './fromCatalog';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
@@ -120,7 +121,19 @@ function spanClass(span: number, columns: number, proportional: boolean): string
         : `md:col-span-2 ${size === 3 ? 'xl:col-span-3' : 'xl:col-span-4'}`;
 }
 
-function FieldCell({
+function FieldCell(props: {
+    field: TemplateField;
+    pageApi: UseTemplatePageResult;
+    value: unknown;
+}) {
+    return (
+        <FieldHelpProvider node={props.field}>
+            <FieldCellBody {...props} />
+        </FieldHelpProvider>
+    );
+}
+
+function FieldCellBody({
     field: placed,
     pageApi,
     value,
@@ -157,6 +170,9 @@ function FieldCell({
                         type: 'primitive',
                         bindingKey: bridged.key,
                         label: field.label,
+                        docsPath: field.docsPath,
+                        hideHelp: field.hideHelp,
+                        hideLabel: field.hideLabel,
                         ...(field.labelMessage ? { labelMessage: field.labelMessage } : {}),
                         ...(field.termRef ? { termRef: field.termRef } : {}),
                         ...(field.termHint === false ? { termHint: false } : {}),
@@ -187,6 +203,7 @@ function FieldCell({
         return (
             <CompactTextField
                 label={field.label}
+                afterLabel={<FieldHelpMark />}
                 value={typeof value === 'string' ? value : ''}
                 disabled={pageApi.disabled}
                 onChange={(next) => pageApi.setValue(fieldValueKey(field), next)}
@@ -349,7 +366,10 @@ function RatingScoreTracker({
 function CatalogTextOutput({ field, text }: { field: TemplateField; text: string | undefined }) {
     return useBriefPage() ? (
         <div className="grid min-w-24 flex-1 basis-24 gap-0">
-            <span className={BRIEF.caption}>{field.label}</span>
+            <span className={BRIEF.caption}>
+                {field.label}
+                <FieldHelpMark />
+            </span>
             <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
         </div>
     ) : (
@@ -421,6 +441,7 @@ function BoundFieldCell({
         return (
             <CompactTextField
                 label={field.label}
+                afterLabel={<FieldHelpMark />}
                 value={typeof value === 'string' ? value : ''}
                 disabled={readOnly}
                 onChange={onChange}
@@ -430,7 +451,10 @@ function BoundFieldCell({
     if (brief && field.type === 'text' && binding.suggestions) {
         return (
             <label className="grid min-w-24 flex-1 basis-24 gap-0">
-                <span className={BRIEF.caption}>{field.label}</span>
+                <span className={BRIEF.caption}>
+                    {field.label}
+                    <FieldHelpMark />
+                </span>
                 <CatalogSuggest
                     catalog={suggestions}
                     value={typeof value === 'string' ? value : ''}
@@ -570,7 +594,12 @@ function TableBlock({
                                 scope="col"
                                 className="border-b border-border px-2 py-2 text-left text-xs font-semibold text-textSecondary"
                             >
-                                {column.label}
+                                <FieldHelpProvider node={column}>
+                                    <span>
+                                        {column.label}
+                                        <FieldHelpMark />
+                                    </span>
+                                </FieldHelpProvider>
                             </th>
                         ))}
                         {rowButtons.length > 0 && (
@@ -747,7 +776,7 @@ const NodeView = memo(function NodeView({
     showHidden?: boolean;
 }) {
     const template = pageApi.template!;
-    const docsPath = isContainerNode(node) ? node.docsPath : undefined;
+    const docsPath = 'docsPath' in node ? node.docsPath : undefined;
     useEffect(() => {
         // The editor lists a broken link among the draft's issues instead.
         if (showHidden || !docsPath || parseDocsLink(docsPath)) return;

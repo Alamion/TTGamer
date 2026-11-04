@@ -18,6 +18,8 @@ primitives:
     removePreset: Удалить пресет
     degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
+    hideHelp: Скрыть справку
+    hideHelpHint: Скрыть справку по использованию этого элемента. Его собственная ссылка на документацию останется.
     visibleWhen: Показывать только при условии
     elementButton: Кнопка
     paletteButton: Кнопка

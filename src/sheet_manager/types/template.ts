@@ -100,6 +100,8 @@ const fieldBaseShape = {
     ...placementShape,
     /** Keep the label for accessibility and the editor, but do not show it on the page. */
     hideLabel: z.boolean().optional(),
+    docsPath: z.string().max(500).optional(),
+    hideHelp: z.boolean().optional(),
     /** Label above the value or beside it; unset uses the type's default (`fieldLabelPosition`). */
     labelPosition: z.enum(['top', 'left']).optional(),
     description: z.string().max(500).optional(),
@@ -796,6 +798,8 @@ const PrimitiveNodeSchema = z.object({
     ...termShape,
     ...placementShape,
     hideLabel: z.boolean().optional(),
+    docsPath: z.string().max(500).optional(),
+    hideHelp: z.boolean().optional(),
     /** Pool resources: edit the current value (default) or the maximum. */
     part: z.enum(['current', 'max']).optional(),
     /** Dynamic minimum (formula): lower dots are locked and writes never go below it. */

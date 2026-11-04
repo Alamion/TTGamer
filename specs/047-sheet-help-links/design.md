@@ -134,3 +134,56 @@ templates changes before it.
    its "?" is gone.
 6. Russian site: the same cards in Russian.
 7. Phone width: marks fit beside labels; the card opens and scrolls.
+
+## Implementation notes
+
+### US4 (T006–T013), 2026-11-04
+
+- Section, card, and dense-card help uses the existing `DocsPreviewLink` beside the fold button. The
+  fold button retains its own accessible name and native keyboard activation. The browser test
+  scopes the button to the sheet because the documentation card can contain an embedded sheet with
+  the same button name. Dense headings apply their padding and border once, on the header row; all
+  existing brief-height pins remain unchanged.
+- Field and primitive help is resolved by `FieldHelpProvider` into `FieldHelpContext`, with
+  `FieldHelpMark` passed through existing label slots. `LabeledField` already owns the labels for
+  ordinary controls, including Markdown and Mentions, so their marks are drawn there rather than
+  duplicating labels inside those controls. Ratings, trackers, and labelled bound values use their
+  own label slots. Table columns place their mark in the header; list entries use their own help
+  context. Hidden labels retain their previous layout when there is no mark.
+- `elementHelpFor` accepts the resolved binding when a primitive's actual control depends on its
+  descriptor (for example a rating resource versus a pool). `ELEMENT_HELP` contains only Markdown
+  for US4. Full pages use its default unless `hideHelp`; briefs use only explicit `docsPath`.
+  Explicit paths take precedence even with `hideHelp`. No shipped template links or documentation
+  content changed. The editor exposes both optional properties through the existing settings
+  registry and English/Russian YAML sources.
+
+**Verification:** tests were written before implementation. Targeted section, field/control,
+primitive, editor settings/parity, storybook, and anchor checks passed. The final implementation's
+`yarn verify:full` passed in `/tmp/ttgamer047-candidate`: lint, typecheck, all validators, dead
+code, 335 unit files / 3,364 tests, 13 performance files / 20 tests, both locale production builds,
+and 72 browser tests. No tests were skipped or relaxed. Two nonblocking browser pane timings
+reported 231 ms to open a second document (200 ms budget) and 203 ms to move a tab (200 ms budget).
+
+The working-tree `yarn verify:full` stops at Prettier on the pre-existing uncommitted `AGENTS.md`
+edit. As the brief forbids changing it or `.claude/`, verification used an isolated archive of HEAD
+with this story's files overlaid and the committed versions of those protected files. The complete
+verification command was unchanged. No dev server was started on port 3000; browser checks used and
+released their own port 3100. The story remains uncommitted as required by the brief.
+
+**SC-005:** master `4a0a8cb6e8f913d9f84308339772f0b9266768a3` was built in `/tmp/ttgamer047-master`.
+After full verification, both production builds were measured sequentially on the same machine in
+one paired run with `yarn test:e2e tests-e2e/timings/sheet.spec.ts --project=timings` (master, then
+US4). Each measurement uses the existing test's one warm-up and best of five reloads. Sheet opening
+was **110.2 ms → 118.2 ms (+7.26%)**, within the 10% limit (121.22 ms). Downloaded JS/CSS was
+3,700,950 → 3,707,050 bytes (+6,100 uncompressed bytes).
+
+English production JavaScript sizes, compressed with gzip level 9 and `mtime=0`:
+
+| Chunk                           | master gzip bytes | US4 gzip bytes | Change |
+| ------------------------------- | ----------------: | -------------: | -----: |
+| Main (`main.*.js`)              |           289,598 |        289,717 |   +119 |
+| Shared renderer (`common.*.js`) |           386,867 |        388,072 | +1,205 |
+| Sheet route (`1c7e39ea.*.js`)   |           104,832 |        105,026 |   +194 |
+
+Main-chunk growth is **119 bytes**, below 2 KB; the three measured chunks together grew by 1,518
+gzip bytes. Both SC-005 limits pass.

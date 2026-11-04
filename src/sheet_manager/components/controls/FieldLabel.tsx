@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
+import type { ReactNode } from 'react';
 
 import { TermLabel } from '../terms/TermLabel';
 import type { TermLink } from '../terms/termLink';
@@ -20,6 +21,7 @@ export function FieldLabel({
     position,
     hidden = false,
     className,
+    afterLabel,
 }: {
     label: string;
     term?: TermLink;
@@ -28,10 +30,14 @@ export function FieldLabel({
     /** Kept for assistive technology only. */
     hidden?: boolean;
     className?: string;
+    afterLabel?: ReactNode;
 }) {
     return (
-        <span className={clsx(labelStyles[position], hidden && 'sr-only', className)}>
-            <TermLabel text={label} {...term} />
+        <span
+            className={clsx(labelStyles[position], hidden && !afterLabel && 'sr-only', className)}
+        >
+            <TermLabel text={label} {...term} className={hidden ? 'sr-only' : undefined} />
+            {afterLabel}
             {required && (
                 <span
                     aria-label={translate(uiMessages.sheet.templates.editor.fieldRequired)}

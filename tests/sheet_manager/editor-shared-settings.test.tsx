@@ -73,7 +73,7 @@ describe('shared settings (spec 023, US3)', () => {
         expect(keys([f1!, f3!])).toContain('required');
         expect(keys([f1!, f3!])).not.toContain('min');
         expect(keys([f3!, f3!])).toContain('min');
-        expect(keys([f1!, section])).toEqual(['span', 'visibleWhen']);
+        expect(keys([f1!, section])).toEqual(['span', 'visibleWhen', 'docsPath']);
         for (const key of ['valueKey', 'options', 'columns', 'item', 'type', 'kind', 'label']) {
             expect(SHARED_SETTINGS.some((setting) => setting.key === key)).toBe(false);
         }
@@ -119,6 +119,17 @@ describe('the settings area with several elements (spec 023, US3)', () => {
         ]);
     });
 
+    it('writes a shared documentation link to every selected field', () => {
+        openWithThree();
+        const path = '/docs/guide/notes#syntax';
+        fireEvent.change(control('docsPath')!, { target: { value: path } });
+        expect(saved().map((node) => ('docsPath' in node ? node.docsPath : undefined))).toEqual([
+            path,
+            path,
+            path,
+        ]);
+    });
+
     it('undoes a shared change for every element at once', () => {
         openWithThree();
         fireEvent.click(control('hideLabel')!);
@@ -140,6 +151,7 @@ describe('the settings area with several elements (spec 023, US3)', () => {
             'hideLabel',
             'span',
             'visibleWhen',
+            'docsPath',
         ]);
     });
 });

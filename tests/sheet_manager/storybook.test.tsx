@@ -41,6 +41,9 @@ function variantsOf(node: TemplateNode): string[] {
     if ((record.visibleWhen as { not?: boolean } | undefined)?.not) tags.push('visibleWhen:not');
     flag('column');
     flag('span');
+    if ('docsPath' in node && node.docsPath) tags.push(`${node.type}:docsPath`);
+    if (node.type === 'markdown' && !node.hideHelp) tags.push('markdown:element-help');
+    if ('hideHelp' in node && node.hideHelp) tags.push(`${node.type}:hideHelp`);
     switch (node.type) {
         case 'section':
         case 'group':
@@ -167,6 +170,9 @@ function variantsOf(node: TemplateNode): string[] {
 
 const REQUIRED_VARIANTS = [
     ...TEMPLATE_FIELD_TYPES,
+    'text:docsPath',
+    'markdown:element-help',
+    'markdown:hideHelp',
     'section',
     'group',
     'table',
@@ -328,6 +334,7 @@ describe('element storybook (constitution VI, T-069)', () => {
             'trackers',
             'buttons',
             'markdown',
+            'field-help',
         ]);
     });
 

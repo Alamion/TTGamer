@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus, X } from 'lucide-react';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import {
@@ -17,6 +17,7 @@ import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBriefPage } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
+import { FieldHelpMark, useFieldHelpMark } from './FieldHelp';
 import { moveItem } from './rowOrder';
 import {
     parentName,
@@ -74,6 +75,7 @@ function EnumSelect({
 }
 
 export function EnumField({
+    afterLabel,
     compact,
     disabled,
     hideLabel,
@@ -82,6 +84,7 @@ export function EnumField({
     options,
     value,
 }: {
+    afterLabel?: ReactNode;
     compact?: boolean;
     disabled: boolean;
     hideLabel?: boolean;
@@ -99,8 +102,9 @@ export function EnumField({
                     : 'grid gap-1 text-xs font-medium text-textSecondary'
             }
         >
-            <span className={hideLabel ? 'sr-only' : compact ? BRIEF.caption : undefined}>
-                {label}
+            <span className={compact ? BRIEF.caption : undefined}>
+                <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
+                {afterLabel}
             </span>
             <EnumSelect
                 ariaLabel={label}
@@ -125,6 +129,7 @@ function columnLabel(column: RowsColumn): string {
 
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
+    const help = useFieldHelpMark();
     const bound = useBoundDocument();
     const brief = useBriefPage();
     const locale = useDocusaurusContext().i18n.currentLocale;
@@ -175,9 +180,10 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
 
     return (
         <div className="grid gap-2 overflow-x-auto">
-            {!node.hideLabel && !brief && (
+            {((!node.hideLabel && !brief) || help) && (
                 <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                    {label}
+                    <span className={node.hideLabel || brief ? 'sr-only' : undefined}>{label}</span>
+                    <FieldHelpMark />
                 </span>
             )}
             {rows.length === 0 ? (

@@ -31,6 +31,7 @@ export type NodeUpdates = {
     framed?: boolean;
     collapsible?: boolean;
     docsPath?: string;
+    hideHelp?: boolean;
     minRows?: number;
     maxRows?: number;
     valueKey?: string;

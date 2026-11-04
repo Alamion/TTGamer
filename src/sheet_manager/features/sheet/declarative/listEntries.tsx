@@ -36,6 +36,7 @@ import {
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import type { DocumentOption } from './fieldControls';
 import { listEntryShape } from './fieldControls';
+import { FieldHelpProvider } from './FieldHelp';
 import { formulaErrorMessage } from './formulaMessages';
 import type { CatalogFieldRuntime, MaxState, UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
@@ -210,25 +211,29 @@ const ListEntryRow = memo(function ListEntryRow({
 
     if (item.type === 'rating') {
         return (
-            <div data-list-entry={entry.id} className="grid grid-cols-1 gap-1">
-                {control}
-                {item.description && (
-                    <span className="text-xs text-textSecondary">{item.description}</span>
-                )}
-            </div>
+            <FieldHelpProvider node={item}>
+                <div data-list-entry={entry.id} className="grid grid-cols-1 gap-1">
+                    {control}
+                    {item.description && (
+                        <span className="text-xs text-textSecondary">{item.description}</span>
+                    )}
+                </div>
+            </FieldHelpProvider>
         );
     }
     return (
-        <div data-list-entry={entry.id}>
-            <LabeledField
-                field={field}
-                term={named ? undefined : termLinkOf(item)}
-                nameSlot={nameSlot}
-                trailing={shape === 'block' ? removeSlot : undefined}
-            >
-                {control}
-            </LabeledField>
-        </div>
+        <FieldHelpProvider node={item}>
+            <div data-list-entry={entry.id}>
+                <LabeledField
+                    field={field}
+                    term={named ? undefined : termLinkOf(item)}
+                    nameSlot={nameSlot}
+                    trailing={shape === 'block' ? removeSlot : undefined}
+                >
+                    {control}
+                </LabeledField>
+            </div>
+        </FieldHelpProvider>
     );
 });
 
