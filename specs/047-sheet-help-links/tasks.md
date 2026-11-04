@@ -8,22 +8,22 @@ the review is approved (T005).
 
 ## Foundation - The review
 
-- [ ] T001 Dump the inventory of every shipped template (system, template, page kind, node, type,
+- [x] T001 Dump the inventory of every shipped template (system, template, page kind, node, type,
       label, today's `docsPath`) and the docs tree (pages and anchors, en and ru) into the
       git-ignored `context/047/` (a script that can regenerate it), as the input of the review
-- [ ] T002 Draft the review by system with subagents (design D1): Star Wars (5 documents), WoD 2e,
+- [x] T002 Draft the review by system with subagents (design D1): Star Wars (5 documents), WoD 2e,
       V5 core/Storyteller/group, Hunter and Vampire, General note and the field types; each row: id,
       document, page, where, what a newcomer sees, link today, link it should have (rules page or
       guide, with anchor), the first sentence of that target (quoted from our docs), target exists /
       must be written, and a one-line reason; rows cover sections, groups, element types, and only
       the fields and bound elements (primitives) a newcomer would not understand
-- [ ] T003 Merge the drafts into `specs/047-sheet-help-links/review.md` (grouped by document and
+- [x] T003 Merge the drafts into `specs/047-sheet-help-links/review.md` (grouped by document and
       page), check each proposed target against the docs, remove duplicates, and list the targets to
       write
-- [ ] T004 Publish the review page from `review.md` (Artifact with the `db` capability: one mark per
+- [x] T004 Publish the review page from `review.md` (Artifact with the `db` capability: one mark per
       row, `agree` / `change` with a comment, filter by document) (design D2); load the
       `artifact-design` and `artifact-capabilities` skills first
-- [ ] T005 Read the maintainer's marks (`ArtifactData`), apply the changes to `review.md`, repeat
+- [x] T005 Read the maintainer's marks (`ArtifactData`), apply the changes to `review.md`, repeat
       until every row is agreed; commit `review.md`
 
 ## User Story 4 - The "?" is a link for everyone, on sections and fields (P2, first)
