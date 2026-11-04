@@ -180,50 +180,71 @@ for (const locale of ['en', 'ru'] as const) {
         await createDocument(page, 'wod-2e/wod2e-character');
         if (locale === 'ru') await page.goto('/ru/universal_sheet');
         const sheet = page.locator('#character-sheet-root');
-        for (const label of locale === 'ru'
-            ? ['Обращение с животными', 'Вождение']
-            : ['Animal Ken', 'Drive']) {
+        // Master build, in the pinned fonts: normal, dense desktop, and wrapped input rows.
+        const skills =
+            locale === 'ru'
+                ? [
+                      { label: 'Обращение с животными', widths: [207, 73, 240] },
+                      { label: 'Вождение', widths: [317, 183, 240] },
+                  ]
+                : [
+                      { label: 'Animal Ken', widths: [311, 177, 240] },
+                      { label: 'Drive', widths: [353, 219, 240] },
+                  ];
+        for (const { label, widths } of skills) {
             const link = sheet.getByRole('link', {
                 name: locale === 'ru' ? `Документация: ${label}` : `Documentation for ${label}`,
                 exact: true,
             });
             await expect(link).toBeVisible();
-            for (const width of [500, 240]) {
-                const layout = await link.evaluate(async (markLink, rowWidth) => {
-                    await document.fonts.ready;
-                    const row = markLink.closest<HTMLElement>('.term-row-specialty')!;
-                    row.style.width = `${rowWidth}px`;
-                    const mark = markLink.parentElement!;
-                    const term = mark.previousElementSibling!;
-                    const caption = mark.parentElement!;
-                    caption.style.maxWidth = rowWidth === 500 ? '145px' : '';
-                    const text =
-                        [...term.querySelectorAll('.term-full, .term-short')].find(
-                            (node) => getComputedStyle(node).display !== 'none'
-                        ) ?? term;
-                    const range = document.createRange();
-                    range.selectNodeContents(text);
-                    const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
-                    const last = lines.at(-1)!;
-                    const box = mark.getBoundingClientRect();
-                    const input = row.querySelector('input')!;
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d')!;
-                    context.font = getComputedStyle(input).font;
-                    return {
-                        lines: lines.length,
-                        gap: box.left - last.right,
-                        top: box.top - last.top,
-                        inputWidth: input.getBoundingClientRect().width,
-                        minimum: context.measureText('00000000').width,
-                    };
-                }, width);
-                if (locale === 'ru' && label === 'Обращение с животными' && width === 500) {
+            for (const [index, width] of [500, 366, 240, 500].entries()) {
+                const wrappedLabel = index === 3;
+                const layout = await link.evaluate(
+                    async (markLink, { rowWidth, wrappedLabel }) => {
+                        await document.fonts.ready;
+                        const row = markLink.closest<HTMLElement>('.term-row-specialty')!;
+                        row.style.width = `${rowWidth}px`;
+                        const mark = markLink.parentElement!;
+                        const term = mark.previousElementSibling!;
+                        const caption = mark.parentElement!;
+                        caption.style.maxWidth = wrappedLabel ? '145px' : '';
+                        const text =
+                            [...term.querySelectorAll('.term-full, .term-short')].find(
+                                (node) => getComputedStyle(node).display !== 'none'
+                            ) ?? term;
+                        const range = document.createRange();
+                        range.selectNodeContents(text);
+                        const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
+                        const last = lines.at(-1)!;
+                        const box = mark.getBoundingClientRect();
+                        const input = row.querySelector('input')!;
+                        const inputBox = input.getBoundingClientRect();
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d')!;
+                        context.font = getComputedStyle(input).font;
+                        return {
+                            lines: lines.length,
+                            gap: box.left - last.right,
+                            top: box.top - last.top,
+                            inputWidth: inputBox.width,
+                            inputClear: box.right <= inputBox.left || box.bottom <= inputBox.top,
+                            rowHeight: row.getBoundingClientRect().height,
+                            minimum: context.measureText('00000000').width,
+                        };
+                    },
+                    { rowWidth: width, wrappedLabel }
+                );
+                if (locale === 'ru' && label === 'Обращение с животными' && wrappedLabel) {
                     expect(layout.lines).toBeGreaterThan(1);
                 }
                 expect(layout.gap).toBeCloseTo(6, 0);
                 expect(Math.abs(layout.top)).toBeLessThan(5);
                 expect(layout.inputWidth).toBeGreaterThanOrEqual(layout.minimum);
+                expect(layout.inputClear).toBe(true);
+                if (!wrappedLabel) {
+                    expect(layout.inputWidth).toBeCloseTo(widths[index]!, 1);
+                    expect(layout.rowHeight).toBe(width === 240 ? 77 : 48);
+                }
             }
         }
     });

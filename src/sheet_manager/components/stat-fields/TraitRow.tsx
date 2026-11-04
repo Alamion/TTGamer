@@ -157,7 +157,13 @@ export function TraitRowWithInput({
     return (
         // The outer div is the size container; the inner row wraps the specialization input
         // onto its own line when the row is too narrow for label, input, and dots together.
-        <div className={clsx('term-row term-row-specialty py-1.5', className)}>
+        <div
+            className={clsx(
+                'term-row term-row-specialty py-1.5',
+                afterLabel && 'term-row-specialty-help',
+                className
+            )}
+        >
             <div className="term-row-inner flex items-end gap-2">
                 <StatLabel afterLabel={afterLabel} label={name} tooltip={tooltip} term={term} />
                 <input

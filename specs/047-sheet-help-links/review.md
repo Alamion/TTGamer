@@ -1839,18 +1839,29 @@ Rows whose help content still needs a rules or meaning decision:
 
 ## Round 2 layout verification
 
-The EN/RU browser checks cover short and long explicit skill labels at 500 px and 240 px row widths,
-including a wrapped Russian label. The mark remains inline after the last word; the specialization
-input keeps its existing eight-character minimum. Unmarked traits use the original master label
-structure. All full-sheet and brief height pins pass unchanged.
+Item C is resolved: a specialization row with explicit help borrows 10 px from each card gutter
+above the 256 px input-wrapping breakpoint. Its label gains the mark's 20 px without taking that
+space from the input. Unmarked rows retain their original layout; wrapped inputs keep a full line.
 
-**Open requirement:** explicit help still occupies 20 px of the row. In the same pinned font at a
-1280 px viewport, master versus this change measured specialization widths of Animal Ken 177 → 157
-px, Drive 219 → 199 px; Russian Animal Ken 73 → 64 px and Drive 183 → 163 px. Thus the inline-mark
-fix is verified, but exact master specialization widths are not met for explicitly linked skills.
-The browser regression currently checks the original minimum width, not equality with master. This
-remains for the maintainer's layout decision; no smaller dots, overlapping controls, or taller rows
-were substituted to conceal the difference.
+Browser scripts served `/tmp/ttgamer047-master/build` and HEAD on scratch ports 3197 and 3198, using
+the repository's Playwright font fixtures. Master → HEAD input widths (px):
+
+| Locale / skill | Normal row (500 px) | Dense row (366 px) | Wrapped input (240 px) |
+| -------------- | ------------------: | -----------------: | ---------------------: |
+| EN Animal Ken  |           311 → 311 |          177 → 177 |              240 → 240 |
+| EN Drive       |           353 → 353 |          219 → 219 |              240 → 240 |
+| RU Animal Ken  |           207 → 207 |            73 → 73 |              240 → 240 |
+| RU Drive       |           317 → 317 |          183 → 183 |              240 → 240 |
+
+Every mark follows the label's last word on the same line, with a 6 px gap and no input overlap.
+Russian Animal Ken stays on one line in the dense desktop row. A separately constrained 145 px
+caption still tests a genuinely wrapped label. The e2e regression pins input widths against master,
+checks mark placement and separation from the input, and retains 48 / 77 px row heights. Full-sheet
+and brief height pins remain unchanged.
+
+Verification passed: ESLint/Prettier on the changed files, `yarn ci:typecheck`, `yarn ci:test`
+(3,417 tests), and `yarn build && yarn ci:e2e` (76 browser tests, including all existing height
+pins).
 
 ## Round 2 marks per page
 

@@ -507,7 +507,9 @@ duplicate template facts here. Invariants that must never be broken:
   the label. Template help settings (`docsPath`, `hideHelp`) and their resolution have one owner:
   the `sheet-templates` skill's `references/node-tree.md`, "Help links", including automatic-help
   eligibility and shipped-link deduplication. Unmarked trait labels retain their original input
-  space; explicit marks flow inline with the last label word. Fragment loading belongs to the
+  space; explicit marks flow inline with the last label word. Specialization rows with a mark borrow
+  10 px from each card gutter above the input-wrapping breakpoint, preserving the master input
+  width; wrapped inputs keep their full line. Fragment loading belongs to the
   `docusaurus-integration` skill, "Docs Fragments in the App".
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.

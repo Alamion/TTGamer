@@ -269,6 +269,14 @@
     display: none;
 }
 
+@container (width > 16rem) {
+    /* Borrow 10 px from each card gutter for the 14 px mark and its 6 px gap, preserving
+       the specialization input's width. Wrapped inputs already have a full line. */
+    .term-row-specialty-help .term-row-inner {
+        margin-inline: -0.625rem;
+    }
+}
+
 @container (max-width: 22rem) {
     .term-row-specialty .term-has-short .term-full {
         display: none;
