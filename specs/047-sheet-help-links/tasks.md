@@ -67,14 +67,14 @@ markdown field show a "?" beside their labels; "Hide help" removes the element's
 **Check**: every target `review.md` marks "write" exists in English and Russian with the same anchor
 and opens with a definition.
 
-- [ ] T014 [US3] Write the rules parts the review lists (e.g. what a cell is, V5 skills overview, V5
+- [x] T014 [US3] Write the rules parts the review lists (e.g. what a cell is, V5 skills overview, V5
       experience) in `docs/` and the Russian mirror: a plain definition first, explicit `\{#id}`
       anchors in both, paraphrased (design D8, FR-007)
-- [ ] T015 [US3] Write the guide parts for element help (e.g. trackers, reference fields) in
+- [x] T015 [US3] Write the guide parts for element help (e.g. trackers, reference fields) in
       `docs/guide/` and the Russian mirror, same rules
-- [ ] T016 [US3] Rewrite the first paragraph of existing targets the review marks "definition
+- [x] T016 [US3] Rewrite the first paragraph of existing targets the review marks "definition
       missing", in both languages
-- [ ] T017 [US3] Run `yarn validate:i18n` and `yarn verify:full` (documentation paths); commit the
+- [x] T017 [US3] Run `yarn validate:i18n` and `yarn verify:full` (documentation paths); commit the
       story
 
 ## User Story 1 - Every section says what it is (P1)

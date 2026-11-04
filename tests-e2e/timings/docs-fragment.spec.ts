@@ -13,7 +13,7 @@ test('opening a docs card on a sheet section', async ({ page }) => {
     const open = async () => {
         const started = Date.now();
         await help.click();
-        await expect(card).toContainText('The nine Attributes define');
+        await expect(card).toContainText('Attributes measure raw capabilities');
         const time = Date.now() - started;
         await page.keyboard.press('Escape');
         await expect(card).toBeHidden();

@@ -7,15 +7,15 @@ import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
 import { CharRoll } from '@site/src/integrations/docs-character-rolls/CharRoll';
 
-# Combat Flow
+# Combat Flow \{#combat-flow}
 
-When blasters start firing and lightsabers ignite, the game shifts into structured rounds. Here is how combat unfolds.
+Combat rounds and turns are the procedure for resolving a fight when the order of events matters. A **round** gives the combatants their opportunities to act; a character's **turn** is their opportunity within that sequence. Initiative establishes the order, then characters declare actions, resolve attacks and defenses, and apply damage before the next round.
 
 ---
 
-## 1. Initiative
+## 1. Initiative \{#1-initiative}
 
-At the start of combat, each character rolls **Wits + Alertness** at difficulty **6**. Characters act in descending order of successes. Ties are resolved simultaneously — both declare actions and resolve together.
+**Initiative** determines who acts first in combat. The sheet's standard Initiative value is **Wits + Alertness**, the number of dice to roll, rather than an already rolled result. Roll that pool at difficulty **6** at the start of combat; characters act in descending order of successes. Tied characters declare and resolve their actions simultaneously.
 
 <TWWrapper>
     <InlineRoll notation={'4d10\u003e=6f=1'} variant="details" preroll /> — a Wits 3 + Alertness 1

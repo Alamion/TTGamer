@@ -14,7 +14,7 @@ test('a section\'s "?" shows its rules in a card, and Ctrl-click leaves it to th
     await help.click();
     await expect(fold).toHaveAttribute('aria-expanded', 'true');
     const card = page.getByRole('dialog', { name: 'Documentation: Attributes' });
-    await expect(card).toContainText('The nine Attributes define');
+    await expect(card).toContainText('Attributes measure raw capabilities');
     // Only the Attributes part: the Abilities section after it stays on the page.
     await expect(card).not.toContainText('The thirty Abilities');
     // Styled: drawn under .tailwind-root.

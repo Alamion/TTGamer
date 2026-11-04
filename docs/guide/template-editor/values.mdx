@@ -72,7 +72,11 @@ The editor always shows conditional elements, hatched, and says whether the cond
 
 ## Catalogs \{#catalogs}
 
-A **Choice** field can take its options from one of the game's catalogs — weapons, merits, species. Choosing an entry can fill other fields of the page with the entry's details (damage, cost, description): pick which detail goes to which field. The filled values are copies; readers can still change them.
+A catalog choice is a picker of predefined entries, such as weapon models or species. Selecting an entry records that choice and fills the fields mapped to its details, such as damage, price, or description; selecting another entry replaces those mapped values, including edits you made to them. Other fields stay as they are.
+
+Open the picker, search if it offers a search, and select the entry you want. Merely typing a name in an ordinary text field does not select a catalog entry or fill its details. The filled values are editable copies, so changing them does not change the catalog.
+
+In the editor, connect a **Choice** field to a catalog and map each detail to the field it should fill. In a table, the mappings fill other columns of the same row only.
 
 ### Text from a catalog \{#from-catalog}
 

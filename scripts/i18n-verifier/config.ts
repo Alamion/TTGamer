@@ -117,6 +117,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
     ],
     glossaryDocs: {
         'star-wars-wod': ['star-wars-wod-2e'],
+        wod2e: ['wod-2e'],
         v5: ['wod-v5'],
         'v5-hunter': ['wod-v5/hunter', 'wod-v5/rules'],
         'v5-vampire': ['wod-v5/vampire'],

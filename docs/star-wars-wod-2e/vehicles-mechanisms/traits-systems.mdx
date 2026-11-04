@@ -30,7 +30,7 @@ A vehicle is only as good as its pilot. The vehicle's **Maneuverability** adds d
 
 ---
 
-## Scale
+## Scale \{#scale}
 
 Every vehicle has a **Scale** that determines how it interacts with other scales in combat. This uses the same system described in [Combat Scales](../combat/combat-scales.mdx).
 
@@ -61,6 +61,10 @@ For non-WEG sources, use the "How to Tell" column above.
 
 ---
 
+## Crew and Capacity \{#crew-and-capacity}
+
+**Capacity statistics** describe the people, supplies and space a vehicle can support. **Crew** is the number needed to operate it, including any stated skeleton minimum; **Passengers** counts additional people it can carry. **Cargo capacity** is the load it can carry, recorded with a unit such as kilograms or metric tons. **Consumables** describes how long provisions and life support last for the stated complement, in days, weeks or months; **Length** is the vehicle's physical length, normally in metres. These are limits and requirements, while [crew stations](./space-combat.mdx#dice-pool-by-crew-role) assign particular characters to jobs.
+
 ## Vehicle Attributes \{#vehicle-attributes}
 
 A vehicle's attributes describe its tactical performance. Each is rated on a **1–5 dot scale** (like character attributes), with some exceptions noted below.
@@ -80,6 +84,10 @@ A light, fast starfighter has high Maneuverability. A bulk freighter or walker h
 The vehicle's structural integrity and ability to absorb damage. This replaces **Stamina** for soak rolls — when a vehicle is hit, the pilot rolls the vehicle's **Durability** at difficulty 6 to soak.
 
 **Conversion from WEG:** Use the dice value from the WEG **Hull** or **Body Strength** stat directly, ignoring pluses. If the value is 6+, cap at 5 and note that the vehicle can **reroll 10s** on Durability rolls.
+
+### Durability Rerolls \{#durability-rerolls}
+
+A **Durability reroll** is the exceptional permission to roll an extra die when a Durability die shows **10**, keeping the original success and counting any further success from the extra roll. It applies to Durability rolls only when the vehicle has that property, not to every roll made aboard it. In conversion, a WEG Hull or Body Strength value of six dice or more is represented by Durability **5** with this permission, preserving exceptional toughness without increasing the displayed rating beyond five.
 
 ### Speed
 
@@ -179,7 +187,7 @@ Shields can be reduced during combat. Each dot of Shields grants one soak box pe
 
 ## Weapon Systems \{#weapon-systems}
 
-Vehicle weapons are simplified into a few key stats:
+A **vehicle weapon system** is an installed armament, such as a laser cannon or torpedo launcher. Its **firing arc** limits where it can aim: a fixed forward weapon is aimed by turning the vehicle, while a turret covers its permitted hemisphere. **Damage** is the number of dice rolled after a hit (`8D` means eight d10s at difficulty 6); **Range** is the abstract combat distance at which it can engage a target, rather than a personal weapon's range in metres. Going beyond the listed range, up to double, adds **+1 difficulty**. The key statistics are:
 
 | Stat       | Description                                                                                        |
 | ---------- | -------------------------------------------------------------------------------------------------- |

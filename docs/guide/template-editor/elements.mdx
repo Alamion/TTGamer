@@ -100,6 +100,16 @@ A field holds one value. Its **Label** is shown next to it (**Show label** hides
     <ElementExample story="fields" node="section-text" />
 </LiveDemo>
 
+## Images \{#images}
+
+A standalone image field holds one picture on the sheet, chosen from your device or shown from an HTTPS web address. Unlike a picture inside [Markdown text](../notes.mdx#pictures), it has its own upload, address, and removal controls.
+
+Press **Upload image** and choose a file from the device (up to 10 MB); it is resized and saved in this browser. Or paste an `https://` picture address in **Image URL**, then press `Enter` or leave the field to apply it. An unavailable or insecure source shows a message.
+
+Upload another picture or enter another address to replace the image. **Remove image** (**×**) clears the field; clearing the address text alone does not remove the existing picture.
+
+Device uploads stay on this device and are not included in document exports; keep the original file to upload again elsewhere. An image by address keeps its address in the export and loads from that website, so it needs to remain available. See [export and import](../sheet.mdx#export-import).
+
 ## Markdown text \{#markdown}
 
 A long text written in markdown, like a [note](../notes.mdx): readers see it as a page and press **Edit** to change it. **Starting height (lines)** sets how tall its text box opens. On a brief it is read-only and folded, so long descriptions do not crowd the cards; its checklist still ticks there. It cannot be a list entry or a table column.
@@ -114,7 +124,15 @@ A read-only list of the documents whose markdown links to the shown one, each wi
 
 ## Ratings \{#rating}
 
-A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point), **Number** (a number box), or **Tracker** (boxes, below). Templates saved with the older "boxes" presentation open as dots and keep their values.
+A rating is one numerical value, shown as dots, a number, or filled boxes. It records how much of something the document has; the chosen game's rules explain what that number means.
+
+Click or tap the dot for the value you want: the dots before it fill too. Pressing the last filled dot again lowers the value by one; repeat to clear it, unless a minimum keeps some dots filled. With a keyboard, focus a dot with `Tab` and press `Enter` or `Space`. In number form, type the value or use the arrow keys; both forms keep the field's limits.
+
+If there is a specialty text input, type its name there. The **S**, **P**, and **E** buttons switch specialization, practiced, and experienced on or off separately from the number. Their effects depend on the game. A left click on the die puts the rating's pool into the dice panel; a right click rolls it at once. See [rolling from a sheet](../dice-roller.mdx#sheet-rolls).
+
+In tracker form, a click or tap fills up to a box; pressing the last filled box lowers the rating by one. Some ratings also have secondary marks from the opposite end, such as Humanity's Stains. Right click an unfilled box, use `Shift+Enter` or `Shift+Space` on it, or long press it on touch to put or clear those marks from the end. A secondary mark cannot cover a filled box; the page explains a refused mark. Raising the rating reduces secondary marks that no longer fit. These marks are a second value, rather than the editable capacity of a [resource](../sheet.mdx#resources).
+
+In the editor, **Presentation** chooses **Dots** (one dot per point), **Number** (a number box), or **Tracker** (up to 20 boxes). Templates saved with the older "boxes" presentation open as dots and keep their values.
 
 - **Min** is a floor, not a dot: the dots up to it stay filled in a darker shade, and the reader cannot go below it.
 - **Max** sets the number of dots. A [maximum from a value or formula](./values.mdx#limits-from-values) replaces it while it can be computed, up to 100 dots; when it drops below the stored value, the value is kept and shown in parentheses until the maximum rises again.
@@ -125,7 +143,7 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 
 On a [brief](#page-kinds) a rating shows a few capital letters and its number instead of its full name, so many ratings fit one screen. The letters default to the first three of the label; **Short label text** sets your own (up to four), and **Full name on the brief** keeps the name where letters would mislead. In a narrow area each rating is a row (letters, number); in a wider one it is a small chip, and chips flow inside their card. The full name stays the name for screen readers and appears as a hint on hover, focus, and tap. A short label that would repeat another one in the same block takes a fourth letter (BRA and BRAC for Brawl and Brace), or a number when the names are the same (FIE, FIE2), so every rating keeps the brief look; give the ratings their real names or your own letters. On a free rating only the number shows in this form: its dots, text, flags, and die are not part of it.
 
-**Tracker** draws the rating as a row of boxes (up to 20), like a [pool drawn as a tracker](#built-in-parts). **Marks of another value from the end** adds a second value marked from the last box backward — Humanity and its stains: name the **Value of the marks** (a number field or a game value) and the **Mark name**. A click fills or empties up to a box; the outline action (right click, **Shift+Enter**, or a long press) marks or clears from the end. A mark never lands on a filled box: the page says so instead, and raising the rating shrinks marks that no longer fit. A game's own single value, such as V5 Humanity, takes the same **Display: Tracker** and marks.
+**Marks of another value from the end** adds the secondary marks: name the **Value of the marks** (a number field or a game value) and the **Mark name**. A game's own single value, such as V5 Humanity, takes the same **Display: Tracker** and marks.
 
 Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
 
@@ -135,9 +153,15 @@ Formulas and display conditions read the rating's number; its text and flags do 
 
 ## Document references \{#references}
 
-**Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. A page of the rules themselves (the V5 mortal's, a Storyteller character's, a group's) offers every kind of those rules, the Hunter and Vampire ones included. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
+A document reference is a link from one document to another, such as a group's member or a vehicle's pilot. It keeps the documents connected without copying their contents.
 
-On the sheet, the search offers the reader's documents of those kinds from the same setting, never the document itself. Pointing at a linked document shows its card, as for a [link in a note](../notes.mdx#links).
+Type part of a document's name in the search and choose a result to add its link. On a brief, press **Add** first to show the search. The search offers documents of the allowed kinds in the same setting, excluding this document and entries already linked here. A field may hold one link or several; to replace a single link, remove it first.
+
+Hover, focus, or tap a linked name to preview its card, as for a [link in a note](../notes.mdx#links); use its open icon to open the document. The **×** beside an editable link removes the link and keeps the other document.
+
+An incoming **Member of** list shows the groups whose **Members** link to this character. It is read-only here: open a group and edit **Members** there to add or remove membership. This uses reference fields, while [**Mentioned in**](#mentions) collects incoming links written in Markdown.
+
+**Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. A page of the rules themselves (the V5 mortal's, a Storyteller character's, a group's) offers every kind of those rules, the Hunter and Vampire ones included. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
 
 **Show the documents that link here** turns the field around: it stores nothing and lists, read-only, the documents of the allowed kinds whose own fields link to this document. Every V5 character page uses one for **Member of**, the groups whose members include the character.
 
