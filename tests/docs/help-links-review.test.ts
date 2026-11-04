@@ -2,9 +2,14 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { parseDocsLink } from '@site/src/shared/utils/docsLink';
+import { elementHelpFor } from '@site/src/sheet_manager/features/sheet/declarative/elementHelp';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
-import { walkTemplateNodes } from '@site/src/sheet_manager/types/template';
+import {
+    CustomTemplateSchema,
+    isTemplateField,
+    walkTemplateNodes,
+} from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 
 const ROOT = path.resolve(__dirname, '../..');
@@ -100,6 +105,30 @@ function docsPathOf(node: TemplateNode): string | undefined {
     return 'docsPath' in node ? node.docsPath : undefined;
 }
 
+function duplicateProblems(nodes: ReadonlyMap<string, { node: TemplateNode }>): string[] {
+    const problems: string[] = [];
+    for (const [id, { node }] of nodes) {
+        const target = docsPathOf(node);
+        if (!target) continue;
+        for (const [childId, child] of nodes) {
+            if (childId.startsWith(`${id}/`) && docsPathOf(child.node) === target) {
+                problems.push(`${id} and ${childId}: repeat ${target}`);
+            }
+        }
+        if (node.type !== 'section' && node.type !== 'group' && node.type !== 'brief') continue;
+        const content: TemplateNode[] = [];
+        walkTemplateNodes(node.children, (child) => {
+            if (!('children' in child)) content.push(child);
+        });
+        if (content.length !== 1) continue;
+        const only = content[0]!;
+        if (docsPathOf(only)) {
+            problems.push(`${id}/${only.id}: sole content must use its container's link`);
+        }
+    }
+    return problems;
+}
+
 // Keep the route and explicit-heading resolution used by docs-links-anchors.test.ts.
 function pageFile(base: string, docPath: string): string | undefined {
     const segments = docPath
@@ -148,8 +177,17 @@ describe('shipped help links follow the approved spec 047 review', () => {
                 problems.push(`${id}: review row has no shipped node`);
                 continue;
             }
-            if (row.viaType) continue;
-            const actual = docsPathOf(entry.node);
+            const { node } = entry;
+            const canHaveHelp =
+                isTemplateField(node) ||
+                node.type === 'primitive' ||
+                node.type === 'list' ||
+                node.type === 'table';
+            const actual = row.viaType
+                ? canHaveHelp
+                    ? elementHelpFor(node)
+                    : undefined
+                : docsPathOf(node);
             if (actual !== row.target) {
                 problems.push(
                     `${id}: expected ${row.target ?? 'none'}, received ${actual ?? 'none'}`
@@ -165,18 +203,103 @@ describe('shipped help links follow the approved spec 047 review', () => {
         expectNoProblems(problems);
     });
 
-    it('never repeats a section target on a contained group or field (FR-003, FR-010)', () => {
-        const problems: string[] = [];
-        for (const [id, { node }] of shipped) {
-            const target = docsPathOf(node);
-            if (node.type !== 'section' || !target) continue;
-            for (const [childId, child] of shipped) {
-                if (childId.startsWith(`${id}/`) && docsPathOf(child.node) === target) {
-                    problems.push(`${id} and ${childId}: repeat ${target}`);
-                }
-            }
+    it('rejects repeated ancestor links and linked sole content (FR-003, FR-010)', () => {
+        expectNoProblems(duplicateProblems(shipped));
+    });
+
+    it('detects duplicates below groups, through nested containers, columns, and list items', () => {
+        const target = '/docs/guide/sheet#equipment';
+        const field = CustomTemplateSchema.parse({
+            id: 'test',
+            name: 'Test',
+            schemaVersion: 4,
+            documentKind: 'note',
+            systemId: 'general',
+            children: [{ id: 'field', type: 'text', label: 'Field', docsPath: target }],
+        }).children[0]!;
+        const card = CustomTemplateSchema.parse({
+            id: 'test',
+            name: 'Test',
+            schemaVersion: 4,
+            documentKind: 'note',
+            systemId: 'general',
+            children: [
+                {
+                    id: 'card',
+                    type: 'group',
+                    title: 'Card',
+                    docsPath: target,
+                    children: [field, { ...field, id: 'other', docsPath: undefined }],
+                },
+            ],
+        }).children[0]!;
+        const nodes = new Map<string, { node: TemplateNode }>([
+            ['page/card', { node: card }],
+            ['page/card/nested/field', { node: field }],
+            ['page/card/table/columns/field', { node: field }],
+            ['page/card/list/item/field', { node: field }],
+        ]);
+        expect(duplicateProblems(nodes)).toHaveLength(3);
+    });
+
+    it('rejects a broader link on sole content but keeps distinct rules terms among fields', () => {
+        for (const type of ['section', 'group', 'brief'] as const) {
+            const parse = (extra: unknown[] = []) =>
+                CustomTemplateSchema.parse({
+                    id: 'test',
+                    name: 'Test',
+                    schemaVersion: 4,
+                    documentKind: 'note',
+                    systemId: 'general',
+                    ...(type === 'brief' ? { pageKind: 'brief' } : {}),
+                    children: [
+                        {
+                            id: 'weapons-card',
+                            type,
+                            title: 'Weapons',
+                            docsPath: '/docs/wod-v5/rules/weapons-gear#weapons',
+                            children:
+                                type === 'brief'
+                                    ? [
+                                          {
+                                              id: 'weapons',
+                                              type: 'primitive',
+                                              bindingKey: 'equipment:weapons',
+                                              docsPath: '/docs/guide/sheet#equipment',
+                                          },
+                                          ...extra,
+                                      ]
+                                    : [
+                                          {
+                                              id: 'nested',
+                                              type: 'group',
+                                              title: 'Nested',
+                                              children: [
+                                                  {
+                                                      id: 'weapons',
+                                                      type: 'primitive',
+                                                      bindingKey: 'equipment:weapons',
+                                                      docsPath: '/docs/guide/sheet#equipment',
+                                                  },
+                                                  ...extra,
+                                              ],
+                                          },
+                                      ],
+                        },
+                    ],
+                }).children[0]!;
+            // Brief blocks cannot nest cards; the same ownership rule applies to their direct content.
+            const node = parse();
+            expect(duplicateProblems(new Map([['page/weapons-card', { node }]]))).toEqual([
+                "page/weapons-card/weapons: sole content must use its container's link",
+            ]);
+            const multiple = parse([
+                { id: 'armor', type: 'text', label: 'Armor', docsPath: '/docs/guide/sheet#armor' },
+            ]);
+            expectNoProblems(
+                duplicateProblems(new Map([['page/weapons-card', { node: multiple }]]))
+            );
         }
-        expectNoProblems(problems);
     });
 
     it('keeps rules help in the page system and interaction help in the guide (FR-005)', () => {

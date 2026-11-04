@@ -46,9 +46,7 @@ test('a section\'s "?" shows its rules in a card, and Ctrl-click leaves it to th
     await expect(card).toBeHidden();
 });
 
-test('Russian dark sheet help follows wrapped labels and the portrait upload control', async ({
-    page,
-}) => {
+test('Russian dark sheet keeps rules help and omits automatic portrait help', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     await createDocument(page, 'wod-2e/wod2e-character');
     await page.goto('/ru/universal_sheet');
@@ -59,36 +57,12 @@ test('Russian dark sheet help follows wrapped labels and the portrait upload con
         await expect(link.locator('..')).toHaveCSS('margin-inline-start', '6px');
     }
 
-    const skill = sheet.getByRole('link', {
-        name: 'Документация: Обращение с животными',
-        exact: true,
-    });
-    const wrapped = await skill.evaluate((link) => {
-        const mark = link.parentElement!;
-        mark.parentElement!.style.maxWidth = '145px';
-        const label = mark.previousElementSibling!;
-        const range = document.createRange();
-        range.selectNodeContents(label.querySelector('.term-full') ?? label);
-        const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
-        const last = lines.at(-1)!;
-        const box = mark.getBoundingClientRect();
-        return { lines: lines.length, gap: box.left - last.right, top: box.top - last.top };
-    });
-    expect(wrapped.lines).toBeGreaterThan(1);
-    expect(wrapped.gap).toBeCloseTo(6, 0);
-    expect(Math.abs(wrapped.top)).toBeLessThan(5);
-
     await sheet.getByRole('button', { name: 'Свернуть или развернуть раздел «Внешность»' }).click();
     await sheet.getByRole('checkbox', { name: 'Показывать портрет', exact: true }).check();
-    const upload = sheet.getByLabel('Загрузить изображение', { exact: true }).locator('..');
-    const portrait = sheet.getByRole('link', { name: 'Документация: Портрет', exact: true });
-    await expect(portrait).toBeVisible();
-    const uploadBox = (await upload.boundingBox())!;
-    const markBox = (await portrait.boundingBox())!;
-    expect(markBox.x - (uploadBox.x + uploadBox.width)).toBeCloseTo(6, 0);
-    expect(
-        Math.abs(markBox.y + markBox.height / 2 - uploadBox.y - uploadBox.height / 2)
-    ).toBeLessThan(1);
+    await expect(sheet.getByLabel('Загрузить изображение', { exact: true })).toBeVisible();
+    await expect(
+        sheet.getByRole('link', { name: 'Документация: Портрет', exact: true })
+    ).toHaveCount(0);
 
     await sheet.getByRole('link', { name: 'Документация: Добродетели', exact: true }).click();
     const virtues = page.getByRole('dialog').getByRole('heading', {
@@ -198,3 +172,59 @@ test('a user page offers Markdown help and an explicit notes syntax card', async
     }));
     expect(colors.link).not.toBe(colors.body);
 });
+
+for (const locale of ['en', 'ru'] as const) {
+    test(`${locale}: skill help stays with the last word in normal and dense rows`, async ({
+        page,
+    }) => {
+        await createDocument(page, 'wod-2e/wod2e-character');
+        if (locale === 'ru') await page.goto('/ru/universal_sheet');
+        const sheet = page.locator('#character-sheet-root');
+        for (const label of locale === 'ru'
+            ? ['Обращение с животными', 'Вождение']
+            : ['Animal Ken', 'Drive']) {
+            const link = sheet.getByRole('link', {
+                name: locale === 'ru' ? `Документация: ${label}` : `Documentation for ${label}`,
+                exact: true,
+            });
+            await expect(link).toBeVisible();
+            for (const width of [500, 240]) {
+                const layout = await link.evaluate(async (markLink, rowWidth) => {
+                    await document.fonts.ready;
+                    const row = markLink.closest<HTMLElement>('.term-row-specialty')!;
+                    row.style.width = `${rowWidth}px`;
+                    const mark = markLink.parentElement!;
+                    const term = mark.previousElementSibling!;
+                    const caption = mark.parentElement!;
+                    caption.style.maxWidth = rowWidth === 500 ? '145px' : '';
+                    const text =
+                        [...term.querySelectorAll('.term-full, .term-short')].find(
+                            (node) => getComputedStyle(node).display !== 'none'
+                        ) ?? term;
+                    const range = document.createRange();
+                    range.selectNodeContents(text);
+                    const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
+                    const last = lines.at(-1)!;
+                    const box = mark.getBoundingClientRect();
+                    const input = row.querySelector('input')!;
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d')!;
+                    context.font = getComputedStyle(input).font;
+                    return {
+                        lines: lines.length,
+                        gap: box.left - last.right,
+                        top: box.top - last.top,
+                        inputWidth: input.getBoundingClientRect().width,
+                        minimum: context.measureText('00000000').width,
+                    };
+                }, width);
+                if (locale === 'ru' && label === 'Обращение с животными' && width === 500) {
+                    expect(layout.lines).toBeGreaterThan(1);
+                }
+                expect(layout.gap).toBeCloseTo(6, 0);
+                expect(Math.abs(layout.top)).toBeLessThan(5);
+                expect(layout.inputWidth).toBeGreaterThanOrEqual(layout.minimum);
+            }
+        }
+    });
+}

@@ -2,7 +2,6 @@ import { DocsPreviewLink } from '@site/src/shared/components/DocsFragmentCard';
 import { createContext, type ReactNode, useContext } from 'react';
 
 import { documentationFor } from '../../../components/controls/documentationFor';
-import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import { useBriefPage } from './areaLayout';
 import { elementHelpFor, type HelpNode } from './elementHelp';
 
@@ -25,18 +24,16 @@ export function FieldHelpMark() {
 export function FieldHelpProvider({
     node,
     label,
-    binding,
     children,
 }: {
     node: HelpNode;
     label?: string;
-    binding?: DocumentBindingDescriptor;
     children: ReactNode;
 }) {
     const brief = useBriefPage();
     const ownPath = 'docsPath' in node ? node.docsPath : undefined;
     const hidden = 'hideHelp' in node && node.hideHelp;
-    const docsPath = ownPath ?? (!brief && !hidden ? elementHelpFor(node, binding) : undefined);
+    const docsPath = ownPath ?? (!brief && !hidden ? elementHelpFor(node) : undefined);
     const title =
         label ??
         (node.type === 'list' || node.type === 'table' ? node.title : node.label) ??

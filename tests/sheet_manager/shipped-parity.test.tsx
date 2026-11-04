@@ -196,6 +196,13 @@ it('fields and primitives expose documentation, and element help exposes Hide he
                 hideHelp: true,
             },
             {
+                id: 'help-mentions',
+                type: 'mentions',
+                label: 'Help mentions',
+                required: false,
+                hideHelp: true,
+            },
+            {
                 id: 'help-primitive',
                 type: 'primitive',
                 bindingKey: 'resource:willpower',
@@ -204,7 +211,7 @@ it('fields and primitives expose documentation, and element help exposes Hide he
         ],
     } as CustomTemplate;
     renderEditor(template);
-    for (const id of ['help-field', 'help-markdown', 'help-primitive']) {
+    for (const id of ['help-field', 'help-markdown', 'help-mentions', 'help-primitive']) {
         fireEvent.click(
             [...outlineRow(id).querySelectorAll('button')].find(
                 (button) => !button.hasAttribute('data-drag-handle')
@@ -213,7 +220,7 @@ it('fields and primitives expose documentation, and element help exposes Hide he
         openSettingsGroups();
         const shown = shownSettings(id);
         expect(shown.has('docsPath')).toBe(true);
-        expect(shown.has('hideHelp')).toBe(id !== 'help-field');
+        expect(shown.has('hideHelp')).toBe(id === 'help-markdown' || id === 'help-mentions');
     }
     cleanup();
     takeSheetIssues();

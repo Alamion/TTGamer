@@ -505,8 +505,9 @@ duplicate template facts here. Invariants that must never be broken:
   `SectionCard` (including dense brief blocks) and `CollapsibleBlock`, the mark is a sibling of the
   fold button; opening help never folds the section. Field marks follow the book-term hint beside
   the label. Template help settings (`docsPath`, `hideHelp`) and their resolution have one owner:
-  the `sheet-templates` skill's `references/node-tree.md`, "Help links"; `ELEMENT_HELP` is the sole
-  map of automatic element-help destinations. Fragment loading belongs to the
+  the `sheet-templates` skill's `references/node-tree.md`, "Help links", including automatic-help
+  eligibility and shipped-link deduplication. Unmarked trait labels retain their original input
+  space; explicit marks flow inline with the last label word. Fragment loading belongs to the
   `docusaurus-integration` skill, "Docs Fragments in the App".
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.

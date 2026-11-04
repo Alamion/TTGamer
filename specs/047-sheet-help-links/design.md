@@ -64,6 +64,13 @@ templates changes before it.
   shows a node's own `docsPath` and nothing else. Code, not template data: the user's pages get it
   with no stored change (spec assumption), and the map is the one owner. The help never leads to a
   rules page (FR-005).
+- **Amendment D5 — Maintainer review, round 2**: automatic element help is limited to Markdown
+  (`/docs/guide/template-editor/elements#markdown`) and mentions (`#mentions`), only when the field
+  appears on a full page, including user pages. Other control explanations belong in the template
+  editor: repeating them across a sheet adds clutter and competes with the section's rules help.
+  `elementHelpFor(node)` no longer inspects bindings or control presentations. Explicit `docsPath`
+  and `hideHelp` keep D4's precedence. A shipped descendant cannot repeat an ancestor's link; a
+  linked section/group's sole content cannot carry a separate explicit link to a broader page.
 - **D6 — Editor settings**: `docsPath` widens from containers to fields in the settings registry
   (`features/template-editor/settings/registry.ts`), and `hideHelp` is a new toggle shown for field
   types that have element help. `tests/sheet_manager/shipped-parity.test.tsx` keeps both honest.

@@ -394,7 +394,7 @@ export function SystemListView({
         );
     }
     return (
-        <FieldHelpProvider node={list} label={list.title ?? descriptor.label} binding={descriptor}>
+        <FieldHelpProvider node={list} label={list.title ?? descriptor.label}>
             <SystemListBody
                 binding={descriptor}
                 disabled={disabled}
@@ -595,6 +595,7 @@ function PrimitiveTraitBody({
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'trait' }>;
 }) {
+    const help = useFieldHelpMark();
     const bound = useBoundDocument();
     const brief = useBriefPage();
     const traitDiceRoll = useDocumentTraitDiceRoll();
@@ -623,7 +624,7 @@ function PrimitiveTraitBody({
         const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
         const rating = (
             <CompactRating
-                afterLabel={<FieldHelpMark />}
+                afterLabel={help}
                 label={label}
                 term={termLinkOf(node)}
                 shortLabel={shortLabel}
@@ -658,7 +659,7 @@ function PrimitiveTraitBody({
     if (rowKind === 'trait') {
         return (
             <TraitRow
-                afterLabel={<FieldHelpMark />}
+                afterLabel={help}
                 label={label}
                 term={termLinkOf(node)}
                 value={trait.value}
@@ -689,7 +690,7 @@ function PrimitiveTraitBody({
     }
     return (
         <TraitRowWithInput
-            afterLabel={<FieldHelpMark />}
+            afterLabel={help}
             name={label}
             term={termLinkOf(node)}
             specializationText={trait.specializationText}
@@ -1085,11 +1086,7 @@ export function PrimitiveNodeView(props: Parameters<typeof PrimitiveNodeBody>[0]
     const { node, systemId, documentKind } = props;
     const descriptor = resolveDocumentBinding(systemId, documentKind, node.bindingKey);
     return (
-        <FieldHelpProvider
-            node={node}
-            label={node.label ?? descriptor?.label ?? node.bindingKey}
-            binding={descriptor}
-        >
+        <FieldHelpProvider node={node} label={node.label ?? descriptor?.label ?? node.bindingKey}>
             <PrimitiveNodeBody {...props} />
         </FieldHelpProvider>
     );

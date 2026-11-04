@@ -37,11 +37,23 @@ export function StatLabel({
                 className
             )}
         >
-            <span className="line-clamp-2 min-w-0 text-sm font-medium text-textPrimary">
-                <TermLabel text={label} {...term} className={hidden ? 'sr-only' : undefined} />
-                {afterLabel}
-                {required && <span className="ml-2 text-error">*</span>}
-            </span>
+            {afterLabel ? (
+                <span className="min-w-0 text-sm font-medium text-textPrimary">
+                    <TermLabel text={label} {...term} className={hidden ? 'sr-only' : undefined} />
+                    {'\u2060'}
+                    {afterLabel}
+                    {required && <span className="ml-2 text-error">*</span>}
+                </span>
+            ) : (
+                <>
+                    <TermLabel
+                        text={label}
+                        {...term}
+                        className="line-clamp-2 min-w-0 text-sm font-medium text-textPrimary"
+                    />
+                    {required && <span className="text-error">*</span>}
+                </>
+            )}
             {tooltip && (
                 <div className="relative">
                     <button
