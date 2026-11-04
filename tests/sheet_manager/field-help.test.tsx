@@ -86,6 +86,12 @@ describe('field help resolution', () => {
         expect(help()).toBeTruthy();
         expect(help()?.closest('.sr-only')).toBeNull();
     });
+    it('keeps hidden image help beside the upload control', () => {
+        mount({ type: 'image', hideLabel: true });
+        const upload = screen.getByLabelText('Upload image');
+        expect(help()?.parentElement?.previousElementSibling).toBe(upload.parentElement);
+        expect(help()?.closest('.sr-only')).toBeNull();
+    });
     it('classifies primitives by the control they draw', () => {
         const node = { id: 'p', type: 'primitive', bindingKey: 'track:health' } as const;
         expect(elementHelpFor(node)).toBe('/docs/guide/template-editor/elements#trackers');
@@ -121,6 +127,7 @@ it.each(TEMPLATE_FIELD_TYPES)('%s draws one help mark beside its label', (type) 
     );
     expect(screen.getAllByRole('link', { name: 'Documentation for Journal' })).toHaveLength(1);
     expect(help()?.parentElement?.parentElement?.textContent).toContain('Journal');
+    expect(help()?.parentElement?.classList.contains('ms-1.5')).toBe(true);
 });
 
 it.each(['trait', 'resource', 'track', 'field', 'rows'] as const)(
@@ -166,6 +173,12 @@ it.each(['trait', 'resource', 'track', 'field', 'rows'] as const)(
         );
         const link = screen.getByRole('link', { name: `Documentation for ${descriptor.label}` });
         expect(link.parentElement?.parentElement?.textContent).toContain(descriptor.label);
+        if (kind === 'trait') {
+            const mark = link.parentElement!;
+            expect(mark.previousElementSibling?.textContent).toContain(descriptor.label);
+            expect(mark.parentElement?.classList.contains('line-clamp-2')).toBe(true);
+            expect(mark.parentElement?.classList.contains('flex')).toBe(false);
+        }
     }
 );
 

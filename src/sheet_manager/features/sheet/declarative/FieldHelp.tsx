@@ -17,6 +17,7 @@ export function FieldHelpMark() {
             label={documentationFor(help.label)}
             title={help.label}
             size="sm"
+            className="ms-1.5"
         />
     ) : null;
 }
@@ -65,7 +66,7 @@ export function FieldHelpLayout({ label, children }: { label?: ReactNode; childr
             {children}
         </div>
     ) : help ? (
-        <div className="flex min-w-0 items-start gap-2">
+        <div className="flex min-w-0 items-start">
             <div className="min-w-0 flex-1">{children}</div>
             {help}
         </div>

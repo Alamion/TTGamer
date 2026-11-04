@@ -38,7 +38,7 @@ export function LabeledField({
     ) : (
         <FieldLabel
             label={field.label}
-            afterLabel={help}
+            afterLabel={field.type === 'image' && field.hideLabel && !nameSlot ? undefined : help}
             term={term}
             required={field.required}
             position={position}

@@ -182,6 +182,7 @@ const ListEntryRow = memo(function ListEntryRow({
         value: coerceListValue(item, entry.value),
         onChange: onValueChange,
         disabled,
+        ...(item.type === 'image' ? { nameSlot } : {}),
         ...(item.type === 'rating'
             ? {
                   ratingDetail: readRatingDetail(entry.detail),

@@ -714,13 +714,17 @@ export function Tracker({
                                 className={clsx(
                                     'font-semibold uppercase tracking-wider',
                                     copy.out ? 'text-error line-through' : 'text-textSecondary',
-                                    ownName && model.hideLabel && 'sr-only'
+                                    ownName && model.hideLabel && !afterLabel && 'sr-only'
                                 )}
                                 title={copy.out ? wording.out : undefined}
                             >
-                                {ownName ? model.label : name}
+                                <span
+                                    className={ownName && model.hideLabel ? 'sr-only' : undefined}
+                                >
+                                    {ownName ? model.label : name}
+                                </span>
+                                {ownName && afterLabel}
                             </span>
-                            {ownName && afterLabel}
                             <span
                                 className={clsx(
                                     'flex flex-wrap items-center',

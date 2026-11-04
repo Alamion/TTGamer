@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import * as Popover from '@radix-ui/react-popover';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import MDXContent from '@theme/MDXContent';
+import { clsx } from 'clsx';
 import {
     Children,
     type ComponentProps,
@@ -17,6 +18,7 @@ import {
 } from 'react';
 
 import { modalRoot } from '../utils/modalRoot';
+import styles from './DocsFragmentCard.module.css';
 import { type DocsPageModule, fragmentRange, loadDocsPage, reportFragment } from './docsFragments';
 import { DocsHelpLink } from './DocsHelpLink';
 
@@ -116,7 +118,7 @@ function FragmentContent({ path, anchor }: { path: string; anchor?: string }) {
     const Content = current.page.default;
     return (
         <FragmentContext.Provider value={{ path, anchor }}>
-            <div className="markdown text-sm">
+            <div className={clsx('markdown text-sm', styles.content)}>
                 <MDXContent>
                     <Content components={COMPONENTS} />
                 </MDXContent>
@@ -135,19 +137,21 @@ export function DocsPreviewLink({
     label,
     title,
     size = 'md',
+    className,
 }: {
     docsPath: string;
     label: string;
     /** What the link is about, named in the card's label. */
     title: string;
     size?: 'sm' | 'md';
+    className?: string;
 }) {
     const [href, setHref] = useState<string>();
     const anchor = useRef<HTMLSpanElement>(null);
     const open = href !== undefined;
     return (
         <>
-            <span ref={anchor} className="inline-flex shrink-0 align-middle">
+            <span ref={anchor} className={clsx('inline-flex shrink-0 align-middle', className)}>
                 <DocsHelpLink
                     docsPath={docsPath}
                     label={label}

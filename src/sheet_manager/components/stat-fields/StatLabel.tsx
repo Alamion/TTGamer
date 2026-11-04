@@ -37,16 +37,11 @@ export function StatLabel({
                 className
             )}
         >
-            <TermLabel
-                text={label}
-                {...term}
-                className={clsx(
-                    'line-clamp-2 min-w-0 text-sm font-medium text-textPrimary',
-                    hidden && 'sr-only'
-                )}
-            />
-            {afterLabel}
-            {required && <span className="text-error">*</span>}
+            <span className="line-clamp-2 min-w-0 text-sm font-medium text-textPrimary">
+                <TermLabel text={label} {...term} className={hidden ? 'sr-only' : undefined} />
+                {afterLabel}
+                {required && <span className="ml-2 text-error">*</span>}
+            </span>
             {tooltip && (
                 <div className="relative">
                     <button

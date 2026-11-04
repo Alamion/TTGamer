@@ -19,6 +19,15 @@ test('a section\'s "?" shows its rules in a card, and Ctrl-click leaves it to th
     await expect(card).not.toContainText('The thirty Abilities');
     // Styled: drawn under .tailwind-root.
     await expect(card).toHaveCSS('width', '420px');
+    const heading = card.getByRole('heading', { name: 'Attributes', exact: true }).first();
+    await expect(heading).toHaveCSS('font-size', '18px');
+    await expect(heading).toHaveCSS('font-weight', '700');
+    await expect(card.getByRole('heading', { name: 'Physical', exact: true }).first()).toHaveCSS(
+        'font-size',
+        '16px'
+    );
+    await expect(heading).toHaveCSS('margin-top', '0px');
+    await expect(heading).toHaveCSS('margin-bottom', '8px');
     await page.keyboard.press('Escape');
     await expect(card).toBeHidden();
 
@@ -35,6 +44,59 @@ test('a section\'s "?" shows its rules in a card, and Ctrl-click leaves it to th
     );
     await help.click({ modifiers: ['ControlOrMeta'] });
     await expect(card).toBeHidden();
+});
+
+test('Russian dark sheet help follows wrapped labels and the portrait upload control', async ({
+    page,
+}) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await createDocument(page, 'wod-2e/wod2e-character');
+    await page.goto('/ru/universal_sheet');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    const sheet = page.locator('#character-sheet-root');
+    for (const label of ['Натура', 'Инициатива (обыч.)', 'Воля']) {
+        const link = sheet.getByRole('link', { name: `Документация: ${label}`, exact: true });
+        await expect(link.locator('..')).toHaveCSS('margin-inline-start', '6px');
+    }
+
+    const skill = sheet.getByRole('link', {
+        name: 'Документация: Обращение с животными',
+        exact: true,
+    });
+    const wrapped = await skill.evaluate((link) => {
+        const mark = link.parentElement!;
+        mark.parentElement!.style.maxWidth = '145px';
+        const label = mark.previousElementSibling!;
+        const range = document.createRange();
+        range.selectNodeContents(label.querySelector('.term-full') ?? label);
+        const lines = [...range.getClientRects()].filter((rect) => rect.width > 0);
+        const last = lines.at(-1)!;
+        const box = mark.getBoundingClientRect();
+        return { lines: lines.length, gap: box.left - last.right, top: box.top - last.top };
+    });
+    expect(wrapped.lines).toBeGreaterThan(1);
+    expect(wrapped.gap).toBeCloseTo(6, 0);
+    expect(Math.abs(wrapped.top)).toBeLessThan(5);
+
+    await sheet.getByRole('button', { name: 'Свернуть или развернуть раздел «Внешность»' }).click();
+    await sheet.getByRole('checkbox', { name: 'Показывать портрет', exact: true }).check();
+    const upload = sheet.getByLabel('Загрузить изображение', { exact: true }).locator('..');
+    const portrait = sheet.getByRole('link', { name: 'Документация: Портрет', exact: true });
+    await expect(portrait).toBeVisible();
+    const uploadBox = (await upload.boundingBox())!;
+    const markBox = (await portrait.boundingBox())!;
+    expect(markBox.x - (uploadBox.x + uploadBox.width)).toBeCloseTo(6, 0);
+    expect(
+        Math.abs(markBox.y + markBox.height / 2 - uploadBox.y - uploadBox.height / 2)
+    ).toBeLessThan(1);
+
+    await sheet.getByRole('link', { name: 'Документация: Добродетели', exact: true }).click();
+    const virtues = page.getByRole('dialog').getByRole('heading', {
+        name: 'Добродетели',
+        exact: true,
+    });
+    await expect(virtues).toHaveCSS('font-size', '18px');
+    await expect(virtues).toHaveCSS('font-weight', '700');
 });
 
 test('a user page offers Markdown help and an explicit notes syntax card', async ({ page }) => {
@@ -58,6 +120,8 @@ test('a user page offers Markdown help and an explicit notes syntax card', async
     for (const [label, docsPath] of [
         ['Markdown guide', undefined],
         ['Notes syntax', '/docs/guide/notes#syntax'],
+        ['Editing keys', '/docs/guide/notes#editing'],
+        ['Rating guide', '/docs/guide/template-editor/elements#rating'],
     ] as const) {
         await editor
             .getByRole('button', { name: 'Insert an element here', exact: true })
@@ -108,4 +172,29 @@ test('a user page offers Markdown help and an explicit notes syntax card', async
     });
     await expect(syntaxCard).toContainText('Notes read the markdown Obsidian writes');
     await expect(syntaxCard).not.toContainText('Creating a note');
+    await page.keyboard.press('Escape');
+
+    await sheet.getByRole('link', { name: 'Documentation for Editing keys', exact: true }).click();
+    const editingCard = page.getByRole('dialog', { name: 'Documentation: Editing keys' });
+    await expect(editingCard.getByRole('columnheader', { name: 'Keys', exact: true })).toHaveCSS(
+        'border-bottom-width',
+        '1px'
+    );
+    const code = editingCard.locator('td code').first();
+    await expect(code).toBeVisible();
+    expect(await code.evaluate((node) => getComputedStyle(node).backgroundColor)).not.toBe(
+        'rgba(0, 0, 0, 0)'
+    );
+    await page.keyboard.press('Escape');
+
+    await sheet.getByRole('link', { name: 'Documentation for Rating guide', exact: true }).click();
+    const ratingCard = page.getByRole('dialog', { name: 'Documentation: Rating guide' });
+    await expect(ratingCard.locator('.markdown > ul').first()).toHaveCSS('list-style-type', 'disc');
+    const limitsLink = ratingCard.getByRole('link', { name: 'maximum from a value or formula' });
+    await expect(limitsLink).toHaveAttribute('target', '_blank');
+    const colors = await limitsLink.evaluate((node) => ({
+        link: getComputedStyle(node).color,
+        body: getComputedStyle(node.parentElement!).color,
+    }));
+    expect(colors.link).not.toBe(colors.body);
 });

@@ -905,7 +905,15 @@ function OutgoingReferences({
     );
 }
 
-export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldControlProps) {
+export function ImageFieldControl({
+    disabled,
+    field,
+    nameSlot,
+    onChange,
+    value,
+}: TemplateFieldControlProps) {
+    const help = useFieldHelpMark();
+    const controlHelp = field.hideLabel && !nameSlot ? help : undefined;
     const t = (descriptor: { message: string }) => translate(descriptor);
     const baseUrl = useDocusaurusContext().siteConfig.baseUrl ?? '/';
     const image =
@@ -993,16 +1001,19 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
             )}
             {!disabled && (
                 <div className="flex flex-wrap items-center gap-2">
-                    <label className="cursor-pointer rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface">
-                        {t(page.imageUpload)}
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="sr-only"
-                            aria-label={t(page.imageUpload)}
-                            onChange={(event) => void handleUpload(event.target.files?.[0])}
-                        />
-                    </label>
+                    <span className="inline-flex items-center">
+                        <label className="cursor-pointer rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface">
+                            {t(page.imageUpload)}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="sr-only"
+                                aria-label={t(page.imageUpload)}
+                                onChange={(event) => void handleUpload(event.target.files?.[0])}
+                            />
+                        </label>
+                        {controlHelp}
+                    </span>
                     <input
                         type="url"
                         value={urlDraft}
@@ -1031,6 +1042,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
                     )}
                 </div>
             )}
+            {disabled && controlHelp}
         </div>
     );
 }
