@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.37.0
+
+### Minor feat
+
+- **Help that explains what it sits on (spec 047, T-130)**: every section of the shipped Star Wars, WoD 2e and V5 pages has one "?" that shows the part of the rules saying what that thing is, in your language. Duplicate and misdirected links are gone, and pages carry far fewer marks than before
+- **The "?" no longer lives in the fold button**: it stands beside it, so opening help never folds the section (F-011)
+- **Help on a single field**: a field can have its own documentation link, or hide help altogether (**Hide help** in the template editor). Markdown fields and "Mentioned in" explain their syntax on the page; other controls are explained in the guide and the template editor
+- **New and rewritten rules pages**: the missing explanations the links needed, in English and Russian, including a new WoD 2e rules tree, the V5 skills, experience and equipment pages, and the guide's sheet and template editor sections
+- **Droid equipment**: a droid page shows Weapons, Armor, **Built-in equipment**, and **Inventory** instead of implants, which belong to cyborg characters. Stored droids keep their data
+
+### Fix
+
+- **Marks sit where they read well**: a consistent gap after a label, beside the upload button for pictures, and right after the last word of a long skill name without narrowing its specialization field
+- **Readable rules cards**: headings, lists and links inside the card opened by "?" are styled
+
 ## v3.36.1
 
 ### Minor feat
