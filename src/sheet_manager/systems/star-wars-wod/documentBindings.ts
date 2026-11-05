@@ -99,6 +99,27 @@ const equipmentBindings = wod2eEquipmentBindings(CHARACTER_KINDS, [
     { sectionId: 'implants', label: 'Implants & Cyberware' },
 ]);
 
+const builtInEquipmentBinding: DocumentBindingDescriptor = {
+    key: 'equipment:built-in',
+    kind: 'equipment',
+    label: 'Built-in equipment',
+    documentKinds: CHARACTER_KINDS,
+    sectionId: 'inventory',
+};
+
+const carriedInventoryBinding: DocumentBindingDescriptor = {
+    key: 'equipment:carried-inventory',
+    kind: 'equipment',
+    label: 'Inventory',
+    documentKinds: CHARACTER_KINDS,
+    sectionId: 'inventory',
+    dataKey: 'carriedInventory',
+    catalog: {
+        catalogIds: ['tools-gear'],
+        fills: { name: 'text', description: 'description', effect: 'effects', cost: 'price' },
+    },
+};
+
 const METADATA_FIELDS: ReadonlyArray<[key: string, label: string]> = [
     ['name', 'Name'],
     ['concept', 'Concept'],
@@ -127,6 +148,8 @@ export const starWarsTemplateBindings: readonly DocumentBindingDescriptor[] = [
     droidDamageBinding,
     ...listBindings,
     ...equipmentBindings,
+    builtInEquipmentBinding,
+    carriedInventoryBinding,
     ...fieldBindings,
     ...starWarsEntityBindings,
 ];

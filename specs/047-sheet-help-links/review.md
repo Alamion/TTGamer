@@ -130,6 +130,20 @@ checked; translation quality and rendered placement still need the later manual 
 
 ## Star Wars droid
 
+Equipment decision: add `equipment:built-in` as an alias for the existing installed-gear handlers,
+and `equipment:carried-inventory` for the already stored loose `inventory` array. Existing droids
+keep installed items under Built-in equipment; any loose inventory becomes visible under Inventory.
+Their `implants` records remain loadable and exportable, but the shipped page omits that card. The
+old `equipment:inventory` address and edited/custom pages retain their behavior. No schema or
+storage migration is needed; the regular character page is unchanged. Legacy conversion could
+already copy the same items into both stored arrays: those saved copies now appear in both lists.
+Nothing is moved, deduplicated, or inferred from item names or ids.
+
+Relabeling the existing inventory/implant slots was rejected: it would present installed items as
+loose possessions or implant records as ordinary inventory, with mismatched item controls and
+catalog suggestions. The explicit bindings avoid either reinterpretation. T-133 retains only the
+memory-vocabulary work.
+
 ### Full sheet (`droid-sheet`)
 
 | id                                                              | where                             | what a newcomer sees                    | link today                                                             | link it should have                                                                       | first sentence of target                                                                                                                                                                                                         | target (exists / definition missing / write) | reason                                                                                                                                    | mark |
@@ -168,8 +182,8 @@ checked; translation quality and rendered placement still need the later manual 
 | `droid-sheet/body`                                              | Equipment                         | Equipment cards                         | `/docs/star-wars-wod-2e/equipment`                                     | none                                                                                      | —                                                                                                                                                                                                                                | —                                            | Keep rules help on the specific cards.                                                                                                    |      |
 | `droid-sheet/body/body-weapons`                                 | Equipment → Weapons               | Weapon statistics                       | `/docs/star-wars-wod-2e/equipment#weapons`                             | `/docs/star-wars-wod-2e/equipment#weapons`                                                | “WEG and WoD both take the view that any weapon in a particular class (heavy pistols, rifles, knives, etc.) is similar enough to every other weapon of the same class that differences in accuracy or stopping power are minor.” | definition missing                           | Explain the statistics before the comparison of systems.                                                                                  |      |
 | `droid-sheet/body/body-armor`                                   | Equipment → Armor                 | Protective equipment                    | `/docs/star-wars-wod-2e/equipment#armor`                               | `/docs/star-wars-wod-2e/equipment#armor`                                                  | “Armor adds dice to your Stamina soak roll when resisting Bashing or Lethal damage.”                                                                                                                                             | exists                                       | Explains armor's rules purpose.                                                                                                           |      |
-| `droid-sheet/body/body-inventory`                               | Equipment → Built-in equipment    | Equipment described as built in         | `/docs/star-wars-wod-2e/equipment#tools-gear`                          | `/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment`                      | — (not written)                                                                                                                                                                                                                  | write                                        | Tool bonuses do not explain installed droid equipment or its relation to the other lists.                                                 |      |
-| `droid-sheet/body/body-implants`                                | Equipment → Implants & Cyberware  | Another installed-equipment list        | `/docs/star-wars-wod-2e/equipment#cybernetics`                         | `/docs/star-wars-wod-2e/equipment#cybernetics`                                            | “Cybernetic prosthetics cost approximately 500c each (depending on availability).”                                                                                                                                               | definition missing                           | Define the category and distinguish it from Built-in equipment.                                                                           |      |
+| `droid-sheet/body/body-inventory`                               | Equipment → Built-in equipment    | Installed droid gear                    | `/docs/star-wars-wod-2e/equipment#tools-gear`                          | `/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment`                      | “Built-in equipment is installed gear a droid carries as part of its body”                                                                                                                                                       | exists                                       | Keep the help on this card; distinguish installed gear from loose Inventory. Existing installed items keep this card.                     |      |
+| `droid-sheet/body/body-carried-inventory`                       | Equipment → Inventory             | Loose possessions                       | none                                                                   | none                                                                                      | —                                                                                                                                                                                                                                | —                                            | Like the character Inventory, no extra help. Replaces the droid implant card; existing implant records remain stored.                     |      |
 | `droid-sheet/other`                                             | Experience and Notes              | Advancement and notes                   | `/docs/star-wars-wod-2e/gm/rewards-advancement`                        | none                                                                                      | —                                                                                                                                                                                                                                | —                                            | Drop the section’s duplicate advancement link; keep it on the Experience card.                                                            |      |
 | `droid-sheet/other/experience`                                  | Experience and Notes → Experience | XP totals                               | `/docs/star-wars-wod-2e/gm/rewards-advancement`                        | `/docs/star-wars-wod-2e/gm/rewards-advancement#rewards--advancement`                      | “Characters grow through experience.”                                                                                                                                                                                            | definition missing                           | Use the explicit anchor; define XP and Total, Spent and Available before describing droid advancement, and pair the EN-only anchor in RU. |      |
 | `droid-sheet/other/experience/field-experience-total`           | Experience and Notes → Experience | Total XP                                | none                                                                   | none                                                                                      | —                                                                                                                                                                                                                                | —                                            | The Experience card should explain XP and the totals.                                                                                     |      |
@@ -860,8 +874,8 @@ explanation. Rows: `full-sheet/body/body-weapons`, `brief/brief-weapons`,
 ### `/docs/star-wars-wod-2e/equipment#cybernetics`
 
 **Repair opening; EN + RU.** Define mechanical replacements and enhancements before prices. Outline:
-Clarify what belongs in this list for living characters and droids. Rows:
-`full-sheet/body/body-implants`, `droid-sheet/body/body-implants`.
+Clarify what belongs in this list for living characters, including cyborgs. Droids use installed
+equipment and loose Inventory instead. Rows: `full-sheet/body/body-implants`.
 
 ### `/docs/star-wars-wod-2e/gm/rewards-advancement`
 
@@ -899,9 +913,8 @@ redistribution. Rows: `droid-sheet/skills/abilities-talents/droid-free-talents`,
 ### `/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment`
 
 **New fragment on existing page; EN + RU.** Define installed droid equipment. Outline: Explain how
-it differs from carried inventory, weapons, armor and the Implants & Cyberware list. Resolve the two
-installed-equipment categories before presenting instructions. Rows:
-`droid-sheet/body/body-inventory`.
+it differs from loose Inventory, weapons and armor. Cyborgs use Implants & Cyberware on the regular
+character sheet; droids have no implant card. Rows: `droid-sheet/body/body-inventory`.
 
 ### `/docs/star-wars-wod-2e/combat/combat-scales#combat-scales`
 
@@ -1765,9 +1778,10 @@ These are backlog candidates or decisions for later work, not changes made by T0
 - **Derived-resource semantics need reconciliation.** Star Wars docs say creation-derived resources
   do not change with later Virtue increases, while controls apply derived minimums. Willpower is
   described as static in Star Wars; shared resource instructions must not imply it is spendable.
-- **Droid equipment and memory terminology need a coordinated pass.** Built-in equipment uses the
-  inventory binding beside Implants & Cyberware; their division is unclear. Memory examples use
-  Firearms, Computer and Occult rather than the shipped Star Wars vocabulary.
+- **Droid memory terminology remains open (T-133).** Equipment is resolved: Built-in equipment
+  stores installed gear, Inventory stores loose possessions, and the droid implant card is removed.
+  Existing arrays and older custom-page bindings retain their data and behavior. Memory examples
+  still use Firearms, Computer and Occult rather than the shipped Star Wars vocabulary.
 - **Group health has conflicting models.** Encounter guidance describes a shared health pool while
   the shipped fodder group tracks members separately; creature guidance also disagrees with the
   3/5/7 selector. Establish the intended model before writing the Members passage.
@@ -1828,14 +1842,14 @@ These are backlog candidates or decisions for later work, not changes made by T0
 
 Rows whose help content still needs a rules or meaning decision:
 
-| Subject                                | Rows to inspect                                                                                                                                                              |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Creed Fields                           | `v5-hunter-sheet/purpose/creed-drive/creed-fields-field`                                                                                                                     |
-| Droid identity and installed equipment | `droid-sheet/base/identity-fields/field-species`, `droid-sheet/body/body-inventory`, `droid-sheet/body/body-implants`                                                        |
-| Fodder members and health              | `fodder-sheet/members`                                                                                                                                                       |
-| Force-derived calculations             | `full-sheet/force/derived-stats`, `brief/brief-resolve/derived-initiative-saber`                                                                                             |
-| WoD 2e engine mechanics                | The `wod2e-sheet/condition` and `wod2e-brief/brief-resolve` descendants, plus `wod2e-sheet/body/body-armor`; their individual writing briefs identify the missing decisions. |
-| Mortal moral traits                    | `v5-core-sheet/purpose/touchstones`, `v5-core-sheet/purpose/chronicle`                                                                                                       |
+| Subject                    | Rows to inspect                                                                                                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Creed Fields               | `v5-hunter-sheet/purpose/creed-drive/creed-fields-field`                                                                                                                     |
+| Droid identity             | `droid-sheet/base/identity-fields/field-species`                                                                                                                             |
+| Fodder members and health  | `fodder-sheet/members`                                                                                                                                                       |
+| Force-derived calculations | `full-sheet/force/derived-stats`, `brief/brief-resolve/derived-initiative-saber`                                                                                             |
+| WoD 2e engine mechanics    | The `wod2e-sheet/condition` and `wod2e-brief/brief-resolve` descendants, plus `wod2e-sheet/body/body-armor`; their individual writing briefs identify the missing decisions. |
+| Mortal moral traits        | `v5-core-sheet/purpose/touchstones`, `v5-core-sheet/purpose/chronicle`                                                                                                       |
 
 ## Round 2 layout verification
 

@@ -3850,7 +3850,7 @@
                                 {
                                     "id": "equipment-inventory",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:inventory"
+                                    "bindingKey": "equipment:built-in"
                                 }
                             ],
                             "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
@@ -3858,20 +3858,19 @@
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment"
                         },
                         {
-                            "id": "body-implants",
+                            "id": "body-carried-inventory",
                             "type": "group",
-                            "title": "Implants & Cyberware",
+                            "title": "Inventory",
                             "collapsible": true,
                             "children": [
                                 {
-                                    "id": "equipment-implants",
+                                    "id": "equipment-carried-inventory",
                                     "type": "primitive",
-                                    "bindingKey": "equipment:implants"
+                                    "bindingKey": "equipment:carried-inventory"
                                 }
                             ],
-                            "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
                             "column": 2,
-                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory"
                         }
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/equipment",

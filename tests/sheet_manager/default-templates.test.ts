@@ -208,6 +208,41 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(briefFor(starWarsCharacterDefinition)!.id).toBe('brief');
     });
 
+    it('separates installed droid gear from carried Inventory without changing character gear', () => {
+        const bodyOf = (id: string) => {
+            const body = defaults
+                .find((template) => template.id === id)!
+                .children.find((node) => node.id === 'body');
+            if (body?.type !== 'section') throw new Error('Missing Equipment section');
+            return body.children;
+        };
+        const droid = bodyOf('droid-sheet');
+        expect(droid.map((node) => 'title' in node && node.title)).toEqual([
+            'Weapons',
+            'Armor',
+            'Built-in equipment',
+            'Inventory',
+        ]);
+        const installed = droid.find((node) => node.id === 'body-inventory');
+        expect(installed).toMatchObject({
+            docsPath: '/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment',
+            children: [{ id: 'equipment-inventory', bindingKey: 'equipment:built-in' }],
+        });
+        const carried = droid.find((node) => node.id === 'body-carried-inventory');
+        expect(carried).toMatchObject({
+            title: 'Inventory',
+            children: [{ bindingKey: 'equipment:carried-inventory' }],
+        });
+        expect(carried).not.toHaveProperty('docsPath');
+        expect(JSON.stringify(droid)).not.toContain('equipment:implants');
+        expect(bodyOf('full-sheet').map((node) => 'title' in node && node.title)).toEqual([
+            'Weapons',
+            'Armor',
+            'Inventory',
+            'Implants & Cyberware',
+        ]);
+    });
+
     it('gives every entity page a distinct identity from the character pages', () => {
         const ids = defaults.map(({ id }) => id);
         expect(new Set(ids).size).toBe(ids.length);

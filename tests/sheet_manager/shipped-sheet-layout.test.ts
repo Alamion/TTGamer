@@ -10,7 +10,8 @@ import { withoutHelpMetadata } from './helpers/withoutHelpMetadata';
 /**
  * Spec 042: the shipped full sheets change their layout only. Every field keeps what it binds,
  * computes, and rolls (the fixture was taken from the trees before the change), and the three
- * WoD 2e engine character sheets share one section layout (FR-011).
+ * WoD 2e engine character sheets share one section layout (FR-011). Spec 047 amends the droid
+ * equipment bindings; the fixture retains every other contract.
  */
 
 const before = JSON.parse(

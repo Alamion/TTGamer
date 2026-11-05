@@ -266,10 +266,17 @@ function equipment(variant: SheetVariant): SectionNode {
                 gear(
                     'inventory',
                     variant === 'droid' ? 'Built-in equipment' : 'Inventory',
-                    'equipment:inventory',
-                    variant === 'droid' ? DOCS.droidInventory : undefined
+                    variant === 'droid' ? 'equipment:built-in' : 'equipment:inventory',
+                    variant === 'droid' ? DOCS.droidBuiltInEquipment : undefined
                 ),
-                gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
+                variant === 'droid'
+                    ? gear(
+                          'carried-inventory',
+                          'Inventory',
+                          'equipment:carried-inventory',
+                          undefined
+                      )
+                    : gear('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
             ],
         },
         undefined

@@ -28,7 +28,7 @@ export const DOCS = {
     droidIdentity: '/docs/star-wars-wod-2e/character/droids-cyborgs#droid-characters',
     droidHealth: '/docs/star-wars-wod-2e/character/droids-cyborgs#droid-damage--recovery',
     droidFreePoints: '/docs/star-wars-wod-2e/character/droids-cyborgs#free-ability-points',
-    droidInventory: '/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment',
+    droidBuiltInEquipment: '/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment',
     weapons: '/docs/star-wars-wod-2e/equipment#weapons',
     armor: '/docs/star-wars-wod-2e/equipment#armor',
     implants: '/docs/star-wars-wod-2e/equipment#cybernetics',

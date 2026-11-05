@@ -335,7 +335,9 @@ fields:
     configuration: Configuration
     systems: Systems
     movementAndNavigation: Movement and navigation
-    builtInEquipment: Built-in equipment
+    builtInEquipment:
+        message: Built-in equipment
+        description: Installed droid gear; loose possessions belong in Inventory.
     addRow: Add row
     removeRow: Remove row
     label: Label

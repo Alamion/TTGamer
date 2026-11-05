@@ -904,15 +904,15 @@
             "type": "primitive",
             "bindingKey": "equipment:armor"
         },
-        "equipment-implants": {
-            "id": "equipment-implants",
+        "equipment-carried-inventory": {
+            "id": "equipment-carried-inventory",
             "type": "primitive",
-            "bindingKey": "equipment:implants"
+            "bindingKey": "equipment:carried-inventory"
         },
         "equipment-inventory": {
             "id": "equipment-inventory",
             "type": "primitive",
-            "bindingKey": "equipment:inventory"
+            "bindingKey": "equipment:built-in"
         },
         "equipment-weapons": {
             "id": "equipment-weapons",

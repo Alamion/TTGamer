@@ -2213,23 +2213,22 @@
         {
          "id": "equipment-inventory",
          "type": "primitive",
-         "bindingKey": "equipment:inventory"
+         "bindingKey": "equipment:built-in"
         }
        ]
       },
       {
-       "id": "body-implants",
+       "id": "body-carried-inventory",
        "type": "group",
-       "title": "Implants & Cyberware",
-       "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants",
+       "title": "Inventory",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory",
        "column": 2,
-       "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
        "collapsible": true,
        "children": [
         {
-         "id": "equipment-implants",
+         "id": "equipment-carried-inventory",
          "type": "primitive",
-         "bindingKey": "equipment:implants"
+         "bindingKey": "equipment:carried-inventory"
         }
        ]
       }

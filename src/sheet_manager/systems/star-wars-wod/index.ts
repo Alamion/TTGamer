@@ -66,12 +66,15 @@ const characterCapability = {
 const droidCharacterCapability = {
     read: (documentId: string, data: unknown) => {
         const droid = DroidDataSchema.parse(data);
-        return StarWarsCharacterSchema.parse({
-            id: documentId,
-            ...droid,
-            health: droid.damage,
-            inventory: droid.builtInEquipment,
-        });
+        return {
+            ...StarWarsCharacterSchema.parse({
+                id: documentId,
+                ...droid,
+                health: droid.damage,
+                inventory: droid.builtInEquipment,
+            }),
+            carriedInventory: droid.inventory,
+        };
     },
     applyUpdates: (data: unknown, updates: Partial<StarWarsCharacter>) => {
         const next = dataUpdates(updates);
@@ -79,9 +82,14 @@ const droidCharacterCapability = {
             next.damage = next.health;
             delete next.health;
         }
+        // Preserve the inventory address used by older droid pages and custom templates.
         if (next.inventory) {
             next.builtInEquipment = next.inventory;
             delete next.inventory;
+        }
+        if (next.carriedInventory) {
+            next.inventory = next.carriedInventory;
+            delete next.carriedInventory;
         }
         return DroidDataSchema.parse({ ...DroidDataSchema.parse(data), ...next });
     },

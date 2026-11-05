@@ -8,7 +8,8 @@ import { captureStarWarsParity, type StarWarsParitySnapshot, withStableIds } fro
 
 /**
  * Spec 012 (US7): Star Wars moved onto the WoD 2e ruleset with every identity frozen. The fixture
- * was captured before the split; documents, shipped pages, and dice pools must stay identical.
+ * was captured before the split; spec 047 amends only droid equipment. Documents, all other page
+ * fields, and dice pools must stay identical.
  */
 const fixture = JSON.parse(
     readFileSync('tests/sheet_manager/fixtures/star-wars-parity.json', 'utf8')
