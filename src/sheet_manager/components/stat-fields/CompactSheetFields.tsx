@@ -68,7 +68,6 @@ function ShortRating({
     onChange,
     shortLabel,
     term,
-    afterLabel,
     value,
 }: CompactRatingProps & { shortLabel: string }) {
     const settings = useTermHintSettings();
@@ -98,7 +97,6 @@ function ShortRating({
         >
             <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border/70 @md/brief:px-1 @md/brief:text-[10.5px]">
                 {shortLabel}
-                {afterLabel}
             </span>
             <NumberInput
                 min={0}

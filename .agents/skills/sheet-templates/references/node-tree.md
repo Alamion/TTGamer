@@ -14,9 +14,11 @@ columns use the field settings.
 cell: its own `docsPath` first, otherwise automatic element help on a full page unless `hideHelp` is
 true. Thus **Hide help** never removes an explicit link, and briefs show only explicit links.
 `FieldHelpMark` and `useFieldHelpMark` expose the resolved mark to the control's label slot;
-controls do not resolve help themselves. Hidden labels retain an accessible name, falling back to a
-primitive's binding key when no label is available. Mark placement and fold-button accessibility are
-owned by `src/sheet_manager/AGENTS.md`, "UI Rules".
+abbreviated brief pills omit that slot and use their section's help, while non-pill labels retain
+their marks. Section marks sit at the right end of the header, after any chevron and outside the
+fold button. Controls do not resolve help themselves. Hidden labels retain an accessible name,
+falling back to a primitive's binding key when no label is available. Mark placement and fold-button
+accessibility are owned by `src/sheet_manager/AGENTS.md`, "UI Rules".
 
 `ELEMENT_HELP` in `features/sheet/declarative/elementHelp.ts` is the sole map of automatic
 destinations: only Markdown (`#markdown`) and Mentioned in (`#mentions`) fields receive it, under
