@@ -503,14 +503,16 @@ duplicate template facts here. Invariants that must never be broken:
 - Icon-only actions require accessible labels.
 - Sheet help marks use `DocsPreviewLink`, named "Documentation for <title or label>". In
   `SectionCard` (including dense brief blocks) and `CollapsibleBlock`, the mark is a sibling of the
-  fold button; opening help never folds the section. Field marks follow the book-term hint beside
-  the label. Template help settings (`docsPath`, `hideHelp`) and their resolution have one owner:
-  the `sheet-templates` skill's `references/node-tree.md`, "Help links", including automatic-help
-  eligibility and shipped-link deduplication. Unmarked trait labels retain their original input
-  space; explicit marks flow inline with the last label word. Specialization rows with a mark borrow
-  10 px from each card gutter above the input-wrapping breakpoint, preserving the master input
-  width; wrapped inputs keep their full line. Fragment loading belongs to the
-  `docusaurus-integration` skill, "Docs Fragments in the App".
+  fold button at the right end of the header row, after the chevron when present; non-folding
+  headers use the same right alignment. Opening help never folds the section. Field marks follow the
+  book-term hint beside the label; abbreviated brief pills have no help mark (their section provides
+  help), while non-pill labels keep theirs. Template help settings (`docsPath`, `hideHelp`) and
+  their resolution have one owner: the `sheet-templates` skill's `references/node-tree.md`, "Help
+  links", including automatic-help eligibility and shipped-link deduplication. Unmarked trait labels
+  retain their original input space; explicit marks flow inline with the last label word.
+  Specialization rows with a mark borrow 10 px from each card gutter above the input-wrapping
+  breakpoint, preserving the master input width; wrapped inputs keep their full line. Fragment
+  loading belongs to the `docusaurus-integration` skill, "Docs Fragments in the App".
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on
   Escape, and restore focus to its trigger.
 - Character pages (every shipped character and Storyteller character, not the V5 group's emblem)

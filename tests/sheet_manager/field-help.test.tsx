@@ -16,10 +16,15 @@ import {
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { setTestLocale } from '../stubs/testLocale';
 import { mountSheet } from './helpers/sheet';
 
 const ownPath = '/docs/guide/notes#syntax';
-afterEach(cleanup);
+afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    setTestLocale('en');
+});
 
 function mount(extra: Record<string, unknown> = {}, brief = false) {
     return mountSheet(
@@ -35,6 +40,84 @@ function mount(extra: Record<string, unknown> = {}, brief = false) {
     );
 }
 const help = () => screen.queryByRole('link', { name: 'Documentation for Journal' });
+
+const shippedBriefs = systemRegistry
+    .getSystems()
+    .flatMap((system) =>
+        (system.defaultTemplates ?? [])
+            .filter((template) => template.pageKind === 'brief')
+            .map((template) => ({ system, template }))
+    );
+
+describe.each(['en', 'ru'] as const)('%s shipped brief help', (locale) => {
+    it.each(shippedBriefs)(
+        '$system.id / $template.id keeps every pill free of help',
+        ({ system, template }) => {
+            setTestLocale(locale);
+            const definition = system.documents.find(({ kind }) => kind === template.documentKind)!;
+            useDocumentStore.setState({
+                documents: [
+                    {
+                        id: 'brief-help-document',
+                        kind: definition.kind,
+                        systemId: system.id,
+                        definitionId: definition.id,
+                        schemaVersion: definition.schemaVersion,
+                        metadata: { title: 'Brief help', tags: [] },
+                        data: definition.createDefault(),
+                    } as never,
+                ],
+                currentDocumentId: 'brief-help-document',
+            });
+            const { container } = mountSheet(template);
+            const pills = container.querySelectorAll('label.term-label.rounded-sm');
+            const hasRatings =
+                template.documentKind !== 'vehicle' && template.documentKind !== 'v5-group';
+            if (hasRatings) expect(pills.length).toBeGreaterThan(0);
+            for (const pill of pills) {
+                expect(
+                    pill.querySelector('a, button, .lucide-circle-help'),
+                    pill.textContent ?? ''
+                ).toBeNull();
+            }
+            if (template.id === 'brief') {
+                expect(
+                    screen.getByRole('link', {
+                        name:
+                            locale === 'ru' ? 'Документация: Воля' : 'Documentation for Willpower',
+                    })
+                ).toBeTruthy();
+            }
+        }
+    );
+});
+
+it('omits explicit help only for an abbreviated rating on a custom brief', () => {
+    const { container } = mountSheet(
+        CustomTemplateSchema.parse({
+            id: 'custom-brief-help',
+            name: 'Brief help',
+            systemId: 'general',
+            documentKind: 'note',
+            schemaVersion: 4,
+            pageKind: 'brief',
+            children: [
+                { id: 'short', type: 'rating', label: 'Luck', max: 5, docsPath: ownPath },
+                {
+                    id: 'full',
+                    type: 'rating',
+                    label: 'Grit',
+                    max: 5,
+                    docsPath: ownPath,
+                    fullLabel: true,
+                },
+            ],
+        })
+    );
+    expect(container.querySelector('label.term-label.rounded-sm a')).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Documentation for Luck' })).toBeNull();
+    expect(screen.getByRole('link', { name: 'Documentation for Grit' })).toBeTruthy();
+});
 
 describe('field help resolution', () => {
     it('adds optional schema properties without losing them', () => {

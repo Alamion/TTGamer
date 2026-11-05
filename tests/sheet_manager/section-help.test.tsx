@@ -43,6 +43,11 @@ describe.each(['section', 'group', 'dense group'] as const)('%s help', (kind) =>
         const help = screen.getByRole('link', { name: 'Documentation for Attributes' });
         const fold = screen.getByRole('button', { name: 'Toggle Attributes section' });
         expect(help.closest('button')).toBeNull();
+        const row = fold.parentElement!;
+        expect(row.classList.contains('justify-between')).toBe(true);
+        expect(row.lastElementChild?.contains(help)).toBe(true);
+        expect(fold.nextElementSibling?.contains(help)).toBe(true);
+        expect(fold.lastElementChild?.classList.contains('lucide-chevron-down')).toBe(true);
         fireEvent.click(help);
         await act(() => Promise.resolve());
         expect(
@@ -57,4 +62,18 @@ describe.each(['section', 'group', 'dense group'] as const)('%s help', (kind) =>
         fireEvent.click(fold, { detail: 0 });
         expect(screen.getByText('Sheet content')).toBeTruthy();
     });
+});
+
+it.each([false, true])('a non-folding card (dense: %s) puts help at the right end', (dense) => {
+    render(
+        <SectionCard title="Attributes" docsPath="/docs/help-test" dense={dense}>
+            <p>Sheet content</p>
+        </SectionCard>
+    );
+    const help = screen.getByRole('link', { name: 'Documentation for Attributes' });
+    const heading = screen.getByRole('heading', { name: /Attributes/ });
+    expect(heading.classList.contains('flex')).toBe(true);
+    expect(heading.classList.contains('justify-between')).toBe(true);
+    expect(heading.lastElementChild?.contains(help)).toBe(true);
+    expect(screen.queryByRole('button', { name: 'Toggle Attributes section' })).toBeNull();
 });

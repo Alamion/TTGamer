@@ -44,7 +44,7 @@ export function SectionCard({
         ) : null;
 
     const storageHeader = (
-        <div className="flex items-center gap-2 p-4">
+        <div className="flex items-center justify-between gap-2 p-4">
             <button
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -70,7 +70,7 @@ export function SectionCard({
     );
 
     const header = (
-        <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-2 flex items-center gap-2">
+        <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-2 flex items-center justify-between gap-2">
             {title}
             {renderDocsIcon()}
         </h3>
@@ -81,7 +81,12 @@ export function SectionCard({
             <section className="min-w-0">
                 {title &&
                     (storageKey ? (
-                        <div className={clsx('mb-0.5 flex items-center gap-2', BRIEF.heading)}>
+                        <div
+                            className={clsx(
+                                'mb-0.5 flex items-center justify-between gap-2',
+                                BRIEF.heading
+                            )}
+                        >
                             <button
                                 type="button"
                                 onClick={() => setIsExpanded(!isExpanded)}
@@ -103,7 +108,12 @@ export function SectionCard({
                             {renderDocsIcon()}
                         </div>
                     ) : (
-                        <h3 className={clsx('mb-0.5 flex items-center gap-2', BRIEF.heading)}>
+                        <h3
+                            className={clsx(
+                                'mb-0.5 flex items-center justify-between gap-2',
+                                BRIEF.heading
+                            )}
+                        >
                             {title}
                             {renderDocsIcon()}
                         </h3>
