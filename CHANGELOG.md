@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.37.1
+
+### Fix
+
+- **Compact sheets**: the abbreviated pills of a brief (Conscience, Self-Control, Courage and the like) no longer carry a "?" inside them; the section's help covers them
+- **One place for a section's "?"**: it always stands at the right end of the section's heading, after the fold arrow when the section can be folded
+
 ## v3.37.0
 
 ### Minor feat
