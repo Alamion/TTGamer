@@ -353,9 +353,10 @@ export function MarkdownFieldControl({
         if (!textarea) return;
         textarea.focus();
         textarea.setSelectionRange(from, to);
-        if (!insertUndoably(insert)) {
-            writeText(applyEdit(textarea.value, { from, to, insert, selectFrom: 0, selectTo: 0 }));
-        }
+        if (insertUndoably(insert)) return;
+        writeText(applyEdit(textarea.value, { from, to, insert, selectFrom: 0, selectTo: 0 }));
+        // The browser's own insert leaves the caret after the text; a late restore would jump
+        // over what was typed in the meantime.
         const end = from + insert.length;
         requestAnimationFrame(() => textarea.setSelectionRange(end, end));
     };
