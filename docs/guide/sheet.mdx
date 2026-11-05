@@ -53,6 +53,52 @@ Type, click ratings, add list entries: there is no save button. Every change is 
 - **Several documents.** Each open document keeps its own values; see [several documents side by side](./documents#layout).
 - **Links between documents.** A linked document (a group's member, a character's group) opens with its open icon. The browser's **Back** returns to the document you came from and **Forward** goes on again; the address names the shown document, so a reload keeps it.
 
+## Resources \{#resources}
+
+A resource control records two numbers: the current points and the maximum capacity, such as 2 points out of a maximum of 5. It can show those numbers as dots, as editable numbers, or as filled and outlined boxes. The game's rules say what the points represent and whether they can be spent.
+
+- **Dots.** Use the rows labelled **Current** and **Maximum**. Click or tap the dot for the value you want; pressing the last filled dot lowers that value by one. With a keyboard, focus a dot with `Tab` and press `Enter` or `Space`.
+- **Numbers.** In `2 / 5`, the first number is current and the second is maximum. Select either number to type it, or use the arrow keys. On a brief, these number inputs may replace the two dot rows.
+- **Boxes.** Filled boxes count current points; outlined boxes show the maximum. Click or tap to fill up to a box, or press the last filled box to lower current by one. Right click to set the maximum; on a focused box use `Shift+Enter` or `Shift+Space`, or long press on touch. Pressing the last outlined box with that action lowers the maximum by one. A plain `Enter` or `Space` changes current instead. If a legend is shown, select its current or maximum mark, then click boxes; press the mark again or `Escape` to stop.
+
+Values stay within the field's limits. Lowering maximum also lowers current if needed; current usually stops at maximum, though a game may let raising current raise maximum too. Darker dots or boxes mark a minimum that cannot be cleared. A maximum derived from other values may impose another limit.
+
+This pair differs from a [rating](./template-editor/elements.mdx#rating), which has one numerical value, and a [damage tracker](./template-editor/elements.mdx#trackers), whose boxes record kinds of damage or other marks. Filled boxes here count points, rather than cycling through damage types.
+
+## Resource tracking switch \{#resource-tracking}
+
+The resource-tracking switch chooses whether a Hunter or Vampire sheet shows certain changing resources during play. **Track Willpower** on a Hunter controls the Willpower tracker. **Track Hunger and Willpower** on a Vampire controls the Hunger and Willpower controls and the main **Rouse check** button.
+
+Click or tap the switch to turn it on or off; with a keyboard, focus it and press `Enter` or `Space`. Turning it off hides those controls without clearing their saved values. Turn it on again to show the values you had before.
+
+While Vampire tracking is off, rolls from that document do not automatically replace ordinary dice with Hunger dice. Turning tracking on resumes that replacement using the saved Hunger value. The switch leaves other controls, such as Health, visible.
+
+## Equipment \{#equipment}
+
+The equipment editor is a list of weapons, armor, and other items, with editable details for each item. Weapons, armor, inventory, and implants offer different fields, according to the page and game.
+
+Use **Add Weapon**, **Add Armor**, **Add Item**, or the list's other add button to create an entry. Expand an item's heading to see its details. Type its name; where catalog suggestions appear, select one to fill the available statistics. You can also enter your own item. The copied statistics remain editable, so check them before play and adjust them for your item. Use the item's **×** (**Remove item**) to remove its entry.
+
+Edit the fields that are present: for example damage and range on a weapon, armor statistics on armor, or description, effects, weight, price, and quantity in inventory. **Equipped**, where shown, records whether that item is in use; switch it on or off rather than deleting an item you still carry.
+
+Weapons with **Ammo** and **Capacity** keep current ammunition and its maximum. Edit **Ammo** after firing or reloading; typing damage or making an ordinary sheet roll does not spend ammunition for you. Inventory may similarly show **Quantity** and **Max qty**. These controls record your choices; the game's equipment rules determine damage, protection, costs, and when an item can be used.
+
+## System slots \{#system-slots}
+
+**System slots** is an editable table of named vehicle systems and their **Damaged** switches. Each row records one system you want to track, rather than a fixed physical compartment in the vehicle.
+
+Use the table's add button to make a row, type its name under **System**, and switch **Damaged** on or off as its condition changes. The table holds up to ten rows; a row's remove button deletes that row. A switch can also be focused with `Tab` and changed with `Enter` or `Space`.
+
+These switches are separate from the vehicle's overall damage track and from the [Configuration](#vehicle-configuration) list: editing one does not update the others. Record the outcome agreed at the table here; see the Star Wars [specific-damage rules](../star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair.mdx#specific-damage) for when a particular system is affected.
+
+## Vehicle configuration \{#vehicle-configuration}
+
+**Configuration** is a list of labels naming the systems of a vehicle, for example engines, sensors, or a hyperdrive. It provides a named list to refer to during play, including when the Star Wars ion-damage rules call for a system to be chosen.
+
+Expand **Configuration**, use its add button to create a row, and type the system's name in **Label**. Edit a label directly to rename it, or use the row's remove button to delete it. The list holds up to twenty entries.
+
+Configuration stores names; [System slots](#system-slots) also stores a **Damaged** switch for each of its own rows. Maintain these records separately: a label does not create a slot or change a damage mark. The sheet does not choose a disabled system or time its recovery for you; follow the [ion-damage rules](../star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair.mdx#ion-damage) and record the result.
+
 ## Views and briefs \{#views}
 
 **View mode** lists the ways a document can be shown: its full sheet, its **Brief**, and pages you made for it in the [template editor](./template-editor). The choice is saved with the document. When two or more documents are open, each group has its own selector instead, which changes only that group.

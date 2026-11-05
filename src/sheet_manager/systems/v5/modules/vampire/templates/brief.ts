@@ -10,7 +10,7 @@ import {
     tracked,
     trackGroup,
 } from '../../../ruleset/templateParts';
-import { VAMPIRE_KIND, vampireBloodGroup, vampireIdentityGroup } from './sheet';
+import { VAMPIRE_DOCS, VAMPIRE_KIND, vampireBloodGroup, vampireIdentityGroup } from './sheet';
 
 const v5 = uiMessages.sheet.v5;
 const vampire = uiMessages.sheet.v5Vampire;
@@ -58,10 +58,14 @@ export const vampireBriefTemplate: CustomTemplate = {
                         vampire.sections.disciplineList.message
                     ),
                 ],
-                { collapsible: true, labelMessage: vampire.sections.disciplines }
+                {
+                    collapsible: true,
+                    labelMessage: vampire.sections.disciplines,
+                    docsPath: VAMPIRE_DOCS.disciplines,
+                }
             )
         ),
-        dense(equipmentGroup('weapons'), { collapsed: true }),
+        dense(equipmentGroup('weapons', { docsPath: VAMPIRE_DOCS.weapons }), { collapsed: true }),
         memberOfBriefGroup(),
     ],
 };

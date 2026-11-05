@@ -20,7 +20,7 @@ import { portraitFieldBinding } from '../../portraitBinding';
 import type { DocumentBindingDescriptor, FieldBinding } from '../../templateBindings';
 import type { DocumentDefinition } from '../../types';
 import { V5_LIMITS, V5MetadataSchema } from '../ruleset/schema';
-import { portraitGroup, v5Text } from '../ruleset/templateParts';
+import { portraitGroup, V5_DOCS, v5Text } from '../ruleset/templateParts';
 import { GROUP_EXAMPLES } from './examples';
 import { STORYTELLER_KIND } from './storytellerBindings';
 
@@ -65,6 +65,7 @@ const field = (
 
 const THREAT: TemplateField = {
     id: 'threat-field',
+    docsPath: '/docs/wod-v5/storyteller/groups#threat',
     type: 'rating',
     label: labels.fields.threat.message,
     labelMessage: labels.fields.threat.id,
@@ -138,7 +139,7 @@ export const v5GroupSheetTemplate = page('v5-group-sheet', 'Group — Full sheet
     section(
         'group',
         labels.section.message,
-        undefined,
+        '/docs/wod-v5/storyteller/groups',
         [
             flowingPortrait(),
             identity(),
@@ -176,6 +177,7 @@ export const v5GroupBriefTemplate = page(
         dense(
             group('members', labels.fields.members.message, [members(true)], {
                 labelMessage: labels.fields.members,
+                docsPath: V5_DOCS.references,
             })
         ),
         foldedText('goals', labels.fields.goals),
@@ -227,6 +229,7 @@ export function memberOfBriefGroup(): BriefNode {
     return dense(
         group('member-of', labels.memberOf.message, [{ ...memberOfField(true), hideLabel: true }], {
             labelMessage: labels.memberOf,
+            docsPath: V5_DOCS.references,
         }),
         { collapsed: true }
     );

@@ -1,5 +1,10 @@
 # Feature Specification: Sheet follow-ups after links
 
+> **Historical record (partly superseded).** [Spec 047](../047-sheet-help-links/spec.md) moves the
+> section/card "?" outside the fold button and adds field and primitive help, with automatic element
+> help on full pages. The fragment-card mechanism remains. Current help behavior lives in
+> `src/sheet_manager/AGENTS.md` and `.agents/skills/sheet-templates/`.
+
 **Branch**: `045-sheet-followups` | **Created**: 2026-10-28 | **Status**: Draft
 
 **Input**: "Sheet follow-ups after links (T-059, T-102, T-111, T-083, F-010): sheet hints show the

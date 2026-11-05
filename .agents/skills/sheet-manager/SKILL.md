@@ -43,8 +43,9 @@ detail.
 - `capabilities.character` (`systems/capabilities.ts`) adapts a payload to the shared
   `CharacterView` interface (id, name and kind, traits, health, equipment lists):
   `read(documentId, data)` for display, `applyUpdates(data, updates)` for writes. The droid
-  capability maps persisted `damage` ↔ `health` and `builtInEquipment` ↔ `inventory` without
-  renaming stored fields.
+  capability maps persisted `damage` ↔ `health`, `builtInEquipment` ↔ `inventory` (the legacy
+  address), and loose `inventory` ↔ `carriedInventory`, without renaming stored fields. Legacy
+  `implants` remain stored but are absent from the shipped droid page.
 - Shared views route by capability presence (`definition.capabilities?.character`), never by
   `definitionId` string matching. View labels are definition-owned translation descriptors
   (`DocumentViewLabel`), consumed by `ViewModeSelect` via `translate(view.label)`.

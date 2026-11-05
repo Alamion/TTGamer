@@ -18,6 +18,7 @@ type RatingFlags = Pick<RatingDetail, RatingFlag>;
 
 interface RatingRowProps {
     label: string;
+    afterLabel?: ReactNode;
     term?: TermLink;
     hideLabel?: boolean;
     /** Beside the value like a trait row (default), or above it like a stacked field. */
@@ -58,6 +59,7 @@ interface RatingRowProps {
  */
 export function RatingRow({
     label,
+    afterLabel,
     term,
     hideLabel = false,
     labelPosition = 'left',
@@ -198,6 +200,7 @@ export function RatingRow({
             {top && !labelSlot && (
                 <FieldLabel
                     label={label}
+                    afterLabel={afterLabel}
                     term={term}
                     required={required}
                     position="top"
@@ -216,9 +219,10 @@ export function RatingRow({
                 {!top && !labelSlot && (
                     <StatLabel
                         label={label}
+                        afterLabel={afterLabel}
                         term={term}
                         required={required}
-                        className={clsx(hideLabel && 'sr-only')}
+                        hidden={hideLabel}
                     />
                 )}
                 {onTextChange && (

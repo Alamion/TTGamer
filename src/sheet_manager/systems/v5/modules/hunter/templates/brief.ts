@@ -47,7 +47,12 @@ export const hunterBriefTemplate: CustomTemplate = {
         compactTraitsGroup('attributes'),
         compactTraitsGroup('skills', { collapsible: true }),
         dense(hunterEdgesGroup()),
-        dense(equipmentGroup('weapons'), { collapsed: true }),
+        dense(
+            equipmentGroup('weapons', {
+                docsPath: '/docs/wod-v5/hunter/reference/weapons-gear#weapons',
+            }),
+            { collapsed: true }
+        ),
         memberOfBriefGroup(),
     ],
 };

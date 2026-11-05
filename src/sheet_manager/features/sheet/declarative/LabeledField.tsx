@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { FieldLabel } from '../../../components/controls/FieldLabel';
 import type { TermLink } from '../../../components/terms/termLink';
 import { fieldLabelPosition, type TemplateField } from '../../../types/template';
+import { useFieldHelpMark } from './FieldHelp';
 
 /**
  * A field's label and control in the field's label position (spec 014): stacked above, or
@@ -26,15 +27,18 @@ export function LabeledField({
     trailing?: ReactNode;
     children: ReactNode;
 }) {
+    const help = useFieldHelpMark();
     const position = fieldLabelPosition(field);
     const labelClass = clsx(position === 'left' && 'min-w-0 max-w-[50%] shrink-0 pt-1.5');
     const label = nameSlot ? (
         <div className={clsx('min-w-0', position === 'left' ? labelClass : 'w-full')}>
             {nameSlot}
+            {help}
         </div>
     ) : (
         <FieldLabel
             label={field.label}
+            afterLabel={field.type === 'image' && field.hideLabel && !nameSlot ? undefined : help}
             term={term}
             required={field.required}
             position={position}

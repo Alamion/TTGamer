@@ -39,29 +39,34 @@ export function SectionCard({
                 docsPath={docsPath}
                 label={documentationFor(title ?? '')}
                 title={title ?? ''}
+                size={dense ? 'sm' : 'md'}
             />
         ) : null;
 
     const storageHeader = (
-        <button
-            type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-bgBase/30 transition-colors"
-            aria-expanded={isExpanded}
-            aria-label={translate(uiMessages.sheet.controls.toggleSection, { title: title ?? '' })}
-        >
-            <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
-                {title}
-                {renderDocsIcon()}
-            </h3>
-            <ChevronDown
-                className={clsx(
-                    'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
-                    isExpanded && 'rotate-180'
-                )}
-                aria-hidden="true"
-            />
-        </button>
+        <div className="flex items-center gap-2 p-4">
+            <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex min-w-0 flex-1 items-center justify-between text-left hover:bg-bgBase/30 transition-colors"
+                aria-expanded={isExpanded}
+                aria-label={translate(uiMessages.sheet.controls.toggleSection, {
+                    title: title ?? '',
+                })}
+            >
+                <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider">
+                    {title}
+                </h3>
+                <ChevronDown
+                    className={clsx(
+                        'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                        isExpanded && 'rotate-180'
+                    )}
+                    aria-hidden="true"
+                />
+            </button>
+            {renderDocsIcon()}
+        </div>
     );
 
     const header = (
@@ -76,30 +81,27 @@ export function SectionCard({
             <section className="min-w-0">
                 {title &&
                     (storageKey ? (
-                        <button
-                            type="button"
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className={clsx(
-                                'mb-0.5 flex w-full items-center justify-between text-left',
-                                BRIEF.heading
-                            )}
-                            aria-expanded={isExpanded}
-                            aria-label={translate(uiMessages.sheet.controls.toggleSection, {
-                                title: title ?? '',
-                            })}
-                        >
-                            <h3 className="flex items-center gap-2">
-                                {title}
-                                {renderDocsIcon()}
-                            </h3>
-                            <ChevronDown
-                                className={clsx(
-                                    'h-4 w-4 shrink-0 transition-transform duration-200 ease-linear motion-reduce:transition-none',
-                                    isExpanded && 'rotate-180'
-                                )}
-                                aria-hidden="true"
-                            />
-                        </button>
+                        <div className={clsx('mb-0.5 flex items-center gap-2', BRIEF.heading)}>
+                            <button
+                                type="button"
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="flex min-w-0 flex-1 items-center justify-between text-left"
+                                aria-expanded={isExpanded}
+                                aria-label={translate(uiMessages.sheet.controls.toggleSection, {
+                                    title: title ?? '',
+                                })}
+                            >
+                                <h3 className="flex items-center gap-2">{title}</h3>
+                                <ChevronDown
+                                    className={clsx(
+                                        'h-4 w-4 shrink-0 transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                                        isExpanded && 'rotate-180'
+                                    )}
+                                    aria-hidden="true"
+                                />
+                            </button>
+                            {renderDocsIcon()}
+                        </div>
                     ) : (
                         <h3 className={clsx('mb-0.5 flex items-center gap-2', BRIEF.heading)}>
                             {title}

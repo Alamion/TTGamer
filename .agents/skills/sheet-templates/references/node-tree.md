@@ -3,6 +3,38 @@
 Reference for the `sheet-templates` skill: every node type, its fields, and its limits. The
 invariants are in the skill index.
 
+## Help links
+
+Fields and document-bound primitives accept optional `docsPath` (string, up to 500 characters) and
+`hideHelp` (boolean) in `types/template.ts`. These optional settings require no schema or store
+version change. Lists and tables have no own `docsPath` or `hideHelp`; their entry fields and
+columns use the field settings.
+
+`FieldHelpProvider` (`features/sheet/declarative/FieldHelp.tsx`) resolves one destination for the
+cell: its own `docsPath` first, otherwise automatic element help on a full page unless `hideHelp` is
+true. Thus **Hide help** never removes an explicit link, and briefs show only explicit links.
+`FieldHelpMark` and `useFieldHelpMark` expose the resolved mark to the control's label slot;
+controls do not resolve help themselves. Hidden labels retain an accessible name, falling back to a
+primitive's binding key when no label is available. Mark placement and fold-button accessibility are
+owned by `src/sheet_manager/AGENTS.md`, "UI Rules".
+
+`ELEMENT_HELP` in `features/sheet/declarative/elementHelp.ts` is the sole map of automatic
+destinations: only Markdown (`#markdown`) and Mentioned in (`#mentions`) fields receive it, under
+`/docs/guide/template-editor/elements`, on full pages including user pages. `elementHelpFor(node)`
+selects only those field types; bindings never add defaults. Descriptions of other controls belong
+to the template editor's element documentation, not automatic sheet marks.
+
+A shipped section or group's link owns the explanation for its content: no descendant may repeat an
+ancestor's exact destination, and its sole content must not carry a separate explicit link, even to
+a broader page. Keep field links for distinct rules terms in containers with several fields. Keep
+interaction defaults in the map rather than copying their paths into templates.
+
+`tests/sheet_manager/field-help.test.tsx` covers precedence and control marks;
+`tests/docs/help-links-review.test.ts` checks shipped links against the approved review, system
+boundaries, ancestor/descendant duplicates, and linked sole content. Fragment loading and bilingual
+anchor checks are owned by the `docusaurus-integration` skill, "Docs Fragments in the App". Editor
+controls are described in `references/editor.md`, "Help settings".
+
 ## Node tree (`types/template.ts`, schema v4)
 
 - Page kind (spec 041): `pageKind: 'brief'` makes a brief; absent, a full page. Schema refinements

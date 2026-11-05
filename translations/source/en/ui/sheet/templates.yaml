@@ -18,6 +18,8 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
+    hideHelp: Hide help
+    hideHelpHint: Hide the help for using this element. Its own documentation link still shows.
     visibleWhen: Show only when a condition holds
     elementButton: Button
     paletteButton: Button

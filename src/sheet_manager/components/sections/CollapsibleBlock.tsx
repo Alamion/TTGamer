@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsPreviewLink } from '@site/src/shared/components/DocsFragmentCard';
 import { useExpandedState } from '@site/src/shared/hooks/useLocalStorageState';
 import { clsx } from 'clsx';
@@ -33,31 +35,36 @@ export function CollapsibleBlock({
 
     return (
         <div className="space-y-4">
-            <button
-                type="button"
-                onClick={toggleExpanded}
-                aria-expanded={isExpanded}
-                className="w-full flex items-center justify-between"
-            >
-                <h2 className="text-lg font-semibold text-textPrimary flex items-center gap-2">
-                    <span className={`w-1 h-6 ${accentColorClasses[accentColor]} rounded-full`} />
-                    {title}
-                    {docsPath && (
-                        <DocsPreviewLink
-                            docsPath={docsPath}
-                            label={documentationFor(title)}
-                            title={title}
+            <div className="flex items-center gap-2">
+                <button
+                    type="button"
+                    onClick={toggleExpanded}
+                    aria-expanded={isExpanded}
+                    aria-label={translate(uiMessages.sheet.controls.toggleSection, { title })}
+                    className="flex min-w-0 flex-1 items-center justify-between text-left"
+                >
+                    <h2 className="text-lg font-semibold text-textPrimary flex items-center gap-2">
+                        <span
+                            className={`w-1 h-6 ${accentColorClasses[accentColor]} rounded-full`}
                         />
-                    )}
-                </h2>
-                <ChevronDown
-                    className={clsx(
-                        'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
-                        isExpanded && 'rotate-180'
-                    )}
-                    aria-hidden="true"
-                />
-            </button>
+                        {title}
+                    </h2>
+                    <ChevronDown
+                        className={clsx(
+                            'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                            isExpanded && 'rotate-180'
+                        )}
+                        aria-hidden="true"
+                    />
+                </button>
+                {docsPath && (
+                    <DocsPreviewLink
+                        docsPath={docsPath}
+                        label={documentationFor(title)}
+                        title={title}
+                    />
+                )}
+            </div>
 
             {isExpanded && children}
         </div>

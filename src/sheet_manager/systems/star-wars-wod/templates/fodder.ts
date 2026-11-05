@@ -82,18 +82,22 @@ function armorCatalog(): TemplateField {
     );
 }
 
-const soak = (compact = false) =>
-    formula('soak-bashing', 'Soak (bashing only)', SOAK, {
+const soak = (compact = false) => ({
+    ...formula('soak-bashing', 'Soak (bashing only)', SOAK, {
         labelMessage: entities.soakBashingOnly,
         compact,
-    });
+    }),
+    ...(!compact ? { docsPath: DOCS.soak } : {}),
+});
 
-const willpower = (compact = false) =>
-    primitive('resource-willpower', 'resource:willpower', {
+const willpower = (compact = false) => ({
+    ...primitive('resource-willpower', 'resource:willpower', {
         compact,
         label: 'Willpower',
         labelMessage: fields.willpower,
-    });
+    }),
+    ...(!compact ? { docsPath: DOCS.willpower } : {}),
+});
 
 const leader = (compact = false) =>
     reference('field-leader', 'Leader', 'leader', ['character'], {
@@ -135,9 +139,12 @@ function fodderSheet(): CustomTemplate {
                         'fodder-identity',
                         'Group',
                         [
-                            text('field-concept', 'Concept', 'concept', {
-                                labelMessage: fields.concept,
-                            }),
+                            {
+                                ...text('field-concept', 'Concept', 'concept', {
+                                    labelMessage: fields.concept,
+                                }),
+                                docsPath: DOCS.concept,
+                            },
                             leader(),
                             {
                                 ...text('field-notes', 'Notes', 'notes', {
@@ -155,7 +162,7 @@ function fodderSheet(): CustomTemplate {
             section(
                 'members',
                 'Members',
-                DOCS.health,
+                DOCS.fodderMembers,
                 [
                     group(
                         'fodder-members',
@@ -163,24 +170,30 @@ function fodderSheet(): CustomTemplate {
                         [
                             { ...membersTrack(), span: 3 },
                             willpower(),
-                            number(
-                                'field-quick-pool-specialty',
-                                'Specialty pool',
-                                'quick-pool-specialty',
-                                {
-                                    max: 10,
-                                    labelMessage: entities.specialtyPool,
-                                }
-                            ),
-                            number(
-                                'field-quick-pool-secondary',
-                                'Secondary pool',
-                                'quick-pool-secondary',
-                                {
-                                    max: 10,
-                                    labelMessage: entities.secondaryPool,
-                                }
-                            ),
+                            {
+                                ...number(
+                                    'field-quick-pool-specialty',
+                                    'Specialty pool',
+                                    'quick-pool-specialty',
+                                    {
+                                        max: 10,
+                                        labelMessage: entities.specialtyPool,
+                                    }
+                                ),
+                                docsPath: DOCS.quickNpcRolls,
+                            },
+                            {
+                                ...number(
+                                    'field-quick-pool-secondary',
+                                    'Secondary pool',
+                                    'quick-pool-secondary',
+                                    {
+                                        max: 10,
+                                        labelMessage: entities.secondaryPool,
+                                    }
+                                ),
+                                docsPath: DOCS.quickNpcRolls,
+                            },
                         ],
                         // The track takes the row; Willpower and the pools share the next one.
                         { columns: 3, hideTitle: true, labelMessage: fields.members }
@@ -218,7 +231,7 @@ function fodderSheet(): CustomTemplate {
                             ],
                             {
                                 labelMessage: fields.abilities,
-                                docsPath: DOCS.encounterTiers,
+                                docsPath: DOCS.skills,
                             }
                         ),
                         span: 3,
@@ -306,10 +319,11 @@ function fodderBrief(): CustomTemplate {
                         labelMessage: fields.abilities,
                     }),
                 ],
-                { collapsible: true, labelMessage: fields.abilities }
+                { collapsible: true, labelMessage: fields.abilities, docsPath: DOCS.skills }
             ),
             group('brief-weapons', 'Weapons', [weapons(true)], {
                 labelMessage: fields.weapons,
+                docsPath: DOCS.weapons,
             }),
             group('brief-members', 'Members', [membersTrack(true)], {
                 hideTitle: true,

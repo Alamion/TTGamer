@@ -23,11 +23,11 @@ by `documentKind`.
 
 **Data access is kind-independent**: bound elements read and write through `useBoundDocument()`
 (`features/sheet/declarative/boundDocument.ts`). Documents with a `character` capability go through
-it (droids map damage/built-in equipment); every other kind reads `document.data` directly. Writes
-merge top-level keys and re-parse with the kind schema; a rejection reports
-`template-value-write-rejected` instead of throwing. Equipment bindings without `dataKey` still need
-the character capability (`useBodyHandlers`, Star Wars catalogs); with `dataKey` they edit a plain
-item array through the same molecules (V5 `weapons`, `inventory`).
+it (droids map damage and expose built-in equipment separately); every other kind reads
+`document.data` directly. Writes merge top-level keys and re-parse with the kind schema; a rejection
+reports `template-value-write-rejected` instead of throwing. Equipment bindings without `dataKey`
+still need the character capability (`useBodyHandlers`, Star Wars catalogs); with `dataKey` they
+edit a plain item array through the same molecules (V5 `weapons`, `inventory`).
 
 | Kind        | Key shape                                                | Star Wars data                                                                                                |
 | ----------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -101,7 +101,17 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 - `track:droid-damage` reads droid damage (exposed as `health` by the droid capability) with the
   damage chart's level names and penalties. The shipped `droid-sheet` is the `droid` variant of the
   full sheet: no Force skills/powers or Force Points, per-group free-point fields
-  (`droid-free-<group>` bag values), Built-in equipment, and the damage chart.
+  (`droid-free-<group>` bag values), Built-in equipment, and the damage chart. `equipment:built-in`
+  uses the existing character inventory handlers on `builtInEquipment`;
+  `equipment:carried-inventory` uses the inventory molecule on capability `carriedInventory` (stored
+  `inventory`, tool/gear suggestions). The Built-in card retains `body-inventory` and its section
+  help; `body-carried-inventory` has no help. Existing built-in and inventory arrays keep their
+  contents; `implants` are preserved by the schema and exports but omitted from this page. Older
+  edited/custom pages keep their behavior: `equipment:inventory` still addresses installed droid
+  gear, and `equipment:implants` still addresses retained implant records. Neither is relabeled or
+  migrated. Regular character templates and inventory bindings are unchanged. Legacy-converted
+  droids may already contain the same items in both stored arrays; both copies become visible, with
+  no automatic move or deduplication.
 - Views resolve through the document's own definition (`resolveDocumentView` →
   `resolveEffectiveTemplate`): character and droid share the `character` kind, so the droid
   definition registers its own `droid-brief` view (aliases `brief`, `npc-card`) whose shipped

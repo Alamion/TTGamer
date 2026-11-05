@@ -64,7 +64,7 @@ export const v5CoreSheetTemplate = page('v5-core-sheet', 'Mortal — Full sheet'
     section(
         'mortal',
         core.section.message,
-        undefined,
+        '/docs/wod-v5/rules/mortals#mortal',
         [portraitGroup(1, PORTRAIT_SHOWN), { ...identity(), column: 2 }, biographyGroup(2)],
         { columns: 2, columnWidths: [1, 2], labelMessage: core.section }
     ),
@@ -99,14 +99,18 @@ export const v5CoreBriefTemplate = page(
                 'condition',
                 v5.sections.condition.message,
                 [
-                    ...trackGroup('health', { compact: true }).children.map((node) => ({
-                        ...node,
-                        column: 1,
-                    })),
-                    ...trackGroup('willpower', { compact: true }).children.map((node) => ({
-                        ...node,
-                        column: 2,
-                    })),
+                    ...trackGroup('health', { compact: true, help: false }).children.map(
+                        (node) => ({
+                            ...node,
+                            column: 1,
+                        })
+                    ),
+                    ...trackGroup('willpower', { compact: true, help: false }).children.map(
+                        (node) => ({
+                            ...node,
+                            column: 2,
+                        })
+                    ),
                 ],
                 { columns: 2, labelMessage: v5.sections.condition }
             )

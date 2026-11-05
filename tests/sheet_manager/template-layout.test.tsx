@@ -254,6 +254,25 @@ describe('resource minimums, proportional columns, condition tracks, droid varia
 });
 
 describe('droid default template', () => {
+    it('keeps the legacy installed address and adds a separate carried-inventory source', () => {
+        const builtIn = resolveDocumentBinding('star-wars-wod', 'character', 'equipment:built-in');
+        expect(builtIn).toMatchObject({ kind: 'equipment', sectionId: 'inventory' });
+        expect(builtIn).not.toHaveProperty('dataKey');
+        expect(
+            resolveDocumentBinding('star-wars-wod', 'character', 'equipment:inventory')
+        ).toMatchObject({
+            kind: 'equipment',
+            sectionId: 'inventory',
+        });
+        expect(
+            resolveDocumentBinding('star-wars-wod', 'character', 'equipment:carried-inventory')
+        ).toMatchObject({
+            kind: 'equipment',
+            sectionId: 'inventory',
+            dataKey: 'carriedInventory',
+        });
+    });
+
     it('drops Force content, adds free points per ability group, and uses the damage chart', () => {
         const droid = starWarsWodDefaultTemplates.find(({ id }) => id === 'droid-sheet')!;
         const json = JSON.stringify(droid);

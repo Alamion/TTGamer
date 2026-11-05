@@ -15,6 +15,7 @@ import {
     trackerLengthHidesMarks,
 } from '../data/trackerModel';
 import type { TemplateFieldControlProps } from './fieldControls';
+import { useFieldHelpMark } from './FieldHelp';
 
 function newCopyId(): string {
     return randomToken(8);
@@ -29,6 +30,7 @@ export function TrackerFieldControl({
     rawValue,
     value,
 }: TemplateFieldControlProps) {
+    const help = useFieldHelpMark();
     const tracker = field as TrackerField;
     const stored = value as TrackerValue | undefined;
     const model = useMemo(
@@ -56,6 +58,7 @@ export function TrackerFieldControl({
 
     return (
         <Tracker
+            afterLabel={help}
             model={model}
             disabled={disabled}
             onMark={(columnId, copyId, levelId, click) =>

@@ -39,6 +39,7 @@ import {
     shortenMarks,
     toggleMark,
 } from './cohort';
+import { useFieldHelpMark } from './FieldHelp';
 import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
 const cohort = uiMessages.sheet.templates.cohort;
@@ -78,6 +79,7 @@ export function BuiltInTracker({
     documentKind: string;
     page?: TrackerPageAccess;
 }) {
+    const help = useFieldHelpMark();
     const brief = useBriefPage();
     const label = node.label ?? descriptor.label;
     const readOnly = bound.readOnly;
@@ -331,6 +333,7 @@ export function BuiltInTracker({
 
     return (
         <Tracker
+            afterLabel={help}
             model={model}
             disabled={readOnly}
             onMark={onMark}

@@ -7,8 +7,9 @@ import {
     createDefaultDroidData,
     createDefaultStarWarsCharacterData,
 } from '@site/src/sheet_manager/systems/star-wars-wod';
+import { ItemSchema } from '@site/src/sheet_manager/types/equipment';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -102,6 +103,57 @@ describe('declarative default templates (feature 006, zero placements)', () => {
         render(createElement(DeclarativeSheetView, { template: template! }));
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
         expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
+        expect(
+            screen.getByRole('button', { name: 'Toggle Built-in equipment section' })
+        ).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Toggle Inventory section' })).toBeTruthy();
+        expect(screen.queryByText('Implants & Cyberware')).toBeNull();
+        expect(
+            screen.getByRole('link', { name: 'Documentation for Built-in equipment' })
+        ).toBeTruthy();
+        expect(screen.queryByRole('link', { name: 'Documentation for Inventory' })).toBeNull();
+    });
+
+    it('loads existing droid lists and edits installed and carried items independently', () => {
+        const original = {
+            ...createDefaultDroidData(),
+            builtInEquipment: [ItemSchema.parse({ id: 'installed', text: 'Installed scanner' })],
+            inventory: [ItemSchema.parse({ id: 'carried', text: 'Loose comlink' })],
+            implants: [
+                { id: 'legacy', name: 'Retained implant', type: 'sensory', effect: 'Old note' },
+            ],
+        };
+        seedDocument(original, 'character', 'droid');
+        const envelope = useDocumentStore.getState().documents[0]!;
+        expect(
+            systemRegistry.parseDocument(JSON.parse(JSON.stringify(envelope))).envelope.data
+        ).toEqual(original);
+        render(createElement(DeclarativeSheetView, { template: defaultTemplate('droid-sheet')! }));
+        expect(screen.queryByText('Retained implant')).toBeNull();
+        const stored = () => useDocumentStore.getState().documents[0]!.data;
+        expect(stored()).toEqual(original);
+        for (const [before, after] of [
+            ['Installed scanner', 'Installed sensor'],
+            ['Loose comlink', 'Loose toolkit'],
+        ]) {
+            fireEvent.click(screen.getByText(before).closest('button')!);
+            fireEvent.change(screen.getByDisplayValue(before), { target: { value: after } });
+        }
+        expect(stored()).toMatchObject({
+            builtInEquipment: [{ ...original.builtInEquipment[0], text: 'Installed sensor' }],
+            inventory: [{ ...original.inventory[0], text: 'Loose toolkit' }],
+            implants: original.implants,
+        });
+        const carriedCard = document.querySelector('[data-node-id="body-carried-inventory"]');
+        expect(carriedCard).toBeTruthy();
+        fireEvent.click(
+            within(carriedCard as HTMLElement).getByRole('button', { name: 'Add inventory item' })
+        );
+        expect(stored()).toMatchObject({
+            builtInEquipment: [{ text: 'Installed sensor' }],
+            implants: original.implants,
+        });
+        expect((stored() as typeof original).inventory).toHaveLength(2);
     });
 
     it('scenario: dropping the force section keeps the rest composable (SC-002 successor)', () => {

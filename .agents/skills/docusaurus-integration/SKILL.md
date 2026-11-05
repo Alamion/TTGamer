@@ -38,16 +38,21 @@ props, and `@theme/Heading` with `as` prop.
 
 ## Docs Fragments in the App
 
-- A sheet section's "?" (`DocsPreviewLink`, `shared/components/DocsFragmentCard.tsx`, spec 045)
+- Sheet help on sections, cards, brief blocks, fields, primitives, lists, and tables uses
+  `DocsPreviewLink` (`shared/components/DocsFragmentCard.tsx`, specs 045 and 047). A site docs link
   shows part of a docs page in a card: `shared/components/docsFragments.ts` finds the page's content
   chunk in `@generated/routesChunkNames` and loads it through `@generated/registry` (both already in
   the main bundle; this file is their only reader). MDX v3 hands its `wrapper` one element that
   draws the page; the card draws it and keeps the blocks from the anchored heading to the next one
   of the same or higher level. `DocsHelpLink` stays a plain link elsewhere, so the navbar does not
-  load the card.
+  load the card. Modified and middle clicks retain normal link navigation; external HTTPS links open
+  their destination rather than a fragment card. Help placement is owned by
+  `src/sheet_manager/AGENTS.md`, "UI Rules"; template settings and destination selection by the
+  `sheet-templates` skill's `references/node-tree.md`, "Help links".
 - A heading a shipped sheet links to carries the same explicit `\{#id}` in the English and the
   Russian page (Russian headings slug differently); `tests/docs/docs-links-anchors.test.ts` checks
-  every shipped `docsPath`.
+  every shipped `docsPath`, including field and primitive paths, and every automatic `ELEMENT_HELP`
+  destination. Destination policy belongs to root `AGENTS.md` §6.
 
 ## Config File Formats
 

@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
@@ -14,6 +15,7 @@ interface TraitRowProps {
     /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
     presentation?: 'dots' | 'number';
     label: string;
+    afterLabel?: ReactNode;
     /** Book term of the label (spec 009). */
     term?: TermLink;
     value: number;
@@ -45,6 +47,7 @@ interface TraitRowProps {
 export function TraitRow({
     presentation,
     label,
+    afterLabel,
     term,
     value,
     maxValue = 5,
@@ -63,7 +66,7 @@ export function TraitRow({
 }: TraitRowProps) {
     return (
         <div className={clsx('term-row flex items-end justify-between gap-2 py-1', className)}>
-            <StatLabel label={label} tooltip={tooltip} term={term} />
+            <StatLabel afterLabel={afterLabel} label={label} tooltip={tooltip} term={term} />
             <StatDot
                 presentation={presentation}
                 value={value}
@@ -85,6 +88,7 @@ export function TraitRow({
 }
 
 interface TraitRowWithInputProps {
+    afterLabel?: ReactNode;
     /** `number` shows a number field instead of dots (values past five, such as NPC pools). */
     presentation?: 'dots' | 'number';
     name: string;
@@ -119,6 +123,7 @@ interface TraitRowWithInputProps {
 }
 
 export function TraitRowWithInput({
+    afterLabel,
     presentation,
     name,
     term,
@@ -152,9 +157,15 @@ export function TraitRowWithInput({
     return (
         // The outer div is the size container; the inner row wraps the specialization input
         // onto its own line when the row is too narrow for label, input, and dots together.
-        <div className={clsx('term-row term-row-specialty py-1.5', className)}>
+        <div
+            className={clsx(
+                'term-row term-row-specialty py-1.5',
+                afterLabel && 'term-row-specialty-help',
+                className
+            )}
+        >
             <div className="term-row-inner flex items-end gap-2">
-                <StatLabel label={name} tooltip={tooltip} term={term} />
+                <StatLabel afterLabel={afterLabel} label={name} tooltip={tooltip} term={term} />
                 <input
                     type="text"
                     value={specializationText}
@@ -193,6 +204,7 @@ interface CustomTraitListProps {
     items: Array<{
         id: string;
         label: string;
+        afterLabel?: ReactNode;
         value: number;
         specialization?: boolean;
         experienced?: boolean;

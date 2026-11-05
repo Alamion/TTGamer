@@ -22,6 +22,7 @@ import { describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import preFeatureCharacterTemplates from './fixtures/character-templates.pre-007.json';
+import { withoutHelpMetadata } from './helpers/withoutHelpMetadata';
 
 describe('character templates after the builder split (feature 007)', () => {
     it('produce exactly the pre-refactor briefs', () => {
@@ -33,10 +34,12 @@ describe('character templates after the builder split (feature 007)', () => {
             .defaultTemplates!.filter(
                 (template) => template.documentKind === 'character' && !relaidOut.has(template.id)
             );
-        expect(JSON.parse(JSON.stringify(shipped))).toEqual(
-            preFeatureCharacterTemplates
-                .filter((template) => !relaidOut.has(template.id))
-                .map((template) => upgradeTemplate(template).template)
+        expect(withoutHelpMetadata(shipped)).toEqual(
+            withoutHelpMetadata(
+                preFeatureCharacterTemplates
+                    .filter((template) => !relaidOut.has(template.id))
+                    .map((template) => upgradeTemplate(template).template)
+            )
         );
     });
 });
@@ -94,7 +97,7 @@ describe('explicit default templates (feature 006, R9)', () => {
         }
     });
 
-    it('mirrors the built-in viewer composition order with the same docsPath links', () => {
+    it('keeps the viewer composition order with the reviewed section links', () => {
         const full = defaults.find(({ id }) => id === 'full-sheet')!;
         const sections = full.children.filter(
             (node): node is Extract<CustomTemplate['children'][number], { type: 'section' }> =>
@@ -112,14 +115,16 @@ describe('explicit default templates (feature 006, R9)', () => {
             'Experience and Notes',
         ]);
         const docsPaths = sections.map((section) => section.docsPath);
-        expect(docsPaths[0]).toContain('/docs/star-wars-wod-2e/quick-start');
-        expect(docsPaths[1]).toContain('virtues-willpower');
-        expect(docsPaths[2]).toContain('attributes-abilities#attributes');
-        expect(docsPaths[3]).toContain('attributes-abilities#abilities');
-        expect(docsPaths[4]).toContain('/character/force');
-        expect(docsPaths[5]).toContain('merits-flaws');
-        expect(docsPaths[6]).toContain('/equipment');
-        expect(docsPaths[7]).toContain('rewards-advancement');
+        expect(docsPaths).toEqual([
+            undefined,
+            undefined,
+            '/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes',
+            '/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities',
+            '/docs/star-wars-wod-2e/character/force',
+            undefined,
+            undefined,
+            undefined,
+        ]);
     });
 
     it('composes system content from first-class elements (no placements, R9)', () => {
@@ -201,6 +206,41 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(JSON.stringify(droidBrief)).toContain('track:droid-damage');
         expect(JSON.stringify(droidBrief)).not.toContain('resource:force-points');
         expect(briefFor(starWarsCharacterDefinition)!.id).toBe('brief');
+    });
+
+    it('separates installed droid gear from carried Inventory without changing character gear', () => {
+        const bodyOf = (id: string) => {
+            const body = defaults
+                .find((template) => template.id === id)!
+                .children.find((node) => node.id === 'body');
+            if (body?.type !== 'section') throw new Error('Missing Equipment section');
+            return body.children;
+        };
+        const droid = bodyOf('droid-sheet');
+        expect(droid.map((node) => 'title' in node && node.title)).toEqual([
+            'Weapons',
+            'Armor',
+            'Built-in equipment',
+            'Inventory',
+        ]);
+        const installed = droid.find((node) => node.id === 'body-inventory');
+        expect(installed).toMatchObject({
+            docsPath: '/docs/star-wars-wod-2e/character/droids-cyborgs#built-in-equipment',
+            children: [{ id: 'equipment-inventory', bindingKey: 'equipment:built-in' }],
+        });
+        const carried = droid.find((node) => node.id === 'body-carried-inventory');
+        expect(carried).toMatchObject({
+            title: 'Inventory',
+            children: [{ bindingKey: 'equipment:carried-inventory' }],
+        });
+        expect(carried).not.toHaveProperty('docsPath');
+        expect(JSON.stringify(droid)).not.toContain('equipment:implants');
+        expect(bodyOf('full-sheet').map((node) => 'title' in node && node.title)).toEqual([
+            'Weapons',
+            'Armor',
+            'Inventory',
+            'Implants & Cyberware',
+        ]);
     });
 
     it('gives every entity page a distinct identity from the character pages', () => {

@@ -67,6 +67,11 @@ describe('the tracking switch', () => {
                 render(createElement(CharacterSheet));
                 expect(screen.getAllByRole('button', { name: /^Willpower 1/ }).length).toBe(1);
                 expect(screen.getByRole('button', { name: 'Rouse check' })).toBeTruthy();
+                expect(
+                    screen.getByRole('link', {
+                        name: 'Documentation for Track Hunger and Willpower',
+                    })
+                ).toBeTruthy();
                 fireEvent.click(toggle('Track Hunger and Willpower'));
                 expect(stored().trackResources).toBe(false);
                 expect(screen.queryAllByRole('button', { name: /^Willpower 1/ })).toHaveLength(0);
@@ -110,16 +115,27 @@ describe('the tracking switch', () => {
         RENDER_TIMEOUT
     );
 
-    it(
-        'hides only Willpower on a hunter and keeps Desperation',
-        () => {
-            seed('hunter', HunterSchema.parse({ desperation: 2 }), 'v5-hunter-sheet');
-            render(createElement(CharacterSheet));
-            fireEvent.click(toggle('Track Willpower'));
-            expect(screen.queryAllByRole('button', { name: /^Willpower 1/ })).toHaveLength(0);
-            expect(screen.getAllByText('Desperation').length).toBeGreaterThan(0);
-            expect(stored()).toMatchObject({ trackResources: false, desperation: 2 });
-        },
-        RENDER_TIMEOUT
-    );
+    for (const viewId of ['v5-hunter-sheet', 'v5-hunter-brief']) {
+        it(
+            `hides only Willpower on a hunter (${viewId}) and keeps Desperation`,
+            () => {
+                seed('hunter', HunterSchema.parse({ desperation: 2 }), viewId);
+                render(createElement(CharacterSheet));
+                expect(screen.getAllByRole('button', { name: /^Willpower 1/ })).toHaveLength(1);
+                expect(
+                    screen.getByRole('link', {
+                        name: 'Documentation for Track Willpower',
+                    })
+                ).toBeTruthy();
+                fireEvent.click(toggle('Track Willpower'));
+                expect(screen.queryAllByRole('button', { name: /^Willpower 1/ })).toHaveLength(0);
+                expect(screen.getAllByText('Desperation').length).toBeGreaterThan(0);
+                expect(stored()).toMatchObject({ trackResources: false, desperation: 2 });
+                fireEvent.click(toggle('Track Willpower'));
+                expect(screen.getAllByRole('button', { name: /^Willpower 1/ })).toHaveLength(1);
+                expect(stored()).toMatchObject({ trackResources: true, desperation: 2 });
+            },
+            RENDER_TIMEOUT
+        );
+    }
 });

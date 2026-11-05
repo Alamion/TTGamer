@@ -1312,6 +1312,19 @@ const markdown = story(
     }
 );
 
+const fieldHelp = story(
+    'field-help',
+    'Field documentation and element help',
+    'An explicit field link follows its term hint. Markdown gets the notes guide automatically; Hide help suppresses only that default.',
+    ENGINE,
+    [
+        text('field-rules-help', 'Rules link', { docsPath: '/docs/guide/notes#syntax' }),
+        { id: 'markdown-help', type: 'markdown', label: 'Markdown help' },
+        { id: 'markdown-hidden-help', type: 'markdown', label: 'Hidden help', hideHelp: true },
+    ],
+    { 'markdown-help': { text: 'A note with its syntax guide beside the label.' } }
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     brief,
@@ -1323,6 +1336,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     trackers,
     buttons,
     markdown,
+    fieldHelp,
 ];
 
 let allStories: readonly ElementStory[] | undefined;

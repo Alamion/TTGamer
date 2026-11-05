@@ -61,6 +61,7 @@ import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { BriefGroupContext, useBriefPage } from './areaLayout';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
+import { FieldHelpLayout, FieldHelpMark, FieldHelpProvider, useFieldHelpMark } from './FieldHelp';
 import { PageScopeContext } from './PageScope';
 import { PoolTracker, ScoreTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
@@ -119,7 +120,10 @@ function IdentityField({
 }) {
     return (
         <label className="grid gap-1 text-xs font-medium text-textSecondary">
-            <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
+            <span>
+                <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
+                <FieldHelpMark />
+            </span>
             <input
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
@@ -237,7 +241,17 @@ function TraitListBindingView({
 }
 
 /** System-bound list rendered with the same molecules the built-in page uses. */
-function SystemListBody({
+function SystemListBody(props: Parameters<typeof SystemListContent>[0] & { hideLabel?: boolean }) {
+    const help = useFieldHelpMark();
+    if (!help) return <SystemListContent {...props} />;
+    return (
+        <FieldHelpLayout label={props.showTitle && !props.hideLabel ? props.title : undefined}>
+            <SystemListContent {...props} showTitle={false} docsPath={undefined} />
+        </FieldHelpLayout>
+    );
+}
+
+function SystemListContent({
     binding,
     disabled,
     title,
@@ -380,14 +394,16 @@ export function SystemListView({
         );
     }
     return (
-        <SystemListBody
-            binding={descriptor}
-            disabled={disabled}
-            title={list.title ?? descriptor.label}
-            columns={list.columns as 1 | 2 | 3 | 4}
-            showTitle={list.showTitle}
-            framed={list.framed}
-        />
+        <FieldHelpProvider node={list} label={list.title ?? descriptor.label}>
+            <SystemListBody
+                binding={descriptor}
+                disabled={disabled}
+                title={list.title ?? descriptor.label}
+                columns={list.columns as 1 | 2 | 3 | 4}
+                showTitle={list.showTitle}
+                framed={list.framed}
+            />
+        </FieldHelpProvider>
     );
 }
 
@@ -548,10 +564,11 @@ function EquipmentView({
     node: PrimitiveNode;
     descriptor: DocumentBindingDescriptor;
 }) {
+    const help = useFieldHelpMark();
     if (descriptor.kind !== 'equipment') {
         return <DegradedBinding bindingKey={node.bindingKey} reason="wrong-binding-kind" />;
     }
-    return descriptor.dataKey ? (
+    const body = descriptor.dataKey ? (
         <BoundEquipmentBody
             sectionId={descriptor.sectionId}
             dataKey={descriptor.dataKey}
@@ -559,6 +576,11 @@ function EquipmentView({
         />
     ) : (
         <CharacterEquipmentBody sectionId={descriptor.sectionId} />
+    );
+    return (
+        <FieldHelpLayout label={help && !node.hideLabel ? node.label : undefined}>
+            {body}
+        </FieldHelpLayout>
     );
 }
 
@@ -573,6 +595,7 @@ function PrimitiveTraitBody({
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'trait' }>;
 }) {
+    const help = useFieldHelpMark();
     const bound = useBoundDocument();
     const brief = useBriefPage();
     const traitDiceRoll = useDocumentTraitDiceRoll();
@@ -601,6 +624,7 @@ function PrimitiveTraitBody({
         const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
         const rating = (
             <CompactRating
+                afterLabel={help}
                 label={label}
                 term={termLinkOf(node)}
                 shortLabel={shortLabel}
@@ -635,6 +659,7 @@ function PrimitiveTraitBody({
     if (rowKind === 'trait') {
         return (
             <TraitRow
+                afterLabel={help}
                 label={label}
                 term={termLinkOf(node)}
                 value={trait.value}
@@ -665,6 +690,7 @@ function PrimitiveTraitBody({
     }
     return (
         <TraitRowWithInput
+            afterLabel={help}
             name={label}
             term={termLinkOf(node)}
             specializationText={trait.specializationText}
@@ -819,6 +845,7 @@ function PrimitiveResourceBody({
             >
                 {asPool ? (
                     <CompactResource
+                        afterLabel={<FieldHelpMark />}
                         label={label}
                         current={pair.current}
                         maximum={pair.max}
@@ -837,6 +864,7 @@ function PrimitiveResourceBody({
                     />
                 ) : (
                     <CompactRating
+                        afterLabel={<FieldHelpMark />}
                         label={label}
                         term={termLinkOf(node)}
                         shortLabel={shortLabel}
@@ -853,6 +881,7 @@ function PrimitiveResourceBody({
     return (
         <div className="grid gap-1">
             <TraitRow
+                afterLabel={<FieldHelpMark />}
                 label={label}
                 term={termLinkOf(node)}
                 value={Math.min(shown, rowMax)}
@@ -926,6 +955,7 @@ function PrimitiveFieldBody({
             <label className="flex items-center gap-2 text-sm text-textPrimary">
                 <input
                     type="checkbox"
+                    aria-label={label}
                     checked={raw === true}
                     disabled={readOnly}
                     onChange={(event) =>
@@ -934,7 +964,10 @@ function PrimitiveFieldBody({
                         )
                     }
                 />
-                <span className={node.hideLabel ? 'sr-only' : undefined}>{label}</span>
+                <span>
+                    <span className={node.hideLabel ? 'sr-only' : undefined}>{label}</span>
+                    <FieldHelpMark />
+                </span>
             </label>
         );
     }
@@ -956,6 +989,7 @@ function PrimitiveFieldBody({
     if (descriptor.valueType === 'enum' && descriptor.options) {
         return (
             <EnumField
+                afterLabel={<FieldHelpMark />}
                 label={label}
                 hideLabel={node.hideLabel}
                 compact={brief}
@@ -967,7 +1001,13 @@ function PrimitiveFieldBody({
         );
     }
     return brief ? (
-        <CompactTextField label={label} value={value} disabled={readOnly} onChange={write} />
+        <CompactTextField
+            afterLabel={<FieldHelpMark />}
+            label={label}
+            value={value}
+            disabled={readOnly}
+            onChange={write}
+        />
     ) : (
         <IdentityField
             label={label}
@@ -980,7 +1020,7 @@ function PrimitiveFieldBody({
 }
 
 /** Renders one primitive node against its resolved binding (feature 006 element set). */
-export function PrimitiveNodeView({
+function PrimitiveNodeBody({
     node,
     systemId,
     documentKind,
@@ -1027,6 +1067,8 @@ export function PrimitiveNodeView({
                 <SystemListBody
                     binding={descriptor}
                     disabled={readOnly}
+                    hideLabel={node.hideLabel}
+                    showTitle={node.label !== undefined}
                     title={
                         node.label ??
                         (descriptor.translation
@@ -1038,4 +1080,14 @@ export function PrimitiveNodeView({
         default:
             return <DegradedBinding bindingKey={node.bindingKey} reason="wrong-binding-kind" />;
     }
+}
+
+export function PrimitiveNodeView(props: Parameters<typeof PrimitiveNodeBody>[0]) {
+    const { node, systemId, documentKind } = props;
+    const descriptor = resolveDocumentBinding(systemId, documentKind, node.bindingKey);
+    return (
+        <FieldHelpProvider node={node} label={node.label ?? descriptor?.label ?? node.bindingKey}>
+            <PrimitiveNodeBody {...props} />
+        </FieldHelpProvider>
+    );
 }

@@ -21,6 +21,7 @@ the area you change:
 | Touching                                                       | Load                            |
 | -------------------------------------------------------------- | ------------------------------- |
 | Node types, fields, limits, schema version                     | `references/node-tree.md`       |
+| Help links, automatic element help, `docsPath` / `hideHelp`    | `references/node-tree.md`       |
 | Bindings, primitives, trait/resource sources, entity pages     | `references/bindings.md`        |
 | Page resolution, template stores, template import/export       | `references/pages.md`           |
 | Formulas, `maxFrom`, docs sheet embeds                         | `references/formulas-embeds.md` |

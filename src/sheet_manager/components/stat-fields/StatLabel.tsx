@@ -2,13 +2,15 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { HelpCircle } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { TermLabel } from '../terms/TermLabel';
 import type { TermLink } from '../terms/termLink';
 
 interface StatLabelProps {
     label: string;
+    afterLabel?: ReactNode;
+    hidden?: boolean;
     tooltip?: string;
     className?: string;
     required?: boolean;
@@ -16,17 +18,42 @@ interface StatLabelProps {
     term?: TermLink;
 }
 
-export function StatLabel({ label, tooltip, className, required = false, term }: StatLabelProps) {
+export function StatLabel({
+    label,
+    tooltip,
+    className,
+    required = false,
+    term,
+    afterLabel,
+    hidden,
+}: StatLabelProps) {
     const [showTooltip, setShowTooltip] = useState(false);
 
     return (
-        <div className={clsx('relative flex min-w-0 items-center gap-2', className)}>
-            <TermLabel
-                text={label}
-                {...term}
-                className="line-clamp-2 min-w-0 text-sm font-medium text-textPrimary"
-            />
-            {required && <span className="text-error">*</span>}
+        <div
+            className={clsx(
+                'relative flex min-w-0 items-center gap-2',
+                hidden && !afterLabel && 'sr-only',
+                className
+            )}
+        >
+            {afterLabel ? (
+                <span className="min-w-0 text-sm font-medium text-textPrimary">
+                    <TermLabel text={label} {...term} className={hidden ? 'sr-only' : undefined} />
+                    {'\u2060'}
+                    {afterLabel}
+                    {required && <span className="ml-2 text-error">*</span>}
+                </span>
+            ) : (
+                <>
+                    <TermLabel
+                        text={label}
+                        {...term}
+                        className="line-clamp-2 min-w-0 text-sm font-medium text-textPrimary"
+                    />
+                    {required && <span className="text-error">*</span>}
+                </>
+            )}
             {tooltip && (
                 <div className="relative">
                     <button
