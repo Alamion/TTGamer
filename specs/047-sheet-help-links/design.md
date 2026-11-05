@@ -204,3 +204,10 @@ KB). Sheet opening, best of five interleaved paired runs: master 107–113 ms, H
 111 → 116 ms, +4.5 %), within the 10 % limit. The sheet now draws about 74 help marks (DOM nodes
 1,777 → 2,251); `DocsPreviewLink` mounts its popover only while open instead of one Radix popover
 root per mark.
+
+**Manual walk (T026):** the maintainer walked the shipped pages on the review server (WoD 2e, Star
+Wars character and droid, V5) over several rounds and accepted the result. Their findings were fixed
+in the same spec: field-mark gaps, the portrait mark, fragment-card typography, marks following
+wrapped labels, automatic element help limited to Markdown and mentions (amendment of D5), the trait
+row's specialization width, and the droid page (built-in equipment and Inventory instead of
+implants).

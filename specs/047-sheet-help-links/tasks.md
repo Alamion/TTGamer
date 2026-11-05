@@ -113,7 +113,7 @@ and opens with a definition.
       guide and a rules term's "?" on a sheet to its own system's rules; a historical banner on spec
       045 (the "?" no longer sits in the fold button) and the `docusaurus-integration` skill's "Docs
       Fragments in the App" updated
-- [ ] T026 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
+- [x] T026 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
       design.md
 
 ## Coverage
