@@ -144,7 +144,7 @@ check fo it existence before killing processes or creating new one.
 │   ├── star-wars-wod-2e/      # Star Wars WoD 2e rules and catalogs
 │   ├── wod-v5/                # V5 rules (Hunter: the Reckoning 5e)
 │   ├── guide/                 # How to use the site (sheet, documents, dice, template editor,
-│   │                          #   roll sharing); the app's help links here, never to rules pages
+│   │                          #   roll sharing); the app's how-to help links here; a rules term's "?" on a sheet leads to its own system's rules
 │   └── dev/                   # Draft-only developer pages (storybook), English only
 ├── i18n/                      # Translations (en, ru)
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
@@ -284,6 +284,12 @@ This section owns the verification rules; other guidance links here.
 
 ## 12. Workflow
 
+- **Roles** (global rules: `~/.claude/CLAUDE.md`): Claude is the master model: it decides the
+  architecture, writes the briefs, reviews the diff, and owns every commit, merge, and release. The
+  Codex CLI (newest GPT model, set by `model` in `~/.codex/config.toml`, never named in project
+  files) is the workhorse: it writes the code, tests, drafts, and runs the long checks through
+  `codex exec`. The `/ttg-speckit-*` commands below say which steps are delegated. The worker leaves
+  changes uncommitted; the maintainer's instructions still win over both.
 - **Features** go through the project's lean spec-kit commands: `/ttg-speckit-specify` →
   `/ttg-speckit-clarify` → `/ttg-speckit-plan` (one `design.md`) → `/ttg-speckit-tasks` (one
   planning commit) → `/ttg-speckit-analyze` (four or more stories, or on request) →
