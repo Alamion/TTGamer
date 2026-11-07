@@ -13,23 +13,23 @@ would lead nowhere. Paths are under `src/sheet_manager/` unless they start with 
 **Check**: an edited copy has a stored base after its first save, a plain later edit keeps it, reset
 removes it, and a revision is stable and changes with any content change.
 
-- [ ] T001 Write `tests/sheet_manager/shipped-revision.test.ts` first: `revisionOf` is equal for the
+- [x] T001 Write `tests/sheet_manager/shipped-revision.test.ts` first: `revisionOf` is equal for the
       same page with keys in another order, differs after any change of a label, a node, or an
       order; two builds of every shipped page in `systemRegistry` have equal revisions (the
       determinism pin, design D3); `shippedPageFor(systemId, viewId)` returns the registry page and
       `undefined` for an unknown view
-- [ ] T002 Write `tests/sheet_manager/template-store.bases.test.ts` first:
+- [x] T002 Write `tests/sheet_manager/template-store.bases.test.ts` first:
       `setDefaultOverride(template, { base })` records `{ base, revision }`; a call without a base
       keeps the stored one (or none); a call with a base replaces it; the store imports no registry;
       `clearDefaultOverride` removes copy and base; `migrateTemplateStoreState` from version 6 adds
       `{}`, parses each base with the template schema, drops an unparseable one and reports
       `template-update-unreadable`
-- [ ] T003 Create `features/sheet/data/shippedRevision.ts`: `revisionOf(template)` (canonical JSON
+- [x] T003 Create `features/sheet/data/shippedRevision.ts`: `revisionOf(template)` (canonical JSON
       with sorted keys, `cyrb53` as hex, memoized in a `WeakMap`),
       `shippedPageFor(systemId, viewId)` through `systemRegistry`, and the pure
       `pendingUpdate({ shipped, copy, record })` with its states (none, base equal, base differs, no
       base and differs, dismissed) that design D7 lists
-- [ ] T004 `store/templateStore.ts`: version 6 → 7,
+- [x] T004 `store/templateStore.ts`: version 6 → 7,
       `overrideBases: Record<string, { base: CustomTemplate; revision: string; dismissed?: string }>`
       in state, `partialize`, and `migrateTemplateStoreState`;
       `setDefaultOverride(template, options?: { base?: CustomTemplate })` stores the base it is
@@ -37,10 +37,10 @@ removes it, and a revision is stable and changes with any content change.
       `dismissUpdate(systemId, viewId, revision)`; `clearDefaultOverride` removes the base too; add
       the codes `template-update-unreadable` and `template-merge-failed` to `diagnostics.ts` (the
       codes list in `.agents/skills/sheet-templates/SKILL.md` is updated in T031)
-- [ ] T005 `features/template-editor/session/useTemplateSave.ts` `saveDefault` passes the base: the
+- [x] T005 `features/template-editor/session/useTemplateSave.ts` `saveDefault` passes the base: the
       shipped page as it is now on a first edit of a page with no stored base, nothing on a later
       plain edit (design D6); extend the cases of T002 through the dialog
-- [ ] T006 Run the checks for a schema, store, and persistence change (`yarn verify`, AGENTS.md §11)
+- [x] T006 Run the checks for a schema, store, and persistence change (`yarn verify`, AGENTS.md §11)
       and commit the foundation
 
 ## User Story 2 - Review the shipped changes merged into my copy (P1)
