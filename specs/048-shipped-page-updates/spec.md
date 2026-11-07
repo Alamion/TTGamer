@@ -62,7 +62,8 @@ revision, and never for a page that was not edited.
 3. **Given** a shipped page that was never edited, **When** its revision changes, **Then** no notice
    appears and the page simply shows the new shipped version.
 4. **Given** the player is in the template editor on an edited copy with a pending update, **Then**
-   the editor offers **Review shipped changes** as well, so the notice is not the only entry.
+   the editor offers **Review shipped changes** as well (the merge, or the list of differences for a
+   copy with no recorded base), so the banner is not the only entry.
 5. **Given** several edited copies with pending updates, **When** a document of one opens, **Then**
    the notice concerns only that page.
 
@@ -98,7 +99,7 @@ saving records the new base.
    removed and is not offered again; **given** the shipped page changed that field too, **Then** it
    is a conflict whose default is removed.
 5. **Given** the review is open, **When** the player cancels or closes the editor, **Then** the
-   stored copy, its recorded base, and the notice state are exactly as before.
+   stored copy, its recorded base, and its dismissed revision are exactly as before.
 6. **Given** the player saved the merged page, **Then** documents that show it use it at once, the
    recorded base is the shipped revision that was merged, and the notice does not return for it.
 7. **Given** the merged page has issues the editor already reports for any draft, **Then** they are
@@ -150,7 +151,7 @@ its recorded base together.
 works without it.
 
 **Independent Test**: export and re-import a library file holding an edited copy and compare the
-recorded base; reset a copy and check no base or notice state is left.
+recorded base; reset a copy and check no base or dismissed revision is left.
 
 **Acceptance Scenarios**:
 
@@ -159,7 +160,7 @@ recorded base; reset a copy and check no base or notice state is left.
 2. **Given** a file written before this feature, **When** it is imported, **Then** its edited copies
    are accepted as copies with no recorded base (User Story 3).
 3. **Given** a copy, **When** the player chooses **Reset to default**, **Then** the copy, its base,
-   and its notice state are removed.
+   and its dismissed revision are removed.
 
 ### Edge Cases
 
@@ -171,8 +172,6 @@ recorded base; reset a copy and check no base or notice state is left.
   both are present.
 - **Moved elements**: a move made only by the player or only by the shipped page is taken as a
   change; a move made by both to different places is a conflict.
-- **A shipped page that was removed or replaced by another id**: the copy keeps working as the
-  player's own page, with one notice that the shipped page it came from no longer exists.
 - **A copy edited to equal a later shipped page**: no differences, no notice; the base moves forward
   silently.
 - **Tabs**: the template store does not sync between tabs today, so a review saved in one tab and a
@@ -218,13 +217,14 @@ recorded base; reset a copy and check no base or notice state is left.
   other saved page, and an invalid merge MUST be reported as draft issues instead of being saved.
 - **FR-013**: Library export and import MUST carry a copy's recorded base, and files without one
   MUST import as copies with no recorded base.
-- **FR-014**: **Reset to default** MUST remove the copy together with its base and notice state.
+- **FR-014**: **Reset to default** MUST remove the copy together with its base and dismissed
+  revision.
 - **FR-015**: The notice, the review marks, the conflict controls, and the difference list MUST be
   keyboard reachable, name their state to assistive technology (not by colour alone), and have
   English and Russian text.
 - **FR-016**: Every unreadable base, merge failure, or skipped item MUST be reported through the
-  template diagnostics channel and leave the player's copy untouched; the review then says the page
-  cannot be merged and offers the difference list.
+  template diagnostics channel and leave the player's copy untouched; when a merge fails the review
+  opens as the list of differences and says the page could not be merged.
 - **FR-017**: Finding which copies have an update MUST read only the stored copies and the shipped
   revisions, never the documents.
 
@@ -234,7 +234,7 @@ recorded base; reset a copy and check no base or notice state is left.
 - **Base**: the shipped page's content as it was when the copy was last brought up to date; what the
   three-way merge compares both sides to.
 - **Revision**: the identity of a shipped page's content; equal revisions mean equal pages.
-- **Notice state**: per copy, the shipped revision the player last dismissed.
+- **Dismissed revision**: per copy, the shipped revision the player last answered **Not now** to.
 
 ## Success Criteria
 
@@ -258,13 +258,15 @@ recorded base; reset a copy and check no base or notice state is left.
   from the start and receives no shipped updates; it is not in this spec.
 - A shipped page's revision is derived from its content, so a change is never missed and an
   unrelated release never raises a notice.
-- Notice state and bases are device data stored with the copies, like the copies themselves; they
-  are not part of the cloud contract.
+- Dismissed revisions and bases are device data stored with the copies, like the copies themselves;
+  they are not part of the cloud contract.
 - Merge is by element id: the page tree already gives every element a stable id. Changes are
   compared per element and per setting; the review's marks and conflict switch work at that same
   grain.
 - The player's dismissal of one revision is remembered per copy and never expires.
 - The review reuses the template editor's session, issue list, and save path; it is a mode of the
   editor, not a second editor.
+- A release never removes or renames a shipped page's id; a copy whose shipped page is gone is not
+  handled by this spec (the page resolver already ignores such a copy).
 - Guide pages for the template editor gain a section on updates in both languages; no new element
   appears in templates, so the element storybook is unchanged.

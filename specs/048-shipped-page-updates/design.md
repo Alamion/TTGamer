@@ -39,10 +39,15 @@ US1.
   → taken (item origin `shipped`); by the copy only → kept (origin `user`, no item unless it
   matters); by both and different → conflict, copy wins. Removal by the copy loses to nothing unless
   shipped also changed the node (conflict, default removed). Order: start from the copy's order; a
-  node new from shipped goes after its shipped predecessor that is in the result, else first. Page
-  props (`name`, `description`, `pageKind`) merge the same way; `systemId`, `documentKind`, and
-  `schemaVersion` come from the shipped page. _Rejected_: text/JSON-patch diff (ignores identity,
-  breaks on moves); finer-than-property grain (setting objects such as `options` are atomic here).
+  node new from shipped goes into its shipped parent, after its nearest shipped predecessor that is
+  in the result, else first in that parent; if the parent is gone from the copy, it goes into the
+  nearest shipped ancestor that remains, else at the end of the page (never dropped), and the item
+  says where it landed. Page props (`name`, `description`, `pageKind`) merge the same way;
+  `systemId`, `documentKind`, and `schemaVersion` come from the shipped page. Values are compared as
+  stored, never through `localizeTemplate`: a label kept as a `labelMessage` key is one value in
+  every language, so switching language raises no change. _Rejected_: text/JSON-patch diff (ignores
+  identity, breaks on moves); finer-than-property grain (setting objects such as `options` are
+  atomic here).
 - **D5 — One item model for merge and difference list.**
   `ReviewItem { key, nodeId, path, kind: added|removed|moved|changed, origin: shipped|user|conflict|difference, userValue, shippedValue }`;
   its state (copy's or shipped value) is read from the draft by deep equality, and switching one is
@@ -50,10 +55,13 @@ US1.
   same flattening: every item is `difference`, state keep. _Why_: US2 and US3 share the list, the
   marks, and the switch; no recomputation loses later edits. _Rejected_: recomputing the merge with
   a choices map on each switch (drops edits made after opening).
-- **D6 — Recording the base.** `setDefaultOverride(template, base?)`: a first edit of a shipped page
-  records `base = the shipped page now`; later plain edits keep the stored base (or none); saving a
-  review records the shipped page it compared against. Reset removes both records. _Rejected_:
-  recording the base on every save (would hide pending shipped changes the player never saw).
+- **D6 — Recording the base.** `setDefaultOverride(template, { base })`: the store never reads the
+  registry (`systems/index.ts` already imports the store, so it would be a cycle); the caller passes
+  the base. `useTemplateSave.saveDefault` passes the shipped page as it is now when the page has no
+  stored base and the save is a first edit, passes the compared shipped page when saving a review,
+  and passes nothing on a later plain edit, which keeps the stored base (or none). Import passes the
+  file's base. Reset removes both records. _Rejected_: recording the base on every save (would hide
+  pending shipped changes the player never saw); the store looking the page up itself (cycle).
 - **D7 — Pending state is derived, not stored.** `pendingUpdate(key)`: no override → none; base
   present → `revision(shipped) !== base.revision`; none → `revision(shipped) !== revision(copy)`. In
   both, a notice shows only if `dismissed !== revision(shipped)` and the merge or list would change
@@ -64,8 +72,10 @@ US1.
   (`role="region"`, not an alert) in the style of `FallbackNotice`, and **Review changes** mounts
   `TemplateEditorDialog` through `React.lazy`, so the editor stays off the sheet's load path. **Not
   now** writes `dismissed`. The editor header also offers **Review shipped changes** while the draft
-  equals the stored copy (otherwise disabled, naming why). _Rejected_: a toast (can vanish unseen);
-  a library-only badge (not found).
+  equals the stored copy (otherwise disabled, naming why): the merge for a copy with a base, the
+  difference list for one without, and the list as well when a merge fails (reported as
+  `template-merge-failed`, with a line saying the page could not be merged). _Rejected_: a toast
+  (can vanish unseen); a library-only badge (not found).
 - **D9 — Files.** The library file gets an optional `overrideBases` map (same key and parse as
   pages; version stays 2: additive, older readers ignore it, older files import as copies with no
   base). Only **Replace** of an override writes its base; **Keep both** makes a user template, which
@@ -85,9 +95,11 @@ US1.
 - `features/template-editor/merge/` (new): `flatten.ts`, `merge.ts`, `differences.ts`, `items.ts`.
 - `features/template-editor/session/`: `review` slice in the session store (items, mode), the save
   path passing base; `useTemplateSave.ts` `saveDefault` records the base.
+  `TemplateEditorDialogProps .base` gains `{ kind: 'review'; … }`, the one addition to what code
+  outside the editor may use.
 - `features/sheet/shell/libraryFile.ts` / `libraryImport.ts`: the optional `overrideBases` map.
-- `diagnostics.ts`: code `template-update-unreadable`; `merge-failed` goes through
-  `template-draft-invalid`'s channel with a `details.stage`.
+- `diagnostics.ts`: codes `template-update-unreadable` (a stored base fails to parse) and
+  `template-merge-failed` (the merge or the difference engine returned an error).
 - UI: `translations/source/{en,ru}/ui/sheet/templates*.yaml` (banner, review list, marks, buttons);
   guide `docs/guide/template-editor/` gets a section "Updates to shipped pages" in en and ru with an
   `EDITOR_GUIDE` anchor.
@@ -111,7 +123,7 @@ US1.
 - `tests/sheet_manager/template-editor/merge.test.ts`: added, removed, moved, changed by one side;
   both-side conflicts per kind; removal vs change; order of new nodes; property-level grain;
   merge(copy = base) equals shipped, merge(shipped = base) equals copy, on every shipped page
-  (SC-002).
+  (SC-002); a node new inside a container the copy removed; a language switch raises no item.
 - `.../differences.test.ts`: no-base list, items start on keep, take applies, identical pages empty.
 - `.../review-items.test.ts`: state read from the draft, switch and switch back, one undo step.
 - `shipped-revision.test.ts`: revision stable across canonical orderings, differs on any content
