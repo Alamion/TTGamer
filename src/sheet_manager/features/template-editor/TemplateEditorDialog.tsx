@@ -8,6 +8,7 @@ import { useStore } from 'zustand';
 import { reportSheetIssue } from '../../diagnostics';
 import { isDefaultTemplateId } from '../../systems/view';
 import type { CustomTemplate } from '../../types/template';
+import { usePendingUpdate } from '../sheet/data/pendingUpdate';
 import { isTypingTarget, shortcutHandlers, useEditorShortcuts } from './commands/keys';
 import { commandById, type CommandContext } from './commands/list';
 import { EditorConfirms } from './components/EditorConfirms';
@@ -19,6 +20,7 @@ import { EditorTemplateFields } from './components/EditorTemplateFields';
 import { type EditorMode, EditorToolbar } from './components/EditorToolbar';
 import { ShortcutList } from './components/ShortcutList';
 import { type DraftIssue } from './issues/draftIssues';
+import { differencesOf } from './merge/differences';
 import { mergePages } from './merge/merge';
 import { createDraftFromTemplate, createEmptyDraft } from './model/factories';
 import { generateDraftId } from './model/ids';
@@ -50,6 +52,12 @@ export interface TemplateEditorDialogProps {
               shipped: CustomTemplate;
               mode: 'merge';
               baseline: CustomTemplate;
+          }
+        | {
+              kind: 'review';
+              copy: CustomTemplate;
+              shipped: CustomTemplate;
+              mode: 'differences';
           };
     onClose: () => void;
     /** Called with the saved template (user templates only; e.g. to create a user type). */
@@ -74,24 +82,49 @@ function initialDraft(
 }
 
 export function TemplateEditorDialog(props: TemplateEditorDialogProps) {
+    const [base, setBase] = useState(props.base);
+    return <EditorSessionDialog {...props} base={base} key={base.kind} onReview={setBase} />;
+}
+
+type ReviewBase = Extract<TemplateEditorDialogProps['base'], { kind: 'review' }>;
+interface ReviewEntry {
+    onReview: (base: ReviewBase) => void;
+}
+
+function EditorSessionDialog(props: TemplateEditorDialogProps & ReviewEntry) {
     const plural = usePluralMessage();
     // One session per opening (spec 025, D2): created with the dialog, dropped with it.
     const [session] = useState(() => {
         const { base } = props;
         if (base.kind !== 'review') return createEditorSession(initialDraft(base), plural);
-        const result = mergePages(base.baseline, base.shipped, base.copy);
+        let result =
+            base.mode === 'merge'
+                ? mergePages(base.baseline, base.shipped, base.copy)
+                : differencesOf(base.shipped, base.copy);
         const failed = 'error' in result;
-        if (failed) {
+        let mode = base.mode;
+        if ('error' in result) {
             reportSheetIssue({
                 code: 'template-merge-failed',
                 message: 'Merging the shipped page failed',
-                details: { stage: 'merge', error: result.error, templateId: base.copy.id },
+                details: { stage: mode, error: result.error, templateId: base.copy.id },
             });
+            if (mode === 'merge') {
+                mode = 'differences';
+                result = differencesOf(base.shipped, base.copy);
+                if ('error' in result) {
+                    reportSheetIssue({
+                        code: 'template-merge-failed',
+                        message: 'Comparing the shipped page failed',
+                        details: { stage: mode, error: result.error, templateId: base.copy.id },
+                    });
+                }
+            }
         }
         return createEditorSession(
-            failed ? createDraftFromTemplate(base.copy) : result.draft,
+            'error' in result ? createDraftFromTemplate(base.copy) : result.draft,
             plural,
-            { mode: base.mode, items: failed ? [] : result.items, shipped: base.shipped, failed }
+            { mode, items: 'error' in result ? [] : result.items, shipped: base.shipped, failed }
         );
     });
     return <EditorDialog {...props} session={session} />;
@@ -122,7 +155,8 @@ function EditorDialog({
     onClose,
     onSaved,
     session,
-}: TemplateEditorDialogProps & { session: EditorSession }) {
+    onReview,
+}: TemplateEditorDialogProps & ReviewEntry & { session: EditorSession }) {
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     // Feature 004: editing a default template targets its override, never the custom library.
@@ -139,6 +173,23 @@ function EditorDialog({
     const [dropColumns, setDropColumns] = useState<DropColumnsRequest | null>(null);
     const [initialJson] = useState(() => JSON.stringify(draft));
     const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+    const pending = usePendingUpdate(draft.systemId, draft.id);
+    const canReview =
+        editingDefault &&
+        base.kind === 'edit' &&
+        (pending.state === 'base-differs' ||
+            pending.state === 'no-base-differs' ||
+            pending.state === 'dismissed');
+    const reviewDisabled = JSON.stringify(draft) !== initialJson;
+    const openReview = () => {
+        if (!canReview || reviewDisabled || !pending.copy || !pending.shipped) return;
+        const review = { kind: 'review' as const, copy: pending.copy, shipped: pending.shipped };
+        onReview(
+            pending.record
+                ? { ...review, mode: 'merge', baseline: pending.record.base }
+                : { ...review, mode: 'differences' }
+        );
+    };
 
     const commands = useMemo<CommandContext>(
         () => ({
@@ -230,6 +281,11 @@ function EditorDialog({
                                 draft={draft}
                                 targetFixed={editingDefault || lockTarget}
                                 kindFixed={editingDefault}
+                                review={
+                                    canReview
+                                        ? { disabled: reviewDisabled, open: openReview }
+                                        : undefined
+                                }
                             />
                         )}
                         {mode === 'preview' ? (

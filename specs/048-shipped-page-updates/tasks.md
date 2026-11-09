@@ -101,27 +101,27 @@ switches back and forth, cancelling stores nothing, saving records the new base.
 taking some applies them; saving records the base even when all stay on keep; nothing is stored
 before Save.
 
-- [ ] T015 [US3] Write `tests/sheet_manager/template-editor/differences.test.ts` first: identical
+- [x] T015 [US3] Write `tests/sheet_manager/template-editor/differences.test.ts` first: identical
       pages give no items; one item per differing node and property with origin `difference`; every
       item starts on keep; taking one equals the shipped value at that place; items of added and
       removed nodes; a later change to the same shipped page merges (the base now exists)
-- [ ] T016 [US3] Create `features/template-editor/merge/differences.ts`
+- [x] T016 [US3] Create `features/template-editor/merge/differences.ts`
       (`differencesOf(shipped, copy)` returning the draft equal to the copy and its items, through
       the flatten of T008 and the item model of T008, design D5)
-- [ ] T017 [US3] Extend `tests/sheet_manager/template-editor.review.test.tsx`: the list for a copy
+- [x] T017 [US3] Extend `tests/sheet_manager/template-editor.review.test.tsx`: the list for a copy
       with no base, take and keep per row, saving records the base whatever the answers were
       (FR-010), nothing stored before Save, an identical copy records the base without asking
-- [ ] T018 [US3] Review mode `mode: 'differences'` in the session and `ReviewPanel.tsx`: take / keep
+- [x] T018 [US3] Review mode `mode: 'differences'` in the session and `ReviewPanel.tsx`: take / keep
       buttons per row in place of the conflict switch; a failed merge (`template-merge-failed`) now
       opens this list instead of the plain editor, with the same line saying the page could not be
       merged (FR-016, replacing the US2 stopgap); translations in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`
-- [ ] T019 [US3] Editor header **Review shipped changes** in
+- [x] T019 [US3] Editor header **Review shipped changes** in
       `features/template-editor/components/EditorTemplateFields.tsx`, while the draft equals the
       stored copy and an update is pending (disabled with its reason otherwise): it opens the merge
       for a copy with a base and the list of differences for one without (US1 scenario 4); add the
       cases to `tests/sheet_manager/template-editor.review.test.tsx`
-- [ ] T020 [US3] Run the checks (`yarn verify`) and commit the story
+- [x] T020 [US3] Run the checks (`yarn verify`) and commit the story
 
 ## User Story 1 - Learn that the shipped page changed (P1)
 

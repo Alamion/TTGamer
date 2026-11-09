@@ -17,7 +17,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
-import { renderReview, resetEditorStores } from './helpers/editor';
+import { renderEditor, renderReview, resetEditorStores } from './helpers/editor';
 import { libraryDocument } from './helpers/library';
 
 const field = (id: string, label: string): TemplateNode => ({
@@ -40,6 +40,11 @@ function fixture() {
     const key = overrideKey(copy.systemId, copy.id);
     useTemplateStore.getState().setDefaultOverride(copy, { base: baseline });
     return { kind: 'review' as const, mode: 'merge' as const, baseline, copy, shipped, key };
+}
+function differencesFixture() {
+    const { copy, shipped, key } = fixture();
+    useTemplateStore.setState({ overrideBases: {} });
+    return { kind: 'review' as const, mode: 'differences' as const, copy, shipped, key };
 }
 const stored = () => JSON.stringify(useTemplateStore.getState());
 const row = (id: string) => document.querySelector(`[data-review-item="${id}"]`)! as HTMLElement;
@@ -101,7 +106,7 @@ describe('shipped-page review in the editor', () => {
         expect(stored()).toBe(before);
     });
 
-    it('reports a merge failure and opens the unchanged copy with an explanation', () => {
+    it('reports a merge failure and opens differences on the unchanged copy with an explanation', () => {
         const base = fixture();
         base.baseline = page([field('duplicate', 'One'), field('duplicate', 'Two')]);
         const before = stored();
@@ -117,6 +122,193 @@ describe('shipped-page review in the editor', () => {
         ).toBeTruthy();
         expect(outline('changed')?.textContent).toContain('Before');
         expect(outline('conflict')?.textContent).toContain('My label');
+        expect(screen.getAllByRole('radiogroup')).toHaveLength(2);
+        for (const radio of screen.getAllByRole('radio', { name: 'Keep mine' })) {
+            expect((radio as HTMLInputElement).checked).toBe(true);
+        }
+        expect(stored()).toBe(before);
+    });
+
+    it('lists every difference on keep with named radios and text marks', () => {
+        const base = differencesFixture();
+        const before = stored();
+        renderReview(base);
+        const panel = screen.getByRole('region', { name: 'Review shipped changes' });
+        expect(panel.textContent).toContain(
+            'Your copy was made before updates were tracked, so every difference is listed, including your own edits. Each stays yours unless you take the shipped version.'
+        );
+        const groups = within(panel).getAllByRole('radiogroup');
+        expect(groups).toHaveLength(2);
+        for (const group of groups) {
+            expect(group.getAttribute('aria-label')).toMatch(/Details.*(My label|Before)/);
+            const keep = within(group).getByRole('radio', { name: 'Keep mine' });
+            const take = within(group).getByRole('radio', { name: 'Take shipped' });
+            expect(keep.tagName).toBe('INPUT');
+            expect((keep as HTMLInputElement).checked).toBe(true);
+            expect((take as HTMLInputElement).checked).toBe(false);
+            take.focus();
+            expect(document.activeElement).toBe(take);
+        }
+        expect(outline('changed').getAttribute('data-review-origin')).toBe('difference');
+        expect(outline('changed').textContent).toContain('Differs from the shipped page');
+        expect(
+            document
+                .querySelector('[data-editor-frame][data-node-id="changed"]')
+                ?.getAttribute('data-review-origin')
+        ).toBe('difference');
+        expect(stored()).toBe(before);
+    });
+
+    it('saves taken rows and kept rows with the compared shipped page as the base', async () => {
+        const base = differencesFixture();
+        const before = stored();
+        const onClose = vi.fn();
+        renderReview(base, onClose);
+        const changed = row('changed:label');
+        fireEvent.click(within(changed).getByRole('radio', { name: 'Take shipped' }));
+        expect(outline('changed').textContent).toContain('After');
+        expect(
+            (within(changed).getByRole('radio', { name: 'Take shipped' }) as HTMLInputElement)
+                .checked
+        ).toBe(true);
+        fireEvent.click(within(changed).getByRole('radio', { name: 'Keep mine' }));
+        expect(outline('changed').textContent).toContain('Before');
+        fireEvent.click(within(changed).getByRole('radio', { name: 'Take shipped' }));
+        expect(stored()).toBe(before);
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+        expect(useTemplateStore.getState().defaultOverrides[base.key]).toEqual(
+            page([field('conflict', 'My label'), field('changed', 'After')])
+        );
+        expect(useTemplateStore.getState().overrideBases[base.key]).toEqual({
+            base: base.shipped,
+            revision: revisionOf(base.shipped),
+        });
+    });
+
+    it.each([false, true])(
+        'records the base when all rows stay on keep (identical: %s)',
+        async (identical) => {
+            const base = differencesFixture();
+            if (identical) base.shipped = structuredClone(base.copy);
+            const before = stored();
+            const onClose = vi.fn();
+            renderReview(base, onClose);
+            if (identical) {
+                expect(screen.getByText('Your copy matches the shipped page.')).toBeTruthy();
+                expect(screen.queryByRole('radiogroup')).toBeNull();
+            }
+            expect(screen.getByRole('button', { name: 'Save' }).hasAttribute('disabled')).toBe(
+                false
+            );
+            expect(stored()).toBe(before);
+            fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+            await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+            expect(useTemplateStore.getState().defaultOverrides[base.key]).toEqual(base.copy);
+            expect(useTemplateStore.getState().overrideBases[base.key]).toEqual({
+                base: base.shipped,
+                revision: revisionOf(base.shipped),
+            });
+        }
+    );
+
+    it('cancels a difference list without writing anything', () => {
+        const base = differencesFixture();
+        const before = stored();
+        const onClose = vi.fn();
+        renderReview(base, onClose);
+        fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+        expect(onClose).toHaveBeenCalledOnce();
+        expect(stored()).toBe(before);
+    });
+
+    it('reports a difference failure and opens the plain editor on the copy', () => {
+        const base = differencesFixture();
+        base.shipped = page([field('duplicate', 'One'), field('duplicate', 'Two')]);
+        const before = stored();
+        renderReview(base);
+        expect(takeSheetIssues()).toEqual([
+            expect.objectContaining({
+                code: 'template-merge-failed',
+                details: expect.objectContaining({
+                    stage: 'differences',
+                    templateId: base.copy.id,
+                }),
+            }),
+        ]);
+        expect(
+            screen.getByText('This page could not be merged; your copy is unchanged.')
+        ).toBeTruthy();
+        expect(outline('changed').textContent).toContain('Before');
+        expect(screen.queryByRole('radio')).toBeNull();
+        expect(stored()).toBe(before);
+    });
+
+    it.each(['merge', 'differences', 'dismissed'] as const)(
+        'opens %s from the header of the same editor',
+        (mode) => {
+            const shipped = shippedPageFor('general', 'general-note')!;
+            const copy = { ...shipped, name: 'My page' };
+            const baseline = { ...shipped, name: 'Old shipped page' };
+            const store = useTemplateStore.getState();
+            store.setDefaultOverride(copy, mode === 'differences' ? undefined : { base: baseline });
+            if (mode === 'dismissed')
+                store.dismissUpdate(copy.systemId, copy.id, revisionOf(shipped));
+            const before = stored();
+            renderEditor(copy);
+            const button = screen.getByRole('button', { name: 'Review shipped changes' });
+            expect(button.hasAttribute('disabled')).toBe(false);
+            fireEvent.click(button);
+            expect(screen.getAllByRole('dialog')).toHaveLength(1);
+            expect(screen.queryByRole('button', { name: 'Review shipped changes' })).toBeNull();
+            const panel = screen.getByRole('region', { name: 'Review shipped changes' });
+            if (mode === 'differences') {
+                expect(within(panel).getByRole('radiogroup', { name: 'My page' })).toBeTruthy();
+            } else {
+                expect(
+                    within(panel).getByRole('switch', { name: /Use shipped: My page/ })
+                ).toBeTruthy();
+            }
+            expect(stored()).toBe(before);
+        }
+    );
+
+    it.each(['unedited', 'up-to-date', 'identical'] as const)(
+        'hides header review for %s pages',
+        (state) => {
+            const shipped = shippedPageFor('general', 'general-note')!;
+            const copy = state === 'identical' ? shipped : { ...shipped, name: 'My page' };
+            if (state !== 'unedited') {
+                useTemplateStore
+                    .getState()
+                    .setDefaultOverride(
+                        copy,
+                        state === 'up-to-date' ? { base: shipped } : undefined
+                    );
+            }
+            renderEditor(state === 'unedited' ? shipped : copy);
+            expect(screen.queryByRole('button', { name: 'Review shipped changes' })).toBeNull();
+        }
+    );
+
+    it('disables header review after an edit and explains why, then enables it after undo', () => {
+        const shipped = shippedPageFor('general', 'general-note')!;
+        const copy = { ...shipped, name: 'My page' };
+        useTemplateStore.getState().setDefaultOverride(copy);
+        const before = stored();
+        renderEditor(copy);
+        fireEvent.change(screen.getByPlaceholderText('Template name'), {
+            target: { value: 'Unsaved name' },
+        });
+        const button = screen.getByRole('button', { name: 'Review shipped changes' });
+        expect(button.hasAttribute('disabled')).toBe(true);
+        expect(document.getElementById(button.getAttribute('aria-describedby')!)?.textContent).toBe(
+            'Save or close your changes before reviewing.'
+        );
+        fireEvent.click(button);
+        expect(screen.queryByRole('region', { name: 'Review shipped changes' })).toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+        expect(button.hasAttribute('disabled')).toBe(false);
         expect(stored()).toBe(before);
     });
 

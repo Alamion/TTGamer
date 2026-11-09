@@ -19,8 +19,10 @@ function shortValue(value: unknown): string {
 
 function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
     const session = useEditorSession();
+    const radioName = useId();
     const place = item.path.map((id) => labelIn(draft, id)).join(' / ') || draft.name;
-    const shipped = itemState(draft, item) === 'shipped';
+    const state = itemState(draft, item);
+    const shipped = state === 'shipped';
     const action =
         item.origin === 'shipped'
             ? shipped
@@ -41,18 +43,38 @@ function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
                     <p>{shortValue(item.shippedValue)}</p>
                 </div>
             </div>
-            <label className="flex cursor-pointer items-center gap-2">
-                <input
-                    type="checkbox"
-                    role="switch"
-                    checked={shipped}
-                    aria-label={`${translate(action)}: ${place}`}
-                    onChange={(event) =>
-                        session.switchReviewItem(item, event.target.checked ? 'shipped' : 'copy')
-                    }
-                />
-                {translate(action)}
-            </label>
+            {item.origin === 'difference' ? (
+                <div role="radiogroup" aria-label={place} className="flex flex-wrap gap-3">
+                    {(['copy', 'shipped'] as const).map((side) => (
+                        <label key={side} className="flex cursor-pointer items-center gap-2">
+                            <input
+                                type="radio"
+                                name={radioName}
+                                value={side}
+                                checked={state === side}
+                                onChange={() => session.switchReviewItem(item, side)}
+                            />
+                            {translate(side === 'copy' ? editor.keepMine : editor.takeShipped)}
+                        </label>
+                    ))}
+                </div>
+            ) : (
+                <label className="flex cursor-pointer items-center gap-2">
+                    <input
+                        type="checkbox"
+                        role="switch"
+                        checked={shipped}
+                        aria-label={`${translate(action)}: ${place}`}
+                        onChange={(event) =>
+                            session.switchReviewItem(
+                                item,
+                                event.target.checked ? 'shipped' : 'copy'
+                            )
+                        }
+                    />
+                    {translate(action)}
+                </label>
+            )}
         </li>
     );
 }
@@ -81,7 +103,13 @@ export function ReviewPanel({ draft }: { draft: EditorDraft }) {
             </summary>
             <div role="region" aria-labelledby={titleId} className="mt-2 space-y-3">
                 <p className="text-textSecondary">{translate(editor.reviewNote)}</p>
+                {review.mode === 'differences' && (
+                    <p className="text-textSecondary">{translate(editor.reviewDifferencesNote)}</p>
+                )}
                 {review.failed && <p role="alert">{translate(editor.reviewFailed)}</p>}
+                {review.mode === 'differences' && !review.failed && review.items.length === 0 && (
+                    <p>{translate(editor.reviewMatches)}</p>
+                )}
                 {[...groups].map(([path, items]) => (
                     <section key={path} className="space-y-2">
                         <h4 className="text-xs font-semibold">

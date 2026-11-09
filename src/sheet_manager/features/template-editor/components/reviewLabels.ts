@@ -12,5 +12,11 @@ const marks = {
 };
 
 export function reviewMarkLabel(item: ReviewItem): string {
-    return translate(item.origin === 'conflict' ? editor.markConflict : marks[item.kind]);
+    return translate(
+        item.origin === 'difference'
+            ? editor.markDifference
+            : item.origin === 'conflict'
+              ? editor.markConflict
+              : marks[item.kind]
+    );
 }
