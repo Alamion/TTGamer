@@ -83,6 +83,40 @@ describe('edited shipped page bases', () => {
         });
     });
 
+    it('replaces an imported copy and its base as one record, clearing the dismissal', () => {
+        const store = useTemplateStore.getState();
+        store.setDefaultOverride(copy, { base });
+        store.dismissUpdate(base.systemId, base.id, 'dismissed');
+        const imported = { ...copy, name: 'Imported copy' };
+        const importedBase = { ...base, name: 'Imported base' };
+        store.replaceOverride(imported, importedBase);
+        expect(useTemplateStore.getState().defaultOverrides[key]).toEqual(imported);
+        expect(useTemplateStore.getState().overrideBases[key]).toEqual({
+            base: importedBase,
+            revision: revisionOf(importedBase),
+        });
+    });
+
+    it.each([true, false])(
+        'replacing without a base removes the whole old record (base: %s)',
+        (withBase) => {
+            const store = useTemplateStore.getState();
+            store.setDefaultOverride(copy, withBase ? { base } : undefined);
+            store.dismissUpdate(base.systemId, base.id, 'dismissed');
+            const other = { ...base, id: 'other-page' };
+            store.setDefaultOverride(other, { base: other });
+            const record =
+                useTemplateStore.getState().overrideBases[overrideKey(other.systemId, other.id)];
+            const imported = { ...copy, name: 'Older imported copy' };
+            store.replaceOverride(imported);
+            expect(useTemplateStore.getState().defaultOverrides[key]).toEqual(imported);
+            expect(useTemplateStore.getState().overrideBases).not.toHaveProperty(key);
+            expect(
+                useTemplateStore.getState().overrideBases[overrideKey(other.systemId, other.id)]
+            ).toBe(record);
+        }
+    );
+
     it('remembers dismissal before a base exists and preserves it on a plain save', () => {
         const store = useTemplateStore.getState();
         store.setDefaultOverride(copy);

@@ -94,10 +94,14 @@ describe('shipped page update banner', () => {
         }
     );
 
-    it('does not show for an unedited page', () => {
+    it('removes the banner, base, and dismissal when an edited page is reset', () => {
         seed();
-        useTemplateStore.getState().clearDefaultOverride(shipped.systemId, shipped.id);
+        useTemplateStore.getState().dismissUpdate(shipped.systemId, shipped.id, 'older-revision');
         render(<CharacterSheet />);
+        expect(banner()).toBeTruthy();
+        act(() => useTemplateStore.getState().clearDefaultOverride(shipped.systemId, shipped.id));
+        expect(useTemplateStore.getState().defaultOverrides).not.toHaveProperty(key);
+        expect(useTemplateStore.getState().overrideBases).not.toHaveProperty(key);
         expect(banner()).toBeNull();
     });
 

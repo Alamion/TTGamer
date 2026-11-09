@@ -160,21 +160,21 @@ before Save.
 **Check**: a library file with an edited copy keeps its base through export and import; a file
 without bases imports as copies with no base; reset removes copy and base.
 
-- [ ] T027 [US4] Write the cases first in `tests/sheet_manager/library-file.test.ts` and
+- [x] T027 [US4] Write the cases first in `tests/sheet_manager/library-file.test.ts` and
       `tests/sheet_manager/library-import.test.ts` (find them with
       `ls tests/sheet_manager | grep     library`): export writes `overrideBases` for edited pages
       only; import with Replace writes the base; Keep both writes none; a version 2 file without the
       field imports as copies with no base; a malformed base is dropped and reported, the copy is
       kept; the dismissed revision is never exported
-- [ ] T028 [US4] `features/sheet/shell/libraryFile.ts` and `libraryImport.ts`: the optional
+- [x] T028 [US4] `features/sheet/shell/libraryFile.ts` and `libraryImport.ts`: the optional
       `overrideBases` map in the payload, parsed like pages; `installImport` writes the base through
       `setDefaultOverride(template, { base })` for replaced overrides (design D9); the file version
       stays 2
-- [ ] T029 [US4] `components/dialogs/LibraryPanel.tsx` reset case: the confirmation text says the
+- [x] T029 [US4] `components/dialogs/LibraryPanel.tsx` reset case: the confirmation text says the
       copy and its update record go together; extend the reset test in `tests/sheet_manager` that
       already covers `clearDefaultOverride` (find it with `grep -rl clearDefaultOverride tests`) to
       assert the base and dismissed revision are gone (FR-014); translations in `en` and `ru`
-- [ ] T030 [US4] Run the checks (`yarn verify`) and commit the story
+- [x] T030 [US4] Run the checks (`yarn verify`) and commit the story
 
 ## Finish
 

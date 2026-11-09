@@ -4,6 +4,7 @@ import {
     countDocuments,
     findNode,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
+import { shippedPageFor } from '@site/src/sheet_manager/features/sheet/data/shippedRevision';
 import {
     buildLibraryFilename,
     buildLibraryPayload,
@@ -20,6 +21,7 @@ import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
 import {
     ASHEN_ID,
     ASHEN_MORTAL_PAGE_ID,
@@ -49,7 +51,13 @@ function tree() {
 function exportKeys(keys: string[]) {
     const current = tree();
     const closure = exportClosure(current, new Set(keys));
-    return { closure, payload: buildLibraryPayload(current, closure, readLibraryState()) };
+    return {
+        closure,
+        payload: buildLibraryPayload(current, closure, {
+            ...readLibraryState(),
+            overrideBases: useTemplateStore.getState().overrideBases,
+        }),
+    };
 }
 
 describe('library export (spec 013, US4)', () => {
@@ -105,6 +113,102 @@ describe('library export (spec 013, US4)', () => {
         const text = serializeLibraryFile(payload, new Date('2026-09-26T12:00:00Z'));
         expect(text).not.toContain('"brief"');
         expect(JSON.parse(text).notices).toBeUndefined();
+    });
+
+    it('exports bases only for included edited pages, without revisions or dismissals', () => {
+        const shipped = shippedPageFor('star-wars-wod', 'full-sheet')!;
+        const key = 'star-wars-wod:full-sheet';
+        const base = { ...shipped, name: 'Earlier shipped page' };
+        const store = useTemplateStore.getState();
+        store.setDefaultOverride({ ...shipped, name: 'My copy' }, { base });
+        store.dismissUpdate(shipped.systemId, shipped.id, 'device-dismissal');
+        const brief = shippedPageFor('star-wars-wod', 'brief')!;
+        store.setDefaultOverride({ ...brief, name: 'My brief' }, { base: brief });
+        const { payload } = exportKeys(['p:star-wars-wod:full-sheet', `p:user:${CULT_PAGE_ID}`]);
+        expect(payload.overrideBases).toEqual({ [key]: base });
+        const text = serializeLibraryFile(payload);
+        expect(JSON.parse(text).overrideBases).toEqual({ [key]: base });
+        expect(text).not.toContain('dismissed');
+        expect(text).not.toContain('device-dismissal');
+        expect(text).not.toContain('"revision"');
+    });
+
+    it.each([true, false])(
+        'omits the bases field when none is recorded (dismissed: %s)',
+        (dismissed) => {
+            if (dismissed)
+                useTemplateStore.getState().dismissUpdate('star-wars-wod', 'full-sheet', 'later');
+            const { payload } = exportKeys(['p:star-wars-wod:full-sheet']);
+            expect(payload.overrideBases).toEqual({});
+            expect(JSON.parse(serializeLibraryFile(payload))).not.toHaveProperty('overrideBases');
+        }
+    );
+
+    it('reads a version 2 file with bases and ignores unknown additive fields', () => {
+        const copy = libraryPage('general-note', { systemId: 'general', documentKind: 'note' });
+        const base = CustomTemplateSchema.parse({
+            ...copy,
+            children: [
+                {
+                    id: 'choice',
+                    type: 'select',
+                    label: 'Choice',
+                    options: [{ id: 'none', label: 'None' }],
+                    binding: { catalogId: 'missing-shipped-catalog', fills: {} },
+                },
+            ],
+        });
+        const parsed = parseLibraryFile(
+            JSON.stringify({
+                format: 'ttgamer-library',
+                version: 2,
+                overrides: [copy],
+                overrideBases: { 'general:general-note': { ...base, unknown: 'stripped' } },
+                futureField: { ignored: true },
+            })
+        );
+        expect(parsed.ok).toBe(true);
+        if (!parsed.ok) return;
+        expect(parsed.payload.overrideBases).toEqual({ 'general:general-note': base });
+        expect(parsed.payload.overrides).toEqual([copy]);
+        expect(parsed.degradedCatalogFields).toEqual([]);
+        expect(parsed.convertedPages).toEqual([]);
+    });
+
+    it('drops unreadable and unmatched bases, reports their keys, and keeps the copy', () => {
+        const { payload } = exportKeys(['p:star-wars-wod:full-sheet']);
+        const copy = payload.overrides[0]!;
+        const key = 'star-wars-wod:full-sheet';
+        const parsed = parseLibraryFile(
+            JSON.stringify({
+                ...JSON.parse(serializeLibraryFile(payload)),
+                overrideBases: { [key]: { ...copy, children: 'broken' }, 'general:missing': copy },
+            })
+        );
+        expect(parsed.ok && parsed.payload.overrides).toEqual([copy]);
+        expect(parsed.ok && parsed.payload.overrideBases).toEqual({});
+        expect(takeSheetIssues()).toEqual(
+            [key, 'general:missing'].map((key) =>
+                expect.objectContaining({
+                    code: 'template-update-unreadable',
+                    details: { key },
+                })
+            )
+        );
+    });
+
+    it('upgrades an older base without adding it to the conversion summary', () => {
+        const copy = libraryPage('general-note', { systemId: 'general', documentKind: 'note' });
+        const parsed = parseLibraryFile(
+            JSON.stringify({
+                format: 'ttgamer-library',
+                version: 2,
+                overrides: [copy],
+                overrideBases: { 'general:general-note': { ...copy, schemaVersion: 3 } },
+            })
+        );
+        expect(parsed.ok && parsed.payload.overrideBases['general:general-note']).toEqual(copy);
+        expect(parsed.ok && parsed.convertedPages).toEqual([]);
     });
 
     it('adds publisher notices only for V5 material', () => {

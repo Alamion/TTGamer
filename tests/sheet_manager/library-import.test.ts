@@ -3,6 +3,11 @@ import {
     buildLibraryTree,
     countDocuments,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
+import {
+    pendingUpdate,
+    revisionOf,
+    shippedPageFor,
+} from '@site/src/sheet_manager/features/sheet/data/shippedRevision';
 import { validateTemplateReferences } from '@site/src/sheet_manager/features/sheet/data/templateReferences';
 import {
     buildLibraryPayload,
@@ -68,7 +73,10 @@ function exportAshen(): LibraryPayload {
         new Set([`s:user:${ASHEN_ID}`, `t:user:${CULT_ID}`, `p:user:${CULT_PAGE_ID}`])
     );
     closure.picked.add(`p:user:${ASHEN_MORTAL_PAGE_ID}`);
-    const payload = buildLibraryPayload(tree, closure, readLibraryState());
+    const payload = buildLibraryPayload(tree, closure, {
+        ...readLibraryState(),
+        overrideBases: useTemplateStore.getState().overrideBases,
+    });
     const parsed = parseLibraryFile(serializeLibraryFile(payload));
     if (!parsed.ok) throw new Error('export did not parse');
     return parsed.payload;
@@ -218,6 +226,7 @@ describe('library import (spec 013, US5)', () => {
                 libraryPage(CULT_PAGE_ID, { systemId: 'star-wars-wod', documentKind: 'creature' }),
             ],
             overrides: [],
+            overrideBases: {},
             catalogs: [],
             included: {},
             addresses: [],
@@ -275,7 +284,13 @@ describe('catalogs in library files (spec 015, US4)', () => {
     function exportPicked(keys: string[]) {
         const tree = libraryTree();
         const closure = exportClosure(tree, new Set(keys));
-        return { closure, payload: buildLibraryPayload(tree, closure, readLibraryState()) };
+        return {
+            closure,
+            payload: buildLibraryPayload(tree, closure, {
+                ...readLibraryState(),
+                overrideBases: useTemplateStore.getState().overrideBases,
+            }),
+        };
     }
 
     beforeEach(() => {
@@ -414,5 +429,131 @@ describe('catalogs in library files (spec 015, US4)', () => {
         );
         expect(file.ok && file.degradedCatalogFields).toEqual([]);
         expect(file.ok && validateTemplateReferences(file.payload.templates[0]!)).toEqual([]);
+    });
+});
+
+describe('edited page bases in library files (spec 048, US4)', () => {
+    const shipped = shippedPageFor('general', 'general-note')!;
+    const key = 'general:general-note';
+    const base = { ...shipped, name: 'Earlier shipped note' };
+    const copy = { ...base, description: 'My copy' };
+    const payload = (withBase = true): LibraryPayload => ({
+        settings: [],
+        types: [],
+        templates: [],
+        catalogs: [],
+        overrides: [copy],
+        overrideBases: withBase ? { [key]: base } : {},
+        included: {},
+        addresses: [],
+    });
+    const install = (incoming: LibraryPayload) => {
+        const entries = preview(incoming);
+        return installImport(
+            incoming,
+            entries,
+            initialChoices(entries),
+            installed(),
+            systemRegistry
+        );
+    };
+
+    beforeEach(resetLibraryStores);
+    afterEach(resetLibraryStores);
+
+    it('replaces a copy and its base and derives the revision without a dismissal', () => {
+        useTemplateStore
+            .getState()
+            .setDefaultOverride({ ...copy, name: 'Existing' }, { base: shipped });
+        useTemplateStore.getState().dismissUpdate(shipped.systemId, shipped.id, 'device-dismissal');
+        install(payload());
+        expect(useTemplateStore.getState().defaultOverrides[key]).toEqual(copy);
+        expect(useTemplateStore.getState().overrideBases[key]).toEqual({
+            base,
+            revision: revisionOf(base),
+        });
+    });
+
+    it('imports a pre-feature version 2 file as a copy with no base, removing the previous record', () => {
+        useTemplateStore
+            .getState()
+            .setDefaultOverride({ ...copy, name: 'Existing' }, { base: shipped });
+        useTemplateStore.getState().dismissUpdate(shipped.systemId, shipped.id, 'dismissed');
+        const oldFile = { ...payload(false), format: 'ttgamer-library', version: 2 };
+        const { overrideBases: _omitted, ...withoutBases } = oldFile;
+        void _omitted;
+        const parsed = parseLibraryFile(JSON.stringify(withoutBases));
+        if (!parsed.ok) throw new Error('old file did not parse');
+        expect(parsed.payload.overrideBases).toEqual({});
+        install(parsed.payload);
+        expect(useTemplateStore.getState().defaultOverrides[key]).toEqual(copy);
+        expect(useTemplateStore.getState().overrideBases).not.toHaveProperty(key);
+    });
+
+    it('Keep both creates a user page without a record and leaves the existing record intact', () => {
+        const store = useTemplateStore.getState();
+        store.setDefaultOverride({ ...copy, name: 'Existing' }, { base: shipped });
+        store.dismissUpdate(shipped.systemId, shipped.id, 'dismissed');
+        const before = useTemplateStore.getState();
+        const incoming = payload();
+        const entries = preview(incoming);
+        installImport(
+            incoming,
+            entries,
+            setChoice(initialChoices(entries), recordKey('override', key), 'keep-both'),
+            installed(),
+            systemRegistry
+        );
+        const after = useTemplateStore.getState();
+        expect(after.templates).toHaveLength(1);
+        expect(after.templates[0]!.id).toMatch(/^tpl-/);
+        expect(after.templates[0]!.name).toBe(`${copy.name} (imported)`);
+        expect(after.defaultOverrides).toBe(before.defaultOverrides);
+        expect(after.overrideBases).toBe(before.overrideBases);
+        expect(Object.keys(after.overrideBases)).toEqual([key]);
+    });
+
+    it('writes neither a copy nor a base for an unpicked entry', () => {
+        const incoming = payload();
+        const entries = preview(incoming);
+        const choices = initialChoices(entries);
+        choices[recordKey('override', key)]!.picked = false;
+        installImport(incoming, entries, choices, installed(), systemRegistry);
+        expect(useTemplateStore.getState().defaultOverrides).toEqual({});
+        expect(useTemplateStore.getState().overrideBases).toEqual({});
+    });
+
+    it('round-trips a base and preserves the pending update when shipped content changed', () => {
+        useTemplateStore.getState().setDefaultOverride(copy, { base });
+        useTemplateStore
+            .getState()
+            .dismissUpdate(shipped.systemId, shipped.id, revisionOf(shipped));
+        const state = readLibraryState();
+        const tree = buildLibraryTree({
+            ...state,
+            registry: systemRegistry,
+            defaultOverrides: useTemplateStore.getState().defaultOverrides,
+            counts: countDocuments([]),
+        });
+        const closure = exportClosure(tree, new Set(['p:general:general-note']));
+        const exported = buildLibraryPayload(tree, closure, {
+            ...state,
+            overrideBases: useTemplateStore.getState().overrideBases,
+        });
+        const parsed = parseLibraryFile(serializeLibraryFile(exported));
+        if (!parsed.ok) throw new Error('round trip did not parse');
+        resetLibraryStores();
+        install(parsed.payload);
+        const after = useTemplateStore.getState();
+        expect(after.defaultOverrides[key]).toEqual(copy);
+        expect(after.overrideBases[key]?.base).toEqual(base);
+        expect(after.overrideBases[key]).not.toHaveProperty('dismissed');
+        expect(
+            pendingUpdate({
+                shipped,
+                copy: after.defaultOverrides[key],
+                record: after.overrideBases[key],
+            })
+        ).toBe('base-differs');
     });
 });

@@ -262,6 +262,7 @@ describe('stale reference targets (US4)', () => {
             types: [userType()],
             templates: [page],
             overrides: [],
+            overrideBases: {},
             catalogs: [],
             included: {},
             addresses: [],

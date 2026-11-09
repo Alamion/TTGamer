@@ -1,3 +1,5 @@
+import { reportSheetIssue } from '../../../diagnostics';
+import type { TemplateStoreState } from '../../../store/templateStore';
 import {
     exportNotices,
     type PublisherPolicy,
@@ -30,8 +32,8 @@ import { resolveImportedTemplate } from './templateFile';
 /**
  * Library files (spec 013, contracts/library-file-format.md): the user's settings, types, pages,
  * catalogs (version 2, spec 015), and edited shipped pages, with the addresses of the shipped
- * places they attach to. Shipped content is never serialized. Everything is validated before any
- * state change.
+ * places they attach to. Only the bases of edited shipped pages travel with them; other shipped
+ * content is never serialized. Everything is validated before any state change.
  */
 export const LIBRARY_FILE_FORMAT = 'ttgamer-library';
 export const LIBRARY_FILE_VERSION = 2;
@@ -55,6 +57,8 @@ export interface LibraryPayload {
     templates: CustomTemplate[];
     /** Edited shipped pages: `systemId` + `id` name the shipped page they replace. */
     overrides: CustomTemplate[];
+    /** Shipped pages the included overrides were based on; device dismissals never travel. */
+    overrideBases: Record<string, CustomTemplate>;
     catalogs: UserCatalog[];
     /** Record id (override: `systemId:viewId`) → how it got into the file. */
     included: Record<string, Inclusion>;
@@ -183,13 +187,15 @@ export function overrideRecordId(template: Pick<CustomTemplate, 'systemId' | 'id
 export function buildLibraryPayload(
     tree: readonly RulesetNode[],
     closure: ExportClosure,
-    state: Pick<LibraryState, 'settings' | 'types' | 'templates' | 'catalogs'>
+    state: Pick<LibraryState, 'settings' | 'types' | 'templates' | 'catalogs'> &
+        Pick<TemplateStoreState, 'overrideBases'>
 ): LibraryPayload {
     const payload: LibraryPayload = {
         settings: [],
         types: [],
         templates: [],
         overrides: [],
+        overrideBases: {},
         catalogs: [],
         included: {},
         addresses: closure.addresses,
@@ -216,7 +222,10 @@ export function buildLibraryPayload(
             payload.included[node.template.id] = inclusion;
         } else if (node.level === 'page' && node.ref.kind === 'shipped' && node.ref.edited) {
             payload.overrides.push(node.template);
-            payload.included[overrideRecordId(node.template)] = inclusion;
+            const id = overrideRecordId(node.template);
+            payload.included[id] = inclusion;
+            const base = state.overrideBases[id]?.base;
+            if (base) payload.overrideBases[id] = base;
         } else if (node.level === 'catalog' && node.ref.kind === 'user') {
             const catalog = state.catalogs[node.ref.catalogId];
             if (catalog) {
@@ -297,6 +306,9 @@ export function serializeLibraryFile(payload: LibraryPayload, exportedAt = new D
             types: payload.types,
             templates: payload.templates,
             overrides: payload.overrides,
+            ...(Object.keys(payload.overrideBases).length > 0
+                ? { overrideBases: payload.overrideBases }
+                : {}),
             catalogs: payload.catalogs,
             included: payload.included,
             addresses: payload.addresses,
@@ -353,6 +365,7 @@ type RawPayload = Record<
 > & {
     included?: unknown;
     addresses?: unknown;
+    overrideBases?: unknown;
 };
 
 /** Older files open in the same preview (contracts "Backward compatibility"). */
@@ -374,6 +387,7 @@ function adaptLegacy(raw: Record<string, unknown>): RawPayload | LibraryFileErro
             ...(collections as RawPayload),
             included: raw.included,
             addresses: raw.addresses,
+            overrideBases: raw.overrideBases,
         };
     }
     if (raw.format === TYPE_FILE_FORMAT) {
@@ -419,6 +433,31 @@ function parseAddresses(raw: unknown): LibraryAddress[] {
         }
         return [address];
     });
+}
+
+function parseOverrideBases(
+    raw: unknown,
+    overrides: readonly CustomTemplate[]
+): Record<string, CustomTemplate> {
+    if (raw === undefined) return {};
+    const report = (key: string) =>
+        reportSheetIssue({
+            code: 'template-update-unreadable',
+            message: 'Imported shipped-page base is unreadable or has no included copy',
+            details: { key },
+        });
+    if (!isRecord(raw)) {
+        report('overrideBases');
+        return {};
+    }
+    const ids = new Set(overrides.map(overrideRecordId));
+    const bases: Record<string, CustomTemplate> = {};
+    for (const [key, entry] of Object.entries(raw)) {
+        const result = CustomTemplateSchema.safeParse(upgradeTemplate(entry).template);
+        if (result.success && ids.has(key)) bases[key] = result.data;
+        else report(key);
+    }
+    return bases;
 }
 
 export function parseLibraryFile(text: string): ParsedLibraryFile {
@@ -482,6 +521,7 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
         ok: true,
         payload: {
             ...lists,
+            overrideBases: parseOverrideBases(adapted.overrideBases, lists.overrides),
             templates: lists.templates.map(resolve),
             overrides: lists.overrides.map(resolve),
             included: parseIncluded(adapted.included),

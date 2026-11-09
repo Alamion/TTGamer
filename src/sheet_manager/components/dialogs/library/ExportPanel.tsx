@@ -23,6 +23,7 @@ import {
     toggleTick,
 } from '../../../features/sheet/shell/libraryFile';
 import { EditorHelp } from '../../../features/template-editor/components/EditorHelp';
+import { useTemplateStore } from '../../../store/templateStore';
 import { systemRegistry } from '../../../systems';
 import type { RowExtras } from './LibraryTree';
 import { TickBox } from './TickBox';
@@ -135,11 +136,12 @@ export function ExportPanel({
  * tertiary, and the summary with Save.
  */
 export function useExportMode(tree: readonly RulesetNode[]) {
+    const overrideBases = useTemplateStore((state) => state.overrideBases);
     const [picked, setPicked] = useState<Set<string>>(() => new Set());
     const closure = useMemo(() => exportClosure(tree, picked), [tree, picked]);
     const payload = useMemo(
-        () => buildLibraryPayload(tree, closure, readLibraryState()),
-        [tree, closure]
+        () => buildLibraryPayload(tree, closure, { ...readLibraryState(), overrideBases }),
+        [tree, closure, overrideBases]
     );
     const preview = useMemo(() => serializeLibraryFile(payload), [payload]);
 

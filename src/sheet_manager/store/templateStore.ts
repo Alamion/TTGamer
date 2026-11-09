@@ -56,6 +56,8 @@ export interface TemplateStoreState {
      * (the view id); marks the default as modified (FR-12).
      */
     setDefaultOverride: (template: CustomTemplate, options?: { base?: CustomTemplate }) => void;
+    /** Import replaces the whole record; an older file without a base clears the old one. */
+    replaceOverride: (template: CustomTemplate, base?: CustomTemplate) => void;
     dismissUpdate: (systemId: string, viewId: string, revision: string) => void;
     /** Reset (FR-10): deletes the override; the pristine original re-derives from the registry. */
     clearDefaultOverride: (systemId: string, viewId: string) => void;
@@ -227,6 +229,21 @@ const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
                 ? { ...overrideBases, [key]: { base, revision: revisionOf(base) } }
                 : overrideBases,
         }));
+    },
+
+    replaceOverride: (template, base) => {
+        const parsed = CustomTemplateSchema.parse(template);
+        const parsedBase = base ? CustomTemplateSchema.parse(base) : undefined;
+        const key = overrideKey(parsed.systemId, parsed.id);
+        set(({ defaultOverrides, overrideBases }) => {
+            const nextBases = { ...overrideBases };
+            if (parsedBase) nextBases[key] = { base: parsedBase, revision: revisionOf(parsedBase) };
+            else delete nextBases[key];
+            return {
+                defaultOverrides: { ...defaultOverrides, [key]: parsed },
+                overrideBases: nextBases,
+            };
+        });
     },
 
     dismissUpdate: (systemId, viewId, revision) => {

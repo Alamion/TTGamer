@@ -322,7 +322,11 @@ describe('effective template resolution (feature 004/006)', () => {
         const { setDefaultOverride, clearDefaultOverride } = useTemplateStore.getState();
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
 
-        setDefaultOverride(modifiedOverride('full-sheet'));
+        const base = systemRegistry
+            .getSystem('star-wars-wod')!
+            .defaultTemplates!.find(({ id }) => id === 'full-sheet')!;
+        setDefaultOverride(modifiedOverride('full-sheet'), { base });
+        useTemplateStore.getState().dismissUpdate('star-wars-wod', 'full-sheet', 'dismissed');
         expect(
             useTemplateStore.getState().defaultOverrides['star-wars-wod:full-sheet']
         ).toBeDefined();
@@ -336,6 +340,9 @@ describe('effective template resolution (feature 004/006)', () => {
         ).toBe(true);
 
         clearDefaultOverride('star-wars-wod', 'full-sheet');
+        expect(useTemplateStore.getState().overrideBases).not.toHaveProperty(
+            'star-wars-wod:full-sheet'
+        );
         expect(
             useTemplateStore.getState().defaultOverrides['star-wars-wod:full-sheet']
         ).toBeUndefined();

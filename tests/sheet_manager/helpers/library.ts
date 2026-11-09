@@ -124,7 +124,12 @@ export function libraryDocument(
 
 /** Empties the document, template, and type stores. */
 export function resetLibraryStores(): void {
-    useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
+    useTemplateStore.setState({
+        templates: [],
+        quarantine: [],
+        defaultOverrides: {},
+        overrideBases: {},
+    });
     useDocumentStore.setState({ documents: [], currentDocumentId: null, recoveryEntries: [] });
     useDocumentTypeStore.setState({
         types: {},
@@ -162,6 +167,7 @@ export function seedLibrary(): void {
     useTemplateStore.setState({
         templates: [cultPage, mortalPage, orgPage],
         quarantine: [],
+        overrideBases: {},
         defaultOverrides: {
             [`star-wars-wod:${EDITED_SHIPPED_VIEW}`]: { ...shipped, name: 'Edited full sheet' },
         },
