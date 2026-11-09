@@ -6,8 +6,8 @@ import { revisionOf } from './revision';
 export { revisionOf } from './revision';
 
 export interface OverrideBaseRecord {
-    base: CustomTemplate;
-    revision: string;
+    base?: CustomTemplate;
+    revision?: string;
     dismissed?: string;
 }
 
@@ -38,6 +38,6 @@ export function pendingUpdate({
     if (!shipped || !copy) return 'none';
     const revision = revisionOf(shipped);
     if (record?.dismissed === revision) return 'dismissed';
-    if (record) return record.revision === revision ? 'base-equal' : 'base-differs';
+    if (record?.base) return record.revision === revision ? 'base-equal' : 'base-differs';
     return revisionOf(copy) === revision ? 'none' : 'no-base-differs';
 }

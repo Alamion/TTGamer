@@ -620,6 +620,12 @@ defaults:
     experienceAvailable: Available
     freePoints: Free points
 page:
+    updateBannerTitle: The shipped page was updated
+    updateBannerText: '{name}: You edited this page. Review the changes to bring the new version in, or keep your copy as it is.'
+    updateBannerNoBaseText: '{name}: Your copy was made before updates were tracked. The shipped page now differs from it; review the differences.'
+    updateBannerReview: Review changes
+    updateBannerLater: Not now
+    updateBannerRegion: Shipped page update
     embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.

@@ -8,7 +8,7 @@ import { useStore } from 'zustand';
 import { reportSheetIssue } from '../../diagnostics';
 import { isDefaultTemplateId } from '../../systems/view';
 import type { CustomTemplate } from '../../types/template';
-import { usePendingUpdate } from '../sheet/data/pendingUpdate';
+import { reviewBaseFor, usePageEditorSession, usePendingUpdate } from '../sheet/data/pendingUpdate';
 import { isTypingTarget, shortcutHandlers, useEditorShortcuts } from './commands/keys';
 import { commandById, type CommandContext } from './commands/list';
 import { EditorConfirms } from './components/EditorConfirms';
@@ -173,6 +173,7 @@ function EditorDialog({
     const [dropColumns, setDropColumns] = useState<DropColumnsRequest | null>(null);
     const [initialJson] = useState(() => JSON.stringify(draft));
     const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+    usePageEditorSession(draft.systemId, draft.id);
     const pending = usePendingUpdate(draft.systemId, draft.id);
     const canReview =
         editingDefault &&
@@ -182,13 +183,9 @@ function EditorDialog({
             pending.state === 'dismissed');
     const reviewDisabled = JSON.stringify(draft) !== initialJson;
     const openReview = () => {
-        if (!canReview || reviewDisabled || !pending.copy || !pending.shipped) return;
-        const review = { kind: 'review' as const, copy: pending.copy, shipped: pending.shipped };
-        onReview(
-            pending.record
-                ? { ...review, mode: 'merge', baseline: pending.record.base }
-                : { ...review, mode: 'differences' }
-        );
+        if (!canReview || reviewDisabled) return;
+        const review = reviewBaseFor(pending);
+        if (review) onReview(review);
     };
 
     const commands = useMemo<CommandContext>(

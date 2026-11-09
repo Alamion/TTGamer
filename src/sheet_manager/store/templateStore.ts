@@ -150,14 +150,18 @@ export function migrateTemplateStoreState(input: unknown, version = 0): Persiste
     const overrideBases: Record<string, OverrideBaseRecord> = {};
     if (isRecord(input.overrideBases)) {
         for (const [key, entry] of Object.entries(input.overrideBases)) {
+            const dismissal =
+                isRecord(entry) && typeof entry.dismissed === 'string'
+                    ? { dismissed: entry.dismissed }
+                    : undefined;
+            if (dismissal) overrideBases[key] = dismissal;
+            if (isRecord(entry) && entry.base === undefined && dismissal) continue;
             try {
                 const base = CustomTemplateSchema.parse(isRecord(entry) ? entry.base : undefined);
                 overrideBases[key] = {
                     base,
                     revision: revisionOf(base),
-                    ...(isRecord(entry) && typeof entry.dismissed === 'string'
-                        ? { dismissed: entry.dismissed }
-                        : {}),
+                    ...dismissal,
                 };
             } catch (error) {
                 reportSheetIssue({
@@ -228,7 +232,6 @@ const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
     dismissUpdate: (systemId, viewId, revision) => {
         const key = overrideKey(systemId, viewId);
         const record = get().overrideBases[key];
-        if (!record) return;
         set(({ overrideBases }) => ({
             overrideBases: { ...overrideBases, [key]: { ...record, dismissed: revision } },
         }));

@@ -128,7 +128,7 @@ before Save.
 **Check**: an edited copy with a pending update shows one banner above the page that stays until
 **Review changes** or **Not now**; not for an unedited page; again only for a newer revision.
 
-- [ ] T021 [US1] Write `tests/sheet_manager/update-banner.test.tsx` first: the banner shows for a
+- [x] T021 [US1] Write `tests/sheet_manager/update-banner.test.tsx` first: the banner shows for a
       pending copy with a base and for a copy with no base that differs; not for an unedited page;
       not for a dismissed revision; again for a newer one; one banner per shown page when two
       documents are shown; **Not now** writes `dismissed`; **Review changes** opens the review; the
@@ -136,24 +136,24 @@ before Save.
       change nothing advances the base silently once and shows no banner; and, over every shipped
       page in `systemRegistry`, an edited copy shows one banner for a changed shipped revision and
       an unedited page shows none (SC-001) (FR-003, FR-004)
-- [ ] T022 [US1] `features/sheet/data/pendingUpdate.ts`: `usePendingUpdate(systemId, viewId)` over
+- [x] T022 [US1] `features/sheet/data/pendingUpdate.ts`: `usePendingUpdate(systemId, viewId)` over
       the template store, the registry page, and `pendingUpdate`; the silent advance as one store
       write in an effect (design D7); reads no document (FR-017)
-- [ ] T023 [US1] `features/sheet/UpdateBanner.tsx` (`role="region"`, in the style of
+- [x] T023 [US1] `features/sheet/UpdateBanner.tsx` (`role="region"`, in the style of
       `FallbackNotice` in `features/sheet/CharacterSheet.tsx`, named buttons **Review changes** and
       **Not now**), shown by `DocumentSheet` above the effective page when `effective.modified`; the
       editor mounts through `React.lazy` with the review base (design D8); translations in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`
-- [ ] T024 [US1] Write `tests-e2e/smoke/shipped-updates.spec.ts`: edit the Star Wars full sheet and
+- [x] T024 [US1] Write `tests-e2e/smoke/shipped-updates.spec.ts`: edit the Star Wars full sheet and
       save, then make the shipped page look changed by rewriting the stored base in IndexedDB
       (`localforage` database, key `universal-template-storage`, as `layout.spec.ts` reads its own
       store: one label of `overrideBases[...]` changed; done after the app has loaded and before the
       reload, and checked that the store does not write itself back on start), reload, see the
       banner once, review, save, reload, no banner; the page keeps the player's edit
-- [ ] T025 [US1] Timings: `tests-e2e/timings/shipped-updates.spec.ts` records the review open time
+- [x] T025 [US1] Timings: `tests-e2e/timings/shipped-updates.spec.ts` records the review open time
       on the largest page against opening the editor without a review, and the sheet's open time
       with and without a pending copy (SC-005, reported, not blocking)
-- [ ] T026 [US1] Run the checks (`yarn verify`; e2e through `yarn ci:e2e`) and commit the story
+- [x] T026 [US1] Run the checks (`yarn verify`; e2e through `yarn ci:e2e`) and commit the story
 
 ## User Story 4 - Updates travel with the files and survive a reset (P3)
 

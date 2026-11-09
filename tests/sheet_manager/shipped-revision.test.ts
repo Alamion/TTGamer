@@ -116,6 +116,18 @@ describe('pending shipped updates', () => {
         expect(pendingUpdate({ shipped, copy: shipped, record: undefined })).toBe('none');
     });
 
+    it('uses the no-base path for dismissal-only records', () => {
+        expect(pendingUpdate({ shipped, copy, record: { dismissed: 'older' } })).toBe(
+            'no-base-differs'
+        );
+        expect(pendingUpdate({ shipped, copy: shipped, record: { dismissed: 'older' } })).toBe(
+            'none'
+        );
+        expect(pendingUpdate({ shipped, copy, record: { dismissed: revisionOf(shipped) } })).toBe(
+            'dismissed'
+        );
+    });
+
     it('dismisses only the named shipped revision', () => {
         const dismissed = { ...record, dismissed: revisionOf(shipped) };
         expect(pendingUpdate({ shipped, copy, record: dismissed })).toBe('dismissed');

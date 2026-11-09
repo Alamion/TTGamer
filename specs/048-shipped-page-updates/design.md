@@ -153,8 +153,34 @@ US1.
 
 ## Implementation notes
 
+- **US1 amends D1: a record may contain only a dismissal.** `OverrideBaseRecord` has optional `base`
+  and `revision`, so **Not now** also persists for a pre-feature copy. A plain save preserves that
+  record; supplying a base replaces it and clears the dismissal. Migration keeps a string dismissal
+  even when an unreadable base is dropped and reported. US4 must export only records with a base
+  (and must still omit the device's dismissal).
+- **US1 smoke fixture models an older copy as well as an older base.** After the player's title
+  edit, the test perturbs a different label in both copy and recorded base. Perturbing only the base
+  (the original T024 brief) produces a merge equal to the copy, which D7 correctly advances
+  silently; it cannot exercise the banner/review/save path. The test still rereads the persisted
+  state once immediately after reload, before interaction, to catch startup writes.
+- **Lazy entry does not create a separate editor chunk in the current build.** The Library tool
+  still imports `TemplateEditorDialog` statically. The built sheet chunk includes both the banner
+  and editor; the banner's lazy import resolves the existing module without loading another chunk.
+- **US1 local browser checks use IPv6 loopback on port 3100.** An unrelated Telegram service owns
+  IPv4 loopback port 3100 on this machine. A temporary Playwright config in `/tmp` binds the built
+  site's server to `::1`; repository configuration and the existing listener stay unchanged.
+- **Silent advance waits for the page's editor to close.** Transient per-page session counts in
+  `pendingUpdate.ts` guard its single effect, including editor entry from the library; neither the
+  counts nor pending detection read documents. The effect also checks the live store to avoid a
+  duplicate write when two panes show the same page.
+
 - **Switching a conflict is not an exact inverse in two cases** (found by a random merge check on
   all shipped pages; data is never lost). Switching a "removed by shipped, changed by you" conflict
   to shipped and back reinserts the copy's whole subtree, so children the shipped page had removed
   separately return. A moved node whose anchor sibling has gone lands first in its parent. Accepted:
   the choice is the player's, each switch is one undo step, and the cases are rare on real pages.
+- **SC-005 measurement.** The browser timing compares a sheet with an edited copy and its banner
+  against a sheet with the shipped page and no copy, so it also includes drawing the banner: +1 to
+  +15 ms over three runs on a ~125 ms open (up to ~12%). The cost of finding the update, measured
+  alone on the largest page (the Vampire full sheet), is a revision hash of ~0.9 ms and a merge of
+  ~2.2 ms, about 2%. The criterion's 5% bound holds for the finding; the banner is drawn UI.

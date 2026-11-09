@@ -83,10 +83,13 @@ describe('edited shipped page bases', () => {
         });
     });
 
-    it('dismisses only existing records', () => {
+    it('remembers dismissal before a base exists and preserves it on a plain save', () => {
         const store = useTemplateStore.getState();
-        store.dismissUpdate(base.systemId, base.id, 'ignored');
-        expect(useTemplateStore.getState().overrideBases).toEqual({});
+        store.setDefaultOverride(copy);
+        store.dismissUpdate(base.systemId, base.id, 'later');
+        expect(useTemplateStore.getState().overrideBases[key]).toEqual({ dismissed: 'later' });
+        store.setDefaultOverride({ ...copy, name: 'Edited again' });
+        expect(useTemplateStore.getState().overrideBases[key]).toEqual({ dismissed: 'later' });
         store.setDefaultOverride(copy, { base });
         store.dismissUpdate(base.systemId, base.id, 'dismissed');
         expect(useTemplateStore.getState().overrideBases[key]).toEqual({
@@ -152,7 +155,12 @@ describe('template store v7 base migration', () => {
                 templates: [],
                 defaultOverrides: { [key]: copy },
                 overrideBases: {
-                    [key]: { base: { ...base, children: 'broken' }, revision: 'bad' },
+                    [key]: {
+                        base: { ...base, children: 'broken' },
+                        revision: 'bad',
+                        dismissed: 'kept',
+                    },
+                    'general:old-copy': { dismissed: 'later' },
                     'general:missing': null,
                     'general:valid': { base, revision: revisionOf(base), dismissed: 42 },
                 },
@@ -161,6 +169,8 @@ describe('template store v7 base migration', () => {
         );
         expect(migrated.defaultOverrides[key]).toEqual(copy);
         expect(migrated.overrideBases).toEqual({
+            [key]: { dismissed: 'kept' },
+            'general:old-copy': { dismissed: 'later' },
             'general:valid': { base, revision: revisionOf(base) },
         });
         expect(takeSheetIssues()).toEqual([
