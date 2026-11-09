@@ -4,6 +4,7 @@ import { RefreshCw } from 'lucide-react';
 import { lazy, Suspense, useId, useState } from 'react';
 
 import { useTemplateStore } from '../../store/templateStore';
+import { EditorHelp } from '../template-editor/components/EditorHelp';
 import { reviewBaseFor, usePendingUpdate, useSilentAdvance } from './data/pendingUpdate';
 import { revisionOf } from './data/shippedRevision';
 
@@ -43,8 +44,12 @@ export function UpdateBanner({ systemId, viewId }: { systemId: string; viewId: s
                     <span id={labelId} className="sr-only">
                         {translate(page.updateBannerRegion)}
                     </span>
-                    <p className="text-sm font-semibold text-textPrimary">
+                    <p className="flex items-center gap-1 text-sm font-semibold text-textPrimary">
                         {translate(page.updateBannerTitle)}
+                        <EditorHelp
+                            topic="libraryUpdates"
+                            about={translate(page.updateBannerTitle)}
+                        />
                     </p>
                     <p className="mt-1 text-xs text-textSecondary">
                         {translate(

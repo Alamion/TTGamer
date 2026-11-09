@@ -6,6 +6,7 @@ import { itemState, type ReviewItem } from '../merge/items';
 import type { EditorDraft } from '../model/types';
 import { labelIn } from '../operations/selection';
 import { useEditorSession, useEditorState } from '../session/context';
+import { EditorHelp } from './EditorHelp';
 import { reviewMarkLabel } from './reviewLabels';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -101,6 +102,7 @@ export function ReviewPanel({ draft }: { draft: EditorDraft }) {
             <summary id={titleId} aria-expanded={open} className="cursor-pointer font-semibold">
                 {translate(editor.reviewTitle)}
             </summary>
+            <EditorHelp topic="libraryUpdates" about={translate(editor.reviewTitle)} />
             <div role="region" aria-labelledby={titleId} className="mt-2 space-y-3">
                 <p className="text-textSecondary">{translate(editor.reviewNote)}</p>
                 {review.mode === 'differences' && (

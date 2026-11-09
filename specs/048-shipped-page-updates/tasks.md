@@ -178,7 +178,7 @@ without bases imports as copies with no base; reset removes copy and base.
 
 ## Finish
 
-- [ ] T031 Update the guidance, one owner per rule:
+- [x] T031 Update the guidance, one owner per rule:
       `.agents/skills/sheet-templates/references/pages.md` ("Stores and persistence":
       `templateStore` v7, `overrideBases`, revision, pending state) and `references/editor.md` (the
       review mode, merge module, items; the new `base.kind === 'review'` of
@@ -187,13 +187,13 @@ without bases imports as copies with no base; reset removes copy and base.
       `.agents/skills/sheet-templates/SKILL.md` (`template-update-unreadable`,
       `template-merge-failed`), and a short pointer in `src/sheet_manager/AGENTS.md` ("Custom Page
       Templates") that edited shipped pages carry a base and take updates through the review
-- [ ] T032 User guide in English and Russian: a section "Updates to shipped pages" with an explicit
+- [x] T032 User guide in English and Russian: a section "Updates to shipped pages" with an explicit
       anchor in `docs/guide/template-editor/library.mdx` and its mirror under
       `i18n/ru/docusaurus-plugin-content-docs/current/guide/template-editor/library.mdx`, an
       `EDITOR_GUIDE` entry in `features/template-editor/components/EditorHelp.tsx` linked from the
       banner and the review panel; `tests/docs/guide/template-editor-guide.test.ts` and
       `yarn validate:i18n` pass
-- [ ] T033 Backlog: mark T-131 done with its summary in `TODO.md`, in the entry format of the
+- [x] T033 Backlog: mark T-131 done with its summary in `TODO.md`, in the entry format of the
       `backlog` skill; `yarn validate:backlog`
 - [ ] T034 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server and
       record the results in design.md

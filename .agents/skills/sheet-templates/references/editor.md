@@ -4,17 +4,21 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
 025 layout). Outside code imports only `TemplateEditorDialog.tsx`, `model/ids.ts`
 (`generateDraftId`), `components/EditorHelp.tsx`, and `sampleDocuments.ts`.
 
-`TemplateEditorDialogProps.base` also accepts a shipped-page review:
-`{ kind: 'review', copy, shipped, baseline, mode: 'merge' }`. It merges once on opening through
-`merge/merge.ts`; the session's non-persisted `review` holds static items, the compared shipped
-page, and a failure flag. `ReviewPanel` sits above the settings, groups choices by their tree path,
-and reads their state from the current draft through `merge/items.ts`. `switchReviewItem` changes
-one choice as one undo step and announces it. Frames and outline rows read static marks through
+`TemplateEditorDialogProps.base` also accepts a shipped-page review (spec 048), the one addition to
+what code outside the editor may use: `{ kind: 'review', copy, shipped, mode: 'merge', baseline }`
+merges base, shipped page, and copy once on opening through `merge/merge.ts`;
+`{ …, mode: 'differences' }` lists every difference through `merge/differences.ts` (a copy with no
+recorded base: its own edits are listed too, every row starts on keep). Entry points: the banner
+(`UpdateBanner`, lazy dialog) and **Review shipped changes** in the header while the draft equals
+the stored copy. The session's non-persisted `review` holds static items, the compared shipped page,
+and a failure flag. `ReviewPanel` sits above the settings, groups choices by their tree path, and
+reads their state from the current draft through `merge/items.ts`. `switchReviewItem` changes one
+choice as one undo step and announces it. Frames and outline rows read static marks through
 `useReviewMark` (conflict wins), without subscribing to unrelated edits. A failed merge reports
-`template-merge-failed` and opens the unchanged copy with an explanation; the difference-list
-fallback is not wired yet. Cancel compares against the initial merged draft and writes nothing;
-saving checks against the stored copy and records the compared shipped page as the new base.
-Document values stay intact.
+`template-merge-failed` and opens the difference list with an explanation (the plain editor on the
+copy if that fails too). Cancel compares against the initial merged draft and writes nothing; saving
+checks against the stored copy and records the compared shipped page as the new base. Document
+values stay intact.
 
 ## Where to add things
 

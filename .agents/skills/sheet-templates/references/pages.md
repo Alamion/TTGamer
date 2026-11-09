@@ -36,11 +36,25 @@ counts as equal; `templateMatchesSetting`).
 
 ## Stores and persistence
 
-- `templateStore` v5: `templates`, `quarantine` (max 100), `defaultOverrides` keyed by
+- `templateStore` v7: `templates`, `quarantine` (max 100), `defaultOverrides` keyed by
   `overrideKey(systemId, viewId)` (T-046; v4 bare view-id keys are re-keyed from each override's own
-  `systemId` on load). `setDefaultOverride(template)` keys by the template's system and id;
-  `clearDefaultOverride(systemId, viewId)`. Entries failing the parse (including all pre-006 shapes)
-  move to quarantine and report `template-quarantined` with the Zod summary.
+  `systemId` on load). `setDefaultOverride(template, { base? })` keys by the template's system and
+  id; `clearDefaultOverride(systemId, viewId)` removes the copy and its update record together.
+  Entries failing the parse (including all pre-006 shapes) move to quarantine and report
+  `template-quarantined` with the Zod summary.
+- **Updates to edited shipped pages** (spec 048). `overrideBases[key]` is a record beside the copy:
+  `base` (the shipped page as it was when the copy was last brought up to date) with its `revision`,
+  and `dismissed` (the shipped revision answered **Not now**; a record may hold only that, for a
+  copy made before bases were recorded). `revisionOf` (`features/sheet/data/revision.ts`) hashes the
+  page's canonical JSON, so it changes only with content. The store never reads the registry:
+  callers pass the base (`useTemplateSave.saveDefault` on a first edit or a review save; import
+  through `replaceOverride`, which also clears an old record when a file has no base).
+  `pendingUpdate` (`shippedRevision.ts`) derives the state: base present compares the shipped
+  revision with the base's, no base compares it with the copy's, `dismissed` wins first.
+  `usePendingUpdate` and `useSilentAdvance` (`pendingUpdate.ts`) serve the banner
+  (`features/sheet/UpdateBanner.tsx`, in `DocumentSheet` above an edited page): a merge or
+  difference list that would change nothing advances the base silently, once, never while an editor
+  is open on that page. Migration drops an unparseable base with `template-update-unreadable`.
 - `documentTypeStore` v3 (`universal-document-type-storage`): user document types (their
   `defaultTemplateId` is optional: a type may have no page), user settings, `defaultPages`
   (`systemId:definitionId` → the view or user template new documents of a shipped type open on;
