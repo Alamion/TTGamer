@@ -184,3 +184,29 @@ US1.
   +15 ms over three runs on a ~125 ms open (up to ~12%). The cost of finding the update, measured
   alone on the largest page (the Vampire full sheet), is a revision hash of ~0.9 ms and a merge of
   ~2.2 ms, about 2%. The criterion's 5% bound holds for the finding; the banner is drawn UI.
+
+## Manual walk — results (2026-11-09)
+
+Run by the agent through the automated suites; the visual steps are left for the maintainer.
+
+- `yarn verify`: 344 files, 3611 tests pass; knip, validators, and the i18n parity check clean.
+- `yarn ci:test:perf`: 13 files, 20 tests pass.
+- Browser tests: 78 pass (smoke and timings). `yarn ci:e2e` itself cannot start here: an unrelated
+  service (`opencode-telegram`) holds IPv4 port 3100, so the suite ran against `::1` through a
+  temporary config in `/tmp`. The two panes timings are over budget (348 and 265 ms against 200) and
+  were before this spec; they are reported, not blocking.
+- Timings on the largest page (Vampire full sheet), last run: plain editor 727 ms, review 491 ms;
+  sheet with and without a pending copy 203 and 205 ms (earlier runs: +1 to +15 ms on ~125 ms).
+
+| Step                                  | Covered                                                             | Left for the maintainer           |
+| ------------------------------------- | ------------------------------------------------------------------- | --------------------------------- |
+| 1 Edit and save, no banner            | smoke `shipped-updates` (save, no banner until a shipped change)    | —                                 |
+| 2 Banner after a shipped change, once | smoke (banner count 1 after reload; stored value untouched)         | Real source edit on the dev build |
+| 3 **Not now**, then a newer revision  | `update-banner.test.tsx`                                            | Look and wording                  |
+| 4 **Review changes**, marks, Cancel   | smoke and `template-editor.review.test.tsx` (cancel writes nothing) | How the marks and panel look      |
+| 5 Conflict switch and undo            | `template-editor.review.test.tsx`                                   | Feel of the switch                |
+| 6 Save, banner gone, values intact    | smoke; document values compared in the review tests                 | —                                 |
+| 7 Copy with no base: list, take, save | `template-editor.review.test.tsx`, `differences.test.ts`            | Wording of the list               |
+| 8 Export, import on a clean profile   | `library-file.test.ts`, `library-import.test.ts`                    | One real round trip               |
+
+Also for a visual look: the Russian texts (banner, panel, guide section) and a phone-width editor.
