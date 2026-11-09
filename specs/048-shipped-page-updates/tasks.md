@@ -49,7 +49,7 @@ removes it, and a revision is stable and changes with any content change.
 the review shows every merged item with its mark, a conflict defaults to the player's version and
 switches back and forth, cancelling stores nothing, saving records the new base.
 
-- [ ] T007 [US2] Write `tests/sheet_manager/template-editor/merge.test.ts` first: added, removed,
+- [x] T007 [US2] Write `tests/sheet_manager/template-editor/merge.test.ts` first: added, removed,
       moved, and changed by shipped only (taken, origin `shipped`); by the copy only (kept); by both
       to the same value (no item); by both to different values (conflict, copy wins); removed by the
       copy and unchanged by shipped (stays removed, no item); removed by the copy and changed by
@@ -60,38 +60,39 @@ switches back and forth, cancelling stores nothing, saving records the new base.
       page props (`name`, `description`, `pageKind`) and that `systemId`, `documentKind`, and
       `schemaVersion` come from the shipped page; and, on every shipped page in `systemRegistry`,
       merge(copy = base) equals shipped and merge(shipped = base) equals the copy (SC-002)
-- [ ] T008 [US2] Create `features/template-editor/merge/flatten.ts` (a tree to
+- [x] T008 [US2] Create `features/template-editor/merge/flatten.ts` (a tree to
       `id → { parent,     index, props }`, props = every key but `children`, compared deep) and
       `merge.ts` (`mergePages(base, shipped, copy)` returns `{ draft, items }`, pure, never throws:
       an unexpected shape returns `{ error }`, which the caller reports as `template-merge-failed`),
       then `items.ts`: `ReviewItem { key, nodeId, path, kind,     origin, userValue, shippedValue }`
       and `itemState(draft, item)` (copy's or shipped's value by deep equality),
       `switchItem(draft, item, to)` as a draft change (design D4, D5)
-- [ ] T009 [US2] Write `tests/sheet_manager/template-editor/review-items.test.ts` first: state read
+- [x] T009 [US2] Write `tests/sheet_manager/template-editor/review-items.test.ts` first: state read
       from the draft, switching a conflict to shipped and back, one undo step per switch, an edit
       made after opening survives a switch of another item
-- [ ] T010 [US2] Session: a `review` slice in `features/template-editor/session/store.ts` (mode,
+- [x] T010 [US2] Session: a `review` slice in `features/template-editor/session/store.ts` (mode,
       `items`, the shipped page and revision compared) and `TemplateEditorDialogProps.base` gains
       `{ kind: 'review'; template; shipped; items?; mode }` handled in `initialDraft` of
       `features/template-editor/TemplateEditorDialog.tsx`; `session/useTemplateSave.ts`
       `saveDefault` passes the compared shipped page as the base when the session is a review
       (design D6)
-- [ ] T011 [US2] Write `tests/sheet_manager/template-editor.review.test.tsx` first (helpers in
+- [x] T011 [US2] Write `tests/sheet_manager/template-editor.review.test.tsx` first (helpers in
       `tests/sheet_manager/helpers/editor.ts`): opening and cancelling leaves the template store
       byte-identical (SC-003); saving records the new base and the merged page; issues the editor
       reports for any draft block the save (FR-012); a merge failure reports
-      `template-merge-failed`, leaves the copy untouched, and opens the review as the list of
-      differences with a line saying the page could not be merged (FR-016); documents'
-      `templateValues` and `data` are equal before and after a review and save (SC-004)
-- [ ] T012 [US2] UI: `features/template-editor/components/ReviewPanel.tsx` (a labelled region
+      `template-merge-failed`, leaves the copy untouched, and opens the plain editor on the copy
+      with a line saying the page could not be merged (the list of differences as the fallback is
+      wired in the US3 tasks, FR-016); documents' `templateValues` and `data` are equal before and
+      after a review and save (SC-004)
+- [x] T012 [US2] UI: `features/template-editor/components/ReviewPanel.tsx` (a labelled region
       listing items by where they sit, the mark text Added, Changed, Removed, Moved, Conflict in
       words, the copy's and shipped value side by side, a switch for conflicts, a note that document
       values are kept), the marks on `EditorNodeFrame.tsx` and the outline rows through
-      `data-review-origin`, and the review entry in `EditorToolbar.tsx`; keyboard reachable and
-      announced through the session announcer (FR-015)
-- [ ] T013 [US2] Translations: `translations/source/{en,ru}/ui/sheet/templates.yaml` for the panel,
+      `data-review-origin` (the entry button in the editor header is the US3 task for **Review
+      shipped changes**); keyboard reachable and announced through the session announcer (FR-015)
+- [x] T013 [US2] Translations: `translations/source/{en,ru}/ui/sheet/templates.yaml` for the panel,
       marks, switch, and announcements; `yarn build:translations`
-- [ ] T014 [US2] Run the checks for a store, schema, and UI change (`yarn verify`; the storybook is
+- [x] T014 [US2] Run the checks for a store, schema, and UI change (`yarn verify`; the storybook is
       unchanged, no element is added) and commit the story
 
 ## User Story 3 - Review a copy that has no recorded base (P2)
@@ -111,7 +112,9 @@ before Save.
       with no base, take and keep per row, saving records the base whatever the answers were
       (FR-010), nothing stored before Save, an identical copy records the base without asking
 - [ ] T018 [US3] Review mode `mode: 'differences'` in the session and `ReviewPanel.tsx`: take / keep
-      buttons per row in place of the conflict switch; translations in
+      buttons per row in place of the conflict switch; a failed merge (`template-merge-failed`) now
+      opens this list instead of the plain editor, with the same line saying the page could not be
+      merged (FR-016, replacing the US2 stopgap); translations in
       `translations/source/{en,ru}/ui/sheet/templates.yaml`
 - [ ] T019 [US3] Editor header **Review shipped changes** in
       `features/template-editor/components/EditorTemplateFields.tsx`, while the draft equals the

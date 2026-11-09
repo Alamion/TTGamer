@@ -1,3 +1,4 @@
+import type { TemplateEditorDialogProps } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
@@ -122,4 +123,12 @@ export function renderEditor(template: CustomTemplate) {
     return render(
         createElement(TemplateEditorDialog, { base: { kind: 'edit', template }, onClose: () => {} })
     );
+}
+
+/** Opens a shipped-page review without writing to the library. */
+export function renderReview(
+    base: Extract<TemplateEditorDialogProps['base'], { kind: 'review' }>,
+    onClose: () => void = () => {}
+) {
+    return render(createElement(TemplateEditorDialog, { base, onClose }));
 }

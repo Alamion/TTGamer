@@ -8,7 +8,8 @@ import type { TemplateNode } from '../../../types/template';
 import { isContainerNode } from '../../../types/template';
 import type { OverlayPlacement } from '../../sheet/declarative/editorOverlay';
 import { elementName, elementTypeLabel, elementTypeShort } from '../elements/registry';
-import { useEditorActions, useNodeSelection } from '../session/context';
+import { useEditorActions, useNodeSelection, useReviewMark } from '../session/context';
+import { reviewMarkLabel } from './reviewLabels';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -32,6 +33,8 @@ const OutlineItem = memo(function OutlineItem({
 }) {
     const actions = useEditorActions();
     const { selected, anchor, hasIssue } = useNodeSelection(node.id);
+    const review = useReviewMark(node.id);
+    const reviewText = review ? reviewMarkLabel(review) : undefined;
     const column = parentColumns > 1 ? (node.column ?? null) : null;
     const name = elementName(node);
     const drag = useEditorDragContext();
@@ -41,13 +44,15 @@ const OutlineItem = memo(function OutlineItem({
             <div
                 data-outline-row={node.id}
                 data-node-type={node.type}
+                data-review-origin={review?.origin}
                 aria-current={anchor ? 'true' : undefined}
                 data-anchor={anchor ? '' : undefined}
                 className={clsx(
                     'flex items-center gap-1 rounded-sm pr-1 text-sm',
                     selected
                         ? 'bg-primary/15 font-medium text-textPrimary shadow-[inset_2px_0_0_0_rgb(var(--primary))]'
-                        : 'text-textPrimary hover:bg-secondary/15'
+                        : 'text-textPrimary hover:bg-secondary/15',
+                    review && 'outline-dashed outline-1 outline-secondary -outline-offset-1'
                 )}
                 style={{ paddingLeft: `${depth * 0.75}rem` }}
             >
@@ -64,6 +69,11 @@ const OutlineItem = memo(function OutlineItem({
                 <button
                     type="button"
                     aria-pressed={selected}
+                    aria-label={
+                        reviewText
+                            ? `${elementTypeLabel(node)} · ${name} · ${reviewText}`
+                            : undefined
+                    }
                     aria-haspopup="menu"
                     onClick={(event) =>
                         actions.select(
@@ -90,6 +100,7 @@ const OutlineItem = memo(function OutlineItem({
                         <span className="sr-only">{elementTypeLabel(node)}</span>
                     </span>
                     <span className="truncate">{name}</span>
+                    {reviewText && <span className="sr-only">{reviewText}</span>}
                 </button>
                 {node.visibleWhen && (
                     <EyeOff

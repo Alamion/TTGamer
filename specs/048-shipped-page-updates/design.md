@@ -150,3 +150,11 @@ US1.
 7. Reset the page, edit again, then clear its base in IndexedDB (or use a pre-feature copy) → the
    banner lists differences, each on keep; take one, save → the copy has it.
 8. Export the library with the copy, import on a clean profile → banner state matches.
+
+## Implementation notes
+
+- **Switching a conflict is not an exact inverse in two cases** (found by a random merge check on
+  all shipped pages; data is never lost). Switching a "removed by shipped, changed by you" conflict
+  to shipped and back reinserts the copy's whole subtree, so children the shipped page had removed
+  separately return. A moved node whose anchor sibling has gone lands first in its parent. Accepted:
+  the choice is the player's, each switch is one undo step, and the cases are rare on real pages.

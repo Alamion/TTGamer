@@ -5,6 +5,7 @@ import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { useCallback, useMemo, useState } from 'react';
 import { useStore } from 'zustand';
 
+import { reportSheetIssue } from '../../diagnostics';
 import { isDefaultTemplateId } from '../../systems/view';
 import type { CustomTemplate } from '../../types/template';
 import { isTypingTarget, shortcutHandlers, useEditorShortcuts } from './commands/keys';
@@ -18,6 +19,7 @@ import { EditorTemplateFields } from './components/EditorTemplateFields';
 import { type EditorMode, EditorToolbar } from './components/EditorToolbar';
 import { ShortcutList } from './components/ShortcutList';
 import { type DraftIssue } from './issues/draftIssues';
+import { mergePages } from './merge/merge';
 import { createDraftFromTemplate, createEmptyDraft } from './model/factories';
 import { generateDraftId } from './model/ids';
 import { type EditorDraft } from './model/types';
@@ -41,7 +43,14 @@ export interface TemplateEditorDialogProps {
               name?: string;
           }
         | { kind: 'skeleton'; documentKind: string; template: CustomTemplate }
-        | { kind: 'duplicate' | 'edit'; template: CustomTemplate };
+        | { kind: 'duplicate' | 'edit'; template: CustomTemplate }
+        | {
+              kind: 'review';
+              copy: CustomTemplate;
+              shipped: CustomTemplate;
+              mode: 'merge';
+              baseline: CustomTemplate;
+          };
     onClose: () => void;
     /** Called with the saved template (user templates only; e.g. to create a user type). */
     onSaved?: (template: CustomTemplate) => void;
@@ -49,7 +58,9 @@ export interface TemplateEditorDialogProps {
     lockTarget?: boolean;
 }
 
-function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
+function initialDraft(
+    base: Exclude<TemplateEditorDialogProps['base'], { kind: 'review' }>
+): EditorDraft {
     if (base.kind === 'empty') {
         const draft = createEmptyDraft(base.documentKind ?? 'character', base.systemId);
         return {
@@ -65,7 +76,24 @@ function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
 export function TemplateEditorDialog(props: TemplateEditorDialogProps) {
     const plural = usePluralMessage();
     // One session per opening (spec 025, D2): created with the dialog, dropped with it.
-    const [session] = useState(() => createEditorSession(initialDraft(props.base), plural));
+    const [session] = useState(() => {
+        const { base } = props;
+        if (base.kind !== 'review') return createEditorSession(initialDraft(base), plural);
+        const result = mergePages(base.baseline, base.shipped, base.copy);
+        const failed = 'error' in result;
+        if (failed) {
+            reportSheetIssue({
+                code: 'template-merge-failed',
+                message: 'Merging the shipped page failed',
+                details: { stage: 'merge', error: result.error, templateId: base.copy.id },
+            });
+        }
+        return createEditorSession(
+            failed ? createDraftFromTemplate(base.copy) : result.draft,
+            plural,
+            { mode: base.mode, items: failed ? [] : result.items, shipped: base.shipped, failed }
+        );
+    });
     return <EditorDialog {...props} session={session} />;
 }
 
@@ -99,7 +127,8 @@ function EditorDialog({
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     // Feature 004: editing a default template targets its override, never the custom library.
     const editingDefault =
-        base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId);
+        base.kind === 'review' ||
+        (base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId));
 
     // The dialog sits outside its own providers, so it reads the session store directly.
     const draft = useStore(session.store, (state) => state.history.present.draft);
@@ -141,7 +170,7 @@ function EditorDialog({
     );
 
     const { save, confirmation } = useTemplateSave({
-        base: base.kind === 'edit' ? base.template : undefined,
+        base: base.kind === 'review' ? base.copy : base.kind === 'edit' ? base.template : undefined,
         editingDefault,
         onClose,
         onSaved,

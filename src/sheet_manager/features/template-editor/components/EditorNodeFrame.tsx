@@ -8,9 +8,10 @@ import type { TemplateNode } from '../../../types/template';
 import { isFormulaCondition } from '../../../types/template';
 import type { OverlayPlacement } from '../../sheet/declarative/editorOverlay';
 import { elementName, elementTypeLabel } from '../elements/registry';
-import { useEditorActions, useNodeSelection } from '../session/context';
+import { useEditorActions, useNodeSelection, useReviewMark } from '../session/context';
 import { useEditorModel } from '../session/EditorModel';
 import { AddElementMenu } from './AddElementMenu';
+import { reviewMarkLabel } from './reviewLabels';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -105,6 +106,8 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
     parentId,
 }: EditorNodeFrameProps) {
     const { selected, anchor, hasIssue } = useNodeSelection(node.id);
+    const review = useReviewMark(node.id);
+    const reviewText = review ? reviewMarkLabel(review) : undefined;
     const name = elementName(node);
     const drag = useEditorDragContext();
 
@@ -114,6 +117,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
             <div
                 data-editor-frame=""
                 data-node-id={node.id}
+                data-review-origin={review?.origin}
                 data-selected={selected ? '' : undefined}
                 data-anchor={anchor ? '' : undefined}
                 data-condition-hidden={conditionHidden ? '' : undefined}
@@ -123,6 +127,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                         ? 'outline-2 outline-primary-muted'
                         : '[&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
                     hasIssue && !selected && 'outline-1 outline-error',
+                    review && 'outline-dashed outline-1 outline-secondary',
                     '[&[data-previewing]]:outline-dashed [&[data-previewing]]:outline-2 [&[data-previewing]]:outline-primary',
                     conditionHidden &&
                         'bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(var(--text-secondary)/0.08)_8px_16px)]',
@@ -141,7 +146,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                             event.stopPropagation();
                             drag?.start(node.id, event, 'page');
                         }}
-                        aria-label={`${translate(editor.gripHandle)}: ${name}`}
+                        aria-label={`${translate(editor.gripHandle)}: ${name}${reviewText ? ` · ${reviewText}` : ''}`}
                         data-testid={`page-grip-${node.id}`}
                         className="cursor-grab touch-none select-none rounded-sm bg-white/20 p-0.5 active:cursor-grabbing"
                     >
@@ -150,6 +155,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                     {hasIssue && <AlertTriangle className="h-3 w-3" aria-hidden="true" />}
                     <span className="truncate">
                         {elementTypeLabel(node)} · {name}
+                        {reviewText && ` · ${reviewText}`}
                     </span>
                 </span>
                 {content}

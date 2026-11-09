@@ -18,6 +18,22 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
+    reviewTitle: Review shipped changes
+    reviewNote: Values stored in your documents are kept.
+    reviewFailed: This page could not be merged; your copy is unchanged.
+    markAdded: Added by the shipped page
+    markChanged: Changed by the shipped page
+    markRemoved: Removed by the shipped page
+    markMoved: Moved
+    markConflict: Conflict — you kept yours
+    keepMine: Keep mine
+    useShipped: Use shipped
+    undoShippedChange: Undo this change
+    takeShippedAgain: Take it again
+    itemPlace: '{place}'
+    nowYours: '{label} now uses your version'
+    nowShipped: '{label} now uses the shipped version'
+    sameValueNone: None
     hideHelp: Hide help
     hideHelpHint: Hide the help for using this element. Its own documentation link still shows.
     visibleWhen: Show only when a condition holds

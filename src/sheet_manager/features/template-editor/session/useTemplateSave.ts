@@ -78,9 +78,10 @@ export function useTemplateSave({
         const store = useTemplateStore.getState();
         const key = overrideKey(template.systemId, template.id);
         const shipped =
-            !store.overrideBases[key] && !store.defaultOverrides[key]
+            session.store.getState().review?.shipped ??
+            (!store.overrideBases[key] && !store.defaultOverrides[key]
                 ? shippedPageFor(template.systemId, template.id)
-                : undefined;
+                : undefined);
         store.setDefaultOverride(template, shipped ? { base: shipped } : undefined);
         onClose();
     };

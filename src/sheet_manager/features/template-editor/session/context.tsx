@@ -46,6 +46,17 @@ export function useNodeSelection(nodeId: string) {
     return { selected: mark > 0, anchor: mark === 2, hasIssue };
 }
 
+/** Static review items keep this subscription unchanged by unrelated draft edits. */
+export function useReviewMark(nodeId: string) {
+    return useEditorState(({ review }) => {
+        const items = review?.items;
+        return (
+            items?.find((item) => item.nodeId === nodeId && item.origin === 'conflict') ??
+            items?.find((item) => item.nodeId === nodeId)
+        );
+    });
+}
+
 /** A plain click, Ctrl/⌘+click, or Shift+click (spec 023). */
 export type SelectMode = 'only' | 'toggle' | 'range';
 

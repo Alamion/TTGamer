@@ -2,9 +2,12 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 
+import type { CustomTemplate } from '../../../types/template';
 import type { DraftIssue } from '../issues/draftIssues';
+import { type ReviewItem, switchItem } from '../merge/items';
 import type { EditorSelectionState } from '../model/selection';
 import type { EditorDraft } from '../model/types';
+import { labelIn } from '../operations/selection';
 import type { Announcement, MessageDescriptor, Operation, OpRefusal } from '../operations/types';
 import type { SwitchStash } from '../settings/keepSettings';
 import {
@@ -20,6 +23,12 @@ import {
 const editor = uiMessages.sheet.templates.editor;
 
 export interface EditorSessionState {
+    review: {
+        mode: 'merge' | 'differences';
+        items: ReviewItem[];
+        shipped: CustomTemplate;
+        failed: boolean;
+    } | null;
     history: EditorHistory;
     /** Problems a refused operation or a refused save shows until the next change. */
     saveIssues: readonly DraftIssue[];
@@ -51,6 +60,7 @@ export interface EditorSession {
     redo(): void;
     announce(announcement: Announcement | string): void;
     showIssues(issues: readonly DraftIssue[]): void;
+    switchReviewItem(item: ReviewItem, to: 'copy' | 'shipped'): void;
 }
 
 export function refusalMessage(refusal: OpRefusal): string {
@@ -61,8 +71,13 @@ export function refusalMessage(refusal: OpRefusal): string {
     return translate(editor.cannotMoveIntoItself);
 }
 
-export function createEditorSession(draft: EditorDraft, plural: PluralMessage): EditorSession {
+export function createEditorSession(
+    draft: EditorDraft,
+    plural: PluralMessage,
+    review: EditorSessionState['review'] = null
+): EditorSession {
     const store = createStore<EditorSessionState>(() => ({
+        review,
         history: createHistory(draft),
         saveIssues: [],
         announcement: '',
@@ -126,6 +141,15 @@ export function createEditorSession(draft: EditorDraft, plural: PluralMessage): 
         },
         showIssues(issues) {
             store.setState({ saveIssues: issues });
+        },
+        switchReviewItem(item, to) {
+            const draft = session.draft();
+            const label = item.path.map((id) => labelIn(draft, id)).join(' / ') || draft.name;
+            session.change((current) => switchItem(current, item, to));
+            session.announce({
+                message: to === 'copy' ? editor.nowYours : editor.nowShipped,
+                values: { label },
+            });
         },
     };
     return session;
