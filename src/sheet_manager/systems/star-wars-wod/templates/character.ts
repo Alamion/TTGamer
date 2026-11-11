@@ -336,7 +336,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ),
                 { columns: 3, collapsible: true, docsPath: DOCS.skills }
             ),
-            group('brief-resolve', 'Resolve', [
+            group('brief-resolve', 'Condition', [
                 ...compactTraits(VIRTUE_KEYS).map((field, index) => ({
                     ...field,
                     ...(!isDroid
@@ -438,6 +438,7 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Eyes: baseFields.eyes.label,
     Features: baseFields.features.label,
     Appearance: sheetMessages.base.appearance,
+    'Appearance description': defaultMessages.appearanceDescription,
     Biography: sheetMessages.base.biography,
     Portrait: defaultMessages.portrait,
     'Show portrait': defaultMessages.showPortrait,
@@ -463,7 +464,6 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     'Force Powers': defaultMessages.forcePowers,
     Virtues: documentFields.virtues,
     Resources: documentFields.resources,
-    Resolve: defaultMessages.resolve,
     Willpower: documentFields.willpower,
     'Dark Side Resistance': defaultMessages.darkSideResistance,
     'Free points': defaultMessages.freePoints,

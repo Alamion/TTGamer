@@ -142,8 +142,8 @@
       {
        "id": "base-appearance",
        "type": "group",
-       "title": "Appearance",
-       "labelMessage": "ttgamer.ui.sheet.base.appearance",
+       "title": "Appearance description",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.appearanceDescription",
        "column": 2,
        "collapsible": true,
        "defaultCollapsed": true,
@@ -489,8 +489,8 @@
     {
      "id": "skills",
      "type": "section",
-     "title": "Skills",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+     "title": "Abilities",
+     "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
      "columns": 3,
      "children": [
@@ -1359,8 +1359,8 @@
       {
        "id": "base-appearance",
        "type": "group",
-       "title": "Appearance",
-       "labelMessage": "ttgamer.ui.sheet.base.appearance",
+       "title": "Appearance description",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.appearanceDescription",
        "column": 2,
        "collapsible": true,
        "defaultCollapsed": true,
@@ -1697,8 +1697,8 @@
     {
      "id": "skills",
      "type": "section",
-     "title": "Skills",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+     "title": "Abilities",
+     "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
      "columns": 3,
      "children": [
@@ -2865,8 +2865,8 @@
     {
      "id": "brief-resolve",
      "type": "brief",
-     "title": "Resolve",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
      "collapsible": false,
      "children": [
       {
@@ -3530,8 +3530,8 @@
     {
      "id": "brief-resolve",
      "type": "brief",
-     "title": "Resolve",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
      "collapsible": false,
      "children": [
       {
@@ -5949,8 +5949,8 @@
       {
        "id": "base-appearance",
        "type": "group",
-       "title": "Appearance",
-       "labelMessage": "ttgamer.ui.sheet.base.appearance",
+       "title": "Appearance description",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.appearanceDescription",
        "column": 2,
        "collapsible": true,
        "defaultCollapsed": true,
@@ -6281,8 +6281,8 @@
     {
      "id": "skills",
      "type": "section",
-     "title": "Skills",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills",
+     "title": "Abilities",
+     "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "docsPath": "/docs/wod-2e/rules/traits#abilities",
      "columns": 3,
      "children": [
@@ -7399,8 +7399,8 @@
     {
      "id": "brief-resolve",
      "type": "brief",
-     "title": "Resolve",
-     "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+     "title": "Condition",
+     "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
      "docsPath": "/docs/wod-2e/character#resolve",
      "collapsible": false,
      "columns": 3,
@@ -8190,7 +8190,7 @@
       {
        "id": "creed-drive",
        "type": "group",
-       "title": "Creed and Drive",
+       "title": "Redemption and creed notes",
        "labelMessage": "ttgamer.ui.sheet.v5Hunter.sections.creedDrive",
        "column": 1,
        "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive",
@@ -8207,7 +8207,7 @@
         },
         {
          "id": "creed-fields-field",
-         "label": "Creed Fields",
+         "label": "Creed notes",
          "labelMessage": "ttgamer.ui.sheet.v5Hunter.fields.creedFields",
          "docsPath": "/docs/wod-v5/hunter/first-hunter/creed-drive#creed-fields",
          "required": false,

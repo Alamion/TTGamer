@@ -57,7 +57,9 @@ test('Russian dark sheet keeps rules help and omits automatic portrait help', as
         await expect(link.locator('..')).toHaveCSS('margin-inline-start', '6px');
     }
 
-    await sheet.getByRole('button', { name: 'Свернуть или развернуть раздел «Внешность»' }).click();
+    await sheet
+        .getByRole('button', { name: 'Свернуть или развернуть раздел «Описание внешности»' })
+        .click();
     await sheet.getByRole('checkbox', { name: 'Показывать портрет', exact: true }).check();
     await expect(sheet.getByLabel('Загрузить изображение', { exact: true })).toBeVisible();
     await expect(

@@ -11,7 +11,7 @@ sections:
     edgeList: Edges
     purpose: Aims and Convictions
     aims: Aims
-    creedDrive: Creed and Drive
+    creedDrive: Redemption and creed notes
 fields:
     trackResources: Track Willpower
     concept: Concept
@@ -20,7 +20,7 @@ fields:
     ambition: Ambition
     desire: Desire
     redemption: Redemption
-    creedFields: Creed Fields
+    creedFields: Creed notes
     despair: Despair
     desperation: Desperation
     danger: Danger

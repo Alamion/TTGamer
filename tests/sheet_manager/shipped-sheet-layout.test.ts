@@ -42,7 +42,7 @@ describe('the layout of the shipped full sheets (spec 042)', () => {
             'Base',
             'Condition',
             'Attributes',
-            'Skills',
+            'Abilities',
             'Advantages',
             'Equipment',
             'Experience and Notes',

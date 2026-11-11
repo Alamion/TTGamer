@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
+import { serializeDocumentExport } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
+import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { CustomTemplate, TemplateNode } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
@@ -67,7 +69,7 @@ const PRINTED_SHEET: Record<string, string> = {
     'Spent Experience': 'experience-spent',
     'Chronicle Tenets': 'chronicle-tenets',
     Touchstones: 'rows:touchstones',
-    'Creed Fields': 'creed-fields',
+    'Creed notes': 'creed-fields',
     Advantages: 'list:advantages',
     Flaws: 'list:flaws',
     Weapons: 'equipment:weapons',
@@ -112,6 +114,58 @@ const SKILLS = [
 ];
 
 describe('hunter full sheet (SC-002)', () => {
+    it(
+        'edits renamed creed notes and retains their coordinate through file reload (spec 049)',
+        () => {
+            seedHunter(
+                hunterData({
+                    creedFields: 'Listen before acting.',
+                    redemption: 'Protect a stranger.',
+                })
+            );
+            useDocumentStore.setState((state) => ({
+                documents: state.documents.map((document) => ({
+                    ...document,
+                    templateValues: {
+                        ...document.templateValues,
+                        'personal-creed-note': 'Keep this coordinate',
+                    },
+                })),
+            }));
+            const mounted = render(
+                createElement(DeclarativeSheetView, { template: template('v5-hunter-sheet') })
+            );
+            expect(screen.getByText('Redemption and creed notes')).toBeTruthy();
+            const notes = screen.getByRole('textbox', {
+                name: 'Creed notes',
+            }) as HTMLTextAreaElement;
+            expect(notes.value).toBe('Listen before acting.');
+            fireEvent.change(notes, { target: { value: 'Bring the cell home.' } });
+            expect(currentHunter().creedFields).toBe('Bring the cell home.');
+            const saved = useDocumentStore.getState().documents[0]!;
+            const imported = systemRegistry.parseDocument(
+                JSON.parse(serializeDocumentExport(saved))
+            ).envelope;
+            expect(imported.data).toEqual(saved.data);
+            expect(imported.templateValues).toEqual(saved.templateValues);
+            mounted.unmount();
+            useDocumentStore.setState({ documents: [imported], currentDocumentId: imported.id });
+            render(createElement(DeclarativeSheetView, { template: template('v5-hunter-sheet') }));
+            expect(
+                (
+                    screen.getByRole('textbox', {
+                        name: 'Creed notes',
+                    }) as HTMLTextAreaElement
+                ).value
+            ).toBe('Bring the cell home.');
+            expect(currentHunter().redemption).toBe('Protect a stranger.');
+            expect(useDocumentStore.getState().documents[0]!.templateValues).toMatchObject({
+                'personal-creed-note': 'Keep this coordinate',
+            });
+        },
+        RENDER_TIMEOUT
+    );
+
     it('has a place for every field of the printed sheet', () => {
         const used = new Set(addresses(template('v5-hunter-sheet').children));
         for (const [field, address] of Object.entries(PRINTED_SHEET)) {

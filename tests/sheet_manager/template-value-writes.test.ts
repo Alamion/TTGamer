@@ -63,9 +63,12 @@ describe('template value write path', () => {
         render(createElement(DeclarativeSheetView, { template: fullSheet }));
         takeSheetIssues(); // render-time degradation (e.g. missing body handlers) is out of scope
 
-        // The portrait card shows once the folded Appearance card's switch is on.
+        // The portrait card shows once the folded Appearance description card's switch is on.
         expect(screen.queryByLabelText('Image URL')).toBeNull();
-        fireEvent.click(screen.getByRole('button', { name: 'Toggle Appearance section' }));
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Toggle Appearance description section' })
+        );
+        expect(screen.getByText('Appearance', { exact: true })).toBeTruthy();
         fireEvent.click(screen.getByRole('checkbox', { name: 'Show portrait' }));
         expect(
             (useDocumentStore.getState().documents[0]!.data as { metadata: object }).metadata

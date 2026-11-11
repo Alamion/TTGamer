@@ -25,8 +25,8 @@ import { takeSheetIssues } from '../setup/sheetIssues';
 import preFeatureCharacterTemplates from './fixtures/character-templates.pre-007.json';
 import { withoutHelpMetadata } from './helpers/withoutHelpMetadata';
 
-/** Spec 049 changes only these resource contracts in the otherwise frozen brief trees. */
-function amendLegacyResources(templates: CustomTemplate[]): CustomTemplate[] {
+/** Spec 049 explicitly amends resources and the combined status caption in the frozen briefs. */
+function amendLegacyResourcesAndCaptions(templates: CustomTemplate[]): CustomTemplate[] {
     const amended = structuredClone(templates);
     const character = amended.find(({ id }) => id === 'brief')!;
     const forceResources: PrimitiveNode[] = [];
@@ -42,6 +42,12 @@ function amendLegacyResources(templates: CustomTemplate[]): CustomTemplate[] {
     for (const template of amended) {
         walkTemplateNodes(template.children, (node) => {
             if (node.type === 'primitive' && node.id === 'resource-willpower') node.part = 'max';
+            if (node.type === 'brief' && node.id === 'brief-resolve') {
+                expect(node.title).toBe('Resolve');
+                expect(node.labelMessage).toBe('ttgamer.ui.sheet.templates.defaults.resolve');
+                node.title = 'Condition';
+                node.labelMessage = 'ttgamer.ui.sheet.templates.defaults.condition';
+            }
             if (
                 template.id === 'droid-brief' &&
                 node.type === 'brief' &&
@@ -57,7 +63,7 @@ function amendLegacyResources(templates: CustomTemplate[]): CustomTemplate[] {
 }
 
 describe('character templates after the builder split (feature 007)', () => {
-    it('keeps the pre-refactor briefs with the explicit spec 049 resource amendments', () => {
+    it('keeps the pre-refactor briefs with explicit spec 049 resource and caption amendments', () => {
         // Spec 042 laid the full sheets out anew (their fields are pinned by
         // `shipped-sheet-layout.test.ts`); spec 041 upgraded the trees to schema 4.
         const relaidOut = new Set(['full-sheet', 'droid-sheet']);
@@ -68,7 +74,7 @@ describe('character templates after the builder split (feature 007)', () => {
             );
         expect(withoutHelpMetadata(shipped)).toEqual(
             withoutHelpMetadata(
-                amendLegacyResources(
+                amendLegacyResourcesAndCaptions(
                     preFeatureCharacterTemplates
                         .filter((template) => !relaidOut.has(template.id))
                         .map((template) => upgradeTemplate(template).template)
@@ -142,7 +148,7 @@ describe('explicit default templates (feature 006, R9)', () => {
             'Base',
             'Condition',
             'Attributes',
-            'Skills',
+            'Abilities',
             'Force',
             'Advantages',
             'Equipment',

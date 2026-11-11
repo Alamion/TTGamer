@@ -50,27 +50,27 @@
 
 ## User Story 3 - Terminology and records (P2)
 
-- [ ] T014 [US3] Reconcile complete droid memory categories in
+- [x] T014 [US3] Reconcile complete droid memory categories in
       `docs/star-wars-wod-2e/character/droids-cyborgs.mdx` and its Russian mirror with
       `systems/star-wars-wod/profile.ts`; audit supported Force-derived examples in
       `character/force.mdx` and its mirror.
-- [ ] T015 [US3] Correct per-member Health and shortened variants in
+- [x] T015 [US3] Correct per-member Health and shortened variants in
       `docs/star-wars-wod-2e/gm/building-encounters.mdx`, `creatures/mechanics.mdx` and Russian
       mirrors; retain the existing per-member model.
-- [ ] T016 [US3] Align vehicle overview and independent system-list help in
+- [x] T016 [US3] Align vehicle overview and independent system-list help in
       `docs/star-wars-wod-2e/vehicles-mechanisms/traits-systems.mdx`, `docs/guide/sheet.mdx` and
       Russian mirrors; preserve independent records.
-- [ ] T017 [US3] Rename ambiguous WoD-family headings in `systems/wod2e/ruleset/templateParts.ts`,
+- [x] T017 [US3] Rename ambiguous WoD-family headings in `systems/wod2e/ruleset/templateParts.ts`,
       `systems/wod2e/templates.ts`, `systems/star-wars-wod/templates/character.ts` and canonical
       `translations/source/{en,ru}/ui/sheet/` files; preserve V5's single Skills group, node ids and
       coordinates.
-- [ ] T018 [US3] Rename hunter Creed notes and its actual-content card in
+- [x] T018 [US3] Rename hunter Creed notes and its actual-content card in
       `translations/source/{en,ru}/ui/sheet/v5Hunter.yaml`, hunter full-sheet declarations and
       affected hunter tutorials/reference pages; preserve `creedFields` and stored text.
-- [ ] T019 [US3] Validate mortal narrative scope and canonical glossary usage in
+- [x] T019 [US3] Validate mortal narrative scope and canonical glossary usage in
       `docs/wod-v5/rules/convictions-touchstones.mdx`, mortal pages and Russian mirrors; fix only
       actual inconsistencies.
-- [ ] T020 [US3] Run `yarn validate:data`, `yarn validate:i18n`, targeted composition/layout/docs
+- [x] T020 [US3] Run `yarn validate:data`, `yarn validate:i18n`, targeted composition/layout/docs
       tests and `yarn verify:fast`; commit US3 and its checked tasks.
 
 ## User Story 4 - Action help and rendered verification (P2)

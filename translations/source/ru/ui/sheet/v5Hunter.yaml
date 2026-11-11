@@ -11,7 +11,7 @@ sections:
     edgeList: Грани
     purpose: Цели и убеждения
     aims: Цели
-    creedDrive: Кредо и Мотив
+    creedDrive: Искупление и заметки о кредо
 fields:
     trackResources: Вести Волю
     concept: Концепция
@@ -20,7 +20,7 @@ fields:
     ambition: Цель
     desire: Желание
     redemption: Искупление
-    creedFields: Поля кредо
+    creedFields: Заметки о кредо
     despair: Отчаяние
     desperation: Безысходность
     danger: Опасность
