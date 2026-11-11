@@ -13,7 +13,7 @@ import {
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
-import { StatDiceButton } from '../../../components/stat-fields/StatDiceButton';
+import { StatDiceButton, type TraitDiceRoll } from '../../../components/stat-fields/StatDiceButton';
 import {
     CustomTraitList,
     TraitRow,
@@ -138,7 +138,21 @@ function IdentityField({
 // System lists (feature 006 US6): one interface for every SystemListId binding.
 // ---------------------------------------------------------------------------
 
-type TraitListEntry = { id: string; label: string; value: number };
+type TraitListEntry = CustomSkill;
+
+function supportedTraitRoll(
+    roll: TraitDiceRoll | undefined,
+    flags: ListBinding['flags']
+): TraitDiceRoll | undefined {
+    if (!roll || flags === undefined || flags === true) return roll;
+    return (value, specialization, experienced, practiced) =>
+        roll(
+            value,
+            flags !== false && flags.includes('specialization') ? specialization : false,
+            flags !== false && flags.includes('experienced') ? experienced : false,
+            flags !== false && flags.includes('practiced') ? practiced : false
+        );
+}
 
 export function toCatalogEntries(
     catalog: CatalogBindingEntry,
@@ -198,7 +212,7 @@ function TraitListBindingView({
     placeholder?: string;
     columns?: 1 | 2 | 3 | 4;
 }) {
-    const traitDiceRoll = useDocumentTraitDiceRoll();
+    const traitDiceRoll = supportedTraitRoll(useDocumentTraitDiceRoll(), binding.flags);
     const locale = useDocusaurusContext().i18n.currentLocale;
     const brief = useContext(BriefGroupContext);
     return (
@@ -228,7 +242,8 @@ function TraitListBindingView({
                 onChange(items.map((item) => (item.id === id ? { ...item, label, value } : item)))
             }
             size="md"
-            showFlags={binding.flags ?? true}
+            showFlags={binding.flags !== false}
+            flags={typeof binding.flags === 'object' ? binding.flags : undefined}
             placeholder={binding.placeholder ? translate(binding.placeholder) : placeholder}
             catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
@@ -317,6 +332,11 @@ function SystemListContent({
         id: String(item.id ?? ''),
         label: String(item.label ?? item.name ?? ''),
         value: typeof item.value === 'number' ? item.value : 0,
+        ...(typeof item.specialization === 'boolean'
+            ? { specialization: item.specialization }
+            : {}),
+        ...(typeof item.experienced === 'boolean' ? { experienced: item.experienced } : {}),
+        ...(typeof item.practiced === 'boolean' ? { practiced: item.practiced } : {}),
     }));
     // Reverse mapping keeps unknown fields (specialization flags, catalog ids, `name` for
     // named traits) intact across label/value edits — entries are edits, never re-creations.
@@ -598,7 +618,7 @@ function PrimitiveTraitBody({
     const help = useFieldHelpMark();
     const bound = useBoundDocument();
     const brief = useBriefPage();
-    const traitDiceRoll = useDocumentTraitDiceRoll();
+    const traitDiceRoll = supportedTraitRoll(useDocumentTraitDiceRoll(), descriptor.row?.flags);
     const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
@@ -619,7 +639,8 @@ function PrimitiveTraitBody({
         });
     const rowKind = traitRowKind(brief, descriptor);
     const showSpecialization = descriptor.row?.specialization ?? true;
-    const showFlags = descriptor.row?.flags ?? true;
+    const flags = descriptor.row?.flags;
+    const showFlags = flags !== false;
     if (rowKind === 'compact') {
         const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
         const rating = (
@@ -680,6 +701,7 @@ function PrimitiveTraitBody({
                     })
                 }
                 showFlags={showFlags}
+                flags={typeof flags === 'object' ? flags : undefined}
                 specialization={trait.specialization ?? false}
                 experienced={trait.experienced ?? false}
                 practiced={trait.practiced ?? false}
@@ -714,6 +736,7 @@ function PrimitiveTraitBody({
             maxValue={descriptor.maximum}
             presentation={descriptor.presentation}
             showFlags={showFlags}
+            flags={typeof flags === 'object' ? flags : undefined}
             specialization={trait.specialization ?? false}
             experienced={trait.experienced ?? false}
             practiced={trait.practiced ?? false}

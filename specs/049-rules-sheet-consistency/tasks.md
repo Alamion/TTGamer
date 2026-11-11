@@ -20,31 +20,32 @@
 
 ## User Story 2 - Classic injuries and migration (P1)
 
-- [ ] T006 [US2] Add tests in `tests/sheet_manager/systems/wod2e/engine.test.tsx`, a new
+- [x] T006 [US2] Add tests in `tests/sheet_manager/systems/wod2e/engine.test.tsx`, a new
       `wod2e-migration.test.ts`, and Star Wars parity tests: classic penalties/marks, specialty
       eligibility and unchanged conversion behavior.
-- [ ] T007 [US2] Separate classic vs conversion rules in
+- [x] T007 [US2] Separate classic vs conversion rules in
       `src/sheet_manager/systems/wod2e/ruleset/schema.ts`, `profile.ts`, `bindings.ts` and
       `src/sheet_manager/systems/star-wars-wod/profile.ts`, `documentBindings.ts`,
       `entityBindings.ts`; add a setting-owned rules file if needed.
-- [ ] T008 [US2] Implement engine-only v2 migration and bounded original mark backup in
+- [x] T008 [US2] Implement engine-only v2 migration and bounded original mark backup in
       `src/sheet_manager/systems/wod2e/ruleset/schema.ts`, a dedicated `migration.ts`, and
       `src/sheet_manager/systems/wod2e/index.ts`; add classic trait dice rules at their engine
       owner.
-- [ ] T009 [US2] Thread optional flag subsets through
+- [x] T009 [US2] Thread optional flag subsets through
       `src/sheet_manager/systems/templateBindings.ts`,
       `src/sheet_manager/components/stat-fields/TraitRow.tsx` and the existing declarative
       trait/list controls; classic bindings show only the supported flag, stored flags remain.
-- [ ] T010 [US2] Test migrated-record persistence through
+- [x] T010 [US2] Test migrated-record persistence through
+      `tests/sheet_manager/document-store-v5.test.ts` and the existing
       `tests/sheet_manager/record-writer.test.ts`; update
       `src/sheet_manager/store/documentContent.ts` so version migrations reach the existing writer.
-- [ ] T011 [US2] Add optional migration-notice metadata in `src/sheet_manager/systems/types.ts`, a
+- [x] T011 [US2] Add optional migration-notice metadata in `src/sheet_manager/systems/types.ts`, a
       neutral `features/sheet/shell/useMigrationNotice.ts`, and workspace wiring; add bounded
       acknowledgment/diagnostic tests and canonical EN/RU messages.
-- [ ] T012 [US2] Correct classic rules prose in `docs/wod-2e/rules/condition.mdx`, `traits.mdx`,
+- [x] T012 [US2] Correct classic rules prose in `docs/wod-2e/rules/condition.mdx`, `traits.mdx`,
       `equipment.mdx` and Russian mirrors; document recovery originals and the edition split in the
       owning skills/module guidance.
-- [ ] T013 [US2] Run migration/engine/persistence/notice tests and `yarn verify`; commit US2 and its
+- [x] T013 [US2] Run migration/engine/persistence/notice tests and `yarn verify`; commit US2 and its
       checked tasks.
 
 ## User Story 3 - Terminology and records (P2)

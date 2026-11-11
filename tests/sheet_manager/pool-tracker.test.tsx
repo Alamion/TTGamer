@@ -256,9 +256,9 @@ describe('the shipped Star Wars sheets', () => {
             expect.objectContaining({
                 id: 'resource-force-points',
                 poolTracker: { display: 'row', legend: false, total: true },
-                maxMinFrom: 'self-control',
             }),
         ]);
+        expect(forceNodes('full-sheet')[0]).not.toHaveProperty('maxMinFrom');
     });
 
     it('keeps the numbers on the briefs', () => {

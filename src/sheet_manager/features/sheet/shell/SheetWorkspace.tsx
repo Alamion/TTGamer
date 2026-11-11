@@ -38,6 +38,7 @@ import { type BatchSummary, type ConflictAnswer, runImportBatch } from './import
 import { documentFileFormat, importAccept, readImportFiles } from './kindFiles';
 import { type BadgePlace, PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
+import { useMigrationNotice } from './useMigrationNotice';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
@@ -106,6 +107,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     const currentView = currentDefinition
         ? resolveDocumentView(currentDefinition, currentDocument?.metadata.preferredViewId)
         : undefined;
+    useMigrationNotice(currentDocument, currentDefinition);
     const activeTemplate = currentDocument
         ? resolveCustomTemplate(
               assignedTemplateId(currentDocument, settings),

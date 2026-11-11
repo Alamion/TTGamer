@@ -10,9 +10,11 @@ Condition collects the values that describe injury, mental reserves, and respons
 
 ## Health \{#health}
 
-Health is the injury track that records how badly a character is hurt. The generic sheet has seven levels: Bruised (0), Hurt (−1), Injured (−2), Wounded (−3), Mauled (−4), Crippled (−5), and Incapacitated. A slash marks bashing damage and a cross marks lethal damage. The deepest marked level supplies the displayed penalty; Incapacitated means the character cannot take normal actions, even though its row has no numerical penalty.
+Health is the injury track that records how badly a character is hurt. The classic second-edition sheet has seven levels: Bruised (0), Hurt (−1), Injured (−1), Wounded (−2), Mauled (−2), Crippled (−5), and Incapacitated. A slash marks ordinary damage and a cross marks aggravated damage. The deepest marked level supplies the displayed penalty; Incapacitated means the character cannot take normal actions, even though its row has no numerical penalty.
 
-Use the appropriate wound penalty when resolving actions under the group's rules. Resolve the attack, damage, and any resistance first, then record the resulting injuries: marking a box does not roll damage, perform a resistance check, or heal the character. This track records two damage types; it does not provide a separate aggravated mark. See the [tracker guide](../../guide/template-editor/elements.mdx#trackers) for marking controls.
+Use the appropriate wound penalty when resolving actions under the group's rules. Resolve the attack, damage, and any resistance first, then record the resulting injuries: marking a box does not roll damage, perform a resistance check, or heal the character. These classic rules are separate from the Star Wars conversion's bashing/lethal distinction and steeper penalties. See the [tracker guide](../../guide/template-editor/elements.mdx#trackers) for marking controls.
+
+Characters saved before this correction used the conversion's two damage types. On opening one, its old bashing and lethal wounds become ordinary wounds at the same positions, and a notice explains the change. The original seven marks remain in `legacyHealth` in the character's JSON export for recovery. New aggravated wounds are recorded explicitly; re-opening or importing an updated character does not convert them again.
 
 ## Willpower \{#willpower}
 

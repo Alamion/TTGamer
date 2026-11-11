@@ -58,6 +58,14 @@ detail.
   `calculateHealthPenalty`, custom skills); `systems/star-wars-wod/schema.ts` owns
   `StarWarsCharacterSchema` (the flat character: metadata with `type: sentient|droid|vehicle`,
   `forcePowerItems`, implants) and `createDefaultCharacter()`.
+- Classic engine characters use definition version 2 (spec 049). A version 1 document migrates
+  bashing/lethal marks to Ordinary marks in the same seven positions and keeps its originals in the
+  optional `legacyHealth` field, which travels in JSON exports. New crosses mean Aggravated; version
+  2 never repeats the mapping. Core characters of a user setting use that definition too; arbitrary
+  user-type values are not reinterpreted. The active document's definition-owned `migrationNotice`
+  produces a toast acknowledged per device (bounded to 500 entries); reading records persists
+  version migrations through the existing writer. See the template bindings reference for
+  edition-specific tracks and trait flags.
 - `systems/star-wars-wod/schema.ts` — definition payloads:
     - `StarWarsCharacterDataSchema` = `StarWarsCharacterSchema` minus `id`, metadata
       `type: 'sentient'`.

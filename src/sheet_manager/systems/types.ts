@@ -82,6 +82,8 @@ export interface DocumentDefinition<TData = unknown> {
     capabilities?: DocumentCapabilities;
     derive?: (data: TData) => unknown;
     migrate?: (data: unknown, fromVersion: number) => unknown;
+    /** A definition-owned explanation of a conversion, shown once per device and document. */
+    migrationNotice?: (data: TData) => { id: string; message: DocumentViewLabel } | undefined;
     module?: DocumentModule;
     /** Sample documents of this definition, offered as template editor preview data. */
     examples?: readonly DocumentExample[];

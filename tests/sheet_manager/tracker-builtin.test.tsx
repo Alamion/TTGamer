@@ -216,14 +216,14 @@ describe('shipped pages and game marks', () => {
         expect(totalRow()!.className).not.toMatch(/\bbg-/);
     });
 
-    it('names bashing and lethal on WoD 2e health, with no total row or legend by default', () => {
+    it('names ordinary and aggravated on classic WoD 2e health, with no total row or legend by default', () => {
         seed(WOD2E);
         mount(page(WOD2E, [track('track:health')]));
         expect(totalRow()).toBeNull();
         expect(screen.queryByRole('list')).toBeNull();
         cleanup();
         mount(page(WOD2E, [track('track:health', named)]));
-        expect(legend()).toEqual(['╱Bashing', '×Lethal']);
+        expect(legend()).toEqual(['╱Ordinary', '×Aggravated']);
     });
 
     it('uses the generic names on droid and vehicle damage', () => {

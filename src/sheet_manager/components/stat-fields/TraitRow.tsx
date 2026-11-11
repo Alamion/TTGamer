@@ -4,6 +4,7 @@ import { clsx } from 'clsx';
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 
+import type { RatingFlag } from '../../types/template';
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
 import { fallbackRowName, RowMoveControls, rowMoveKeys } from '../controls/RowMoveControls';
@@ -32,6 +33,7 @@ interface TraitRowProps {
     className?: string;
     minimal?: number;
     showFlags?: boolean;
+    flags?: readonly RatingFlag[];
     specialization?: boolean | null;
     experienced?: boolean | null;
     practiced?: boolean | null;
@@ -58,6 +60,7 @@ export function TraitRow({
     className,
     minimal,
     showFlags = false,
+    flags,
     specialization = null,
     experienced = null,
     practiced = null,
@@ -76,6 +79,7 @@ export function TraitRow({
                 size={size}
                 minimal={minimal}
                 showFlags={showFlags}
+                flags={flags}
                 specialization={specialization}
                 experienced={experienced}
                 practiced={practiced}
@@ -110,6 +114,7 @@ interface TraitRowWithInputProps {
     className?: string;
     minimal?: number;
     showFlags?: boolean;
+    flags?: readonly RatingFlag[];
     specialization?: boolean | null;
     experienced?: boolean | null;
     practiced?: boolean | null;
@@ -138,6 +143,7 @@ export function TraitRowWithInput({
     className,
     minimal,
     showFlags = false,
+    flags,
     specialization = null,
     experienced = null,
     practiced = null,
@@ -186,6 +192,7 @@ export function TraitRowWithInput({
                     size={size}
                     minimal={minimal}
                     showFlags={showFlags}
+                    flags={flags}
                     specialization={specialization}
                     experienced={experienced}
                     practiced={practiced}
@@ -225,6 +232,7 @@ interface CustomTraitListProps {
     disabled?: boolean;
     size?: 'sm' | 'md' | 'lg';
     showFlags?: boolean;
+    flags?: readonly RatingFlag[];
     onDiceRoll?: (
         value: number,
         specialization: boolean | null,
@@ -261,6 +269,7 @@ export function CustomTraitList({
     disabled = false,
     size = 'md',
     showFlags = false,
+    flags,
     onDiceRoll,
     catalog,
     onCatalogSelect,
@@ -334,6 +343,7 @@ export function CustomTraitList({
                         disabled={disabled}
                         size={compact ? 'sm' : size}
                         showFlags={showFlags}
+                        flags={flags}
                         specialization={item.specialization}
                         experienced={item.experienced}
                         practiced={item.practiced}

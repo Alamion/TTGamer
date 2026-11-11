@@ -311,7 +311,6 @@
             "type": "primitive",
             "bindingKey": "resource:dark-side-resistance",
             "label": "Dark Side Resistance",
-            "minFrom": "max(0, min(5 + conscience - passion, 10))",
             "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
         },
         "resource-force-points": {
@@ -324,7 +323,6 @@
                 "legend": false,
                 "total": true
             },
-            "maxMinFrom": "self-control",
             "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
         },
         "resource-willpower": {
@@ -332,8 +330,8 @@
             "type": "primitive",
             "bindingKey": "resource:willpower",
             "label": "Willpower",
-            "minFrom": "min(passion + self-control, 10)",
-            "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+            "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+            "part": "max"
         },
         "track-health": {
             "id": "track-health",
@@ -1155,13 +1153,32 @@
             "required": false,
             "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
         },
+        "resource-dark-side": {
+            "id": "resource-dark-side",
+            "type": "primitive",
+            "bindingKey": "resource:dark-side-resistance",
+            "label": "Dark Side Resistance",
+            "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
+        },
+        "resource-force-points": {
+            "id": "resource-force-points",
+            "type": "primitive",
+            "bindingKey": "resource:force-points",
+            "label": "Force Points",
+            "poolTracker": {
+                "display": "row",
+                "legend": false,
+                "total": true
+            },
+            "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+        },
         "resource-willpower": {
             "id": "resource-willpower",
             "type": "primitive",
             "bindingKey": "resource:willpower",
             "label": "Willpower",
-            "minFrom": "min(passion + self-control, 10)",
-            "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+            "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+            "part": "max"
         },
         "track-health": {
             "id": "track-health",

@@ -1,5 +1,9 @@
 badge: WoD2e
 system: World of Darkness 2nd Edition
+healthConverted: 'This WoD 2e character now uses classic wound rules. Previous bashing and lethal wounds became ordinary wounds; their positions were kept. Original marks are retained as legacyHealth in the character export. Conversion-only Experienced and Practiced flags no longer affect classic rolls.'
+damageMarks:
+    ordinary: Ordinary
+    aggravated: Aggravated
 views:
     sheet: Full sheet
     brief: Brief

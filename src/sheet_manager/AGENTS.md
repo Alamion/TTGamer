@@ -481,7 +481,10 @@ duplicate template facts here. Invariants that must never be broken:
 ## Derived State
 
 - `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
-  level.
+  level of the classic second-edition track. The template bindings reference owns the separate
+  edition/conversion track and trait-flag rules; the sheet-manager skill owns the version 2
+  migration and retained original wounds. Record reads must not mark a migrated envelope clean: the
+  existing writer persists it even before the player edits a field.
 - Star Wars Virtue formulas set resources only at creation; later Virtue changes do not recalculate
   or impose minima on them. Shipped full pages and briefs show static Willpower through the existing
   resource's `part: 'max'`, retaining the old stored pair and current value for custom page

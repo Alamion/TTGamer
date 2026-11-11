@@ -146,7 +146,12 @@ export async function readEnvelope(
     try {
         const { envelope } = systemRegistry.parseDocument(raw);
         const applied = entry ? applyEntryFields(envelope, entry) : envelope;
-        if (applied === envelope) cleanEnvelopes.add(applied);
+        const migrated =
+            typeof raw === 'object' &&
+            raw !== null &&
+            'schemaVersion' in raw &&
+            raw.schemaVersion !== envelope.schemaVersion;
+        if (applied === envelope && !migrated) cleanEnvelopes.add(applied);
         return applied;
     } catch (error) {
         reportSheetIssue({
