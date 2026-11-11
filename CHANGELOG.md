@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.38.0
+
+### Minor feat
+
+- **Updates to pages you edited (spec 048, T-131)**: when a shipped page changes, your edited copy offers **Review changes** or **Not now**. Your copy stays as it is until you choose to save the review
+- **Review without losing your changes**: new, changed, removed and moved elements are marked in the template editor. Conflicts keep your version by default; switch individual changes to the shipped version and back, with Undo
+- **Find the field behind a change (T-145)**: select a change card to highlight and center its field, opening folded sections along the way. Selecting a field highlights its change cards. Both have a gold outline, and version switches keep the selection
+- **Older copies and library files**: copies made before update tracking list every difference for you to take or keep. Library exports retain the update history; **Reset to original** clears it together with your edited copy. Document values are kept
+
+### Fix
+
+- **Link suggestions**: picking a suggested link no longer moves the caret past text typed immediately after it
+
 ## v3.37.1
 
 ### Fix

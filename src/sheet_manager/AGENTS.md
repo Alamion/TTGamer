@@ -460,6 +460,10 @@ duplicate template facts here. Invariants that must never be broken:
   (`getTemplate` sees only user templates, not shipped defaults or overrides).
 - Every graceful-degradation path (rejected write, quarantine, unresolved binding, missing catalog,
   broken formula) reports through `diagnostics.ts` `reportSheetIssue`. Silent fallbacks are bugs.
+- An edited shipped page (`defaultOverrides`) carries a base and takes shipped updates through the
+  template editor's review (banner or header button), never silently over the player's edits; the
+  rules are in the `sheet-templates` skill, `references/pages.md` ("Updates to edited shipped
+  pages").
 - A template change is not done until the skill reflects it.
 - Editor element kinds (Group · Section/Card, List · Entries/Table, spec 022) are presentation:
   stored node types stay `section`, `group`, `list`, `table`, and switching never migrates document

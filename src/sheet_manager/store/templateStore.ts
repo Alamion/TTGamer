@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { describeError, reportSheetIssue } from '../diagnostics';
+import { revisionOf } from '../features/sheet/data/revision';
+import type { OverrideBaseRecord } from '../features/sheet/data/shippedRevision';
 import type { CustomTemplate } from '../types/template';
 import { CustomTemplateSchema } from '../types/template';
 import { type UpgradeSummary, upgradeTemplate } from '../types/templateUpgrade';
@@ -17,8 +19,9 @@ import { type UpgradeSummary, upgradeTemplate } from '../types/templateUpgrade';
  * Version 6 (spec 041): templates of schema 3 become schema 4 (page kinds, brief blocks); pages
  * whose conversion changed more than a brief's cards becoming blocks are listed in `conversions`
  * until the sheet has told the author.
+ * Version 7 (spec 048): edited shipped pages carry a parallel base and dismissed revision.
  */
-const STORE_VERSION = 6;
+const STORE_VERSION = 7;
 const MAX_QUARANTINE_ENTRIES = 100;
 const MAX_CONVERSIONS = 50;
 
@@ -34,6 +37,7 @@ export interface TemplateStoreState {
     quarantine: unknown[];
     /** Saved user edits of default templates, keyed by `overrideKey(systemId, viewId)`. */
     defaultOverrides: Record<string, CustomTemplate>;
+    overrideBases: Record<string, OverrideBaseRecord>;
     /** Pages converted to schema 4 that the author has not been told about yet (spec 041). */
     conversions: TemplateConversion[];
     /** Returns the conversions to tell about and forgets them. */
@@ -51,7 +55,10 @@ export interface TemplateStoreState {
      * Explicit save of a default template edit (FR-9), keyed by the template's own system and id
      * (the view id); marks the default as modified (FR-12).
      */
-    setDefaultOverride: (template: CustomTemplate) => void;
+    setDefaultOverride: (template: CustomTemplate, options?: { base?: CustomTemplate }) => void;
+    /** Import replaces the whole record; an older file without a base clears the old one. */
+    replaceOverride: (template: CustomTemplate, base?: CustomTemplate) => void;
+    dismissUpdate: (systemId: string, viewId: string, revision: string) => void;
     /** Reset (FR-10): deletes the override; the pristine original re-derives from the registry. */
     clearDefaultOverride: (systemId: string, viewId: string) => void;
 }
@@ -65,6 +72,7 @@ interface PersistedTemplateState {
     templates: CustomTemplate[];
     quarantine: unknown[];
     defaultOverrides: Record<string, CustomTemplate>;
+    overrideBases: Record<string, OverrideBaseRecord>;
     conversions: TemplateConversion[];
 }
 
@@ -90,7 +98,13 @@ function quarantineEntry(quarantine: unknown[], entry: unknown, error: unknown) 
 
 export function migrateTemplateStoreState(input: unknown, version = 0): PersistedTemplateState {
     if (!isRecord(input) || !Array.isArray(input.templates)) {
-        return { templates: [], quarantine: [], defaultOverrides: {}, conversions: [] };
+        return {
+            templates: [],
+            quarantine: [],
+            defaultOverrides: {},
+            overrideBases: {},
+            conversions: [],
+        };
     }
 
     const templates: CustomTemplate[] = [];
@@ -135,13 +149,40 @@ export function migrateTemplateStoreState(input: unknown, version = 0): Persiste
         }
     }
 
-    return { templates, quarantine, defaultOverrides, conversions };
+    const overrideBases: Record<string, OverrideBaseRecord> = {};
+    if (isRecord(input.overrideBases)) {
+        for (const [key, entry] of Object.entries(input.overrideBases)) {
+            const dismissal =
+                isRecord(entry) && typeof entry.dismissed === 'string'
+                    ? { dismissed: entry.dismissed }
+                    : undefined;
+            if (dismissal) overrideBases[key] = dismissal;
+            if (isRecord(entry) && entry.base === undefined && dismissal) continue;
+            try {
+                const base = CustomTemplateSchema.parse(isRecord(entry) ? entry.base : undefined);
+                overrideBases[key] = {
+                    base,
+                    revision: revisionOf(base),
+                    ...dismissal,
+                };
+            } catch (error) {
+                reportSheetIssue({
+                    code: 'template-update-unreadable',
+                    message: 'Persisted shipped page base failed to parse and was dropped',
+                    details: { key, error: describeError(error) },
+                });
+            }
+        }
+    }
+
+    return { templates, quarantine, defaultOverrides, overrideBases, conversions };
 }
 
 const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
     templates: [],
     quarantine: [],
     defaultOverrides: {},
+    overrideBases: {},
     conversions: [],
 
     takeConversions: () => {
@@ -175,21 +216,52 @@ const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
 
     getTemplate: (id) => get().templates.find((template) => template.id === id),
 
-    setDefaultOverride: (template) => {
+    setDefaultOverride: (template, options) => {
         const parsed = CustomTemplateSchema.parse(template);
-        set(({ defaultOverrides }) => ({
+        const base = options?.base ? CustomTemplateSchema.parse(options.base) : undefined;
+        const key = overrideKey(parsed.systemId, parsed.id);
+        set(({ defaultOverrides, overrideBases }) => ({
             defaultOverrides: {
                 ...defaultOverrides,
-                [overrideKey(parsed.systemId, parsed.id)]: parsed,
+                [key]: parsed,
             },
+            overrideBases: base
+                ? { ...overrideBases, [key]: { base, revision: revisionOf(base) } }
+                : overrideBases,
+        }));
+    },
+
+    replaceOverride: (template, base) => {
+        const parsed = CustomTemplateSchema.parse(template);
+        const parsedBase = base ? CustomTemplateSchema.parse(base) : undefined;
+        const key = overrideKey(parsed.systemId, parsed.id);
+        set(({ defaultOverrides, overrideBases }) => {
+            const nextBases = { ...overrideBases };
+            if (parsedBase) nextBases[key] = { base: parsedBase, revision: revisionOf(parsedBase) };
+            else delete nextBases[key];
+            return {
+                defaultOverrides: { ...defaultOverrides, [key]: parsed },
+                overrideBases: nextBases,
+            };
+        });
+    },
+
+    dismissUpdate: (systemId, viewId, revision) => {
+        const key = overrideKey(systemId, viewId);
+        const record = get().overrideBases[key];
+        set(({ overrideBases }) => ({
+            overrideBases: { ...overrideBases, [key]: { ...record, dismissed: revision } },
         }));
     },
 
     clearDefaultOverride: (systemId, viewId) => {
-        set(({ defaultOverrides }) => {
+        set(({ defaultOverrides, overrideBases }) => {
             const next = { ...defaultOverrides };
-            delete next[overrideKey(systemId, viewId)];
-            return { defaultOverrides: next };
+            const nextBases = { ...overrideBases };
+            const key = overrideKey(systemId, viewId);
+            delete next[key];
+            delete nextBases[key];
+            return { defaultOverrides: next, overrideBases: nextBases };
         });
     },
 });
@@ -217,10 +289,17 @@ export const useTemplateStore = isBrowser
                       await localforage.default.removeItem(name);
                   },
               })),
-              partialize: ({ templates, quarantine, defaultOverrides, conversions }) => ({
+              partialize: ({
                   templates,
                   quarantine,
                   defaultOverrides,
+                  overrideBases,
+                  conversions,
+              }) => ({
+                  templates,
+                  quarantine,
+                  defaultOverrides,
+                  overrideBases,
                   conversions,
               }),
           })

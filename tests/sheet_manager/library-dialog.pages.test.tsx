@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 
+import { shippedPageFor } from '@site/src/sheet_manager/features/sheet/data/shippedRevision';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
@@ -111,14 +112,25 @@ describe('library dialog — pages (spec 013, US2)', () => {
     });
 
     it('resets an edited shipped page after confirmation', () => {
+        const key = 'star-wars-wod:full-sheet';
+        const base = shippedPageFor('star-wars-wod', 'full-sheet')!;
+        useTemplateStore
+            .getState()
+            .setDefaultOverride(useTemplateStore.getState().defaultOverrides[key]!, { base });
+        useTemplateStore.getState().dismissUpdate(base.systemId, base.id, 'dismissed');
+        const clear = vi.spyOn(useTemplateStore.getState(), 'clearDefaultOverride');
         openLibrary();
         fireEvent.click(within(mustRow('s:system:star-wars-wod')).getByLabelText(/Expand/));
         fireEvent.click(within(mustRow('t:star-wars-wod:character')).getByLabelText(/Expand/));
         select('p:star-wars-wod:full-sheet');
         expect(action('delete')).toBeNull();
         fireEvent.click(action('reset')!);
+        expect(lastDialog().textContent).toContain('and its update record');
         fireEvent.click(within(lastDialog()).getByRole('button', { name: 'Reset to original' }));
+        expect(clear).toHaveBeenCalledExactlyOnceWith(base.systemId, base.id);
+        clear.mockRestore();
         expect(useTemplateStore.getState().defaultOverrides).toEqual({});
+        expect(useTemplateStore.getState().overrideBases).not.toHaveProperty(key);
     });
 
     it('returns documents to their default page when their page is deleted', () => {

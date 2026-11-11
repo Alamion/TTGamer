@@ -18,6 +18,28 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
+    reviewTitle: Review shipped changes
+    reviewNote: Values stored in your documents are kept.
+    reviewDifferencesNote: Your copy was made before updates were tracked, so every difference is listed, including your own edits. Each stays yours unless you take the shipped version.
+    reviewMatches: Your copy matches the shipped page.
+    reviewHeaderButton: Review shipped changes
+    reviewHeaderDisabled: Save or close your changes before reviewing.
+    reviewFailed: This page could not be merged; your copy is unchanged.
+    markAdded: Added by the shipped page
+    markChanged: Changed by the shipped page
+    markRemoved: Removed by the shipped page
+    markMoved: Moved
+    markConflict: Conflict — you kept yours
+    markDifference: Differs from the shipped page
+    takeShipped: Take shipped
+    keepMine: Keep mine
+    useShipped: Use shipped
+    undoShippedChange: Undo this change
+    takeShippedAgain: Take it again
+    itemPlace: '{place}'
+    nowYours: '{label} now uses your version'
+    nowShipped: '{label} now uses the shipped version'
+    sameValueNone: None
     hideHelp: Hide help
     hideHelpHint: Hide the help for using this element. Its own documentation link still shows.
     visibleWhen: Show only when a condition holds
@@ -598,6 +620,12 @@ defaults:
     experienceAvailable: Available
     freePoints: Free points
 page:
+    updateBannerTitle: The shipped page was updated
+    updateBannerText: '{name}: You edited this page. Review the changes to bring the new version in, or keep your copy as it is.'
+    updateBannerNoBaseText: '{name}: Your copy was made before updates were tracked. The shipped page now differs from it; review the differences.'
+    updateBannerReview: Review changes
+    updateBannerLater: Not now
+    updateBannerRegion: Shipped page update
     embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.

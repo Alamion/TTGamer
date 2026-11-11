@@ -19,6 +19,7 @@ import { buildOrphanPage } from './data/orphanPage';
 import { DeclarativeSheetView } from './declarative/DeclarativeSheetView';
 import { TEMPLATE_VIEW_PREFIX } from './panes/views';
 import { SheetWorkspace } from './shell/SheetWorkspace';
+import { UpdateBanner } from './UpdateBanner';
 
 const page = uiMessages.sheet.templates.page;
 
@@ -178,6 +179,9 @@ function DocumentSheet({ documentId, viewId }: { documentId: string; viewId?: st
                     {customFallback}
                     {viewFallback}
                     {resolved && 'reason' in resolved && <FallbackNotice />}
+                    {effective.modified && (
+                        <UpdateBanner systemId={document.systemId} viewId={shownViewId} />
+                    )}
                     <DeclarativeSheetView template={effective.template} />
                 </>
             );

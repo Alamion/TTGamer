@@ -21,6 +21,7 @@ import { useEditorSession, useEditorState } from '../session/context';
 import { EditorContextMenu, EditorMenuContext, type EditorMenuSource } from './EditorContextMenu';
 import { EditorPage } from './EditorPage';
 import { OutlineTree } from './OutlineTree';
+import { ReviewPanel } from './ReviewPanel';
 import { EditorDragContext, useEditorDrag } from './useEditorDrag';
 import { type Pane, PANE_LIMITS, usePaneWidths } from './usePaneWidths';
 
@@ -219,6 +220,13 @@ export function EditorPanes({
                         <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
                             {translate(editor.areaSettings)}
                         </h3>
+                        <ReviewPanel
+                            draft={draft}
+                            onSelect={(nodeId) => {
+                                onAreaChange('page');
+                                selectNode(session, nodeId, 'review');
+                            }}
+                        />
                         <SettingsArea draft={draft} />
                     </section>
                 </div>

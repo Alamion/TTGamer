@@ -10,6 +10,10 @@ export type SheetIssueCode =
     | 'template-value-write-rejected'
     | 'template-value-write-skipped'
     | 'template-quarantined'
+    /** A stored shipped-page base failed the template schema and was dropped. */
+    | 'template-update-unreadable'
+    /** The page merge or difference engine could not produce a review. */
+    | 'template-merge-failed'
     | 'document-recovered'
     | 'binding-unresolved'
     | 'catalog-unavailable'

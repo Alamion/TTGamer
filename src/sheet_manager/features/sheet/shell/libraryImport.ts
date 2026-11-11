@@ -552,8 +552,10 @@ export function installImport(
         saveCatalogs: catalogs,
     });
     if (replacedOverrides.length > 0) {
-        const { setDefaultOverride } = useTemplateStore.getState();
-        for (const override of replacedOverrides) setDefaultOverride(override);
+        const { replaceOverride } = useTemplateStore.getState();
+        for (const override of replacedOverrides) {
+            replaceOverride(override, payload.overrideBases[overrideRecordId(override)]);
+        }
     }
     return {
         settings: settings.length,

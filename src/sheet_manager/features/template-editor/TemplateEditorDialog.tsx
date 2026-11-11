@@ -5,8 +5,10 @@ import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { useCallback, useMemo, useState } from 'react';
 import { useStore } from 'zustand';
 
+import { reportSheetIssue } from '../../diagnostics';
 import { isDefaultTemplateId } from '../../systems/view';
 import type { CustomTemplate } from '../../types/template';
+import { reviewBaseFor, usePageEditorSession, usePendingUpdate } from '../sheet/data/pendingUpdate';
 import { isTypingTarget, shortcutHandlers, useEditorShortcuts } from './commands/keys';
 import { commandById, type CommandContext } from './commands/list';
 import { EditorConfirms } from './components/EditorConfirms';
@@ -18,6 +20,8 @@ import { EditorTemplateFields } from './components/EditorTemplateFields';
 import { type EditorMode, EditorToolbar } from './components/EditorToolbar';
 import { ShortcutList } from './components/ShortcutList';
 import { type DraftIssue } from './issues/draftIssues';
+import { differencesOf } from './merge/differences';
+import { mergePages } from './merge/merge';
 import { createDraftFromTemplate, createEmptyDraft } from './model/factories';
 import { generateDraftId } from './model/ids';
 import { type EditorDraft } from './model/types';
@@ -41,7 +45,20 @@ export interface TemplateEditorDialogProps {
               name?: string;
           }
         | { kind: 'skeleton'; documentKind: string; template: CustomTemplate }
-        | { kind: 'duplicate' | 'edit'; template: CustomTemplate };
+        | { kind: 'duplicate' | 'edit'; template: CustomTemplate }
+        | {
+              kind: 'review';
+              copy: CustomTemplate;
+              shipped: CustomTemplate;
+              mode: 'merge';
+              baseline: CustomTemplate;
+          }
+        | {
+              kind: 'review';
+              copy: CustomTemplate;
+              shipped: CustomTemplate;
+              mode: 'differences';
+          };
     onClose: () => void;
     /** Called with the saved template (user templates only; e.g. to create a user type). */
     onSaved?: (template: CustomTemplate) => void;
@@ -49,7 +66,9 @@ export interface TemplateEditorDialogProps {
     lockTarget?: boolean;
 }
 
-function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
+function initialDraft(
+    base: Exclude<TemplateEditorDialogProps['base'], { kind: 'review' }>
+): EditorDraft {
     if (base.kind === 'empty') {
         const draft = createEmptyDraft(base.documentKind ?? 'character', base.systemId);
         return {
@@ -63,9 +82,51 @@ function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
 }
 
 export function TemplateEditorDialog(props: TemplateEditorDialogProps) {
+    const [base, setBase] = useState(props.base);
+    return <EditorSessionDialog {...props} base={base} key={base.kind} onReview={setBase} />;
+}
+
+type ReviewBase = Extract<TemplateEditorDialogProps['base'], { kind: 'review' }>;
+interface ReviewEntry {
+    onReview: (base: ReviewBase) => void;
+}
+
+function EditorSessionDialog(props: TemplateEditorDialogProps & ReviewEntry) {
     const plural = usePluralMessage();
     // One session per opening (spec 025, D2): created with the dialog, dropped with it.
-    const [session] = useState(() => createEditorSession(initialDraft(props.base), plural));
+    const [session] = useState(() => {
+        const { base } = props;
+        if (base.kind !== 'review') return createEditorSession(initialDraft(base), plural);
+        let result =
+            base.mode === 'merge'
+                ? mergePages(base.baseline, base.shipped, base.copy)
+                : differencesOf(base.shipped, base.copy);
+        const failed = 'error' in result;
+        let mode = base.mode;
+        if ('error' in result) {
+            reportSheetIssue({
+                code: 'template-merge-failed',
+                message: 'Merging the shipped page failed',
+                details: { stage: mode, error: result.error, templateId: base.copy.id },
+            });
+            if (mode === 'merge') {
+                mode = 'differences';
+                result = differencesOf(base.shipped, base.copy);
+                if ('error' in result) {
+                    reportSheetIssue({
+                        code: 'template-merge-failed',
+                        message: 'Comparing the shipped page failed',
+                        details: { stage: mode, error: result.error, templateId: base.copy.id },
+                    });
+                }
+            }
+        }
+        return createEditorSession(
+            'error' in result ? createDraftFromTemplate(base.copy) : result.draft,
+            plural,
+            { mode, items: 'error' in result ? [] : result.items, shipped: base.shipped, failed }
+        );
+    });
     return <EditorDialog {...props} session={session} />;
 }
 
@@ -94,12 +155,14 @@ function EditorDialog({
     onClose,
     onSaved,
     session,
-}: TemplateEditorDialogProps & { session: EditorSession }) {
+    onReview,
+}: TemplateEditorDialogProps & ReviewEntry & { session: EditorSession }) {
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     // Feature 004: editing a default template targets its override, never the custom library.
     const editingDefault =
-        base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId);
+        base.kind === 'review' ||
+        (base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId));
 
     // The dialog sits outside its own providers, so it reads the session store directly.
     const draft = useStore(session.store, (state) => state.history.present.draft);
@@ -110,6 +173,20 @@ function EditorDialog({
     const [dropColumns, setDropColumns] = useState<DropColumnsRequest | null>(null);
     const [initialJson] = useState(() => JSON.stringify(draft));
     const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+    usePageEditorSession(draft.systemId, draft.id);
+    const pending = usePendingUpdate(draft.systemId, draft.id);
+    const canReview =
+        editingDefault &&
+        base.kind === 'edit' &&
+        (pending.state === 'base-differs' ||
+            pending.state === 'no-base-differs' ||
+            pending.state === 'dismissed');
+    const reviewDisabled = JSON.stringify(draft) !== initialJson;
+    const openReview = () => {
+        if (!canReview || reviewDisabled) return;
+        const review = reviewBaseFor(pending);
+        if (review) onReview(review);
+    };
 
     const commands = useMemo<CommandContext>(
         () => ({
@@ -141,7 +218,7 @@ function EditorDialog({
     );
 
     const { save, confirmation } = useTemplateSave({
-        base: base.kind === 'edit' ? base.template : undefined,
+        base: base.kind === 'review' ? base.copy : base.kind === 'edit' ? base.template : undefined,
         editingDefault,
         onClose,
         onSaved,
@@ -201,6 +278,11 @@ function EditorDialog({
                                 draft={draft}
                                 targetFixed={editingDefault || lockTarget}
                                 kindFixed={editingDefault}
+                                review={
+                                    canReview
+                                        ? { disabled: reviewDisabled, open: openReview }
+                                        : undefined
+                                }
                             />
                         )}
                         {mode === 'preview' ? (

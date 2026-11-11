@@ -149,7 +149,7 @@ delete:
         plural: true
 reset:
     title: Reset this shipped page?
-    body: '"{name}" returns to its original structure. Documents keep all their values.'
+    body: 'Remove your copy of "{name}" and its update record? Documents keep all their values.'
 move:
     title: Move "{name}"
     toRuleset: 'Where to: other rules.'

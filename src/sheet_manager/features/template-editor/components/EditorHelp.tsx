@@ -21,6 +21,7 @@ export const EDITOR_GUIDE = {
     libraryMove: '/docs/guide/template-editor/library#library-move',
     libraryExport: '/docs/guide/template-editor/library#library-export',
     libraryImport: '/docs/guide/template-editor/library#library-import',
+    libraryUpdates: '/docs/guide/template-editor/library#library-updates',
 } as const;
 
 /** A small "?" next to an editor setting, opening its guide section in a new tab. */

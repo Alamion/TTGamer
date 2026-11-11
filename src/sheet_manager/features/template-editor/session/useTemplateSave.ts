@@ -8,8 +8,9 @@ import { describeError, reportSheetIssue } from '../../../diagnostics';
 import { documentRefs } from '../../../store/documentIndex';
 import { loadDocuments, useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
-import { useTemplateStore } from '../../../store/templateStore';
+import { overrideKey, useTemplateStore } from '../../../store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
+import { shippedPageFor } from '../../sheet/data/shippedRevision';
 import { planTemplateRetarget, type RetargetPlan } from '../../sheet/data/templateRetarget';
 import type { DraftIssue } from '../issues/draftIssues';
 import { describeLocation, issueLocation, reportUncoveredIssues } from '../issues/schemaIssues';
@@ -74,7 +75,14 @@ export function useTemplateSave({
     const saveDefault = (template: CustomTemplate) => {
         // Draft-until-save (FR-9): the override lands only on explicit save; assigned
         // documents then render the saved version (live propagation, clarification Q2).
-        useTemplateStore.getState().setDefaultOverride(template);
+        const store = useTemplateStore.getState();
+        const key = overrideKey(template.systemId, template.id);
+        const shipped =
+            session.store.getState().review?.shipped ??
+            (!store.overrideBases[key] && !store.defaultOverrides[key]
+                ? shippedPageFor(template.systemId, template.id)
+                : undefined);
+        store.setDefaultOverride(template, shipped ? { base: shipped } : undefined);
         onClose();
     };
 

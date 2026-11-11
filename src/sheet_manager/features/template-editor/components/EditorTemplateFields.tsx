@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useId } from 'react';
 
 import {
     listTemplateTargetGroups,
@@ -21,14 +22,17 @@ export function EditorTemplateFields({
     draft,
     targetFixed,
     kindFixed,
+    review,
 }: {
     draft: EditorDraft;
     /** Defaults and pages whose place the caller owns cannot move. */
     targetFixed: boolean;
     /** A shipped page keeps the kind of its view (spec 041). */
     kindFixed: boolean;
+    review?: { disabled: boolean; open: () => void };
 }) {
     const session = useEditorSession();
+    const reviewReasonId = useId();
     const targetGroups = listTemplateTargetGroups();
     const targetValue = templateTargetValue(draft);
     const targetKnown = targetGroups.some(({ options }) =>
@@ -90,6 +94,24 @@ export function EditorTemplateFields({
                     <option value="full">{translate(editor.pageKindFullOption)}</option>
                     <option value="brief">{translate(editor.pageKindBriefOption)}</option>
                 </select>
+                {review && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={review.open}
+                            disabled={review.disabled}
+                            aria-describedby={review.disabled ? reviewReasonId : undefined}
+                            className="rounded-sm border border-border px-2 py-1 text-sm disabled:opacity-50"
+                        >
+                            {translate(editor.reviewHeaderButton)}
+                        </button>
+                        {review.disabled && (
+                            <span id={reviewReasonId} className="text-xs text-textSecondary">
+                                {translate(editor.reviewHeaderDisabled)}
+                            </span>
+                        )}
+                    </>
+                )}
             </div>
             <input
                 value={draft.description ?? ''}

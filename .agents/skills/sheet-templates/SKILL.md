@@ -85,7 +85,9 @@ template up by id — `getTemplate(id)` only sees user templates.
   `template-fallback`, `reference-target-missing`, `reference-target-out-of-scope`,
   `catalog-detail-out-of-range`, `list-entry-unreadable`, `template-value-unreadable`,
   `template-value-hidden`, `template-incompatible`, `library-placement`, `template-draft-invalid` (a
-  save found a schema rule no editor check covers).
+  save found a schema rule no editor check covers), `template-update-unreadable` (a stored or
+  imported shipped-page base failed the schema and was dropped), `template-merge-failed` (the page
+  merge or difference engine returned an error; the review falls back to the difference list).
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the browser
   console. **A silently ignored edit, an empty section, or a "degraded" card → check the console
   first.**

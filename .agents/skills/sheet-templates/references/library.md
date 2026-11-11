@@ -61,17 +61,20 @@ stored.
   rendered inside the dialog content so the focus trap keeps it), Delete deletes. Below `md` the
   tree and details are tabs.
 - Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v2 (v1 still
-  reads) — flat `settings`, `types`, `templates`, `overrides` (edited shipped pages), `catalogs` (a
-  picked page auto-adds the user catalogs it binds; Keep both rebinds the file's pages to the copy;
-  beyond the owner limit an entry is unavailable, reason `limit`), `included` (`picked`/`auto`),
-  informative `addresses`, `notices`. Export: tri-state ticks (`tickState`/`toggleTick`),
-  `exportClosure` adds the user parents a pick needs (tertiary in the tree) and turns shipped
-  ancestors into addresses; shipped content is never serialized. Import: `parseLibraryFile` also
-  reads `ttgamer-document-type` v1 and `ttgamer-template` v3; the preview marks entries new / same /
-  conflict / unavailable; Replace overwrites by id (a replaced type keeps installed pages missing
-  from the file), Keep both re-ids the entry and its picked descendants with an "(imported)" suffix;
-  templates colliding with shipped view ids or unrelated templates get fresh ids. Nothing is written
-  before `installImport`.
+  reads) — flat `settings`, `types`, `templates`, `overrides` (edited shipped pages) with an
+  optional `overrideBases` map (record id → the shipped page the copy was based on; only copies that
+  have a base, never the dismissed revision; a malformed entry is dropped with
+  `template-update-unreadable`, a file without the key imports copies with no base; Replace installs
+  through `replaceOverride`), `catalogs` (a picked page auto-adds the user catalogs it binds; Keep
+  both rebinds the file's pages to the copy; beyond the owner limit an entry is unavailable, reason
+  `limit`), `included` (`picked`/`auto`), informative `addresses`, `notices`. Export: tri-state
+  ticks (`tickState`/`toggleTick`), `exportClosure` adds the user parents a pick needs (tertiary in
+  the tree) and turns shipped ancestors into addresses; shipped content is never serialized. Import:
+  `parseLibraryFile` also reads `ttgamer-document-type` v1 and `ttgamer-template` v3; the preview
+  marks entries new / same / conflict / unavailable; Replace overwrites by id (a replaced type keeps
+  installed pages missing from the file), Keep both re-ids the entry and its picked descendants with
+  an "(imported)" suffix; templates colliding with shipped view ids or unrelated templates get fresh
+  ids. Nothing is written before `installImport`.
 - Catalogs (spec 015) are leaves: `RulesetNode.catalogs` (the ruleset's own, then the ruleset
   plugin's shipped catalogs) before its settings, `SettingNode.catalogs` (then a setting system's
   shipped catalogs) before its types; key `c:user:<id>` or `c:<systemId>:<catalogId>`. Shipped ones

@@ -4,6 +4,31 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
 025 layout). Outside code imports only `TemplateEditorDialog.tsx`, `model/ids.ts`
 (`generateDraftId`), `components/EditorHelp.tsx`, and `sampleDocuments.ts`.
 
+`TemplateEditorDialogProps.base` also accepts a shipped-page review (spec 048), the one addition to
+what code outside the editor may use: `{ kind: 'review', copy, shipped, mode: 'merge', baseline }`
+merges base, shipped page, and copy once on opening through `merge/merge.ts`;
+`{ …, mode: 'differences' }` lists every difference through `merge/differences.ts` (a copy with no
+recorded base: its own edits are listed too, every row starts on keep). Entry points: the banner
+(`UpdateBanner`, lazy dialog) and **Review shipped changes** in the header while the draft equals
+the stored copy. The session's non-persisted `review` holds static items, the compared shipped page,
+and a failure flag. `ReviewPanel` sits above the settings, groups choices by their tree path, and
+reads their state from the current draft through `merge/items.ts`. `switchReviewItem` changes one
+choice as one undo step and announces it. Frames and outline rows read static marks through
+`useReviewMark` (conflict wins), without subscribing to unrelated edits. A failed merge reports
+`template-merge-failed` and opens the difference list with an explanation (the plain editor on the
+copy if that fails too). Cancel compares against the initial merged draft and writes nothing; saving
+checks against the stored copy and records the compared shipped page as the new base. Document
+values stay intact.
+
+Review cards share the editor's node selection (T-145): selecting a card selects its field, opens
+folded ancestors, and centers the field where scroll bounds allow; on a narrow screen it opens the
+Page tab. Selecting a field or an outline row highlights all cards for that node and reveals the
+first card in the settings. Selected review cards and their fields have a solid gold outline;
+unselected changed fields keep the dashed gold mark. Selection adds no undo step. A card's native
+selection button is separate from its version switch/radios, whose clicks never select the card. A
+removed node's selection button stays disabled until the node is restored; page-level changes have
+no field to select.
+
 ## Where to add things
 
 | To add…         | Change                                                                                                 | Guard                                                        |
