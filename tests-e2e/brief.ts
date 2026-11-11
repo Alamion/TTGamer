@@ -18,6 +18,10 @@ export async function createDocument(
 }
 
 export interface ViewSize {
+    /** The actual outer width, including the root's padding and border. */
+    width: number;
+    /** The width available to the template, excluding the root's padding and scrollbar. */
+    contentWidth: number;
     /** The sheet root's height, its own padding included. */
     height: number;
     /** The height without the root's padding (which the page, not the brief, decides). */
@@ -36,7 +40,10 @@ export async function showView(page: Page, view: 'sheet' | 'brief'): Promise<voi
     await page.locator('[data-template-root]').first().waitFor();
 }
 
-/** Measures the open view at the current window size; `areaWidth` narrows only the sheet root. */
+/**
+ * Measures the open view; `areaWidth` caps the root's outer width, including its page padding.
+ * Compare `contentWidth` when checking whether equal template areas lay out the same way.
+ */
 export async function measureView(page: Page, areaWidth?: number): Promise<ViewSize> {
     return page.evaluate(async (width) => {
         // The test fonts (fixtures.ts) load after the page draws; measure in them, not before.
@@ -54,6 +61,9 @@ export async function measureView(page: Page, areaWidth?: number): Promise<ViewS
                 (node) => node.getBoundingClientRect().right > limit
             );
         return {
+            width: box.width,
+            contentWidth:
+                root.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight),
             height: Math.round(box.height),
             content: Math.round(box.height - padding),
             overflows,

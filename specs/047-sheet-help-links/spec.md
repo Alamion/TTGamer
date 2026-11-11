@@ -1,5 +1,10 @@
 # Feature Specification: Sheet help that explains
 
+> Historical change record: [spec 049](../049-rules-sheet-consistency/spec.md) resolves T-132's
+> rules decisions and adds action help. Its
+> [review amendments](../049-rules-sheet-consistency/help-review.md) extend the original link
+> decisions; the original scope and negative decisions remain historical.
+
 **Branch**: `047-sheet-help-links` | **Created**: 2026-10-29 | **Status**: Draft
 
 **Input**: "T-130 and F-011: review every shipped sheet page as a reader who knows nothing about

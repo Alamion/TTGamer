@@ -5,6 +5,12 @@ invariants are in the skill index.
 
 ## Help links
 
+Page and row buttons accept an explicit `docsPath` too: `SheetButton` draws a separate
+`DocsPreviewLink` beside the action, using its row-aware name. Help stays reachable while the action
+is disabled; opening it never runs the action or changes the editor selection. Row-button links
+participate in reference checks and report malformed runtime links. There is no automatic button
+help.
+
 Fields and document-bound primitives accept optional `docsPath` (string, up to 500 characters) and
 `hideHelp` (boolean) in `types/template.ts`. These optional settings require no schema or store
 version change. Lists and tables have no own `docsPath` or `hideHelp`; their entry fields and

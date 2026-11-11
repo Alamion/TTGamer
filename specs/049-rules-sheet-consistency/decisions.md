@@ -1,12 +1,12 @@
 # Rules and sheet consistency: decision register
 
 **Backlog**: [T-132](../../TODO.md) | **Branch**: `049-rules-sheet-consistency` **Reviewed**:
-2026-11-11 | **State**: maintainer decisions recorded, before design
+2026-11-11 | **State**: approved rules and source evidence
 
-This register checks the eleven T-132 subjects against the current checkout. The
-[spec 047 review](../047-sheet-help-links/review.md#other-findings) explains the intake; current
-code and documentation provide the evidence below. Proposed decisions are not approved rules. No
-application behavior has changed during this investigation.
+This register records the eleven T-132 subjects as investigated before implementation. The
+[spec 047 review](../047-sheet-help-links/review.md#other-findings) explains the intake; the
+evidence below describes that starting state. Only decisions explicitly marked approved are
+maintainer rules decisions; the implementation and verification record lives in the design.
 
 ## D1. Droid Force resources — approved
 
@@ -156,13 +156,13 @@ application behavior has changed during this investigation.
 - **Not performed in this investigation**: browser walk, assistive-technology testing,
   implementation tests, build, or rule conversion of stored documents.
 
-## Scope boundary and next step
+## Scope boundary
 
 All eleven intake subjects remain in one T-132 specification. T-143's onward interaction-help links
 and T-144's Hunter cell synchronization guidance stay in their own tasks. No new game system, online
 service, initiative tracker or guided creation wizard is included. The feature remains offline and
 must not load the document collection to render or update one sheet.
 
-The rules decisions are recorded in [spec.md](spec.md). Follow the project's clarify -> design ->
-tasks -> analyze workflow before implementation. This file records evidence and decisions; it is not
-an implementation plan or a test report.
+The accepted outcomes are recorded in [spec.md](spec.md); [design.md](design.md) and
+[tasks.md](tasks.md) describe their delivery and verification. This file records evidence and
+decisions; it is not an implementation plan or a test report.

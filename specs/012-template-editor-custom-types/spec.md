@@ -1,5 +1,10 @@
 # Feature Specification: Visual template editor and template-defined document types
 
+> Historical change record: [spec 049](../049-rules-sheet-consistency/spec.md) corrects the
+> classic engine's rules and migrates its wounds. The Star Wars conversion retains its own
+> mechanics. Use current module guidance for the present rules; this record explains the original
+> extraction and template/type architecture.
+
 > **Change record.** Partly superseded by 013 (the library tree replaces the template library's type and setting controls; creating a type or setting no longer creates a page; library files supersede the type-file export) and by 022 (pointer drag with live placement replaces HTML5 drag; the settings panel is grouped; Section/Group and Table/List are kinds of Group and List; the editor areas resize). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
 
 **Feature Branch**: `testing`

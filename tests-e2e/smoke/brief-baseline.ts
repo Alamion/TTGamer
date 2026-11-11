@@ -72,7 +72,8 @@ export const BRIEF_PINS: Readonly<Record<string, { 375: number; 1280: number }>>
  */
 export const SHEET_PINS: Readonly<Record<string, { 375: number; 1280: number }>> = {
     'star-wars-wod/character': { 375: 7236, 1280: 3505 },
-    'star-wars-wod/droid': { 375: 6588, 1280: 3028 },
+    // Spec 049 exposes Force Points and Dark Side Resistance; measured with the pinned fonts.
+    'star-wars-wod/droid': { 375: 6715, 1280: 3115 },
     'star-wars-wod/creature': { 375: 2742, 1280: 1569 },
     'star-wars-wod/vehicle': { 375: 3265, 1280: 1769 },
     'star-wars-wod/fodder-group': { 375: 2779, 1280: 1725 },

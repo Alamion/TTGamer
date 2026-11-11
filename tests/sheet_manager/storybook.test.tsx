@@ -42,6 +42,9 @@ function variantsOf(node: TemplateNode): string[] {
     flag('column');
     flag('span');
     if ('docsPath' in node && node.docsPath) tags.push(`${node.type}:docsPath`);
+    if ('rowButtons' in node && node.rowButtons?.some((button) => button.docsPath)) {
+        tags.push('row-button:docsPath');
+    }
     if (node.type === 'markdown' && !node.hideHelp) tags.push('markdown:element-help');
     if ('hideHelp' in node && node.hideHelp) tags.push(`${node.type}:hideHelp`);
     switch (node.type) {
@@ -171,6 +174,8 @@ function variantsOf(node: TemplateNode): string[] {
 const REQUIRED_VARIANTS = [
     ...TEMPLATE_FIELD_TYPES,
     'text:docsPath',
+    'button:docsPath',
+    'row-button:docsPath',
     'markdown:element-help',
     'markdown:hideHelp',
     'section',

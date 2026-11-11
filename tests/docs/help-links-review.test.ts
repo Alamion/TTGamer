@@ -108,6 +108,12 @@ function shippedNodes(): Map<string, ShippedNode> {
                 if (node.type === 'list' && node.item) {
                     addNode(`${id}/item/${node.item.id}`, node.item);
                 }
+                if ('rowButtons' in node) {
+                    for (const button of node.rowButtons ?? []) {
+                        // An action subject for this inventory, not a stored tree node.
+                        addNode(`${id}/rowButtons/${button.id}`, { ...button, type: 'button' });
+                    }
+                }
             });
         }
     }
@@ -180,6 +186,18 @@ describe('shipped help links follow the approved review and its explicit amendme
         expect(new Set([...review.rows.keys()].map((id) => id.split('/')[0]))).toEqual(
             new Set([...shipped.keys()].map((id) => id.split('/')[0]))
         );
+    });
+
+    it('includes help on repeated row actions once per declaration', () => {
+        expect(
+            shipped.get(
+                'v5-vampire-sheet/disciplines/power-list/power-list-table/rowButtons/power-rouse'
+            )?.node
+        ).toMatchObject({
+            id: 'power-rouse',
+            type: 'button',
+            docsPath: '/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks',
+        });
     });
 
     it('matches every reviewed link and names shipped links missing from the table', () => {

@@ -62,7 +62,7 @@ export function SheetToolbar({
                         <Translate id="ttgamer.ui.sheet.documents.toolbar.import" />
                     </button>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-lg border border-border/20 bg-bgSurface/50 p-1">
+                <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border/20 bg-bgSurface/50 p-1">
                     <button
                         type="button"
                         onClick={onManageTemplates}

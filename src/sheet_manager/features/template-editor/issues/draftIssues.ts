@@ -115,7 +115,7 @@ function referenceIssue(
         case 'invalid-docs-link':
             return {
                 message: interpolate(messages.invalidDocsLink, { id: issue.key }),
-                setting: at('visibility', 'docsPath'),
+                setting: at(issue.group ?? 'visibility', issue.setting ?? 'docsPath'),
             };
         case 'unknown-value':
             return {

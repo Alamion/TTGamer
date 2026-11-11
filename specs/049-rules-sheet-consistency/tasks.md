@@ -75,35 +75,43 @@
 
 ## User Story 4 - Action help and rendered verification (P2)
 
-- [ ] T021 [US4] Add no-action, no-write, disabled and row-help regressions in
+- [x] T021 [US4] Add no-action, no-write, disabled and row-help regressions in
       `tests/sheet_manager/button-ui.test.tsx`, editor tests in
       `tests/sheet_manager/template-editor/button-settings.test.tsx` and a browser regression under
       `tests-e2e/smoke/`.
-- [ ] T022 [US4] Add optional `docsPath` to the shared button shape in
+- [x] T022 [US4] Add optional `docsPath` to the shared button shape in
       `src/sheet_manager/types/template.ts`; expose the existing Documentation link control for
       page/row actions in `features/template-editor/panels/ButtonSettings.tsx` and
       `settings/registry.ts`; include link validation in
       `features/sheet/data/templateReferences.ts`, correct draft-setting locations and schema round
       trips.
-- [ ] T023 [US4] Render sibling `DocsPreviewLink` using the row-aware action name in
+- [x] T023 [US4] Render sibling `DocsPreviewLink` using the row-aware action name in
       `features/sheet/declarative/SheetButton.tsx`; keep help enabled independently of the action
       and avoid editor/row activation.
-- [ ] T024 [US4] Add Rouse/Remorse help paths in `systems/v5/modules/vampire/templates/mechanics.ts`
+- [x] T024 [US4] Add Rouse/Remorse help paths in `systems/v5/modules/vampire/templates/mechanics.ts`
       and paired explicit anchors in EN/RU `hunger-rouse.mdx`, `humanity-stains.mdx`; extend
       `help-review.md` and its contract test to inventory row actions.
-- [ ] T025 [US4] Add page/row button-help examples in `src/sheet_manager/storybook/stories.ts`,
+- [x] T025 [US4] Add page/row button-help examples in `src/sheet_manager/storybook/stories.ts`,
       required variants and editor parity coverage; update
       `.agents/skills/sheet-templates/references/node-tree.md`, `editor.md`, and EN/RU
       `docs/guide/template-editor/elements.mdx`.
-- [ ] T026 [US4] Refresh affected template baselines, run targeted button/settings/help/storybook
+- [x] T029 [US4] Fix the rendered Russian term-help and document-toolbar overflow in
+      `src/sheet_manager/features/sheet/shell/GameTermsMenu.tsx` and `SheetToolbar.tsx`; cover
+      dismissal, keyboard replay and 320/375 px bounds in `tests-e2e/smoke/term-hints.spec.ts`.
+- [x] T026 [US4] Refresh affected template baselines, run targeted button/settings/help/storybook
       tests and `yarn verify:full`; commit US4 and its checked tasks.
 
 ## Finish
 
-- [ ] T027 Confirm every FR/SC against delivered tests/walk evidence in
+- [x] T030 Run the explicit SC-006 browser preservation matrix in
+      `tests-e2e/smoke/sheet-preservation.spec.ts` and `tests-e2e/smoke/wod2e-migration.spec.ts`:
+      old Star Wars Willpower current/max pairs, Hunter Creed notes, original wound marks, notes and
+      template coordinates survive actual edits, persistence, reload, export and import.
+
+- [x] T027 Confirm every FR/SC against delivered tests/walk evidence in
       `specs/049-rules-sheet-consistency/design.md`; update current guidance, mark superseded spec
       portions historically, and complete T-132 in `TODO.md` only when all eleven subjects are
       verified.
-- [ ] T028 Run `yarn verify:full` after final edits and perform the manual walk from `design.md`;
+- [x] T028 Run `yarn verify:full` after final edits and perform the manual walk from `design.md`;
       record exact commands, exit codes, browser matrix and any limitations in `design.md`. Do not
       bump versions, merge or push without a new release instruction for this work.

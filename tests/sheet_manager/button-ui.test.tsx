@@ -162,3 +162,106 @@ describe('row buttons', () => {
         expect(await screen.findByText(/Rouse: 0 of 2 succeeded/)).not.toBeNull();
     });
 });
+
+const helpPath = 'https://example.org/rules#rouse';
+
+/** Observe the actual document-source write boundary, without replacing the renderer or help. */
+function watchWrites() {
+    const { updateTemplateValues, updateDocumentData } = useDocumentStore.getState();
+    const values = vi.fn(updateTemplateValues);
+    const data = vi.fn(updateDocumentData);
+    useDocumentStore.setState({ updateTemplateValues: values, updateDocumentData: data });
+    return {
+        values,
+        data,
+        restore: () => useDocumentStore.setState({ updateTemplateValues, updateDocumentData }),
+    };
+}
+
+const rowKit = (docsPath: string) => ({
+    id: 'powers',
+    type: 'table',
+    title: 'Powers',
+    columns: [{ id: 'name', type: 'text', label: 'Name' }],
+    rowButtons: [{ ...rouse, type: undefined, docsPath, availableWhen: '0' }],
+});
+
+describe('explicit help beside an action (spec 049)', () => {
+    it.each([
+        { name: 'enabled', readOnly: false, availableWhen: undefined },
+        { name: 'unavailable', readOnly: false, availableWhen: '0' },
+        { name: 'read-only', readOnly: true, availableWhen: undefined },
+    ])(
+        'keeps $name help separate without rolling or writing',
+        async ({ readOnly, availableWhen }) => {
+            const roll = rolls(0);
+            const writes = watchWrites();
+            try {
+                mount([{ ...rouse, docsPath: helpPath, availableWhen }], { hunger: 2 }, readOnly);
+                const before = structuredClone(useDocumentStore.getState().documents);
+                const help = screen.getByRole('link', { name: 'Documentation for Rouse' });
+                const action = screen.getByRole('button', { name: 'Rouse' });
+                expect(help.getAttribute('href')).toBe(helpPath);
+                expect(help.closest('button')).toBeNull();
+                expect(action).toHaveProperty('disabled', readOnly || availableWhen !== undefined);
+                fireEvent.click(help, { ctrlKey: true });
+                expect(roll).not.toHaveBeenCalled();
+                expect(writes.values).not.toHaveBeenCalled();
+                expect(writes.data).not.toHaveBeenCalled();
+                expect(useDocumentStore.getState().documents).toEqual(before);
+                if (!readOnly && availableWhen === undefined) {
+                    fireEvent.click(action);
+                    await waitFor(() => expect(hunger()).toBe(3));
+                    expect(roll).toHaveBeenCalledOnce();
+                }
+            } finally {
+                writes.restore();
+            }
+        }
+    );
+
+    it('names disabled row help for the row and keeps both write boundaries untouched', () => {
+        const roll = rolls(0);
+        const writes = watchWrites();
+        try {
+            mount([rowKit(helpPath)], { hunger: 2, powers: { '0': { name: 'Awe' } } });
+            const help = screen.getByRole('link', { name: 'Documentation for Rouse for Awe' });
+            expect(help.getAttribute('href')).toBe(helpPath);
+            expect(help.closest('button')).toBeNull();
+            expect(screen.getByRole('button', { name: 'Rouse for Awe' })).toHaveProperty(
+                'disabled',
+                true
+            );
+            fireEvent.click(help, { ctrlKey: true });
+            expect(roll).not.toHaveBeenCalled();
+            expect(writes.values).not.toHaveBeenCalled();
+            expect(writes.data).not.toHaveBeenCalled();
+        } finally {
+            writes.restore();
+        }
+    });
+
+    it('reports an invalid row help link once and renders no unsafe destination', () => {
+        mount([rowKit('javascript:alert(1)')], { hunger: 2, powers: { '0': { name: 'Awe' } } });
+        expect(screen.queryByRole('link', { name: 'Documentation for Rouse for Awe' })).toBeNull();
+        expect(takeSheetIssues()).toMatchObject([
+            {
+                code: 'template-reference-invalid',
+                details: {
+                    templateId: 'button-kit',
+                    buttonId: 'rouse',
+                    docsPath: 'javascript:alert(1)',
+                },
+            },
+        ]);
+    });
+
+    it('round-trips explicit help on page and row actions and bounds both paths', () => {
+        const template = page([{ ...rouse, docsPath: helpPath }, rowKit(helpPath)]);
+        expect(CustomTemplateSchema.parse(JSON.parse(JSON.stringify(template)))).toEqual(template);
+        expect(template.children[1]).toMatchObject({ type: 'button', docsPath: helpPath });
+        expect(template.children[2]).toMatchObject({ rowButtons: [{ docsPath: helpPath }] });
+        expect(() => page([{ ...rouse, docsPath: 'x'.repeat(501) }])).toThrow();
+        expect(() => page([rowKit('x'.repeat(501))])).toThrow();
+    });
+});

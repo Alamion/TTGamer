@@ -58,7 +58,7 @@ A brief block is the only group of a [brief](#page-kinds): a small heading over 
 
 ## Documentation link \{#documentation-link}
 
-Sections, cards, brief blocks, fields, and built-in parts take a **Documentation link** under **Visibility and help**: a **?** next to the heading or label. The link sits beside a section's fold button, so opening help leaves the section open or closed as it was. For a page of this site a click shows that part of the page in a card beside it, in the reader's language, with **Open the page**; Ctrl or Cmd click and a middle click open the page in a new tab, as does an external link. Two forms are accepted:
+Sections, cards, brief blocks, fields, built-in parts, and buttons take a **Documentation link** under **Visibility and help**: a **?** next to the heading or label. The link sits beside a section's fold button, so opening help leaves the section open or closed as it was. For a page of this site a click shows that part of the page in a card beside it, in the reader's language, with **Open the page**; Ctrl or Cmd click and a middle click open the page in a new tab, as does an external link. Two forms are accepted:
 
 - **A page of this site's documentation**: the address from the browser after the domain, starting with `/docs/`, for example `/docs/wod-v5/rules/dice-pools#reading-the-dice`. The part after `#` jumps to a heading: open the page, hover a heading, and copy its link. Readers get the page in their own language — write the English address and Russian readers land on the Russian page.
 - **An external page**: a full address starting with `https://`, for example a wiki article.
@@ -243,6 +243,8 @@ A **Button** does something when the reader presses it: it rolls dice and change
 The roll goes to the dice panel like any sheet roll: 3D dice, history, and sharing. The message names every change, and **Undo** in it puts the values back for a few seconds; a value the reader changed in the meantime is kept. Cancelling the 3D roll writes nothing more. In a read-only document buttons are disabled.
 
 **Row buttons** of a table or a built-in list of rows put a button on every row; its formulas read that row as `row.<column>` (`row.level`, `row.cost`).
+
+A button's **Documentation link**, under **Visibility and help**, adds a separate **?** beside the action. Row buttons have the same setting for their repeated action. Open the explanation with a click or focus it and press `Enter`; it does not roll or change values, and remains available while the action is disabled. Clearing the link removes the mark. Buttons have no automatic help destination.
 
 <LiveDemo kind="example">
     <ElementExample story="buttons" node="section-buttons" />

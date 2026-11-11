@@ -201,7 +201,7 @@ export const SETTINGS = {
     docsPath: {
         group: 'visibility',
         label: editor.docsLink,
-        appliesTo: (node) => container(node) || valueElement(node),
+        appliesTo: (node) => container(node) || valueElement(node) || node.type === 'button',
         fieldPanel: true,
         shared: { control: 'text' },
         carry: true,

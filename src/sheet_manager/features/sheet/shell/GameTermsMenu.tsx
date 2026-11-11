@@ -20,13 +20,13 @@ export function GameTermsMenu() {
     const setDismissed = useReaderPrefsStore((state) => state.setTermHintNoticeDismissed);
     if (locale === 'en') return null;
     return (
-        <div className="flex items-center gap-2 text-sm text-textSecondary">
-            <label className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-textSecondary">
+            <label className="flex min-w-0 max-w-full items-center gap-2">
                 {translate(terms.menu)}
                 <select
                     value={mode}
                     onChange={(event) => setMode(event.target.value as GameTermsMode)}
-                    className="rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
+                    className="min-w-0 max-w-full rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
                 >
                     {(Object.keys(MODE_LABELS) as GameTermsMode[]).map((candidate) => (
                         <option key={candidate} value={candidate}>

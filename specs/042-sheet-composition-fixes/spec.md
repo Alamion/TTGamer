@@ -1,5 +1,9 @@
 # Feature Specification: Shipped Sheet Composition Fixes
 
+> Historical change record: [spec 049](../049-rules-sheet-consistency/spec.md) amends the Star Wars
+> resource contracts and ambiguous captions. The composition rules remain; the field-contract
+> fixture explicitly includes those later amendments.
+
 **Branch**: `042-sheet-composition-fixes` | **Created**: 2026-10-19 | **Status**: Draft
 
 **Input**: "Spec 042 — T-126, shipped full sheets that break the composition rule. Players get the

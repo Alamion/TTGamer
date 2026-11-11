@@ -1,5 +1,9 @@
 # Sheet help review
 
+> Historical review: [spec 049](../049-rules-sheet-consistency/spec.md) resolves the T-132 intake
+> below. Its [explicit amendments](../049-rules-sheet-consistency/help-review.md) update the link
+> contract without rewriting this original table. T-143 and T-144 remain separate tasks.
+
 Read each document’s Full sheet before its Brief, then the shared Element types. The table records
 the approved decisions, amended by the maintainer’s round 2 review. Each row preserves its draft id
 (`template/node` or `type:control`); repeated ids from different drafts are merged. `where` and

@@ -89,32 +89,66 @@ review. Do not touch unrelated local Claude configuration or the package script 
 
 ## Tests
 
-- US1: `tests/sheet_manager/template-layout.test.tsx` and a dedicated
-  `star-wars-resources.test.tsx`: full/brief droids, independent resources, static max, missing
-  optional values and no writes from opening.
-- US2: `tests/sheet_manager/systems/wod2e/engine.test.tsx`, migration fixtures and
-  `tests/sheet_manager/record-writer.test.ts`: classic rules, Star Wars parity, raw v1 storage ->
-  persisted v2 -> reload, exports, user-setting core characters, notice acknowledgment and storage
-  failures. Use real boundary validation.
-- US3: existing data/i18n, sheet layout/composition and docs validators; assert names through
-  meaningful rendered coverage, not source-text snapshots alone.
-- US4: `button-ui.test.tsx`, editor button settings, help-review and reference tests; no
-  action/roll/write when help is opened, disabled and row actions, schema round trips and storybook
-  variants. Add a browser regression.
-- Each story runs its targeted tests and required checks from AGENTS.md section 11. Finish with
-  `yarn verify:full`; record exact commands and results here.
+- US1: `star-wars-resources.test.tsx`: full/brief droids, independent resources, static max,
+  optional values and no opening writes. US2: engine, migration, parity, record-writer and notice
+  tests: classic rules, retained originals, persisted v2, user settings and storage failures.
+- US3: data/i18n, layout/composition and rendered terminology. US4: button/settings/help-review,
+  reference and storybook tests; no roll/write/fold, disabled/row actions and schema round trips.
+- SC-006 browser matrix: `sheet-preservation.spec.ts` and `wod2e-migration.spec.ts` use actual
+  IndexedDB, edits, reloads, downloads and imports for old resource pairs, Hunter notes, original
+  wounds, general notes and custom coordinates. No host API mock supplies persistence.
+- Each story runs its targeted tests and AGENTS.md section 11 checks; finish with
+  `yarn verify:full`.
 
 ## Manual walk
 
-1. Full/brief living character and droid, EN/RU: edit resources below old Virtue minima; change
-   Virtues -> resources remain independent, no Force Skills on droid.
-2. Open a raw v1 classic character -> Ordinary wounds at original positions, classic penalties and
-   one conversion notice; export retains originals; reload does not remap a newly recorded
-   Aggravated wound. Compare Star Wars unchanged.
-3. Inspect memory categories, individual pack/fodder tracks, both vehicle lists, mortal moral notes
-   and hunter notes -> labels/help agree with actual records.
-4. Keyboard, mouse and touch-width Rouse/Remorse/power-row help -> readable fragment, no action or
-   write; unavailable action's help remains reachable.
-5. Walk every registered shipped full page and brief in EN/RU; record template id, language and
-   actual help/fallback findings, including hidden/short labels.
-6. Accept changes on an edited shipped page -> own edits and values survive.
+1. Character/droid full/brief EN/RU: independent resources below old minima, no droid Force Skills.
+2. Raw classic v1 -> Ordinary wounds at original positions, one notice, retained export originals;
+   reload preserves new Aggravated wounds. Compare unchanged Star Wars behavior.
+3. Memory categories, member tracks, vehicle lists, mortal/Hunter notes -> labels match records.
+4. Pointer/keyboard and phone-width action help -> readable, no action/write/fold, including
+   disabled.
+5. Every registered full page/brief EN/RU -> inventory hidden/short labels and help findings.
+6. Edited shipped page review -> own edits and values survive through the existing flow.
+
+## Implementation notes
+
+The delivered changes follow D1–D8. The rendered walk additionally found Russian term-help replay
+and toolbar overflow at 320 px; T029 adds wrapping and an actual phone-width keyboard regression.
+The layout test previously compared 608 px and 592 px content areas; it now asserts equal content
+width before comparing height. Its height tolerance is unchanged. Droid full-page pins alone grew
+for the two added resources. Historical fixtures have explicit amendments; original pre-007 data and
+spec 047's review remain intact. A prototype or new UI subsystem was unnecessary.
+
+| Intake subject   | Delivered disposition and verification                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| Droid resources  | Full/brief Force resources, no Force Skills; resource tests and browser matrix.           |
+| Derived values   | Static max, no ongoing minima; supported Force formulas, parity and old-pair round trips. |
+| Droid vocabulary | Complete category tables EN/RU; catalog validation and rendered walk.                     |
+| Member Health    | Separate tracks, 7 standard and 3/5 shortened; layout tests and EN/RU help.               |
+| Classic engine   | Edition-owned rolls/marks/penalties; engine/parity tests and real migration round trip.   |
+| Group names      | Abilities, Condition, Appearance description; composition tests and 46-view walk.         |
+| Vehicle records  | Independent lists retained and explained; unchanged payload and rendered help.            |
+| Mortal morality  | Narrative scope retained; bilingual rules audit and rendered moral fields.                |
+| Hunter notes     | Creed notes keeps `creedFields`; actual edit/persist/export/import test.                  |
+| Action help      | Shared sibling help, editor/storybook coverage; EN/RU browser and phone checks.           |
+| Rendered walk    | All 46 EN/RU views checked against the link inventory; no unresolved findings.            |
+
+FR-001–020 and SC-001–006 are covered by these checks and the explicit SC-006 matrix. Existing
+shipped-page review tests cover FR-020 without a second update mechanism. T-143/T-144 remain
+separate.
+
+## Verification record — 2026-11-11
+
+- `yarn verify:full --config=/tmp/ttgamer-049/playwright.config.mts` — exit 0: lint, typecheck,
+  validators, dead code, 3652 unit tests, 20 perf tests, EN/RU build and 85 browser tests passed.
+  The temporary config uses IPv6 loopback because an unrelated server owns IPv4 port 3100;
+  assertions, projects and browser settings are unchanged. Final edits repeat this same gate.
+- `node /tmp/ttgamer-049/rendered-walk.cjs --go` — exit 0: 12 definitions, 23 pages, 46 EN/RU
+  surfaces; zero surface/site errors or help follow-ups in `rendered-walk-results.json`.
+- Chrome DevTools MCP: actual RU droid resources at 375 px; Rouse brief help at 375/320 px and
+  disabled Remorse full-page help at 320 px opened by Enter, readable inside viewport. Term-help
+  select/replay and page have no horizontal overflow at 320 px. Automated tests cover both locales,
+  no writes/rolls/folds, per-power rows, replay and the actual SC-006 persistence boundary.
+- Localhost 3000 was down, so the isolated built-site review uses `review049.localhost:3101` and a
+  disposable Chrome profile. No deployment, remote CI, release, merge or push was performed.

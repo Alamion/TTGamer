@@ -9262,6 +9262,7 @@
          "label": "Rouse check",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
          "icon": "droplet",
+         "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks",
          "roll": {
           "notation": "1d10>=6",
           "successAt": 1,
@@ -9287,6 +9288,7 @@
          "label": "Remorse check",
          "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
          "icon": "heart",
+         "docsPath": "/docs/wod-v5/vampire/reference/humanity-stains#remorse-check",
          "availableWhen": "stains > 0",
          "roll": {
           "notation": "{max(1, 10 - humanity - stains)}d10>=6",
@@ -9792,6 +9794,7 @@
            "label": "Rouse check",
            "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
            "icon": "droplet",
+           "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks",
            "availableWhen": "row.rouse > 0",
            "roll": {
             "notation": "1d10>=6",
@@ -10292,6 +10295,7 @@
        "label": "Rouse check",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.rouse.action",
        "icon": "droplet",
+       "docsPath": "/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks",
        "roll": {
         "notation": "1d10>=6",
         "successAt": 1,
@@ -10318,6 +10322,7 @@
        "label": "Remorse check",
        "labelMessage": "ttgamer.ui.sheet.v5Vampire.remorse.action",
        "icon": "heart",
+       "docsPath": "/docs/wod-v5/vampire/reference/humanity-stains#remorse-check",
        "availableWhen": "stains > 0",
        "roll": {
         "notation": "{max(1, 10 - humanity - stains)}d10>=6",
