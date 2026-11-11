@@ -358,6 +358,79 @@ describe('shipped-page review in the editor', () => {
         expect(screen.getByRole('button', { name: /^Undo/ }).hasAttribute('disabled')).toBe(true);
     });
 
+    it('selects a change card and its field without changing the draft or undo history', () => {
+        renderReview(fixture());
+        const before = stored();
+        const card = row('conflict:label');
+        const select = within(card).getByRole('button', { name: 'Details / My label' });
+        expect(select.getAttribute('aria-pressed')).toBe('false');
+        fireEvent.click(select);
+        expect(card.hasAttribute('data-selected')).toBe(true);
+        expect(select.getAttribute('aria-pressed')).toBe('true');
+        expect(
+            within(outline('conflict') as HTMLElement).getByRole('button', { pressed: true })
+        ).toBeTruthy();
+        expect(
+            document
+                .querySelector('[data-editor-frame][data-node-id="conflict"]')
+                ?.hasAttribute('data-selected')
+        ).toBe(true);
+        expect(row('changed:label').hasAttribute('data-selected')).toBe(false);
+        expect(screen.getByRole('button', { name: /^Undo/ }).hasAttribute('disabled')).toBe(true);
+        expect(stored()).toBe(before);
+    });
+
+    it('highlights the corresponding cards when selecting a field or outline row', () => {
+        renderReview(fixture());
+        const frame = document.querySelector('[data-editor-frame][data-node-id="changed"]')!;
+        fireEvent.click(frame);
+        expect(row('changed:label').hasAttribute('data-selected')).toBe(true);
+        expect(row('conflict:label').hasAttribute('data-selected')).toBe(false);
+        fireEvent.click(
+            within(outline('conflict') as HTMLElement).getByRole('button', {
+                name: /Text.*My label.*Conflict/,
+            })
+        );
+        expect(row('conflict:label').hasAttribute('data-selected')).toBe(true);
+        expect(row('changed:label').hasAttribute('data-selected')).toBe(false);
+    });
+
+    it.each(['switch', 'radio'] as const)(
+        'keeps selection when using a review %s or its label',
+        (controlRole) => {
+            renderReview(controlRole === 'switch' ? fixture() : differencesFixture());
+            fireEvent.click(within(row('changed:label')).getByRole('button'));
+            const conflict = row('conflict:label');
+            const control = within(conflict).getByRole(controlRole, {
+                name: controlRole === 'switch' ? /Use shipped/ : 'Take shipped',
+            });
+            fireEvent.click(control);
+            expect((control as HTMLInputElement).checked).toBe(true);
+            expect(row('changed:label').hasAttribute('data-selected')).toBe(true);
+            expect(conflict.hasAttribute('data-selected')).toBe(false);
+            const keep =
+                controlRole === 'switch'
+                    ? control
+                    : within(conflict).getByRole('radio', { name: 'Keep mine' });
+            fireEvent.click(keep.closest('label')!);
+            expect((control as HTMLInputElement).checked).toBe(false);
+            expect(row('changed:label').hasAttribute('data-selected')).toBe(true);
+            expect(conflict.hasAttribute('data-selected')).toBe(false);
+        }
+    );
+
+    it('disables field selection for removed nodes but keeps their review switch usable', () => {
+        const baseline = page([field('gone', 'Removed'), field('kept', 'Kept')]);
+        const shipped = page([field('kept', 'Kept')]);
+        renderReview({ kind: 'review', mode: 'merge', baseline, copy: baseline, shipped });
+        const card = row('gone:$removed');
+        expect(within(card).getByRole('button').hasAttribute('disabled')).toBe(true);
+        fireEvent.click(within(card).getByRole('switch'));
+        expect(within(card).getByRole('button').hasAttribute('disabled')).toBe(false);
+        fireEvent.click(within(card).getByRole('button'));
+        expect(card.hasAttribute('data-selected')).toBe(true);
+    });
+
     it('names the review region and its controls and marks frames and outline with text', () => {
         renderReview(fixture());
         const panel = screen.getByRole('region', { name: 'Review shipped changes' });

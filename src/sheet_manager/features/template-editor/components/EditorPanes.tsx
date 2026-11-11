@@ -220,7 +220,13 @@ export function EditorPanes({
                         <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
                             {translate(editor.areaSettings)}
                         </h3>
-                        <ReviewPanel draft={draft} />
+                        <ReviewPanel
+                            draft={draft}
+                            onSelect={(nodeId) => {
+                                onAreaChange('page');
+                                selectNode(session, nodeId, 'review');
+                            }}
+                        />
                         <SettingsArea draft={draft} />
                     </section>
                 </div>

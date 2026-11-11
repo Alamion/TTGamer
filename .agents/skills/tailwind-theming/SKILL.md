@@ -41,6 +41,9 @@ Defined in `src/css/custom.css`:
     | Hovered element frame, row and menu hover, help notes  | `secondary` (`outline-secondary`, `bg-secondary/10`–`/15`)    |
     | Parts added automatically (export and import)          | `tertiary`                                                    |
 
+- During shipped-page review, selected change cards and their fields use solid `secondary` (gold)
+  outlines; unselected changed fields keep dashed gold outlines. Other editor selections follow the
+  mapping above.
 - **`primary-muted`** is primary toned toward the surface (`--primary-mute`: 8% light, 30% dark).
   Use it for large or emphatic red fills — primary buttons (New, Save, Create, Move, Import),
   pressed segment switches, the editor's selected-element outline and chip — with `hover:bg-primary`

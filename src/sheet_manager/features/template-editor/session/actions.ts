@@ -63,7 +63,7 @@ export function revealNode(session: EditorSession, nodeId: string) {
 export function selectNode(
     session: EditorSession,
     nodeId: string | null,
-    origin?: 'page' | 'outline',
+    origin?: 'page' | 'outline' | 'review',
     mode: SelectMode = 'only'
 ) {
     const before = session.selection();
@@ -81,6 +81,10 @@ export function selectNode(
     if (!nodeId || !next.ids.includes(nodeId)) return;
     if (origin === 'page') reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
     if (origin === 'outline') reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
+    if (origin === 'review') revealNode(session, nodeId);
+    if (origin === 'page' || origin === 'outline') {
+        reveal(`[data-review-node="${nodeId}"]`, 'nearest');
+    }
 }
 
 export function createEditorActions(session: EditorSession): EditorActions {

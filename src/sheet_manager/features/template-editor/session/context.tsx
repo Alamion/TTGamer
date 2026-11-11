@@ -65,8 +65,8 @@ export type SelectMode = 'only' | 'toggle' | 'range';
  * dialog's lifetime, so frames never re-render because an action changed.
  */
 export interface EditorActions {
-    /** `origin` decides which area scrolls to reveal the selection (the other one). */
-    select(nodeId: string | null, origin?: 'page' | 'outline', mode?: SelectMode): void;
+    /** `origin` decides which other areas reveal the selection. */
+    select(nodeId: string | null, origin?: 'page' | 'outline' | 'review', mode?: SelectMode): void;
     /** Inserts a new node before `placement.index` (in `placement.column` when stacked). */
     insertAt(placement: OverlayPlacement, node: TemplateNode): void;
     /** Moves an existing node before `placement.index`; the column follows the placement. */

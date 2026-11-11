@@ -20,6 +20,15 @@ copy if that fails too). Cancel compares against the initial merged draft and wr
 checks against the stored copy and records the compared shipped page as the new base. Document
 values stay intact.
 
+Review cards share the editor's node selection (T-145): selecting a card selects its field, opens
+folded ancestors, and centers the field where scroll bounds allow; on a narrow screen it opens the
+Page tab. Selecting a field or an outline row highlights all cards for that node and reveals the
+first card in the settings. Selected review cards and their fields have a solid gold outline;
+unselected changed fields keep the dashed gold mark. Selection adds no undo step. A card's native
+selection button is separate from its version switch/radios, whose clicks never select the card. A
+removed node's selection button stays disabled until the node is restored; page-level changes have
+no field to select.
+
 ## Where to add things
 
 | To add…         | Change                                                                                                 | Guard                                                        |

@@ -1,11 +1,13 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { clsx } from 'clsx';
 import { useId, useState } from 'react';
 
 import { itemState, type ReviewItem } from '../merge/items';
+import { findNode } from '../model/tree';
 import type { EditorDraft } from '../model/types';
 import { labelIn } from '../operations/selection';
-import { useEditorSession, useEditorState } from '../session/context';
+import { useEditorSession, useEditorState, useNodeSelection } from '../session/context';
 import { EditorHelp } from './EditorHelp';
 import { reviewMarkLabel } from './reviewLabels';
 
@@ -18,8 +20,17 @@ function shortValue(value: unknown): string {
     return text.length > 80 ? `${text.slice(0, 79)}…` : text;
 }
 
-function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
+interface ReviewSelection {
+    onSelect: (nodeId: string) => void;
+}
+
+function ReviewRow({
+    draft,
+    item,
+    onSelect,
+}: ReviewSelection & { draft: EditorDraft; item: ReviewItem }) {
     const session = useEditorSession();
+    const { selected } = useNodeSelection(item.nodeId);
     const radioName = useId();
     const place = item.path.map((id) => labelIn(draft, id)).join(' / ') || draft.name;
     const state = itemState(draft, item);
@@ -31,21 +42,39 @@ function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
                 : editor.takeShippedAgain
             : editor.useShipped;
     return (
-        <li data-review-item={item.key} className="space-y-2 rounded-sm border border-border p-2">
-            <p className="text-textSecondary">{translate(editor.itemPlace, { place })}</p>
-            <p className="font-medium">{reviewMarkLabel(item)}</p>
-            <div className="grid grid-cols-2 gap-2 break-words">
-                <div>
-                    <p className="text-textSecondary">{translate(editor.keepMine)}</p>
-                    <p>{shortValue(item.userValue)}</p>
-                </div>
-                <div>
-                    <p className="text-textSecondary">{translate(editor.useShipped)}</p>
-                    <p>{shortValue(item.shippedValue)}</p>
+        <li
+            data-review-item={item.key}
+            data-review-node={item.nodeId}
+            data-selected={selected ? '' : undefined}
+            className={clsx(
+                'relative space-y-2 rounded-sm border border-border p-2 outline-offset-2',
+                selected && 'outline-2 outline-secondary'
+            )}
+        >
+            <button
+                type="button"
+                aria-label={place}
+                aria-pressed={selected}
+                disabled={!findNode(draft, item.nodeId)}
+                onClick={() => onSelect(item.nodeId)}
+                className="absolute inset-0 h-full w-full cursor-pointer rounded-sm focus:outline-hidden focus-visible:outline-2 focus-visible:outline-secondary disabled:cursor-default"
+            />
+            <div className="pointer-events-none relative space-y-2">
+                <p className="text-textSecondary">{translate(editor.itemPlace, { place })}</p>
+                <p className="font-medium">{reviewMarkLabel(item)}</p>
+                <div className="grid grid-cols-2 gap-2 break-words">
+                    <div>
+                        <p className="text-textSecondary">{translate(editor.keepMine)}</p>
+                        <p>{shortValue(item.userValue)}</p>
+                    </div>
+                    <div>
+                        <p className="text-textSecondary">{translate(editor.useShipped)}</p>
+                        <p>{shortValue(item.shippedValue)}</p>
+                    </div>
                 </div>
             </div>
             {item.origin === 'difference' ? (
-                <div role="radiogroup" aria-label={place} className="flex flex-wrap gap-3">
+                <div role="radiogroup" aria-label={place} className="relative flex flex-wrap gap-3">
                     {(['copy', 'shipped'] as const).map((side) => (
                         <label key={side} className="flex cursor-pointer items-center gap-2">
                             <input
@@ -53,6 +82,7 @@ function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
                                 name={radioName}
                                 value={side}
                                 checked={state === side}
+                                onClick={(event) => event.stopPropagation()}
                                 onChange={() => session.switchReviewItem(item, side)}
                             />
                             {translate(side === 'copy' ? editor.keepMine : editor.takeShipped)}
@@ -60,11 +90,12 @@ function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
                     ))}
                 </div>
             ) : (
-                <label className="flex cursor-pointer items-center gap-2">
+                <label className="relative flex cursor-pointer items-center gap-2">
                     <input
                         type="checkbox"
                         role="switch"
                         checked={shipped}
+                        onClick={(event) => event.stopPropagation()}
                         aria-label={`${translate(action)}: ${place}`}
                         onChange={(event) =>
                             session.switchReviewItem(
@@ -81,7 +112,7 @@ function ReviewRow({ draft, item }: { draft: EditorDraft; item: ReviewItem }) {
 }
 
 /** Review choices share the normal draft and undo history; document values are never edited. */
-export function ReviewPanel({ draft }: { draft: EditorDraft }) {
+export function ReviewPanel({ draft, onSelect }: ReviewSelection & { draft: EditorDraft }) {
     const review = useEditorState((state) => state.review);
     const titleId = useId();
     const [open, setOpen] = useState(true);
@@ -122,7 +153,12 @@ export function ReviewPanel({ draft }: { draft: EditorDraft }) {
                         </h4>
                         <ul className="space-y-2">
                             {items.map((item) => (
-                                <ReviewRow key={item.key} draft={draft} item={item} />
+                                <ReviewRow
+                                    key={item.key}
+                                    draft={draft}
+                                    item={item}
+                                    onSelect={onSelect}
+                                />
                             ))}
                         </ul>
                     </section>

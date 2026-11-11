@@ -124,10 +124,12 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 className={clsx(
                     'relative rounded-md outline-offset-2',
                     selected
-                        ? 'outline-2 outline-primary-muted'
+                        ? review
+                            ? 'outline-2 outline-secondary'
+                            : 'outline-2 outline-primary-muted'
                         : '[&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
                     hasIssue && !selected && 'outline-1 outline-error',
-                    review && 'outline-dashed outline-1 outline-secondary',
+                    review && !selected && 'outline-dashed outline-1 outline-secondary',
                     '[&[data-previewing]]:outline-dashed [&[data-previewing]]:outline-2 [&[data-previewing]]:outline-primary',
                     conditionHidden &&
                         'bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(var(--text-secondary)/0.08)_8px_16px)]',

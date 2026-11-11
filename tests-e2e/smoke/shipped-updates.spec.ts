@@ -89,6 +89,46 @@ test('reviews a shipped update while keeping the player’s renamed title after 
     await expect(
         review.getByText('Changed by the shipped page', { exact: true }).first()
     ).toBeVisible();
+    const change = review.locator('[data-review-item]').filter({ hasText: OLD_LABEL }).first();
+    const field = page.locator(`[data-editor-frame][data-node-id="${id}"]`);
+    const sheet = page.locator('[data-editor-scroll="page"]');
+    await sheet.evaluate((element) => {
+        element.scrollTop = element.scrollHeight;
+    });
+    await change.getByRole('button').click();
+    await expect(change).toHaveAttribute('data-selected', '');
+    await expect(field).toHaveAttribute('data-selected', '');
+    await expect
+        .poll(() =>
+            field.evaluate((element) => {
+                const pane = element.closest('[data-editor-scroll="page"]')!;
+                const bounds = pane.getBoundingClientRect();
+                const fieldBounds = element.getBoundingClientRect();
+                const target = Math.max(
+                    0,
+                    Math.min(
+                        pane.scrollHeight - pane.clientHeight,
+                        pane.scrollTop +
+                            fieldBounds.top +
+                            fieldBounds.height / 2 -
+                            bounds.top -
+                            pane.clientHeight / 2
+                    )
+                );
+                return Math.abs(target - pane.scrollTop);
+            })
+        )
+        .toBeLessThan(3);
+    const root = page.locator(`[data-outline-row="${first}"]`);
+    await root.locator('button:not([data-drag-handle])').first().click();
+    await expect(change).not.toHaveAttribute('data-selected');
+    await change.getByRole('switch').click();
+    await expect(change).not.toHaveAttribute('data-selected');
+    await expect(root.locator('button[aria-pressed]')).toHaveAttribute('aria-pressed', 'true');
+    await change.getByRole('switch').click();
+    await field.hover();
+    await field.locator(':scope > [data-editor-chip] > span').click();
+    await expect(change).toHaveAttribute('data-selected', '');
     await page
         .getByRole('dialog', { name: 'Full sheet', exact: true })
         .getByRole('button', { name: 'Save', exact: true })
