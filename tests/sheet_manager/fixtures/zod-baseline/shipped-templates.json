@@ -279,7 +279,7 @@
          "label": "Willpower",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
          "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
-         "minFrom": "min(passion + self-control, 10)"
+         "part": "max"
         },
         {
          "id": "resource-force-points",
@@ -292,8 +292,7 @@
           "display": "row",
           "legend": false,
           "total": true
-         },
-         "maxMinFrom": "self-control"
+         }
         },
         {
          "id": "resource-dark-side",
@@ -301,8 +300,7 @@
          "bindingKey": "resource:dark-side-resistance",
          "label": "Dark Side Resistance",
          "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
-         "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance",
-         "minFrom": "max(0, min(5 + conscience - passion, 10))"
+         "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance"
         }
        ]
       },
@@ -1489,7 +1487,28 @@
          "label": "Willpower",
          "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
          "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
-         "minFrom": "min(passion + self-control, 10)"
+         "part": "max"
+        },
+        {
+         "id": "resource-force-points",
+         "type": "primitive",
+         "bindingKey": "resource:force-points",
+         "label": "Force Points",
+         "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
+         "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
+         "poolTracker": {
+          "display": "row",
+          "legend": false,
+          "total": true
+         }
+        },
+        {
+         "id": "resource-dark-side",
+         "type": "primitive",
+         "bindingKey": "resource:dark-side-resistance",
+         "label": "Dark Side Resistance",
+         "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
+         "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance"
         }
        ]
       },
@@ -2893,6 +2912,7 @@
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
        "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
+       "part": "max",
        "fullLabel": true
       },
       {
@@ -3553,7 +3573,26 @@
        "bindingKey": "resource:willpower",
        "label": "Willpower",
        "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#willpower",
+       "part": "max",
        "fullLabel": true
+      },
+      {
+       "id": "resource-force-points",
+       "type": "primitive",
+       "bindingKey": "resource:force-points",
+       "label": "Force Points",
+       "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints",
+       "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
+       "fullLabel": true
+      },
+      {
+       "id": "resource-dark-side",
+       "type": "primitive",
+       "bindingKey": "resource:dark-side-resistance",
+       "label": "Dark Side Resistance",
+       "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance",
+       "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance"
       },
       {
        "id": "derived-initiative",

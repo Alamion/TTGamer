@@ -4,18 +4,18 @@
 
 ## User Story 1 - Star Wars resources (P1)
 
-- [ ] T001 [US1] Add resource regressions in `tests/sheet_manager/star-wars-resources.test.tsx`:
+- [x] T001 [US1] Add resource regressions in `tests/sheet_manager/star-wars-resources.test.tsx`:
       droid full/brief resources without Force Skills, Willpower max rating, no Virtue minima, no
       opening writes, independent Force Point capacity.
-- [ ] T002 [US1] Update `src/sheet_manager/systems/star-wars-wod/templates/character.ts` resource
+- [x] T002 [US1] Update `src/sheet_manager/systems/star-wars-wod/templates/character.ts` resource
       controls using existing max-part presentation; preserve ids and stored values.
-- [ ] T003 [US1] Add `specs/049-rules-sheet-consistency/help-review.md` amendments for droid
+- [x] T003 [US1] Add `specs/049-rules-sheet-consistency/help-review.md` amendments for droid
       resources; extend `tests/docs/help-links-review.test.ts` to merge explicit amendments without
       weakening existing rules.
-- [ ] T004 [US1] Update resource guidance in `.agents/skills/sheet-manager/SKILL.md`,
+- [x] T004 [US1] Update resource guidance in `.agents/skills/sheet-manager/SKILL.md`,
       `.agents/skills/sheet-templates/references/bindings.md`, `src/sheet_manager/AGENTS.md` and
       affected EN/RU Star Wars resource prose; refresh affected shipped template baselines.
-- [ ] T005 [US1] Run targeted resource/help tests and `yarn verify:fast`; commit US1 and its checked
+- [x] T005 [US1] Run targeted resource/help tests and `yarn verify:fast`; commit US1 and its checked
       tasks.
 
 ## User Story 2 - Classic injuries and migration (P1)

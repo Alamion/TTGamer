@@ -273,12 +273,13 @@ describe('droid default template', () => {
         });
     });
 
-    it('drops Force content, adds free points per ability group, and uses the damage chart', () => {
+    it('keeps droid Force resources without skills or powers, free ability points, and damage', () => {
         const droid = starWarsWodDefaultTemplates.find(({ id }) => id === 'droid-sheet')!;
         const json = JSON.stringify(droid);
         expect(json).not.toContain('force-skills-group');
         expect(json).not.toContain('list:forcePowers');
-        expect(json).not.toContain('resource:force-points');
+        expect(json).toContain('resource:force-points');
+        expect(json).toContain('resource:dark-side-resistance');
         for (const group of ['talents', 'skills', 'knowledges']) {
             expect(json).toContain(`"valueKey":"droid-free-${group}"`);
         }

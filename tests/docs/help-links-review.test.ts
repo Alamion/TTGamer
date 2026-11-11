@@ -33,8 +33,11 @@ interface ShippedNode {
     systemId: string;
 }
 
-function readReview(): { rows: Map<string, ReviewRow>; problems: string[] } {
-    const source = readFileSync(path.join(ROOT, 'specs/047-sheet-help-links/review.md'), 'utf8');
+function readReviewFile(
+    file: string,
+    historical = false
+): { rows: Map<string, ReviewRow>; problems: string[] } {
+    const source = readFileSync(path.join(ROOT, file), 'utf8');
     const rows = new Map<string, ReviewRow>();
     const problems: string[] = [];
     let targetColumn = -1;
@@ -69,9 +72,19 @@ function readReview(): { rows: Map<string, ReviewRow>; problems: string[] } {
             rows.set(id, row);
         }
     }
-    if (!reachedElementTypes) problems.push('review.md: missing Element types boundary');
-    if (!rows.size) problems.push('review.md: no template rows parsed');
+    if (historical && !reachedElementTypes)
+        problems.push(`${file}: missing Element types boundary`);
+    if (!rows.size) problems.push(`${file}: no template rows parsed`);
     return { rows, problems };
+}
+
+function readReview(): { rows: Map<string, ReviewRow>; problems: string[] } {
+    const original = readReviewFile('specs/047-sheet-help-links/review.md', true);
+    const amendments = readReviewFile('specs/049-rules-sheet-consistency/help-review.md');
+    return {
+        rows: new Map([...original.rows, ...amendments.rows]),
+        problems: [...original.problems, ...amendments.problems],
+    };
 }
 
 function shippedNodes(): Map<string, ShippedNode> {
@@ -158,7 +171,7 @@ function expectNoProblems(problems: string[]): void {
     expect(problems, `${problems.length} problem(s):\n${problems.join('\n')}`).toEqual([]);
 }
 
-describe('shipped help links follow the approved spec 047 review', () => {
+describe('shipped help links follow the approved review and its explicit amendments', () => {
     const review = readReview();
     const shipped = shippedNodes();
 

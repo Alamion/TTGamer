@@ -482,10 +482,11 @@ duplicate template facts here. Invariants that must never be broken:
 
 - `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
   level.
-- Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance
-  (`max(0, min(5 + conscience - passion, 10))`) as the lower bounds (`minFrom`) of the editable
-  resources, which sit with Health and Initiative in the Condition section's Health and Willpower
-  card (spec 042). Merits/flaws may raise the stored values.
+- Star Wars Virtue formulas set resources only at creation; later Virtue changes do not recalculate
+  or impose minima on them. Shipped full pages and briefs show static Willpower through the existing
+  resource's `part: 'max'`, retaining the old stored pair and current value for custom page
+  compatibility. Living characters and droids both show the independent Force Points pool and Dark
+  Side Resistance. Detailed formulas have one owner in the sheet-manager skill.
 - Current Force Points may legitimately be zero.
 - Detailed formulas are in `.agents/skills/sheet-manager/SKILL.md`.
 

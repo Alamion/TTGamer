@@ -153,21 +153,27 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
 
 ## Derived Stats Formulas
 
-| Stat                         | Formula                                         |
-| ---------------------------- | ----------------------------------------------- |
-| Minimum Willpower            | `Passion + Self Control` (clamped to 10)        |
-| Minimum Dark Side Resistance | `5 + Conscience - Passion` (clamped to 0–10)    |
-| Initiative (Standard)        | `Wits + Alertness`                              |
-| Initiative (Lightsaber)      | `Initiative (Standard) + Control (Force Skill)` |
-| Jumping Distance             | `×min(Control, Telekinesis)`                    |
-| Running Speed                | `×min(Control, Telekinesis)`                    |
+| Stat                          | Formula                                         |
+| ----------------------------- | ----------------------------------------------- |
+| Starting Willpower            | `Passion + Self Control`                        |
+| Starting Force Points         | `Self Control`                                  |
+| Starting Dark Side Resistance | `5 + Conscience - Passion`                      |
+| Initiative (Standard)         | `Wits + Alertness`                              |
+| Initiative (Lightsaber)       | `Initiative (Standard) + Control (Force Skill)` |
+| Jumping Distance              | `×min(Control, Telekinesis)`                    |
+| Running Speed                 | `×min(Control, Telekinesis)`                    |
 
-Virtues provide the minimum values (`minFrom`) for the editable Willpower and Dark Side Resistance
-resources in the character template's Condition section, where standard Initiative is shown too;
-merits/flaws may raise them. The Force-derived formulas (saber initiative, movement) are read-only
-fields of the Force section (`systems/star-wars-wod/templates/character.ts`).
-`calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's
-penalty (Bruised 0 → Crippled −5; Incapacitated none).
+Virtues establish those resources only at creation; later Virtue changes do not recalculate or
+constrain them. Both living characters and droids show Force Points and Dark Side Resistance. Star
+Wars Willpower is static: shipped full pages and briefs edit the stored pair's `max` through
+`part: 'max'`; its old `current` is retained for compatibility. Opening the page neither initializes
+nor recalculates these resources; existing preset bookkeeping may still update document metadata. An
+explicit maximum edit still follows the existing pool contract (current cannot exceed max). Force
+Points retain a spendable current and independent capacity. The Force-derived formulas (saber
+initiative, movement) are read-only fields of the Force section
+(`systems/star-wars-wod/templates/character.ts`). `calculateHealthPenalty()`
+(`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's penalty (Bruised 0 → Crippled
+−5; Incapacitated none).
 
 ## Testing Notes
 

@@ -39,13 +39,6 @@ import { DOCS } from './docs';
 /** Character sheets and droid sheets share one layout with droid-specific differences. */
 type SheetVariant = 'character' | 'droid';
 
-/** Virtue-derived minimums of the editable resources (original sheet rules). */
-const MINIMUMS = {
-    willpower: 'min(passion + self-control, 10)',
-    maxForcePoints: 'self-control',
-    darkSide: 'max(0, min(5 + conscience - passion, 10))',
-} as const;
-
 const ABILITY_GROUPS = abilityGroups({
     talents: [
         'Alertness',
@@ -129,43 +122,29 @@ function skills(variant: SheetVariant): SectionNode {
     );
 }
 
-/** Willpower, and for a sentient its Force Points and Dark Side Resistance. */
-function resources(variant: SheetVariant): TemplateNode[] {
+/** Starting Virtue formulas do not constrain independently advanced resources during play. */
+function resources(): TemplateNode[] {
     return [
         {
             ...resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                minFrom: MINIMUMS.willpower,
+                part: 'max',
             }),
             docsPath: DOCS.willpower,
         },
-        ...(variant === 'droid'
-            ? []
-            : [
-                  // One tracker: the maximum framed, the current points filled (spec 020).
-                  {
-                      ...resource(
-                          'resource-force-points',
-                          'resource:force-points',
-                          'Force Points',
-                          {
-                              poolTracker: { display: 'row', legend: false, total: true },
-                              maxMinFrom: MINIMUMS.maxForcePoints,
-                          }
-                      ),
-                      docsPath: DOCS.forcePoints,
-                  },
-                  {
-                      ...resource(
-                          'resource-dark-side',
-                          'resource:dark-side-resistance',
-                          'Dark Side Resistance',
-                          {
-                              minFrom: MINIMUMS.darkSide,
-                          }
-                      ),
-                      docsPath: DOCS.darkSide,
-                  },
-              ]),
+        {
+            ...resource('resource-force-points', 'resource:force-points', 'Force Points', {
+                poolTracker: { display: 'row', legend: false, total: true },
+            }),
+            docsPath: DOCS.forcePoints,
+        },
+        {
+            ...resource(
+                'resource-dark-side',
+                'resource:dark-side-resistance',
+                'Dark Side Resistance'
+            ),
+            docsPath: DOCS.darkSide,
+        },
     ];
 }
 
@@ -177,7 +156,7 @@ const DERIVED = {
 
 /**
  * Health (a droid's damage), Willpower, and the virtues (spec 042). Droids have no initiative
- * on their sheet; a sentient also checks its Force resources here.
+ * on their full sheet; both kinds check their Force resources here.
  */
 function condition(variant: SheetVariant): SectionNode {
     const isDroid = variant === 'droid';
@@ -199,7 +178,7 @@ function condition(variant: SheetVariant): SectionNode {
                           docsPath: DOCS.initiative,
                       },
                   ]),
-            ...resources(variant),
+            ...resources(),
         ],
         virtuesGroup(VIRTUE_KEYS, 2, DOCS.virtues),
         {
@@ -316,8 +295,8 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
 
 /**
  * Brief perspective: no sections — only the field groups a player or GM glances at during a
- * mission, in compact presentation. Droids have no Force: Resolve keeps virtues, Willpower, and
- * standard initiative, and the condition strip uses the damage chart.
+ * mission, in compact presentation. Droids keep Force resources but no Force skills/powers;
+ * their condition strip uses the damage chart.
  */
 function briefSheet(viewId: string, name: string, variant: SheetVariant): CustomTemplate {
     const isDroid = variant === 'droid';
@@ -367,31 +346,25 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 {
                     ...resource('resource-willpower', 'resource:willpower', 'Willpower', {
                         compact: true,
+                        part: 'max',
                     }),
-                    ...(!isDroid ? { docsPath: DOCS.willpower } : {}),
+                    docsPath: DOCS.willpower,
                 },
-                ...(isDroid
-                    ? []
-                    : [
-                          {
-                              ...resource(
-                                  'resource-force-points',
-                                  'resource:force-points',
-                                  'Force Points',
-                                  { compact: true }
-                              ),
-                              docsPath: DOCS.forcePoints,
-                          },
-                          {
-                              ...resource(
-                                  'resource-dark-side',
-                                  'resource:dark-side-resistance',
-                                  'Dark Side Resistance',
-                                  { compact: true, shortForm: true }
-                              ),
-                              docsPath: DOCS.darkSide,
-                          },
-                      ]),
+                {
+                    ...resource('resource-force-points', 'resource:force-points', 'Force Points', {
+                        compact: true,
+                    }),
+                    docsPath: DOCS.forcePoints,
+                },
+                {
+                    ...resource(
+                        'resource-dark-side',
+                        'resource:dark-side-resistance',
+                        'Dark Side Resistance',
+                        { compact: true, shortForm: true }
+                    ),
+                    docsPath: DOCS.darkSide,
+                },
                 {
                     ...formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
                         compact: true,
