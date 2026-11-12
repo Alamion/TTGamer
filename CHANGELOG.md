@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.38.1
+
+### Fix
+
+- **Star Wars resources (spec 049, T-132)**: Willpower shows its permanent rating without replacing old saved values. Force Points keep an independent capacity, virtues no longer impose ongoing resource minima, and droids show their resources without Force Skills
+- **Classic WoD 2e wounds and specialties**: corrected wound penalties, Ordinary/Aggravated marks and specialty eligibility. Older wound marks convert once, with their original positions and marks retained in exports; the Star Wars conversion keeps its own rules
+- **Clearer rules and records in English and Russian**: corrected droid memory categories, per-member Health, vehicle-system help and sheet headings. Hunter Creed notes keep their existing saved content
+- **Rules help for actions**: open help beside a sheet action, including disabled actions and table-row actions, without rolling or spending resources. Russian term-help controls also stay reachable on narrow screens
+
 ## v3.38.0
 
 ### Minor feat
