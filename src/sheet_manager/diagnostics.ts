@@ -48,6 +48,8 @@ export type SheetIssueCode =
     | 'document-write-failed'
     /** The move of stored documents to one record each failed; nothing is saved until reload. */
     | 'document-migration-failed'
+    /** Device-only acknowledgment of a document conversion could not be read or saved. */
+    | 'document-migration-notice-failed'
     /** A record without an index entry got its entry back. */
     | 'document-index-rebuilt'
     /** A deleted document's record could not be removed yet. */

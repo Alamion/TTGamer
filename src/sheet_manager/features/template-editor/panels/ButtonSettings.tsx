@@ -15,6 +15,7 @@ import type { NodeEdits } from '../session/useNodeEdits';
 import { FormulaField } from '../settings/FormulaField';
 import type { GroupedSettings } from '../settings/groupedSettings';
 import { inputClasses } from '../settings/inputClasses';
+import { settingLabel } from '../settings/registry';
 import { SettingField } from '../settings/SettingField';
 import { ToggleRow } from './LayoutControls';
 
@@ -287,13 +288,32 @@ function buttonGroups(
             </>
         ),
         visibility: (
-            <FormulaField
-                help="buttons"
-                label={t(editor.buttonAvailableWhen)}
-                setting={`${prefix}availableWhen`}
-                value={button.availableWhen}
-                onChange={(availableWhen) => update({ availableWhen })}
-            />
+            <>
+                <FormulaField
+                    help="buttons"
+                    label={t(editor.buttonAvailableWhen)}
+                    setting={`${prefix}availableWhen`}
+                    value={button.availableWhen}
+                    onChange={(availableWhen) => update({ availableWhen })}
+                />
+                <SettingField
+                    label={settingLabel('docsPath')}
+                    help="documentationLink"
+                    setting={`${prefix}docsPath`}
+                >
+                    {(control) => (
+                        <input
+                            {...control}
+                            value={button.docsPath ?? ''}
+                            maxLength={500}
+                            onChange={(event) =>
+                                update({ docsPath: event.target.value.trim() || undefined })
+                            }
+                            className={`${inputClasses} w-full`}
+                        />
+                    )}
+                </SettingField>
+            </>
         ),
     };
 }

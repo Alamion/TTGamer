@@ -1,16 +1,20 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useSheetDiceActions } from '@site/src/integrations/sheet-dice/useSheetDiceActions';
+import { DocsPreviewLink } from '@site/src/shared/components/DocsFragmentCard';
+import { parseDocsLink } from '@site/src/shared/utils/docsLink';
 import { Dices, Droplet, Flame, Heart, type LucideIcon, Skull, Sparkles } from 'lucide-react';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import toast, { type Toast } from 'react-hot-toast';
 
+import { documentationFor } from '../../../components/controls/documentationFor';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentRollSource } from '../../../hooks/useDocumentSource';
 import type { CustomTemplate, RowButton } from '../../../types/template';
 import { listTemplateFormulaCoordinates } from '../data/templateReferences';
 import { useBoundDocument } from './boundDocument';
 import { buttonTarget, readNumber, valueNames } from './buttonTargets';
+import { useTemplateEditorOverlay } from './editorOverlay';
 import type { FormulaEvaluationError, FormulaValue } from './formula';
 import { formulaErrorMessage } from './formulaMessages';
 import type { FormulaRun, UseTemplatePageResult } from './hooks';
@@ -84,6 +88,19 @@ function ScopedButton({
     );
     const { rollImmediately } = useSheetDiceActions({ characterName: bound?.rollName, rollSource });
     const [busy, setBusy] = useState(false);
+    const editing = useTemplateEditorOverlay() !== null;
+    const rowAction = row !== undefined;
+    const docsPath = button.docsPath;
+    const helpPath = docsPath && parseDocsLink(docsPath) ? docsPath : undefined;
+    useEffect(() => {
+        // Page links are checked by NodeView; row actions are not nodes of the tree.
+        if (editing || !rowAction || !docsPath || helpPath) return;
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Documentation link is neither a site docs path nor an https:// address',
+            details: { templateId: template.id, buttonId: button.id, docsPath },
+        });
+    }, [editing, rowAction, docsPath, helpPath, template.id, button.id]);
 
     const evaluate = (formula: string): FormulaRun =>
         pageApi.formulaState.evaluate(
@@ -251,17 +268,27 @@ function ScopedButton({
 
     const Icon = ICONS[button.icon ?? 'dice'];
     return (
-        <button
-            type="button"
-            onClick={() => void run()}
-            disabled={reason !== undefined || busy}
-            aria-label={name}
-            title={reason ?? name}
-            data-button-id={button.id}
-            className="inline-flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:border-primary disabled:cursor-not-allowed disabled:opacity-50"
-        >
-            <Icon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
-            {!row && <span>{label}</span>}
-        </button>
+        <span className="inline-flex items-center gap-1">
+            <button
+                type="button"
+                onClick={() => void run()}
+                disabled={reason !== undefined || busy}
+                aria-label={name}
+                title={reason ?? name}
+                data-button-id={button.id}
+                className="inline-flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                <Icon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                {!row && <span>{label}</span>}
+            </button>
+            {helpPath && (
+                <DocsPreviewLink
+                    docsPath={helpPath}
+                    label={documentationFor(name)}
+                    title={name}
+                    size="sm"
+                />
+            )}
+        </span>
     );
 }

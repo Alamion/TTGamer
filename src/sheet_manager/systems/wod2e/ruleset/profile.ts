@@ -75,7 +75,7 @@ export const WOD2E_ABILITIES = {
     ],
 } as const;
 
-export const WOD2E_HEALTH_TRACK = {
+const WOD2E_HEALTH_TRACK = {
     id: 'health',
     label: 'Health',
     levels: HEALTH_LEVELS.map(({ name, penalty }) => ({

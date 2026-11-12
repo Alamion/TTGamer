@@ -58,6 +58,14 @@ detail.
   `calculateHealthPenalty`, custom skills); `systems/star-wars-wod/schema.ts` owns
   `StarWarsCharacterSchema` (the flat character: metadata with `type: sentient|droid|vehicle`,
   `forcePowerItems`, implants) and `createDefaultCharacter()`.
+- Classic engine characters use definition version 2 (spec 049). A version 1 document migrates
+  bashing/lethal marks to Ordinary marks in the same seven positions and keeps its originals in the
+  optional `legacyHealth` field, which travels in JSON exports. New crosses mean Aggravated; version
+  2 never repeats the mapping. Core characters of a user setting use that definition too; arbitrary
+  user-type values are not reinterpreted. The active document's definition-owned `migrationNotice`
+  produces a toast acknowledged per device (bounded to 500 entries); reading records persists
+  version migrations through the existing writer. See the template bindings reference for
+  edition-specific tracks and trait flags.
 - `systems/star-wars-wod/schema.ts` — definition payloads:
     - `StarWarsCharacterDataSchema` = `StarWarsCharacterSchema` minus `id`, metadata
       `type: 'sentient'`.
@@ -80,12 +88,12 @@ detail.
   options use `<catalogId>/<entryId>` ids (`bodyEquipmentCatalogs.ts`). `metadata` (portrait:
   `portraitId` / `imageUrl`, as every system), `notes`, `biography`. Limits in `V5_LIMITS`.
 - `systems/v5/modules/hunter/schema.ts` — `HunterSchema` = core + `concept`, `creed`, `drive`,
-  `ambition`, `desire`, `redemption`, `creedFields`, `edges` (`{ id, name, note }` ≤ 20), `perks`
-  (`{ id, name, edge, note }` ≤ 60; a picked book Perk fills its Edge name), `despair`, and the cell
-  values `desperation` / `danger` (0–5, per-hunter copies until cells exist). Example document:
-  `modules/hunter/example.ts` (Lena Varga, used by docs). The vampire example is
-  `modules/vampire/example.ts` (Mirela Voss, the Vampire docs' running example; a test keeps her a
-  legal starting character).
+  `ambition`, `desire`, `redemption`, `creedFields` (free-text Creed notes, without a separate
+  mechanic), `edges` (`{ id, name, note }` ≤ 20), `perks` (`{ id, name, edge, note }` ≤ 60; a picked
+  book Perk fills its Edge name), `despair`, and the cell values `desperation` / `danger` (0–5,
+  per-hunter copies until cells exist). Example document: `modules/hunter/example.ts` (Lena Varga,
+  used by docs). The vampire example is `modules/vampire/example.ts` (Mirela Voss, the Vampire docs'
+  running example; a test keeps her a legal starting character).
 - `systems/v5/modules/vampire/schema.ts` — `VampireSchema` (kind `vampire`) = core + `concept`,
   `chronicle`, `sire`, `clan`, `generation` (4–16), `predatorType`, `ambition`, `desire`, `hunger`
   (0–5), `humanity` (0–10) and `stains` (never more than the boxes Humanity leaves), `bloodPotency`
@@ -153,21 +161,27 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
 
 ## Derived Stats Formulas
 
-| Stat                         | Formula                                         |
-| ---------------------------- | ----------------------------------------------- |
-| Minimum Willpower            | `Passion + Self Control` (clamped to 10)        |
-| Minimum Dark Side Resistance | `5 + Conscience - Passion` (clamped to 0–10)    |
-| Initiative (Standard)        | `Wits + Alertness`                              |
-| Initiative (Lightsaber)      | `Initiative (Standard) + Control (Force Skill)` |
-| Jumping Distance             | `×min(Control, Telekinesis)`                    |
-| Running Speed                | `×min(Control, Telekinesis)`                    |
+| Stat                          | Formula                                         |
+| ----------------------------- | ----------------------------------------------- |
+| Starting Willpower            | `Passion + Self Control`                        |
+| Starting Force Points         | `Self Control`                                  |
+| Starting Dark Side Resistance | `5 + Conscience - Passion`                      |
+| Initiative (Standard)         | `Wits + Alertness`                              |
+| Initiative (Lightsaber)       | `Initiative (Standard) + Control (Force Skill)` |
+| Jumping Distance              | `×min(Control, Telekinesis)`                    |
+| Running Speed                 | `×min(Control, Telekinesis)`                    |
 
-Virtues provide the minimum values (`minFrom`) for the editable Willpower and Dark Side Resistance
-resources in the character template's Condition section, where standard Initiative is shown too;
-merits/flaws may raise them. The Force-derived formulas (saber initiative, movement) are read-only
-fields of the Force section (`systems/star-wars-wod/templates/character.ts`).
-`calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's
-penalty (Bruised 0 → Crippled −5; Incapacitated none).
+Virtues establish those resources only at creation; later Virtue changes do not recalculate or
+constrain them. Both living characters and droids show Force Points and Dark Side Resistance. Star
+Wars Willpower is static: shipped full pages and briefs edit the stored pair's `max` through
+`part: 'max'`; its old `current` is retained for compatibility. Opening the page neither initializes
+nor recalculates these resources; existing preset bookkeeping may still update document metadata. An
+explicit maximum edit still follows the existing pool contract (current cannot exceed max). Force
+Points retain a spendable current and independent capacity. The Force-derived formulas (saber
+initiative, movement) are read-only fields of the Force section
+(`systems/star-wars-wod/templates/character.ts`). `calculateHealthPenalty()`
+(`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's penalty (Bruised 0 → Crippled
+−5; Incapacitated none).
 
 ## Testing Notes
 

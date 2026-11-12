@@ -41,7 +41,13 @@ export type TemplateReferenceIssue =
     | { code: 'list-catalog-unnamed'; nodeId: string; key: string }
     | { code: 'unknown-coordinate'; nodeId: string; key: string; setting: CoordinateSetting }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
-    | { code: 'invalid-docs-link'; nodeId: string; key: string }
+    | {
+          code: 'invalid-docs-link';
+          nodeId: string;
+          key: string;
+          setting?: string;
+          group?: 'value' | 'visibility';
+      }
     | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string }
     /** A button or From catalog reads or changes a value the page does not have (spec 038). */
     | {
@@ -301,6 +307,15 @@ export function validateTemplateReferences(
             });
         }
         const checkButton = (button: RowButton, prefix: string) => {
+            if (prefix && button.docsPath && !parseDocsLink(button.docsPath)) {
+                issues.push({
+                    code: 'invalid-docs-link',
+                    nodeId: node.id,
+                    key: button.docsPath,
+                    setting: `${prefix}docsPath`,
+                    group: 'value',
+                });
+            }
             const report = (key: string, setting: string, group: 'value' | 'visibility') =>
                 issues.push({
                     code: 'unknown-value',

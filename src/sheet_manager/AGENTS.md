@@ -481,11 +481,15 @@ duplicate template facts here. Invariants that must never be broken:
 ## Derived State
 
 - `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
-  level.
-- Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance
-  (`max(0, min(5 + conscience - passion, 10))`) as the lower bounds (`minFrom`) of the editable
-  resources, which sit with Health and Initiative in the Condition section's Health and Willpower
-  card (spec 042). Merits/flaws may raise the stored values.
+  level of the classic second-edition track. The template bindings reference owns the separate
+  edition/conversion track and trait-flag rules; the sheet-manager skill owns the version 2
+  migration and retained original wounds. Record reads must not mark a migrated envelope clean: the
+  existing writer persists it even before the player edits a field.
+- Star Wars Virtue formulas set resources only at creation; later Virtue changes do not recalculate
+  or impose minima on them. Shipped full pages and briefs show static Willpower through the existing
+  resource's `part: 'max'`, retaining the old stored pair and current value for custom page
+  compatibility. Living characters and droids both show the independent Force Points pool and Dark
+  Side Resistance. Detailed formulas have one owner in the sheet-manager skill.
 - Current Force Points may legitimately be zero.
 - Detailed formulas are in `.agents/skills/sheet-manager/SKILL.md`.
 
@@ -522,8 +526,8 @@ duplicate template facts here. Invariants that must never be broken:
 - Character pages (every shipped character and Storyteller character, not the V5 group's emblem)
   show the portrait card only while `field:show-portrait` is on (`PORTRAIT_SHOWN`,
   `systems/portraitBinding.ts`): `metadata.showPortrait`, read as "has a portrait" while unset so
-  older documents keep theirs; taking an image sets it. The switch sits in Appearance (WoD 2e
-  engine), the biography (V5), or the identity card (Storyteller character).
+  older documents keep theirs; taking an image sets it. The switch sits in Appearance description
+  (WoD 2e engine), the biography (V5), or the identity card (Storyteller character).
 - Portrait URLs accept only HTTPS or site-relative resources and must use
   `referrerPolicy="no-referrer"`. Local portraits are resized, quota-bounded IndexedDB blobs; never
   put image data URLs or blob contents in Zustand/localStorage JSON.

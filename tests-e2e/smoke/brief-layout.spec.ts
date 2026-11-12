@@ -37,8 +37,17 @@ for (const [definition, baseline] of Object.entries(BASELINE)) {
         // At least half as tall as before on a phone (SC-001), and no taller wide than at 640.
         expect(sizes.get(375)!.height).toBeLessThanOrEqual(baseline.brief[375] / 2);
         expect(sizes.get(1280)!.content).toBeLessThanOrEqual(sizes.get(640)!.content);
-        // The area decides, not the window: a 640 px root in a 1280 px window lays out like 640.
-        const inWindow = await measureView(page, 640);
+        // The page's outer padding changes with the window; compare equal template content widths.
+        const narrow = sizes.get(640)!;
+        const wide = sizes.get(1280)!;
+        const inWindow = await measureView(
+            page,
+            narrow.contentWidth + wide.width - wide.contentWidth
+        );
+        expect(
+            Math.abs(inWindow.contentWidth - narrow.contentWidth),
+            'equal content width in the narrow and wide windows'
+        ).toBeLessThanOrEqual(1);
         expect(inWindow.content).toBeLessThanOrEqual(sizes.get(640)!.content + 2);
         expect(inWindow.content).toBeGreaterThanOrEqual(sizes.get(640)!.content - 2);
     });

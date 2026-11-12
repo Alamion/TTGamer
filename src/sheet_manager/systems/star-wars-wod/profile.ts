@@ -1,15 +1,15 @@
 import { createWodSheetProfileVariant } from '../wod-like';
 import {
     WOD2E_ATTRIBUTE_GROUPS,
-    WOD2E_HEALTH_TRACK,
     WOD2E_WILLPOWER,
     wod2eProfile,
     wodTrait as trait,
 } from '../wod2e/ruleset/profile';
+import { CONVERSION_HEALTH_TRACK } from './conversionRules';
 
 /**
  * The Star Wars conversion as a variant of the WoD 2e engine profile (spec 012): the engine's
- * attributes, Willpower, and Health, with the setting's own abilities, Force skills, virtues
+ * attributes and Willpower, with the setting's own Health rules, abilities, Force skills, virtues
  * (Passion in place of Courage), Force resources, and vehicle systems.
  */
 export const starWarsWodProfile = createWodSheetProfileVariant(wod2eProfile, {
@@ -109,7 +109,7 @@ export const starWarsWodProfile = createWodSheetProfileVariant(wod2eProfile, {
         },
     ],
     conditionTracks: [
-        WOD2E_HEALTH_TRACK,
+        CONVERSION_HEALTH_TRACK,
         {
             id: 'vehicle-damage',
             label: 'Damage',

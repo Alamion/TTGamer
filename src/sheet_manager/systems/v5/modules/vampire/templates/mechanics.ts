@@ -27,6 +27,7 @@ const raiseHunger = [{ target: 'hunger', op: 'add' as const, amount: '1' }];
 export function rouseButton(): ButtonNode {
     return {
         id: 'rouse',
+        docsPath: '/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks',
         type: 'button',
         label: vampire.rouse.action.message,
         labelMessage: vampire.rouse.action.id,
@@ -45,6 +46,7 @@ export function rouseButton(): ButtonNode {
 export function powerRouseButton(): RowButton {
     return {
         id: 'power-rouse',
+        docsPath: '/docs/wod-v5/vampire/reference/hunger-rouse#rouse-checks',
         label: vampire.rouse.action.message,
         labelMessage: vampire.rouse.action.id,
         icon: 'droplet',
@@ -67,6 +69,7 @@ export function powerRouseButton(): RowButton {
 export function remorseButton(): ButtonNode {
     return {
         id: 'remorse',
+        docsPath: '/docs/wod-v5/vampire/reference/humanity-stains#remorse-check',
         type: 'button',
         label: vampire.remorse.action.message,
         labelMessage: vampire.remorse.action.id,

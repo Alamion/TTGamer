@@ -73,7 +73,14 @@ edit a plain item array through the same molecules (V5 `weapons`, `inventory`).
   features (layout, regulator, row options) instead of shipping new look-alike atoms.
 - Trait bindings may declare `row: { specialization?, flags? }` (default both true): hide the
   specialization text input or the specialization/experienced/practiced flags (V5 attributes hide
-  both, V5 skills hide the flags).
+  both, V5 skills hide the flags). Trait `row.flags` and list `flags` also accept a subset of rating
+  flags. Classic WoD 2e traits/custom abilities offer only Specialization, mechanically effective at
+  four dots or more; its rolls always cancel ones. Hidden Experienced/Practiced values remain
+  stored. Only supported flags are passed to trait rolls: hiding an unsupported flag cannot leave
+  its old bonus active. Star Wars retains all conversion flags and their rules.
+- Classic Health has penalties 0/-1/-1/-2/-2/-5 and Ordinary/Aggravated marks, owned by
+  `systems/wod2e/ruleset/`. Star Wars owns its 0/-1/-2/-3/-4/-5 levels and Bashing/Lethal marks in
+  `systems/star-wars-wod/conversionRules.ts`; editing the engine cannot change them.
 - A catalog-bound single-select field with more than `SEARCHABLE_SELECT_THRESHOLD` (12) resolved
   options renders the searchable `CatalogSuggest` instead of a `<select>` (`fieldControls.tsx`,
   `usesSearchableSelect`). It stores the option's value exactly as the drop-down did, so catalog
@@ -97,12 +104,14 @@ edit a plain item array through the same molecules (V5 `weapons`, `inventory`).
   number input); `constrain` keeps the top-level record valid (experience: spent ≤ total) and
   `adapter` maps split values (portrait ↔ `metadata.portraitId`/`imageUrl`). Numeric field bindings
   are formula coordinates (`experience-total - experience-spent`). Pool resources may set
-  `currentRaisesMax` (Willpower).
+  `currentRaisesMax` (legacy Willpower pool behavior). The shipped Star Wars full pages and briefs
+  show Willpower's lasting rating with `part: 'max'`; the stored pair and old pool coordinates stay
+  compatible with custom pages. Starting Virtue formulas impose no ongoing resource minima.
 - `track:droid-damage` reads droid damage (exposed as `health` by the droid capability) with the
   damage chart's level names and penalties. The shipped `droid-sheet` is the `droid` variant of the
-  full sheet: no Force skills/powers or Force Points, per-group free-point fields
-  (`droid-free-<group>` bag values), Built-in equipment, and the damage chart. `equipment:built-in`
-  uses the existing character inventory handlers on `builtInEquipment`;
+  full sheet: Force Points and Dark Side Resistance but no Force skills/powers, per-group free-point
+  fields (`droid-free-<group>` bag values), Built-in equipment, and the damage chart.
+  `equipment:built-in` uses the existing character inventory handlers on `builtInEquipment`;
   `equipment:carried-inventory` uses the inventory molecule on capability `carriedInventory` (stored
   `inventory`, tool/gear suggestions). The Built-in card retains `body-inventory` and its section
   help; `body-carried-inventory` has no help. Existing built-in and inventory arrays keep their

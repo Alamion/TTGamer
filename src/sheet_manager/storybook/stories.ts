@@ -1150,6 +1150,7 @@ const buttons = story(
                 {
                     id: 'button-roll',
                     type: 'button',
+                    docsPath: '/docs/guide/template-editor/elements#buttons',
                     label: 'Check (1d10, 6+)',
                     icon: 'droplet',
                     roll: { notation: '1d10>=6' },
@@ -1175,6 +1176,13 @@ const buttons = story(
                     onSuccess: [{ target: 'marks', op: 'add', amount: '-1' }],
                 },
                 {
+                    id: 'button-unavailable',
+                    type: 'button',
+                    label: 'Unavailable action with help',
+                    availableWhen: '0',
+                    docsPath: '/docs/guide/template-editor/elements#buttons',
+                },
+                {
                     id: 'table-row-buttons',
                     type: 'table',
                     title: 'Row buttons',
@@ -1186,6 +1194,7 @@ const buttons = story(
                     rowButtons: [
                         {
                             id: 'row-check',
+                            docsPath: '/docs/guide/template-editor/elements#buttons',
                             label: 'Pay',
                             icon: 'flame',
                             availableWhen: 'row.cost > 0',

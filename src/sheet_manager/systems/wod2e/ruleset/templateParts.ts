@@ -163,7 +163,7 @@ export function baseSection(
             ),
             group(
                 'base-appearance',
-                'Appearance',
+                'Appearance description',
                 [
                     ...textFields(APPEARANCE_FIELDS),
                     primitive('field-show-portrait', 'field:show-portrait', {
@@ -224,7 +224,7 @@ export function skillsSection(
 ): SectionNode {
     return wodSection(
         'skills',
-        'Skills',
+        'Abilities',
         docsPath,
         groups.map(({ id, title, list, bindingKey, listTitle, keys }) =>
             group(

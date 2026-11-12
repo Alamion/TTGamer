@@ -7,8 +7,9 @@ import {
     SystemIdSchema,
 } from '../../types/document';
 import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from '../types';
-import { classicWodTraitPool } from '../wod-like/dicePool';
 import { buildWod2eCoreBindings } from './ruleset/bindings';
+import { wod2eTraitPool } from './ruleset/dicePool';
+import { migrateWod2eCharacter } from './ruleset/migration';
 import { wod2eProfile } from './ruleset/profile';
 import { createDefaultWod2eCharacterData, Wod2eCharacterDataSchema } from './ruleset/schema';
 import { WOD2E_SYSTEM_ID, wod2eTemplates } from './templates';
@@ -36,12 +37,16 @@ export const wod2eCharacterDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('wod2e-character'),
     kind: DocumentKindSchema.parse('character'),
     label: uiMessages.sheet.documents.types.character,
-    schemaVersion: 1,
+    schemaVersion: 2,
     schema: Wod2eCharacterDataSchema,
     createDefault: createDefaultWod2eCharacterData,
     defaultViewId: SHEET_VIEW.id,
     views: [SHEET_VIEW, BRIEF_VIEW],
-    migrate: (data) => data,
+    migrate: migrateWod2eCharacter,
+    migrationNotice: (data) =>
+        Wod2eCharacterDataSchema.parse(data).legacyHealth
+            ? { id: 'classic-health-v2', message: uiMessages.sheet.wod2e.healthConverted }
+            : undefined,
 };
 
 export const wod2eSystem: SystemPlugin = {
@@ -51,6 +56,6 @@ export const wod2eSystem: SystemPlugin = {
     documents: [wod2eCharacterDefinition],
     defaultTemplates: wod2eTemplates,
     templateBindings: buildWod2eCoreBindings(wod2eProfile, new Set(['character'])),
-    dice: { traitPool: classicWodTraitPool },
+    dice: { traitPool: wod2eTraitPool },
     coreDefinitions: [wod2eCharacterDefinition.id],
 };

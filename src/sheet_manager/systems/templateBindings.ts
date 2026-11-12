@@ -1,5 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
+import type { RatingFlag } from '../types/template';
 import { systemRegistry } from './index';
 
 /**
@@ -34,7 +35,7 @@ export interface TraitBinding extends BindingBase {
      * Trait row options (both default to true): the free-text specialization input and the
      * specialization/experienced/practiced flags of WoD-like systems.
      */
-    row?: { specialization?: boolean; flags?: boolean };
+    row?: { specialization?: boolean; flags?: boolean | readonly RatingFlag[] };
     /** How the game shows the value: dots (default) or a number (pools past five dots). */
     presentation?: 'dots' | 'number';
 }
@@ -76,7 +77,7 @@ export interface ListBinding extends BindingBase {
     /** Translated list title (the plain `label` is the fallback). */
     translation?: TranslationDescriptor;
     /** Trait lists: show the specialization/experienced/practiced flags (default true). */
-    flags?: boolean;
+    flags?: boolean | readonly RatingFlag[];
     /** Trait lists: the name input's placeholder (default "Custom skill"). */
     placeholder?: TranslationDescriptor;
     /** Trait lists: the highest value (default 5). */

@@ -741,6 +741,7 @@ const buttonShape = {
     label: z.string().min(1).max(120),
     ...labelMessageShape,
     icon: z.enum(BUTTON_ICONS).optional(),
+    docsPath: z.string().max(500).optional(),
     /** Enabled only while this formula holds. */
     availableWhen: buttonFormulaSchema.optional(),
     roll: ButtonRollSchema.optional(),

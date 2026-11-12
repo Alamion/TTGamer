@@ -12,10 +12,11 @@ import {
     resolveEffectiveTemplate,
 } from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema, DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
-import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
+import type { CustomTemplate, PrimitiveNode } from '@site/src/sheet_manager/types/template';
 import {
     CustomTemplateSchema,
     TEMPLATE_SCHEMA_VERSION,
+    walkTemplateNodes,
 } from '@site/src/sheet_manager/types/template';
 import { upgradeTemplate } from '@site/src/sheet_manager/types/templateUpgrade';
 import { describe, expect, it } from 'vitest';
@@ -24,8 +25,45 @@ import { takeSheetIssues } from '../setup/sheetIssues';
 import preFeatureCharacterTemplates from './fixtures/character-templates.pre-007.json';
 import { withoutHelpMetadata } from './helpers/withoutHelpMetadata';
 
+/** Spec 049 explicitly amends resources and the combined status caption in the frozen briefs. */
+function amendLegacyResourcesAndCaptions(templates: CustomTemplate[]): CustomTemplate[] {
+    const amended = structuredClone(templates);
+    const character = amended.find(({ id }) => id === 'brief')!;
+    const forceResources: PrimitiveNode[] = [];
+    walkTemplateNodes(character.children, (node) => {
+        if (
+            node.type === 'primitive' &&
+            (node.id === 'resource-force-points' || node.id === 'resource-dark-side')
+        ) {
+            forceResources.push(node);
+        }
+    });
+    expect(forceResources).toHaveLength(2);
+    for (const template of amended) {
+        walkTemplateNodes(template.children, (node) => {
+            if (node.type === 'primitive' && node.id === 'resource-willpower') node.part = 'max';
+            if (node.type === 'brief' && node.id === 'brief-resolve') {
+                expect(node.title).toBe('Resolve');
+                expect(node.labelMessage).toBe('ttgamer.ui.sheet.templates.defaults.resolve');
+                node.title = 'Condition';
+                node.labelMessage = 'ttgamer.ui.sheet.templates.defaults.condition';
+            }
+            if (
+                template.id === 'droid-brief' &&
+                node.type === 'brief' &&
+                node.id === 'brief-resolve'
+            ) {
+                const index = node.children.findIndex(({ id }) => id === 'resource-willpower');
+                expect(index).toBeGreaterThanOrEqual(0);
+                node.children.splice(index + 1, 0, ...structuredClone(forceResources));
+            }
+        });
+    }
+    return amended;
+}
+
 describe('character templates after the builder split (feature 007)', () => {
-    it('produce exactly the pre-refactor briefs', () => {
+    it('keeps the pre-refactor briefs with explicit spec 049 resource and caption amendments', () => {
         // Spec 042 laid the full sheets out anew (their fields are pinned by
         // `shipped-sheet-layout.test.ts`); spec 041 upgraded the trees to schema 4.
         const relaidOut = new Set(['full-sheet', 'droid-sheet']);
@@ -36,9 +74,11 @@ describe('character templates after the builder split (feature 007)', () => {
             );
         expect(withoutHelpMetadata(shipped)).toEqual(
             withoutHelpMetadata(
-                preFeatureCharacterTemplates
-                    .filter((template) => !relaidOut.has(template.id))
-                    .map((template) => upgradeTemplate(template).template)
+                amendLegacyResourcesAndCaptions(
+                    preFeatureCharacterTemplates
+                        .filter((template) => !relaidOut.has(template.id))
+                        .map((template) => upgradeTemplate(template).template)
+                )
             )
         );
     });
@@ -108,7 +148,7 @@ describe('explicit default templates (feature 006, R9)', () => {
             'Base',
             'Condition',
             'Attributes',
-            'Skills',
+            'Abilities',
             'Force',
             'Advantages',
             'Equipment',
@@ -179,9 +219,17 @@ describe('explicit default templates (feature 006, R9)', () => {
                 key
             ).toBe(true);
         }
-        // Force Points: one tracker edits the pool and its maximum (spec 020).
-        expect(JSON.stringify(full)).toContain('"maxMinFrom":"self-control"');
-        expect(JSON.stringify(full)).not.toContain('"part":"max"');
+        // Force Points remain a pool; Willpower displays its lasting rating (spec 049).
+        walkTemplateNodes(full.children, (node) => {
+            if (node.type !== 'primitive' || !node.bindingKey.startsWith('resource:')) return;
+            expect(node).not.toHaveProperty('minFrom');
+            expect(node).not.toHaveProperty('maxMinFrom');
+            if (node.bindingKey === 'resource:willpower') expect(node.part).toBe('max');
+            if (node.bindingKey === 'resource:force-points') {
+                expect(node.poolTracker).toEqual({ display: 'row', legend: false, total: true });
+                expect(node).not.toHaveProperty('part');
+            }
+        });
     });
 
     it('brief is brief blocks only, on a brief page', () => {
@@ -204,7 +252,8 @@ describe('explicit default templates (feature 006, R9)', () => {
         const droidBrief = briefFor(starWarsDroidDefinition)!;
         expect(droidBrief.id).toBe('droid-brief');
         expect(JSON.stringify(droidBrief)).toContain('track:droid-damage');
-        expect(JSON.stringify(droidBrief)).not.toContain('resource:force-points');
+        expect(JSON.stringify(droidBrief)).toContain('resource:force-points');
+        expect(JSON.stringify(droidBrief)).toContain('resource:dark-side-resistance');
         expect(briefFor(starWarsCharacterDefinition)!.id).toBe('brief');
     });
 

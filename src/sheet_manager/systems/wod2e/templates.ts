@@ -167,7 +167,7 @@ function briefChildren(): TemplateNode[] {
         ),
         group(
             'brief-resolve',
-            'Resolve',
+            'Condition',
             [
                 ...compact(WOD2E_VIRTUE_KEYS).map((field) => placed(field, 1)),
                 placed(
@@ -221,6 +221,7 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Eyes: fields.eyes.label,
     Features: fields.features.label,
     Appearance: sheet.base.appearance,
+    'Appearance description': defaults.appearanceDescription,
     Biography: sheet.base.biography,
     Portrait: defaults.portrait,
     'Show portrait': defaults.showPortrait,
@@ -241,7 +242,6 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Flaws: documentFields.flaws,
     Virtues: documentFields.virtues,
     Resources: documentFields.resources,
-    Resolve: defaults.resolve,
     Willpower: documentFields.willpower,
     Body: defaults.body,
     Inventory: defaults.inventory,

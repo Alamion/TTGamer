@@ -73,10 +73,10 @@ describe('character schema', () => {
 });
 
 describe('calculateHealthPenalty', () => {
-    it('uses the deepest marked health level', () => {
+    it('uses the classic penalty of the deepest marked health level', () => {
         expect(
             calculateHealthPenalty(['slash', 'slash', 'cross', 'empty', 'empty', 'empty', 'empty'])
-        ).toBe(-2);
+        ).toBe(-1);
     });
 
     it('returns zero for an undamaged character', () => {

@@ -24,9 +24,9 @@ export const ResourcePairSchema = z
 export const HEALTH_LEVELS = [
     { name: 'Bruised', penalty: 0 },
     { name: 'Hurt', penalty: -1 },
-    { name: 'Injured', penalty: -2 },
-    { name: 'Wounded', penalty: -3 },
-    { name: 'Mauled', penalty: -4 },
+    { name: 'Injured', penalty: -1 },
+    { name: 'Wounded', penalty: -2 },
+    { name: 'Mauled', penalty: -2 },
     { name: 'Crippled', penalty: -5 },
     { name: 'Incapacitated', penalty: 0 },
 ] as const;
@@ -84,6 +84,8 @@ export const Wod2eCharacterDataSchema = z.object({
     flaws: z.array(MeritFlawSchema).default([]),
     willpower: ResourcePairSchema.optional(),
     health: HealthSchema,
+    /** Original pre-classic marks, retained in exports for recovery (spec 049). */
+    legacyHealth: HealthSchema.optional(),
     inventory: z.array(ItemSchema).default([]),
     armor: z.array(ArmorItemSchema).default([]),
     weapons: z.array(WeaponItemSchema).default([]),

@@ -7,11 +7,11 @@ import {
     buildWodTraitBindings,
 } from '../wod-like/templateBindings';
 import {
-    WOD2E_HEALTH_MARKS,
     wod2eEquipmentBindings,
     wod2eFieldBindings,
     wod2eListBindings,
 } from '../wod2e/ruleset/bindings';
+import { CONVERSION_HEALTH_MARKS } from './conversionRules';
 import { starWarsEntityBindings } from './entityBindings';
 import { starWarsWodProfile } from './profile';
 
@@ -60,7 +60,7 @@ const trackBindings = buildWodTrackBindings(starWarsWodProfile, {
         dataKey: 'health',
         documentKinds: CHARACTER_KINDS,
         levelTranslations: levelMessages.healthLevels,
-        marks: WOD2E_HEALTH_MARKS,
+        marks: CONVERSION_HEALTH_MARKS,
     },
     // Level set shared by the droid damage binding; vehicles bind their member tracks instead.
     'vehicle-damage': {

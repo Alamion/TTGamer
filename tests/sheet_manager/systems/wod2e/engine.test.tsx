@@ -88,6 +88,47 @@ describe('the WoD 2e engine plugin (spec 012, US7)', () => {
         expect(systemRegistry.getSystem(SYSTEM)!.coreDefinitions).toEqual([DEFINITION]);
     });
 
+    it('uses classic wounds while Star Wars keeps its conversion penalties and damage names', () => {
+        const classic = systemRegistry.getSystem(SYSTEM)!.templateBindings!;
+        const starWars = systemRegistry.getSystem('star-wars-wod')!.templateBindings!;
+        const track = classic.find(({ key }) => key === 'track:health');
+        const conversion = starWars.find(({ key }) => key === 'track:health');
+        expect(track?.kind).toBe('track');
+        expect(conversion?.kind).toBe('track');
+        if (track?.kind !== 'track' || conversion?.kind !== 'track')
+            throw new Error('Missing tracks');
+        expect(track.levels.map(({ penalty }) => penalty)).toEqual([
+            null,
+            -1,
+            -1,
+            -2,
+            -2,
+            -5,
+            null,
+        ]);
+        expect(conversion.levels.map(({ penalty }) => penalty)).toEqual([
+            null,
+            -1,
+            -2,
+            -3,
+            -4,
+            -5,
+            null,
+        ]);
+        expect(track.marks?.map(({ label }) => label)).toEqual(['Ordinary', 'Aggravated']);
+        expect(conversion.marks?.map(({ label }) => label)).toEqual(['Bashing', 'Lethal']);
+    });
+
+    it('requires four dots for a classic specialty and never applies conversion-only flags', () => {
+        const classic = systemRegistry.getSystem(SYSTEM)!.dice!.traitPool!;
+        const conversion = systemRegistry.getSystem('star-wars-wod')!.dice!.traitPool!;
+        const flags = { specialization: true, experienced: true, practiced: true };
+        expect(classic(3, flags)).toBe('3d10>=6f=1');
+        expect(classic(4, flags)).toBe('4d10!>=6f=1');
+        expect(classic(4, { ...flags, specialization: false })).toBe('4d10>=6f=1');
+        expect(conversion(3, flags)).toBe('3d10>=6!');
+    });
+
     it('is a concrete system that generic code may not import', () => {
         const config = readFileSync('eslint.config.mjs', 'utf8');
         const pattern = /regex: '(\(\^\|\/\)systems\/[^']+)'/.exec(config)![1]!;

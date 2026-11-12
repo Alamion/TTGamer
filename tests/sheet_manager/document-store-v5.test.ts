@@ -139,6 +139,61 @@ describe('the backup countdown', () => {
 });
 
 describe('opening documents from records', () => {
+    it('persists a raw classic v1 migration before reload and keeps later aggravated wounds', async () => {
+        const document = libraryDocument('classic-old', {
+            systemId: 'wod-2e',
+            definitionId: 'wod2e-character',
+        });
+        const originals = ['slash', 'cross', 'empty', 'empty', 'empty', 'empty', 'empty'];
+        const old = {
+            ...document,
+            schemaVersion: 1,
+            templateValues: { own: 'Kept' },
+            data: {
+                ...(document.data as object),
+                notes: 'Kept notes',
+                health: { levels: originals },
+            },
+        };
+        const state = await migrateToIndexedState({
+            documents: [document],
+            recoveryEntries: [],
+            currentDocumentId: null,
+        });
+        await recordWriter.flush();
+        await storage.set(recordKey(document.id), old);
+        useDocumentStore.setState({ documents: [], entries: state.entries });
+
+        expect(await useDocumentStore.getState().openDocument(document.id)).toBe(true);
+        await recordWriter.flush();
+        expect(await readRecord(document.id)).toMatchObject({
+            schemaVersion: 2,
+            data: {
+                legacyHealth: { levels: originals },
+                health: { levels: ['slash', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty'] },
+            },
+        });
+        useDocumentStore.getState().updateDocumentData(document.id, (data) => ({
+            ...(data as object),
+            health: { levels: originals },
+        }));
+        await recordWriter.flush();
+        useDocumentStore.setState({
+            documents: [],
+            entries: state.entries,
+            currentDocumentId: null,
+        });
+        await useDocumentStore.getState().openDocument(document.id);
+        expect(useDocumentStore.getState().documents[0]).toMatchObject({
+            templateValues: { own: 'Kept' },
+            data: {
+                health: { levels: originals },
+                legacyHealth: { levels: originals },
+                notes: 'Kept notes',
+            },
+        });
+    });
+
     it('reads only the opened record and applies what a library move wrote on the entry', async () => {
         const state = await migrateToIndexedState({
             documents: [

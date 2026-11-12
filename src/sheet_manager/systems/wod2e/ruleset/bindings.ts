@@ -16,12 +16,12 @@ import {
     toCoordinate,
 } from '../../wod-like/templateBindings';
 
-const damageMarks = uiMessages.sheet.documents.fields.damageMarks;
+const damageMarks = uiMessages.sheet.wod2e.damageMarks;
 
-/** Health marks of the WoD 2e engine: a slash is bashing damage, a cross lethal (spec 018). */
-export const WOD2E_HEALTH_MARKS: readonly TrackMark[] = [
-    { id: 'slash', label: damageMarks.bashing.message, translation: damageMarks.bashing },
-    { id: 'cross', label: damageMarks.lethal.message, translation: damageMarks.lethal },
+/** Classic second edition distinguishes ordinary wounds from aggravated wounds. */
+const WOD2E_HEALTH_MARKS: readonly TrackMark[] = [
+    { id: 'slash', label: damageMarks.ordinary.message, translation: damageMarks.ordinary },
+    { id: 'cross', label: damageMarks.aggravated.message, translation: damageMarks.aggravated },
 ];
 
 /**
@@ -221,7 +221,10 @@ export function buildWod2eCoreBindings(
             recordFor: ({ role }) =>
                 role === 'attribute' ? 'attributes' : role === 'virtue' ? 'virtues' : 'skills',
             defaultValueFor: ({ role }) => (role === 'ability' ? 0 : 1),
-        }),
+        }).map((binding) => ({
+            ...binding,
+            row: { flags: binding.map === 'virtues' ? false : (['specialization'] as const) },
+        })),
         ...buildWodResourceBindings(profile, {
             documentKinds,
             currentRaisesMax: new Set(['willpower']),
@@ -235,7 +238,16 @@ export function buildWod2eCoreBindings(
                 marks: WOD2E_HEALTH_MARKS,
             },
         }),
-        ...wod2eListBindings(documentKinds),
+        ...wod2eListBindings(documentKinds).map((binding) =>
+            binding.kind === 'list'
+                ? {
+                      ...binding,
+                      flags: binding.listId.startsWith('custom')
+                          ? (['specialization'] as const)
+                          : false,
+                  }
+                : binding
+        ),
         ...wod2eEquipmentBindings(documentKinds, [], { itemArrays: true }),
         ...wod2eFieldBindings(documentKinds, WOD2E_METADATA_FIELDS),
     ];

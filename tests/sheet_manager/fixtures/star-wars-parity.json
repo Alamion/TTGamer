@@ -1802,7 +1802,7 @@
                         {
                             "id": "base-appearance",
                             "type": "group",
-                            "title": "Appearance",
+                            "title": "Appearance description",
                             "collapsible": true,
                             "children": [
                                 {
@@ -1870,7 +1870,7 @@
                             "column": 2,
                             "columns": 3,
                             "defaultCollapsed": true,
-                            "labelMessage": "ttgamer.ui.sheet.base.appearance"
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.appearanceDescription"
                         },
                         {
                             "id": "base-biography",
@@ -1934,8 +1934,8 @@
                                     "id": "resource-willpower",
                                     "type": "primitive",
                                     "bindingKey": "resource:willpower",
+                                    "part": "max",
                                     "label": "Willpower",
-                                    "minFrom": "min(passion + self-control, 10)",
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                                 },
                                 {
@@ -1948,7 +1948,6 @@
                                         "legend": false,
                                         "total": true
                                     },
-                                    "maxMinFrom": "self-control",
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                                 },
                                 {
@@ -1956,7 +1955,6 @@
                                     "type": "primitive",
                                     "bindingKey": "resource:dark-side-resistance",
                                     "label": "Dark Side Resistance",
-                                    "minFrom": "max(0, min(5 + conscience - passion, 10))",
                                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                                 }
                             ],
@@ -2152,7 +2150,7 @@
                 {
                     "id": "skills",
                     "type": "section",
-                    "title": "Skills",
+                    "title": "Abilities",
                     "children": [
                         {
                             "id": "abilities-talents",
@@ -2538,7 +2536,7 @@
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                     "columns": 3,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
                 },
                 {
                     "id": "force",
@@ -3007,7 +3005,7 @@
                         {
                             "id": "base-appearance",
                             "type": "group",
-                            "title": "Appearance",
+                            "title": "Appearance description",
                             "collapsible": true,
                             "children": [
                                 {
@@ -3075,7 +3073,7 @@
                             "column": 2,
                             "columns": 3,
                             "defaultCollapsed": true,
-                            "labelMessage": "ttgamer.ui.sheet.base.appearance"
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.appearanceDescription"
                         },
                         {
                             "id": "base-biography",
@@ -3131,9 +3129,30 @@
                                     "id": "resource-willpower",
                                     "type": "primitive",
                                     "bindingKey": "resource:willpower",
+                                    "part": "max",
                                     "label": "Willpower",
-                                    "minFrom": "min(passion + self-control, 10)",
                                     "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                                },
+                                {
+                                    "id": "resource-force-points",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:force-points",
+                                    "label": "Force Points",
+                                    "poolTracker": {
+                                        "display": "row",
+                                        "legend": false,
+                                        "total": true
+                                    },
+                                    "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
+                                    "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+                                },
+                                {
+                                    "id": "resource-dark-side",
+                                    "type": "primitive",
+                                    "bindingKey": "resource:dark-side-resistance",
+                                    "label": "Dark Side Resistance",
+                                    "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance",
+                                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                                 }
                             ],
                             "column": 1,
@@ -3328,7 +3347,7 @@
                 {
                     "id": "skills",
                     "type": "section",
-                    "title": "Skills",
+                    "title": "Abilities",
                     "children": [
                         {
                             "id": "abilities-talents",
@@ -3741,7 +3760,7 @@
                     ],
                     "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                     "columns": 3,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
                 },
                 {
                     "id": "advantages",
@@ -4481,9 +4500,9 @@
                 },
                 {
                     "id": "brief-resolve",
-                    "title": "Resolve",
+                    "title": "Condition",
                     "collapsible": false,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
                     "type": "brief",
                     "children": [
                         {
@@ -4523,6 +4542,7 @@
                             "id": "resource-willpower",
                             "type": "primitive",
                             "bindingKey": "resource:willpower",
+                            "part": "max",
                             "fullLabel": true,
                             "label": "Willpower",
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
@@ -5130,9 +5150,9 @@
                 },
                 {
                     "id": "brief-resolve",
-                    "title": "Resolve",
+                    "title": "Condition",
                     "collapsible": false,
-                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve",
+                    "labelMessage": "ttgamer.ui.sheet.templates.defaults.condition",
                     "type": "brief",
                     "children": [
                         {
@@ -5172,9 +5192,27 @@
                             "id": "resource-willpower",
                             "type": "primitive",
                             "bindingKey": "resource:willpower",
+                            "part": "max",
                             "fullLabel": true,
                             "label": "Willpower",
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                        },
+                        {
+                            "id": "resource-force-points",
+                            "type": "primitive",
+                            "bindingKey": "resource:force-points",
+                            "fullLabel": true,
+                            "label": "Force Points",
+                            "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#force-points",
+                            "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+                        },
+                        {
+                            "id": "resource-dark-side",
+                            "type": "primitive",
+                            "bindingKey": "resource:dark-side-resistance",
+                            "label": "Dark Side Resistance",
+                            "docsPath": "/docs/star-wars-wod-2e/character/dark_side_resistance",
+                            "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                         },
                         {
                             "id": "derived-initiative",

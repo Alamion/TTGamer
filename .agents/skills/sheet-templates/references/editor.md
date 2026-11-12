@@ -43,12 +43,13 @@ no field to select.
 ## Help settings
 
 Under **Visibility and help**, `settings/registry.ts` exposes **Documentation link** (`docsPath`)
-for containers, fields, and primitives. **Hide help** (`hideHelp`) is offered for fields and
-primitives when `elementHelpFor(node)` returns a default. Both settings carry across supported
-kind/source switches and participate in shared editing. Resolution and precedence are owned by
-`references/node-tree.md`, "Help links"; `tests/sheet_manager/shipped-parity.test.tsx` guards editor
-coverage. The reader-facing explanation lives in
-`docs/guide/template-editor/elements.mdx#documentation-link` and its Russian mirror.
+for containers, fields, primitives, and page buttons. Row buttons take the same explicit link in
+their own settings, with issue locations keyed `rowButton:<id>.docsPath`. **Hide help** (`hideHelp`)
+is offered for fields and primitives when `elementHelpFor(node)` returns a default. Both settings
+carry across supported kind/source switches and participate in shared editing. Resolution and
+precedence are owned by `references/node-tree.md`, "Help links";
+`tests/sheet_manager/shipped-parity.test.tsx` guards editor coverage. The reader-facing explanation
+lives in `docs/guide/template-editor/elements.mdx#documentation-link` and its Russian mirror.
 
 ## Layout
 
